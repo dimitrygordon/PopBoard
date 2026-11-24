@@ -1,47 +1,55 @@
-// Relative Velocity Exploration: art slots. One file per object so each can be dragged.
-// Placeholders ship as SVG in relative-velocity/art/. When Leo's transparent PNG for a slot lands,
-// copy it to art/<name>.png (backdrops: art/<name>-light.png and art/<name>-dark.png) and add the
-// name to PNG_READY. The page then loads the PNG by the same name. Sizes are the intended pixel size
-// (draw at 2x for phones if you like; keep the aspect ratio). See README.md.
-export const PNG_READY = new Set([
-  // "boat", "bg-river", ...
-]);
+// Relative Velocity Exploration: Leo's art set (colored pencil, Physics 101), shipped as webp in art/.
+// Geometry comes from Leo's SPEC.md (PNG pixels, about 2x display). Every scene is a 1600 x 900 stage.
+// One file per object so each can be dragged. Backdrops come in -light (#FCF7EB) and -dark (#1F1D1A).
+// To swap a file: save it as art/<name>.webp (backdrops art/<name>-light.webp and -dark.webp) at the same size.
 
-// w,h: pixel size. anchor: the point (fraction of w,h) that sits on the object's position.
-// themed: has -light and -dark versions. tile: repeats sideways, left edge must meet right edge.
+// png: source PNG size. show: display size on the 1600 x 900 stage. anchor: the PNG pixel that sits on the
+// object's position. themed: has light and dark versions. src: Leo's original file name.
 export const ART = {
   // River Channel Lab
-  "bg-river":   { w: 2400, h: 900, themed: true, tile: true, note: "tabletop under the plexi channel" },
-  channel:      { w: 2000, h: 240, anchor: [0, 0.5], note: "top-down plexiglass channel; x=0 px is 0 m and x=2000 px is 5 m on the ruler (400 px per m); water lane is y 40 to 200" },
-  boat:         { w: 240, h: 120, anchor: [0.5, 0.5], note: "toy motor boat, top-down, bow pointing right" },
-  bead:         { w: 48, h: 48, anchor: [0.5, 0.5], note: "one floating bead (the leaf)" },
-  stopwatch:    { w: 240, h: 280, anchor: [0, 0], note: "stopwatch body; the time is drawn as live text in the face, center (120,160), face radius 80" },
-  "valve-knob": { w: 200, h: 200, anchor: [0.5, 0.5], note: "flow valve knob, pointer at 12 o'clock = off; the page rotates it clockwise up to 270 degrees" },
-  clipboard:    { w: 640, h: 820, anchor: [0, 0], note: "pencil clipboard with an EMPTY data grid; grid box x 60 to 580, y 170 to 760; the page draws the table text on top" },
+  "bg-river":    { png: [1600, 900], themed: true, src: "bg_lab_{theme}.png", note: "lab bench, empty tabletop (y 204 to 795)" },
+  channel:       { png: [2400, 355], show: [1200, 178], anchor: [0, 0], src: "channel_topdown.png", note: "water interior x 46 to 2353, y 47 to 306; placed at x 200, y 392" },
+  ruler:         { png: [2400, 110], show: [1200, 55], anchor: [0, 0], src: "channel_ruler_0-5m.png", note: "0 m at x 46, 5 m at x 2353; placed at x 200, y 584" },
+  boat:          { png: [480, 158], show: [200, 66], anchor: [240, 79], src: "boat_topdown_right.png", note: "bow right" },
+  "bead-yellow": { png: [80, 80], show: [40, 40], anchor: [40, 40], src: "bead_yellow.png", note: "the leaf" },
+  "bead-green":  { png: [80, 80], show: [40, 40], anchor: [40, 40], src: "bead_green.png" },
+  "bead-violet": { png: [80, 80], show: [40, 40], anchor: [40, 40], src: "bead_violet.png" },
+  "bead-red":    { png: [80, 80], show: [40, 40], anchor: [40, 40], src: "bead_red.png" },
+  "valve-knob":  { png: [200, 199], show: [100, 100], anchor: [100, 100], src: "flow_valve_knob.png", note: "rotates when the flow is on" },
+  clipboard:     { png: [640, 969], show: [320, 485], anchor: [0, 0], src: "clipboard_datatable.png", note: "columns x 64 185 313 443 563, rows y 231 304 409 518 625 737 855" },
+  stopwatch:     { png: [240, 334], show: [120, 167], anchor: [0, 0], src: "stopwatch.png", note: "dial center (120, 203)" },
   // Truck and basketball
-  "bg-truck":   { w: 2400, h: 900, themed: true, tile: true, note: "street and sidewalk, road surface along the bottom 120 px" },
-  truck:        { w: 600, h: 300, anchor: [0.5, 1], note: "pickup truck, side view, facing right, wheels touch the bottom edge" },
-  basketball:   { w: 96, h: 96, anchor: [0.5, 0.5], note: "basketball" },
+  "bg-truck":    { png: [1600, 900], themed: true, src: "bg_road_{theme}.png", note: "asphalt y 590 to 740, wheels on y 700" },
+  truck:         { png: [1100, 447], show: [550, 224], anchor: [550, 436], src: "truck_side_right.png", note: "wheels y 436, bed rail top y 171, bed x 10 to 470" },
+  basketball:    { png: [160, 158], show: [56, 55], anchor: [80, 79], src: "basketball.png" },
   // Airport walkway
-  "bg-walkway": { w: 2400, h: 900, themed: true, tile: true, note: "terminal floor and windows" },
-  walkway:      { w: 1200, h: 160, tile: true, anchor: [0, 1], note: "moving walkway side view, one tile; the page slides it at the belt speed" },
-  walker:       { w: 160, h: 320, anchor: [0.5, 1], note: "walker with rolling bag, side view, facing right, feet on the bottom edge" },
+  "bg-walkway":  { png: [1600, 900], themed: true, src: "bg_airport_{theme}.png", note: "walkway base on y 760" },
+  walkway:       { png: [554, 390], show: [277, 195], anchor: [0, 245], src: "walkway_tile.png", note: "tiles sideways, belt surface y 245" },
+  walker:        { png: [400, 741], show: [200, 371], anchor: [200, 730], src: "walker_side_right.png", note: "feet at (200, 730)" },
   // Kart boost road
-  "bg-kart":    { w: 2400, h: 900, themed: true, tile: true, note: "race track infield and grandstand, no logos or game branding" },
-  kart:         { w: 320, h: 180, anchor: [0.5, 1], note: "player kart, side view, facing right, no game branding" },
-  "kart-rival": { w: 320, h: 180, anchor: [0.5, 1], note: "rival kart, a different color from the player kart" },
-  "boost-pad":  { w: 400, h: 80, tile: true, anchor: [0, 0.5], note: "boost lane chevron strip, one tile, chevrons point right" },
+  "bg-kart":     { png: [1600, 900], themed: true, src: "bg_kart_{theme}.png", note: "asphalt y 588 to 768, wheels on y 720" },
+  kart:          { png: [800, 420], show: [300, 158], anchor: [400, 410], src: "kart_blue_side_right.png", note: "wheels y 410" },
+  "kart-rival":  { png: [800, 420], show: [300, 158], anchor: [400, 410], src: "kart_rival_red_side_right.png", note: "wheels y 410" },
+  "boost-pad":   { png: [640, 285], show: [240, 36], anchor: [320, 142], src: "boost_pad_right.png", note: "squashed to lie on the road" },
 };
+export const BEADS = ["bead-yellow", "bead-green", "bead-violet", "bead-red"];
 
 export function artUrl(name, theme) {
   const a = ART[name];
   if (!a) throw new Error("unknown art " + name);
-  const ext = PNG_READY.has(name) ? "png" : "svg";
   const file = a.themed ? `${name}-${theme === "dark" ? "dark" : "light"}` : name;
-  return `relative-velocity/art/${file}.${ext}`;
+  return `relative-velocity/art/${file}.webp`;
 }
 
-// Every placeholder file the page may request (for tests and the README).
+// Display size and the anchor offset in display pixels.
+export function shown(name) {
+  const a = ART[name];
+  const [w, h] = a.show || [1600, 900];
+  const k = w / a.png[0];
+  const [ax, ay] = a.anchor || [0, 0];
+  return { w, h, ax: ax * k, ay: ay * (h / a.png[1]) };
+}
+
 export function artFiles() {
   const out = [];
   for (const [name, a] of Object.entries(ART)) {

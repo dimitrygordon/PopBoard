@@ -35,7 +35,7 @@ export const TARGETS = {
   "projectile": ["Projectile Motion", "study-projectile.html", "physics101/tryit/thumbs/study-projectile.svg"],
   "quantum": ["Quantum Physics", "study-quantum.html", "physics101/tryit/thumbs/study-quantum.svg"],
   "rbmk": ["RBMK Reactor Simulator", "study-rbm.html", "physics101/tryit/thumbs/study-rbmk.svg"],
-  "relative-velocity": ["Relative Velocity Exploration", "study-relative-velocity.html", "physics101/tryit/thumbs/study-relative-velocity.svg", "physics101/tryit/thumbs/study-relative-velocity-dark.svg"],
+  "relative-velocity": ["Relative Velocity Exploration", "study-relative-velocity.html", "physics101/tryit/thumbs/study-relative-velocity.webp", "physics101/tryit/thumbs/study-relative-velocity-dark.webp"],
   "ripple-tank": ["Ripple Tank", "study-ripple-tank.html", "physics101/tryit/thumbs/study-ripple-tank.svg"],
   "rocket-mission": ["Rocket Science & Space Mission", "study-rocket-mission.html", "physics101/tryit/thumbs/study-rocket-mission.svg"],
   "sb-doppler": ["Doppler sandbox", "study-astronomy-story.html?deck=d01&page=14", "physics101/tryit/thumbs/study-sb-doppler.svg"],

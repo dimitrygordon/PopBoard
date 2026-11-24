@@ -31,7 +31,7 @@ export const CONFIG = {
     throwDir: -1,             // -1 backward, +1 forward, 0 just let go
     releaseHeight: 1.5,       // m above the road (truck bed plus arm)
     timeScale: 0.25,          // slow motion so the fall is visible
-    viewWidth: 24,            // m of road across the stage
+    viewWidth: 16,            // m of road across the 1600 px stage (100 px per m)
   },
   walkway: {
     beltSpeed: 0.65,          // m/s, belt relative to the floor
@@ -42,7 +42,7 @@ export const CONFIG = {
     walkDir: 1,               // +1 with the belt, -1 against it, 0 stand still
     beltLength: 30,           // m
     timeScale: 1,
-    viewWidth: 14,            // m across the stage
+    viewWidth: 8,             // m across the 1600 px stage (200 px per m)
   },
   kart: {
     kartSpeedMph: 40,         // kart relative to the boost lane surface
@@ -54,7 +54,7 @@ export const CONFIG = {
     boostOn: true,
     trackLength: 200,         // m, one lap shown as a looping straight
     timeScale: 0.25,
-    viewWidth: 60,            // m across the stage
+    viewWidth: 40,            // m across the 1600 px stage (40 px per m; karts drawn larger than scale)
   },
 };
 
@@ -65,10 +65,11 @@ export const FRAMES = {
   kart: ["track", "rival", "kart"],
 };
 
-// Arrow colors (Leo's spec). The sum arrow is ink on cream paper and cream on charcoal.
+// Arrow colors (Leo's SPEC.md). The sum arrow is bold: ink on cream paper, cream on charcoal.
 export const ARROW = {
   object: "#6FA3E0",
-  medium: "#E0A030",
-  sumLight: "#1F1D1A",
-  sumDark: "#F2EAD8",
+  mediumLight: "#E0A33A",
+  mediumDark: "#E8B04A",
+  sumLight: "#2B3A55",
+  sumDark: "#EDE6D6",
 };

@@ -2,7 +2,7 @@
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import * as P from "./rv-physics.js";
 import { STRINGS } from "./rv-strings.js";
-import { artUrl, ART } from "./rv-art.js";
+import { artUrl, shown, BEADS } from "./rv-art.js";
 
 const C = P.CONFIG;
 const NS = "http://www.w3.org/2000/svg";
@@ -40,11 +40,12 @@ function el(name, attrs = {}, parent) {
   if (parent) parent.appendChild(e);
   return e;
 }
-function sprite(parent, name, w, h, cls) {
+// A sprite at Leo's display size, positioned by its anchor (SPEC.md). scale shrinks it if needed.
+function sprite(parent, name, cls, scale = 1) {
   const g = el("g", cls ? { class: cls } : {}, parent);
   const inner = el("g", {}, g);
-  const a = ART[name].anchor || [0.5, 0.5];
-  const img = el("image", { href: artUrl(name, theme()), width: w, height: h, x: -a[0] * w, y: -a[1] * h, preserveAspectRatio: "xMidYMid meet" }, inner);
+  const s = shown(name);
+  const img = el("image", { href: artUrl(name, theme()), width: s.w * scale, height: s.h * scale, x: -s.ax * scale, y: -s.ay * scale, preserveAspectRatio: "none" }, inner);
   img.dataset.art = name;
   g.inner = inner;
   return g;
@@ -57,7 +58,7 @@ function place(g, x, y, flip = false) {
 function arrow(parent, cls, x0, x1, y, w) {
   const g = el("g", { class: cls }, parent);
   const len = x1 - x0;
-  if (Math.abs(len) < 3) { el("circle", { cx: x0, cy: y, r: w * 0.9, stroke: "none" }, g); return g; }
+  if (Math.abs(len) < 4) { el("circle", { cx: x0, cy: y, r: w * 0.9, stroke: "none" }, g); return g; }
   const dir = Math.sign(len), head = Math.min(Math.abs(len), w * 3.2);
   el("line", { x1: x0, y1: y, x2: x1 - dir * head * 0.8, y2: y, "stroke-width": w, "stroke-linecap": "round" }, g);
   el("path", { d: `M${x1} ${y} L${x1 - dir * head} ${y - head * 0.62} L${x1 - dir * head} ${y + head * 0.62} Z`, stroke: "none" }, g);
@@ -66,17 +67,30 @@ function arrow(parent, cls, x0, x1, y, w) {
 // Tail-to-tip: object arrow, then medium arrow from its tip, then the bold sum underneath.
 function vectorStack(parent, x, y, vObjMedium, vMediumViewer, scale) {
   const a = vObjMedium * scale, b = vMediumViewer * scale;
-  arrow(parent, "rv-a-obj", x, x + a, y, 7);
-  arrow(parent, "rv-a-med", x + a, x + a + b, y, 7);
-  arrow(parent, "rv-a-sum", x, x + a + b, y + 22, 10);
+  arrow(parent, "rv-a-obj", x, x + a, y, 10);
+  arrow(parent, "rv-a-med", x + a, x + a + b, y, 10);
+  arrow(parent, "rv-a-sum", x, x + a + b, y + 34, 15);
 }
 function wrap(v, lo, period) { return ((((v - lo) % period) + period) % period) + lo; }
-function patternTile(defs, id, name, w, h, y = 0) {
-  const p = el("pattern", { id, patternUnits: "userSpaceOnUse", width: w, height: h, y }, defs);
-  const img = el("image", { href: artUrl(name, theme()), width: w, height: h, preserveAspectRatio: "none" }, p);
+// Leo's backdrops are 1600 x 900 scenes, not tiles: repeat them mirrored so the edges always meet.
+function backdrop(defs, svgRoot, id, name) {
+  const p = el("pattern", { id, patternUnits: "userSpaceOnUse", width: 3200, height: 900 }, defs);
+  for (const flip of [false, true]) {
+    const img = el("image", { href: artUrl(name, theme()), width: 1600, height: 900, preserveAspectRatio: "none" }, p);
+    if (flip) img.setAttribute("transform", "translate(3200,0) scale(-1,1)");
+    img.dataset.art = name;
+  }
+  el("rect", { width: 1600, height: 900, fill: `url(#${id})` }, svgRoot);
+  return p;
+}
+function tilePattern(defs, id, name, y, scale = 1, gap = 0) {
+  const s = shown(name);
+  const p = el("pattern", { id, patternUnits: "userSpaceOnUse", width: s.w * scale + gap, height: s.h * scale, y }, defs);
+  const img = el("image", { href: artUrl(name, theme()), width: s.w * scale, height: s.h * scale, preserveAspectRatio: "none" }, p);
   img.dataset.art = name;
   return p;
 }
+const shiftT = (g, px) => g.setAttribute("patternTransform", `translate(${px.toFixed(2)},0)`);
 
 // ---------- state ----------
 const params = {
@@ -93,67 +107,58 @@ const st = {
 const svg = $("sceneSvg");
 
 // ---------- scenes ----------
-// Each scene: W,H,ppm (px per m), build(), step(dt), viewerX(frame) in m, render(shiftM), readParams(), action.
+// Every scene is a 1600 x 900 stage (Leo's backdrops). Each: ppm (px per m), build(), step(dt),
+// viewerX(frame) in m, render(shiftM), readParams(), action, drag.
 const river = {
-  // The view spans the channel (at least 2.5 m) so short channels fill the stage; art keeps its aspect ratio.
-  W: 1000, x0: 60,
-  get ppm() { return 880 / Math.max(lab.length, 2.5); },
-  get k() { return this.ppm / 176; },
-  get cy() { return 110 + this.chH / 2; },
-  get H() { return Math.round(this.chH + 230); },
-  t: 0, flow: 0, boat: { x: 0, y: 0, running: false }, beads: [],
-  get chH() { return 240 * (5 * this.ppm) / 2000; },
+  // Channel at x 200, y 392, 1200 x 178; water 0 m at x 223, 5 m at x 1376.5 (SPEC.md).
+  W: 1600, H: 900, x0: 223, ppm: (1376.5 - 223) / 5, cy: 392 + (176.5 * 178) / 355, half: (129.5 * 178) / 355,
+  span: 5, t: 0, flow: 0, boat: { x: 0, y: 0, running: false }, beads: [],
   get flowOn() { return this.flow > 0; },
   reset() {
     this.boat = { x: lab.heading > 0 ? 0 : lab.length, y: 0, running: false };
-    const n = C.river.beadCount;
-    this.beads = Array.from({ length: n }, (_, i) => ({ x: ((i + 0.5) / n) * lab.length, y: [0.28, -0.3, 0.12, -0.12][i % 4] }));
+    this.beads = BEADS.map((name, i) => ({ name, x: ((i + 0.5) / BEADS.length) * this.span, y: [0.45, -0.5, 0.2, -0.15][i] }));
   },
   build() {
     const defs = el("defs", {}, svg);
-    this.bg = patternTile(defs, "bgRiver", "bg-river", this.H * 2400 / 900, this.H);
-    this.waterPat = el("pattern", { id: "waterPat", patternUnits: "userSpaceOnUse", width: 60, height: 40 }, defs);
-    el("path", { d: "M6 12 q12 -6 24 0 M34 30 q12 -6 24 0", stroke: "#5A8FB0", "stroke-width": 2, fill: "none", opacity: 0.6 }, this.waterPat);
-    this.clip = el("clipPath", { id: "chClip" }, defs);
-    this.clipRect = el("rect", {}, this.clip);
-    this.bgRect = el("rect", { width: this.W, height: this.H, fill: "url(#bgRiver)" }, svg);
+    this.bg = backdrop(defs, svg, "bgRiver", "bg-river");
+    this.waterPat = el("pattern", { id: "waterPat", patternUnits: "userSpaceOnUse", width: 90, height: 60 }, defs);
+    el("path", { d: "M8 18 q18 -9 36 0 M50 46 q18 -9 36 0", stroke: "#4E86AA", "stroke-width": 3, fill: "none", opacity: 0.45 }, this.waterPat);
     this.world = el("g", {}, svg);
-    const ch = el("g", { "clip-path": "url(#chClip)" }, this.world);
-    const chImg = el("image", { href: artUrl("channel", theme()), x: this.x0, y: this.cy - this.chH / 2, width: 5 * this.ppm, height: this.chH, preserveAspectRatio: "none" }, ch);
-    chImg.dataset.art = "channel";
-    this.water = el("rect", { x: this.x0, y: this.cy - this.chH / 3, width: 5 * this.ppm, height: (this.chH * 2) / 3, fill: "url(#waterPat)" }, ch);
-    this.endCap = el("rect", { y: this.cy - this.chH / 2, width: 6, height: this.chH, fill: "#7FA9BF" }, this.world);
-    this.nums = el("g", {}, this.world);
+    const ch = shown("channel"), ru = shown("ruler");
+    el("image", { href: artUrl("channel", theme()), x: 200, y: 392, width: ch.w, height: ch.h, "data-art": "channel" }, this.world);
+    el("image", { href: artUrl("ruler", theme()), x: 200, y: 584, width: ru.w, height: ru.h, "data-art": "ruler" }, this.world);
+    this.water = el("rect", { x: this.x0, y: this.cy - this.half, width: this.span * this.ppm, height: this.half * 2, fill: "url(#waterPat)" }, this.world);
+    this.gates = el("g", {}, this.world);
     this.beadG = this.beads.map((b, i) => {
-      const g = sprite(this.world, "bead", 26 * this.k, 26 * this.k, "rv-drag");
+      const g = sprite(this.world, b.name, "rv-drag");
       g.dataset.drag = "bead" + i;
       if (i === 0) {
-        el("circle", { r: 19 * this.k, fill: "none", stroke: "var(--rv-medium)", "stroke-width": 3, "stroke-dasharray": "5 4" }, g);
-        el("text", { class: "rv-svg-small", y: -24 * this.k - 6, "text-anchor": "middle" }, g).textContent = "leaf";
+        el("circle", { r: 30, fill: "none", stroke: "var(--rv-medium)", "stroke-width": 4, "stroke-dasharray": "8 6" }, g);
+        el("text", { class: "rv-svg-small", y: -40, "text-anchor": "middle" }, g).textContent = "leaf";
       }
       return g;
     });
-    this.boatG = sprite(this.world, "boat", 100 * this.k, 50 * this.k, "rv-drag");
+    this.boatG = sprite(this.world, "boat", "rv-drag");
     this.boatG.dataset.drag = "boat";
     this.arrows = el("g", {}, svg);
-    this.label = el("text", { class: "rv-svg-small", x: 16, y: this.H - 14 }, svg);
+    this.label = el("text", { class: "rv-svg-small rv-svg-chip", x: 30, y: 870 }, svg);
     this.layoutChannel();
   },
+  // Start and finish gates mark the timed run, 0 m to L on the ruler.
   layoutChannel() {
-    this.clipRect.setAttribute("x", this.x0); this.clipRect.setAttribute("y", this.cy - this.chH / 2);
-    this.clipRect.setAttribute("width", lab.length * this.ppm); this.clipRect.setAttribute("height", this.chH);
-    this.endCap.setAttribute("x", this.x0 + lab.length * this.ppm - 3);
-    this.nums.replaceChildren();
-    for (let m = 0; m <= Math.floor(lab.length + 1e-9); m++) {
-      el("text", { class: "rv-svg-text", x: this.x0 + m * this.ppm, y: this.cy + this.chH / 2 + 38, "text-anchor": "middle" }, this.nums).textContent = m + " m";
+    this.gates.replaceChildren();
+    for (const [x, t] of [[0, "start"], [lab.length, "finish"]]) {
+      const px = this.sx(x);
+      el("line", { x1: px, y1: this.cy - this.half - 6, x2: px, y2: this.cy + this.half + 6, stroke: "var(--rv-sum)", "stroke-width": 4, "stroke-dasharray": "12 8" }, this.gates);
+      el("text", { class: "rv-svg-small", x: px, y: this.cy - this.half - 18, "text-anchor": x ? "end" : "start" }, this.gates).textContent = t;
     }
   },
   sx(xm) { return this.x0 + xm * this.ppm; },
-  laneY(f) { return this.cy + f * this.chH * 0.5; },
+  laneY(f) { return this.cy + f * this.half; },
   vBoat() { return P.boatGround(lab.heading, C.river.boatSpeed, this.flow); },
   step(dt) {
     this.t += dt;
-    for (const b of this.beads) { b.x += this.flow * dt; if (b.x > lab.length) b.x -= lab.length; }
+    for (const b of this.beads) { b.x += this.flow * dt; if (b.x > this.span) b.x -= this.span; }
     if (this.boat.running) {
       this.boat.x += this.vBoat() * dt;
       if (lab.heading > 0 && this.boat.x >= lab.length) { this.boat.x = lab.length; this.boat.running = false; }
@@ -164,16 +169,16 @@ const river = {
   render(shift) {
     const sp = shift * this.ppm;
     this.world.setAttribute("transform", `translate(${(-sp).toFixed(2)},0)`);
-    this.bg.setAttribute("patternTransform", `translate(${(-sp).toFixed(2)},0)`);
-    this.waterPat.setAttribute("patternTransform", `translate(${(this.x0 + this.flow * this.t * this.ppm).toFixed(2)},0)`);
+    shiftT(this.bg, -sp);
+    shiftT(this.waterPat, this.x0 + this.flow * this.t * this.ppm);
     this.beads.forEach((b, i) => place(this.beadG[i], this.sx(b.x), this.laneY(b.y)));
     place(this.boatG, this.sx(this.boat.x), this.laneY(this.boat.y), lab.heading < 0);
     this.arrows.replaceChildren();
     const r = P.readout("river", this.readParams(), st.frame.river);
-    const scale = 360;
-    vectorStack(this.arrows, this.sx(this.boat.x) - sp, 46, r.objMedium, r.mediumViewer, scale);
+    const scale = 420;
+    vectorStack(this.arrows, this.sx(this.boat.x) - sp, 300, r.objMedium, r.mediumViewer, scale);
     const lx = this.sx(this.beads[0].x) - sp;
-    arrow(this.arrows, "rv-a-med", lx, lx + r.mediumViewer * scale, this.cy + this.chH / 2 + 70, 7);
+    arrow(this.arrows, "rv-a-med", lx, lx + r.mediumViewer * scale, 690, 10);
     this.label.textContent = this.boat.running ? "Boat running" : this.flowOn ? `Water on: ${this.flow.toFixed(2)} m/s` : "Still water";
   },
   readParams() { return { heading: lab.heading, boatSpeed: C.river.boatSpeed, flow: this.flow }; },
@@ -185,50 +190,49 @@ const river = {
     setPlaying(true);
   },
   drag(id, xm, ym) {
-    const f = Math.max(-0.75, Math.min(0.75, (ym - this.cy) / (this.chH * 0.5)));
-    const x = Math.max(0, Math.min(lab.length, (xm - this.x0) / this.ppm));
-    if (id === "boat") { if (this.boat.running) return null; this.boat.x = x; this.boat.y = f; return "boat"; }
+    const f = Math.max(-0.7, Math.min(0.7, (ym - this.cy) / this.half));
+    if (id === "boat") {
+      if (this.boat.running) return null;
+      this.boat.x = Math.max(0, Math.min(lab.length, (xm - this.x0) / this.ppm)); this.boat.y = f; return "boat";
+    }
     const b = this.beads[+id.slice(4)];
-    b.x = x; b.y = f;
+    b.x = Math.max(0, Math.min(this.span, (xm - this.x0) / this.ppm)); b.y = f;
     return id === "bead0" ? "leaf" : null;
   },
   slowNote: () => "Real time",
 };
 
 const truck = {
-  W: 1000, H: 400, ppm: 1000 / C.truck.viewWidth, groundY: 372,
-  t: 0, marker: 11, released: false, trail: [], done: 0,
+  W: 1600, H: 900, ppm: 1600 / C.truck.viewWidth, groundY: 700, bedBack: -1.55,
+  t: 0, marker: 9.5, released: false, trail: [], done: 0, lead: 1.0,
   anchorRange: { truck: [0.65, 0.8], ball: [0.3, 0.7] },
   vt() { return P.toMs(params.truck.truckSpeedMph); },
   vball() { return P.add(params.truck.throwDir * P.toMs(params.truck.throwSpeedMph), this.vt()); },
-  lead: 1.0,
   reset() { this.t = 0; this.released = false; this.trail = []; this.done = 0; },
   truckX() { return this.marker - this.vt() * this.lead + this.vt() * this.t; },
   ball() {
     const h = C.truck.releaseHeight;
-    if (!this.released) return { x: this.truckX() - 1.2, y: h, landed: false };
-    const xr = this.marker - 1.2;
-    return P.ballAfterRelease(this.t - this.lead, xr, this.vball(), h);
+    if (!this.released) return { x: this.truckX() + this.bedBack, y: h, landed: false };
+    return P.ballAfterRelease(this.t - this.lead, this.marker + this.bedBack, this.vball(), h);
   },
   build() {
     const defs = el("defs", {}, svg);
-    this.bg = patternTile(defs, "bgTruck", "bg-truck", 1066.67, 400);
-    el("rect", { width: this.W, height: this.H, fill: "url(#bgTruck)" }, svg);
+    this.bg = backdrop(defs, svg, "bgTruck", "bg-truck");
     this.world = el("g", {}, svg);
     this.markerG = el("g", { class: "rv-drag" }, this.world);
     this.markerG.dataset.drag = "marker";
-    el("path", { d: "M0 0 V-46 L26 -38 L0 -30", fill: "var(--rv-medium)", stroke: "var(--rv-ink)", "stroke-width": 2 }, this.markerG);
-    el("rect", { x: -16, y: -50, width: 44, height: 56, fill: "transparent" }, this.markerG);
+    el("path", { d: "M0 0 V-74 L42 -61 L0 -48", fill: "var(--rv-medium)", stroke: "var(--rv-ink-svg)", "stroke-width": 3 }, this.markerG);
+    el("rect", { x: -26, y: -80, width: 74, height: 86, fill: "transparent" }, this.markerG);
     this.trailG = el("g", {}, svg);
-    this.truckG = sprite(svg, "truck", 250, 125, "rv-drag");
+    this.truckG = sprite(svg, "truck", "rv-drag");
     this.truckG.dataset.drag = "truck";
-    this.ballG = sprite(svg, "basketball", 30, 30);
+    this.ballG = sprite(svg, "basketball");
     this.arrows = el("g", {}, svg);
-    this.label = el("text", { class: "rv-svg-small", x: 16, y: 30 }, svg);
+    this.label = el("text", { class: "rv-svg-small rv-svg-chip", x: 30, y: 870 }, svg);
   },
   step(dt) {
     this.t += dt;
-    if (!this.released && this.t >= this.lead) { this.released = true; }
+    if (!this.released && this.t >= this.lead) this.released = true;
     if (this.released) {
       const b = this.ball();
       const last = this.trail[this.trail.length - 1];
@@ -238,32 +242,31 @@ const truck = {
     }
   },
   viewerX(f) { return f === "truck" ? this.truckX() : f === "ball" ? this.ball().x : 0; },
-  sy(ym) { return this.groundY - ym * this.ppm * 1.0; },
+  sy(ym) { return this.groundY - ym * this.ppm; },
   render(shift) {
-    const sp = shift * this.ppm;
+    const sp = shift * this.ppm, f = st.frame.truck;
     this.world.setAttribute("transform", `translate(${(-sp).toFixed(2)},0)`);
-    this.bg.setAttribute("patternTransform", `translate(${(-sp).toFixed(2)},0)`);
+    shiftT(this.bg, -sp);
     place(this.markerG, this.marker * this.ppm, this.groundY);
-    const f = st.frame.truck;
     let tx = this.truckX() * this.ppm - sp;
-    if (f !== "truck" && !this.released) tx = wrap(tx, -200, this.W + 400);
+    if (f !== "truck" && !this.released) tx = wrap(tx, -300, this.W + 600);
     place(this.truckG, tx, this.groundY);
     const b = this.ball();
-    const bx = b.x * this.ppm - sp, by = this.sy(b.y) - 12;
+    const ballR = shown("basketball").h / 2;
+    const bx = b.x * this.ppm - sp, by = this.sy(b.y) - ballR;
     place(this.ballG, bx, by);
     this.trailG.replaceChildren();
     for (const p of this.trail) {
       const x = (p.x - (p.v[f] - st.anchor) - st.glide) * this.ppm;
-      el("circle", { cx: x.toFixed(1), cy: (this.sy(p.y) - 12).toFixed(1), r: 3.2, fill: "var(--rv-obj)", opacity: 0.85 }, this.trailG);
+      el("circle", { class: "rv-trail", cx: x.toFixed(1), cy: (this.sy(p.y) - ballR).toFixed(1), r: 6 }, this.trailG);
     }
     this.arrows.replaceChildren();
     const r = P.readout("truck", this.readParams(), f);
-    const scale = 12;
+    const scale = 14;
     const objMedium = this.released && !b.landed ? r.objMedium : 0;
-    const objViewer = this.released && b.landed ? -r.viewerGround : objMedium + r.mediumViewer;
-    if (this.released && b.landed) arrow(this.arrows, "rv-a-sum", bx, bx + objViewer * scale, by - 70, 10);
-    else vectorStack(this.arrows, bx, by - 92, objMedium, r.mediumViewer, scale);
-    arrow(this.arrows, "rv-a-med", tx, tx + r.mediumViewer * scale, this.groundY - 150, 7);
+    if (this.released && b.landed) arrow(this.arrows, "rv-a-sum", bx, bx - r.viewerGround * scale, by - 110, 15);
+    else vectorStack(this.arrows, bx, by - 150, objMedium, r.mediumViewer, scale);
+    arrow(this.arrows, "rv-a-med", tx, tx + r.mediumViewer * scale, this.groundY - 280, 10);
     this.label.textContent = !this.released ? "Truck coming up to the flag" : b.landed ? "Ball landed" : "Ball in the air";
   },
   readParams() { return { ...params.truck, released: true }; },
@@ -279,25 +282,27 @@ const truck = {
 };
 
 const walkway = {
-  W: 1000, H: 380, ppm: 1000 / C.walkway.viewWidth, beltY: 318,
-  t: 0, w0: 3, m0: 8,
-  reset() { this.t = 0; this.w0 = 3; this.m0 = 8; },
+  // Walkway base on y 760; tile 277 x 195, belt surface 122.5 px below its top (SPEC.md).
+  W: 1600, H: 900, ppm: 1600 / C.walkway.viewWidth, beltY: 760 - 195 + 122.5,
+  t: 0, w0: 1.5, m0: 4,
+  reset() { this.t = 0; this.w0 = 1.5; this.m0 = 4; },
   vw() { return P.add(params.walkway.walkDir * params.walkway.walkSpeed, params.walkway.beltSpeed); },
   walkerX() { return this.w0 + this.vw() * this.t; },
   markX() { return this.m0 + params.walkway.beltSpeed * this.t; },
   build() {
     const defs = el("defs", {}, svg);
-    this.bg = patternTile(defs, "bgWalk", "bg-walkway", 1013.33, 380);
-    this.belt = patternTile(defs, "beltPat", "walkway", 375, 50, this.beltY - 10);
-    el("rect", { width: this.W, height: this.H, fill: "url(#bgWalk)" }, svg);
-    el("rect", { x: 0, y: this.beltY - 10, width: this.W, height: 50, fill: "url(#beltPat)" }, svg);
-    el("rect", { x: 0, y: this.beltY - 18, width: this.W, height: 8, fill: "var(--rv-line)" }, svg);
+    this.bg = backdrop(defs, svg, "bgWalk", "bg-walkway");
+    this.tiles = tilePattern(defs, "walkTile", "walkway", 760 - 195);
+    this.treads = el("pattern", { id: "treads", patternUnits: "userSpaceOnUse", width: 40, height: 14, y: this.beltY - 2 }, defs);
+    el("rect", { x: 4, y: 0, width: 6, height: 14, fill: "var(--rv-tread)" }, this.treads);
+    el("rect", { x: 0, y: 760 - 195, width: this.W, height: 195, fill: "url(#walkTile)" }, svg);
+    el("rect", { x: 0, y: this.beltY - 2, width: this.W, height: 14, fill: "url(#treads)" }, svg);
     this.markG = el("g", { class: "rv-drag" }, svg);
     this.markG.dataset.drag = "mark";
-    el("path", { d: "M-12 0 L0 -22 L12 0 Z", fill: "var(--rv-medium)", stroke: "var(--rv-ink)", "stroke-width": 2 }, this.markG);
-    el("text", { class: "rv-svg-small", y: -28, "text-anchor": "middle" }, this.markG).textContent = "belt";
-    el("rect", { x: -22, y: -30, width: 44, height: 34, fill: "transparent" }, this.markG);
-    this.walkerG = sprite(svg, "walker", 64, 128, "rv-drag");
+    el("path", { d: "M-18 0 L0 -34 L18 0 Z", fill: "var(--rv-medium)", stroke: "var(--rv-ink-svg)", "stroke-width": 3 }, this.markG);
+    el("text", { class: "rv-svg-small", y: -44, "text-anchor": "middle" }, this.markG).textContent = "belt";
+    el("rect", { x: -34, y: -46, width: 68, height: 52, fill: "transparent" }, this.markG);
+    this.walkerG = sprite(svg, "walker", "rv-drag");
     this.walkerG.dataset.drag = "walker";
     this.arrows = el("g", {}, svg);
   },
@@ -305,16 +310,17 @@ const walkway = {
   viewerX(f) { return f === "belt" ? this.markX() : f === "walker" ? this.walkerX() : 0; },
   render(shift) {
     const sp = shift * this.ppm, f = st.frame.walkway;
-    this.bg.setAttribute("patternTransform", `translate(${(-sp).toFixed(2)},0)`);
-    this.belt.setAttribute("patternTransform", `translate(${(params.walkway.beltSpeed * this.t * this.ppm - sp).toFixed(2)},0)`);
-    let wx = this.walkerX() * this.ppm - sp; if (f !== "walker") wx = wrap(wx, -80, this.W + 160);
-    let mx = this.markX() * this.ppm - sp; if (f !== "belt") mx = wrap(mx, -40, this.W + 80);
-    place(this.walkerG, wx, this.beltY - 10, params.walkway.walkDir < 0);
-    place(this.markG, mx, this.beltY - 10);
+    shiftT(this.bg, -sp);
+    shiftT(this.tiles, -sp);
+    shiftT(this.treads, params.walkway.beltSpeed * this.t * this.ppm - sp);
+    let wx = this.walkerX() * this.ppm - sp; if (f !== "walker") wx = wrap(wx, -120, this.W + 240);
+    let mx = this.markX() * this.ppm - sp; if (f !== "belt") mx = wrap(mx, -60, this.W + 120);
+    place(this.walkerG, wx, this.beltY, params.walkway.walkDir < 0);
+    place(this.markG, mx, this.beltY);
     this.arrows.replaceChildren();
     const r = P.readout("walkway", params.walkway, f);
-    vectorStack(this.arrows, wx, this.beltY - 190, r.objMedium, r.mediumViewer, 110);
-    arrow(this.arrows, "rv-a-med", mx, mx + r.mediumViewer * 110, this.beltY + 48, 6);
+    vectorStack(this.arrows, wx, 230, r.objMedium, r.mediumViewer, 150);
+    arrow(this.arrows, "rv-a-med", mx, mx + r.mediumViewer * 150, 830, 10);
   },
   readParams: () => params.walkway,
   actionLabel: () => "Start over",
@@ -329,9 +335,10 @@ const walkway = {
 };
 
 const kart = {
-  W: 1000, H: 400, ppm: 1000 / C.kart.viewWidth, laneY: 368, rivalY: 262,
-  t: 0, k0: 8, r0: 14,
-  reset() { this.t = 0; this.k0 = 8; this.r0 = 14; },
+  // Asphalt y 588 to 768: rival lane wheels on y 655, player (boost) lane wheels on y 750.
+  W: 1600, H: 900, ppm: 1600 / C.kart.viewWidth, laneY: 750, rivalY: 655,
+  t: 0, k0: 10, r0: 18,
+  reset() { this.t = 0; this.k0 = 10; this.r0 = 18; },
   vk() { return P.add(P.toMs(params.kart.kartSpeedMph), params.kart.boostOn ? P.toMs(params.kart.boostSpeedMph) : 0); },
   vr() { return P.toMs(params.kart.rivalSpeedMph); },
   kartX() { return this.k0 + this.vk() * this.t; },
@@ -339,34 +346,35 @@ const kart = {
   laneOffset() { return params.kart.boostOn ? P.toMs(params.kart.boostSpeedMph) * this.t : 0; },
   build() {
     const defs = el("defs", {}, svg);
-    this.bg = patternTile(defs, "bgKart", "bg-kart", 1066.67, 400);
-    this.pad = patternTile(defs, "padPat", "boost-pad", 200, 40, this.laneY - 28);
-    el("rect", { width: this.W, height: this.H, fill: "url(#bgKart)" }, svg);
-    el("rect", { x: 0, y: this.laneY - 28, width: this.W, height: 40, fill: "url(#padPat)" }, svg);
-    this.laneText = el("text", { class: "rv-svg-small", x: 16, y: this.laneY + 26 }, svg);
-    this.rivalG = sprite(svg, "kart-rival", 120, 68, "rv-drag");
+    this.bg = backdrop(defs, svg, "bgKart", "bg-kart");
+    const pad = shown("boost-pad");
+    this.pad = tilePattern(defs, "padPat", "boost-pad", this.laneY - 22, 1, 120);
+    this.padRect = el("rect", { x: 0, y: this.laneY - 22, width: this.W, height: pad.h, fill: "url(#padPat)" }, svg);
+    this.rivalG = sprite(svg, "kart-rival", "rv-drag", 0.9);
     this.rivalG.dataset.drag = "rival";
-    el("text", { class: "rv-svg-small", x: 0, y: -74, "text-anchor": "middle" }, this.rivalG).textContent = "rival";
-    this.kartG = sprite(svg, "kart", 120, 68, "rv-drag");
+    el("text", { class: "rv-svg-small", x: 0, y: -150, "text-anchor": "middle" }, this.rivalG).textContent = "rival";
+    this.kartG = sprite(svg, "kart", "rv-drag");
     this.kartG.dataset.drag = "kart";
     this.arrows = el("g", {}, svg);
+    this.laneText = el("text", { class: "rv-svg-small rv-svg-chip", x: 30, y: 870 }, svg);
   },
   step(dt) { this.t += dt; },
   viewerX(f) { return f === "kart" ? this.kartX() : f === "rival" ? this.rivalX() : 0; },
   render(shift) {
     const sp = shift * this.ppm, f = st.frame.kart;
-    this.bg.setAttribute("patternTransform", `translate(${(-sp).toFixed(2)},0)`);
-    this.pad.setAttribute("patternTransform", `translate(${(this.laneOffset() * this.ppm - sp).toFixed(2)},0)`);
-    let kx = this.kartX() * this.ppm - sp; if (f !== "kart") kx = wrap(kx, -120, this.W + 240);
-    let rx = this.rivalX() * this.ppm - sp; if (f !== "rival") rx = wrap(rx, -120, this.W + 240);
+    shiftT(this.bg, -sp);
+    shiftT(this.pad, this.laneOffset() * this.ppm - sp);
+    this.padRect.setAttribute("opacity", params.kart.boostOn ? 1 : 0.35);
+    let kx = this.kartX() * this.ppm - sp; if (f !== "kart") kx = wrap(kx, -200, this.W + 400);
+    let rx = this.rivalX() * this.ppm - sp; if (f !== "rival") rx = wrap(rx, -200, this.W + 400);
     place(this.kartG, kx, this.laneY);
     place(this.rivalG, rx, this.rivalY);
     this.laneText.textContent = params.kart.boostOn ? "Boost lane on" : "Boost lane off";
     this.arrows.replaceChildren();
     const r = P.readout("kart", this.readParams(), f);
-    const scale = 6;
-    vectorStack(this.arrows, kx, this.laneY - 112, r.objMedium, r.mediumViewer, scale);
-    arrow(this.arrows, "rv-a-sum", rx, rx + r.viewers.rival * scale, this.rivalY - 100, 8);
+    const scale = 8;
+    vectorStack(this.arrows, kx, 790, r.objMedium, r.mediumViewer, scale);
+    arrow(this.arrows, "rv-a-sum", rx, rx + r.viewers.rival * scale, this.rivalY - 190, 12);
   },
   readParams: () => params.kart,
   actionLabel: () => "Start over",
@@ -600,10 +608,13 @@ function syncSteps() {
 const sec = (t) => (Number.isFinite(t) ? t.toFixed(2) : "");
 const spd = (v) => (Number.isFinite(v) ? v.toFixed(2) : "");
 function renderTable() {
+  // Leo's clipboard grid: a header row, three trial rows, the average and the speed.
   const T = lab.trials;
-  const rows = Math.min(6, Math.max(C.river.trialsPerCondition, T.still.length, T.down.length, T.up.length));
-  let h = `<p class="rv-cap">Channel length L = ${lab.length.toFixed(1)} m</p><table aria-label="Trial times"><thead><tr><th>Trial</th><th>Still (s)</th><th>Down (s)</th><th>Up (s)</th></tr></thead><tbody>`;
-  for (let i = 0; i < rows; i++) h += `<tr><td>${i + 1}</td><td>${sec(T.still[i])}</td><td>${sec(T.down[i])}</td><td>${sec(T.up[i])}</td></tr>`;
+  const n = Math.max(T.still.length, T.down.length, T.up.length);
+  const first = Math.max(1, n - 2); // show the latest three trials; the averages use them all
+  let h = `<p class="rv-cap">L = ${lab.length.toFixed(1)} m</p><table aria-label="Trial times"><colgroup><col class="c0"><col class="c1"><col class="c2"><col class="c3"></colgroup>`;
+  h += `<thead><tr class="h"><th>Trial</th><th>Still (s)</th><th>Down (s)</th><th>Up (s)</th></tr></thead><tbody>`;
+  for (let i = first; i < first + 3; i++) h += `<tr class="r${i - first + 1}"><td>${i}</td><td>${sec(T.still[i - 1])}</td><td>${sec(T.down[i - 1])}</td><td>${sec(T.up[i - 1])}</td></tr>`;
   const avg = { still: P.average(T.still), down: P.average(T.down), up: P.average(T.up) };
   h += `<tr class="avg"><td>Avg</td><td data-avg="still">${sec(avg.still)}</td><td data-avg="down">${sec(avg.down)}</td><td data-avg="up">${sec(avg.up)}</td></tr>`;
   h += `<tr class="spd"><td>m/s</td><td data-spd="still">${spd(P.measuredSpeed(lab.length, avg.still))}</td><td data-spd="down">${spd(P.measuredSpeed(lab.length, avg.down))}</td><td data-spd="up">${spd(P.measuredSpeed(lab.length, avg.up))}</td></tr>`;
@@ -627,7 +638,7 @@ function wireLab() {
   Object.assign(ls, { min: C.river.lengthMin, max: C.river.lengthMax, step: C.river.lengthStep, value: lab.length });
   const syncLen = () => { $("lenOut").textContent = lab.length.toFixed(1) + " m"; };
   ls.addEventListener("input", () => {
-    lab.length = +ls.value; syncLen(); river.reset(); applyStrings(); renderTable(); setScene("river");
+    lab.length = +ls.value; syncLen(); river.reset(); river.layoutChannel(); applyStrings(); renderTable(); renderReadout();
   });
   syncLen();
   document.querySelectorAll("[data-heading]").forEach((b) => b.addEventListener("click", () => {
@@ -666,16 +677,21 @@ function wireLab() {
 }
 
 // ---------- stopwatch ----------
-const sw = { running: false, start: 0, elapsed: 0 };
+const sw = { running: false, start: 0, elapsed: 0, condition: null, invalid: false };
 function swNow() { return sw.running ? (performance.now() - sw.start) / 1000 : sw.elapsed; }
 function wireStopwatch() {
   const box = $("stopwatch");
   $("swImg").src = artUrl("stopwatch", theme());
   $("swStart").addEventListener("click", () => {
-    if (!sw.running) { sw.running = true; sw.start = performance.now() - sw.elapsed * 1000; $("swStart").textContent = "Stop"; return; }
+    if (!sw.running) {
+      sw.running = true; sw.start = performance.now(); sw.elapsed = 0;
+      sw.condition = condition(); sw.invalid = false; $("swStart").textContent = "Stop"; return;
+    }
     sw.elapsed = swNow(); sw.running = false; $("swStart").textContent = "Start";
     const k = condition();
-    if (k && sw.elapsed > 0.1) { lab.trials[k].push(+sw.elapsed.toFixed(2)); syncSteps(); }
+    if (k && k === sw.condition && !sw.invalid && sw.elapsed > 0.1) {
+      lab.trials[k].push(+sw.elapsed.toFixed(2)); syncSteps();
+    }
   });
   $("swReset").addEventListener("click", () => { sw.running = false; sw.elapsed = 0; $("swStart").textContent = "Start"; });
   let d = null;
@@ -739,7 +755,7 @@ function syncTheme() {
   $("themeLabel").textContent = dark ? "Light" : "Dark";
   $("themeBtn").setAttribute("aria-pressed", String(dark));
   $("themeBtn").setAttribute("aria-label", dark ? "Light mode" : "Dark mode");
-  document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#1F1D1A" : "#FBF6EA");
+  document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#1F1D1A" : "#FCF7EB");
   document.querySelectorAll("[data-art]").forEach((img) => img.setAttribute("href", artUrl(img.dataset.art, theme())));
   $("swImg").src = artUrl("stopwatch", theme());
   $("valveImg").src = artUrl("valve-knob", theme());
@@ -762,7 +778,11 @@ function frame(now) {
   if (st.glide) { st.glide *= Math.exp(-dt / 0.12); if (Math.abs(st.glide) < 1e-3) st.glide = 0; }
   st.shift = viewerShift() + st.glide;
   s.render(st.shift);
-  if (st.scene === "river") $("swTime").textContent = swNow().toFixed(2) + " s";
+  if (st.scene === "river") {
+    if (sw.running && condition() !== sw.condition) sw.invalid = true;
+    const t = swNow().toFixed(2) + " s";
+    if ($("swTime").textContent !== t) $("swTime").textContent = t;
+  }
   syncAction();
   requestAnimationFrame(frame);
 }

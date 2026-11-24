@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import * as P from "../public/relative-velocity/rv-physics.js";
-import { ART, artFiles, artUrl, PNG_READY } from "../public/relative-velocity/rv-art.js";
+import { ART, BEADS, artFiles, artUrl, shown } from "../public/relative-velocity/rv-art.js";
 import { STRINGS, PLACEHOLDER } from "../public/relative-velocity/rv-strings.js";
 
 const pub = new URL("../public/", import.meta.url);
@@ -99,18 +99,19 @@ test("config holds Dimitry's defaults in one block", () => {
   assert.deepEqual(P.FRAMES.kart, ["track", "rival", "kart"]);
 });
 
-test("art slots: one file per object, light and dark backdrops, PNG swap by name", () => {
-  for (const n of ["channel", "boat", "bead", "truck", "basketball", "walkway", "walker", "kart", "boost-pad", "stopwatch", "valve-knob", "clipboard"]) assert.ok(ART[n], n);
+test("art slots: Leo's set as webp, one file per object, light and dark backdrops", () => {
+  for (const n of ["channel", "ruler", "boat", ...BEADS, "truck", "basketball", "walkway", "walker", "kart", "kart-rival", "boost-pad", "stopwatch", "valve-knob", "clipboard"]) assert.ok(ART[n], n);
   for (const s of ["river", "truck", "walkway", "kart"]) assert.ok(ART["bg-" + s].themed, s);
   const shipped = readdirSync(new URL("relative-velocity/art/", pub));
-  for (const f of artFiles()) assert.ok(shipped.includes(f + ".svg"), "placeholder " + f);
-  for (const f of shipped.filter((n) => /\.(svg|png)$/.test(n))) assert.ok(artFiles().includes(f.replace(/\.(svg|png)$/, "")), "unused " + f);
-  assert.equal(artUrl("bg-river", "dark"), "relative-velocity/art/bg-river-dark.svg");
-  PNG_READY.add("boat");
-  assert.equal(artUrl("boat", "light"), "relative-velocity/art/boat.png");
-  PNG_READY.delete("boat");
+  for (const f of artFiles()) assert.ok(shipped.includes(f + ".webp"), "missing " + f);
+  for (const f of shipped) assert.ok(artFiles().includes(f.replace(/\.webp$/, "")) && f.endsWith(".webp"), "unused " + f);
+  assert.equal(artUrl("bg-river", "dark"), "relative-velocity/art/bg-river-dark.webp");
+  assert.equal(artUrl("boat", "dark"), "relative-velocity/art/boat.webp");
+  // the channel never exceeds 1200 px on the 1600 px stage, and keeps Leo's aspect ratio
+  assert.ok(shown("channel").w <= 1200);
+  for (const [n, a] of Object.entries(ART)) if (a.show) assert.ok(Math.abs(a.show[0] / a.show[1] - a.png[0] / a.png[1]) / (a.png[0] / a.png[1]) < 0.02 || n === "boost-pad", "aspect " + n);
   const readme = read("relative-velocity/README.md");
-  for (const f of artFiles()) assert.match(readme, new RegExp(f.replace(/[-]/g, "\\-") + "\\.png"), "README lists " + f);
+  for (const f of artFiles()) assert.match(readme, new RegExp(f.replace(/[-]/g, "\\-") + "\\.webp"), "README lists " + f);
 });
 
 test("strings: one file for Socrates, every data-str key resolves", () => {
@@ -139,7 +140,7 @@ test("page, card, link and files follow the study pattern", () => {
   assert.match(ui, /study\.html"\s*\+\s*location\.search/);
   assert.doesNotMatch(read("relative-velocity/rv-physics.js") + read("relative-velocity/rv-config.js"), /\bdocument\.|\bwindow\.|localStorage/);
   const css = read("relative-velocity/rv.css");
-  assert.match(css, /--rv-paper: #FBF6EA/);
+  assert.match(css, /--rv-paper: #FCF7EB/);
   assert.match(css, /:root\[data-theme="dark"\] \{\s*--rv-paper: #1F1D1A/);
   assert.match(css, /--rv-obj: #6FA3E0/);
   assert.match(css, /prefers-reduced-motion/);
@@ -153,8 +154,8 @@ test("page, card, link and files follow the study pattern", () => {
   const map = JSON.parse(read("physics101/tryit/map.json"));
   assert.deepEqual(map["m06-l03"].map((r) => r.id), ["relative-velocity"]);
   const tryit = read("physics101/tryit.js");
-  assert.match(tryit, /"relative-velocity": \["Relative Velocity Exploration", "study-relative-velocity\.html", "physics101\/tryit\/thumbs\/study-relative-velocity\.svg", "physics101\/tryit\/thumbs\/study-relative-velocity-dark\.svg"\]/);
-  for (const t of ["study-relative-velocity.svg", "study-relative-velocity-dark.svg"]) assert.ok(existsSync(new URL("physics101/tryit/thumbs/" + t, pub)), t);
+  assert.match(tryit, /"relative-velocity": \["Relative Velocity Exploration", "study-relative-velocity\.html", "physics101\/tryit\/thumbs\/study-relative-velocity\.webp", "physics101\/tryit\/thumbs\/study-relative-velocity-dark\.webp"\]/);
+  for (const t of ["study-relative-velocity.webp", "study-relative-velocity-dark.webp"]) assert.ok(existsSync(new URL("physics101/tryit/thumbs/" + t, pub)), t);
   // no em dashes in anything this module ships
   const files = ["study-relative-velocity.html", "relative-velocity/README.md", ...readdirSync(new URL("relative-velocity/", pub)).filter((n) => /\.(js|css)$/.test(n)).map((n) => "relative-velocity/" + n)];
   for (const f of files) assert.doesNotMatch(read(f), /\u2014/, f);

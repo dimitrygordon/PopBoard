@@ -11,6 +11,7 @@ import sys
 import threading
 import time
 from pathlib import Path
+from urllib.parse import urlparse
 
 from playwright.sync_api import sync_playwright
 
@@ -241,7 +242,7 @@ def run_module(ctx, base, tag, touch):
     # Truck: ground frame shows the drop straight down, truck frame the backward flight
     inp.tap(page.locator("[data-scene=truck]"))
     page.wait_for_function("() => __rv.truck.released && __rv.truck.ball().landed", timeout=20000)
-    xs = js(page, "() => [...document.querySelectorAll('#sceneSvg circle[r=\"3.2\"]')].map(c => +c.getAttribute('cx'))")
+    xs = js(page, "() => [...document.querySelectorAll('#sceneSvg .rv-trail')].map(c => +c.getAttribute('cx'))")
     check(len(xs) > 5 and max(xs) - min(xs) < 1.0, f"{tag} truck, ground frame: trail is a vertical drop (spread {max(xs) - min(xs) if xs else -1:.2f} px over {len(xs)} dots)")
     eq = js(page, "() => document.querySelector('[data-eq=ground] .s').textContent")
     check(eq.startswith("0.0 mph"), f"{tag} truck readout: ball/ground = 0 mph ({eq})")
@@ -249,7 +250,7 @@ def run_module(ctx, base, tag, touch):
     shot(page, f"{tag}-03-truck-ground.png")
     inp.tap(frame_btn(page, "Truck"))
     time.sleep(0.9)
-    xs2 = js(page, "() => [...document.querySelectorAll('#sceneSvg circle[r=\"3.2\"]')].map(c => +c.getAttribute('cx'))")
+    xs2 = js(page, "() => [...document.querySelectorAll('#sceneSvg .rv-trail')].map(c => +c.getAttribute('cx'))")
     check(len(xs2) > 5 and max(xs2) - min(xs2) > 20, f"{tag} truck frame: same trail flies backward (spread {max(xs2) - min(xs2) if xs2 else -1:.0f} px)")
     t1 = screen_x(page, "[data-drag=truck]"); time.sleep(0.5); t2 = screen_x(page, "[data-drag=truck]")
     check(abs(t2 - t1) < 1.5, f"{tag} truck frame: truck at rest on screen ({t1:.1f} -> {t2:.1f})")
@@ -291,6 +292,20 @@ def run_module(ctx, base, tag, touch):
     page.locator("#sceneSvg").evaluate("e => e.scrollIntoView({ block: 'center' })")
     shot(page, f"{tag}-07-river-dark.png")
     no_overflow(page, tag, "after all scenes")
+    # Art review shots: each scene in both themes, play paused and the viewer fixed.
+    for dark in (False, True):
+        if (js(page, "() => document.documentElement.dataset.theme") == "dark") != dark:
+            inp.tap(page.locator("#themeBtn"))
+        for scene in ("river", "truck", "walkway", "kart"):
+            inp.tap(page.locator(f"[data-scene={scene}]"))
+            inp.tap(page.locator("#resetBtn"))
+            if js(page, "() => __rv.st.playing"):
+                inp.tap(page.locator("#playBtn"))
+            page.locator("#sceneSvg").evaluate("e => e.scrollIntoView({ block: 'center' })")
+            page.wait_for_function("() => [...document.querySelectorAll('#sceneSvg image')].every(i => i.getAttribute('href').endsWith('.webp'))")
+            time.sleep(0.2)
+            shot(page, f"{tag}-art-{scene}-{'dark' if dark else 'light'}.png")
+        no_overflow(page, tag, "art review " + ("dark" if dark else "light"))
     errors_ok(page, tag, "module")
     page.close()
 
@@ -313,7 +328,7 @@ def run_links(ctx, base, tag, touch):
     link.first.evaluate("e => e.scrollIntoView({ block: 'center' })")
     page.wait_for_function("() => [...document.querySelectorAll('#sqTry .tryit-card img')].some(i => i.offsetParent && i.complete && i.naturalWidth > 0)", timeout=10000)
     thumbs = js(page, "() => [...document.querySelectorAll('#sqTry .tryit-card img')].filter(i => i.offsetParent).map(i => i.getAttribute('src').split('/').pop() + ':' + (i.complete && i.naturalWidth > 0))")
-    want = "study-relative-velocity-dark.svg" if js(page, "() => document.documentElement.dataset.theme") == "dark" else "study-relative-velocity.svg"
+    want = "study-relative-velocity-dark.webp" if js(page, "() => document.documentElement.dataset.theme") == "dark" else "study-relative-velocity.webp"
     check(any(t.startswith(want + ":true") for t in thumbs), f"{tag} Try it thumbnail matches the theme ({want})")
     check(thumbs and all(t.endswith(":true") for t in thumbs), f"{tag} visible Try it thumbnails load {thumbs}")
     if not touch:
@@ -329,7 +344,8 @@ def run_links(ctx, base, tag, touch):
     # Back returns to the study library
     page.locator("#studyBackBtn").click()
     page.wait_for_url("**/study*", timeout=15000)
-    check("/study" in page.url and "relative-velocity" not in page.url, f"{tag} Back goes to the study library ({page.url})")
+    path = urlparse(page.url).path
+    check(path.startswith("/study") and "relative-velocity" not in path, f"{tag} Back goes to the study library ({path})")
     page.close()
     # Missing art is a real 404, not the SPA shell
     if REMOTE_BASE:

@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="shared/layout/layout.css">
 <script type="module" src="shared/layout/layout.js"></script>
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#FBF6EA">
+<meta name="theme-color" content="#FCF7EB">
 <title>Relative Velocity Exploration // PopBoard</title>
 <link rel="icon" type="image/png" href="popboard-logo.png">
 <script>
@@ -59,7 +59,7 @@
       <section class="rv-card tape rv-stagecard" aria-label="Scene">
         <div class="rv-framebar" id="frameBar" role="group" aria-label="Who is watching"></div>
         <div class="rv-stage" id="stage">
-          <svg id="sceneSvg" role="img" aria-label="Scene view" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet"></svg>
+          <svg id="sceneSvg" role="img" aria-label="Scene view" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet"></svg>
         </div>
         <div class="rv-playbar">
           <button type="button" id="playBtn" aria-pressed="true">Pause</button>
@@ -105,7 +105,7 @@
       </section>
 
       <section class="rv-card rv-clip" data-panel="river" aria-label="Data table">
-        <img class="rv-clip-img" id="clipImg" alt="" width="640" height="820">
+        <img class="rv-clip-img" id="clipImg" alt="" width="640" height="969">
         <div class="rv-clip-grid" id="dataTable"></div>
       </section>
 
@@ -152,8 +152,10 @@
 </main>
 
 <div class="rv-stopwatch" id="stopwatch" hidden aria-label="Stopwatch">
-  <img class="rv-sw-img" id="swImg" alt="" draggable="false" width="240" height="280">
-  <p class="rv-sw-time" id="swTime" aria-live="off">0.00 s</p>
+  <div class="rv-sw-face">
+    <img class="rv-sw-img" id="swImg" alt="" draggable="false" width="240" height="334">
+    <p class="rv-sw-time" id="swTime" aria-live="off">0.00 s</p>
+  </div>
   <div class="rv-sw-btns">
     <button type="button" id="swStart">Start</button>
     <button type="button" id="swReset">Reset</button>

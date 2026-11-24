@@ -1,7 +1,7 @@
 /* Relative Velocity Exploration: Physics 101 look. Cream paper in light mode, #1F1D1A charcoal in dark mode,
    taped-in cards. 16 px text floor, 44 px hit targets. */
 :root {
-  --rv-paper: #FBF6EA;
+  --rv-paper: #FCF7EB;
   --rv-ink: #2B2622;
   --rv-dim: #5A534A;
   --rv-card: #FFFDF5;
@@ -9,8 +9,10 @@
   --rv-btn: #FFFDF5;
   --rv-tape: rgba(232, 214, 160, 0.72);
   --rv-obj: #6FA3E0;
-  --rv-medium: #E0A030;
-  --rv-sum: #1F1D1A;
+  --rv-medium: #E0A33A;
+  --rv-sum: #2B3A55;
+  --rv-ink-svg: #2B2622;
+  --rv-tread: rgba(43, 38, 34, 0.35);
   --rv-accent: #4C6FA8;
   --rv-hit: 44px;
   color-scheme: light;
@@ -23,7 +25,10 @@
   --rv-line: #3A352E;
   --rv-btn: #2A2621;
   --rv-tape: rgba(200, 184, 140, 0.35);
-  --rv-sum: #F2EAD8;
+  --rv-sum: #EDE6D6;
+  --rv-medium: #E8B04A;
+  --rv-ink-svg: #EDE6D6;
+  --rv-tread: rgba(237, 230, 214, 0.35);
   --rv-accent: #8FB3EA;
   color-scheme: dark;
 }
@@ -78,8 +83,9 @@ html, body.rv { margin: 0; min-height: 100%; background: var(--rv-paper); color:
 .rv-a-obj { stroke: var(--rv-obj); fill: var(--rv-obj); }
 .rv-a-med { stroke: var(--rv-medium); fill: var(--rv-medium); }
 .rv-a-sum { stroke: var(--rv-sum); fill: var(--rv-sum); }
-.rv-svg-text { fill: var(--rv-ink); font: 600 34px system-ui, sans-serif; }
-.rv-svg-small { fill: var(--rv-dim); font: 500 28px system-ui, sans-serif; }
+.rv-svg-text { fill: var(--rv-ink); font: 600 56px system-ui, sans-serif; }
+.rv-trail { fill: var(--rv-obj); opacity: 0.9; }
+.rv-svg-small { fill: var(--rv-ink); font: 600 46px system-ui, sans-serif; paint-order: stroke; stroke: var(--rv-paper); stroke-width: 8px; stroke-linejoin: round; }
 
 .rv-readout { font-variant-numeric: tabular-nums; }
 .rv-readout h2 { margin: 0 0 6px; font-size: 16px; }
@@ -117,32 +123,38 @@ html, body.rv { margin: 0; min-height: 100%; background: var(--rv-paper); color:
 .rv-predict input { font: inherit; font-size: 16px; min-height: var(--rv-hit); padding: 0 10px; border: 1.5px solid var(--rv-line); border-radius: 10px; background: var(--rv-paper); color: var(--rv-ink); }
 .rv-note { margin: 4px 0; color: var(--rv-dim); }
 
-/* clipboard: Leo's sprite with live text over its empty grid (x 60 to 580, y 170 to 760 of 640 x 820) */
-.rv-clip { padding: 0; background: transparent; border: 0; box-shadow: none; aspect-ratio: 640 / 820; max-width: 380px; width: 100%; justify-self: center; }
+/* clipboard: Leo's 640 x 969 sprite with live text in its grid (columns x 64 185 313 443 563, rows y 231 304 409 518 625 737 855) */
+.rv-clip { padding: 0; background: transparent; border: 0; box-shadow: none; aspect-ratio: 640 / 969; max-width: 320px; width: 100%; justify-self: center; container-type: inline-size; }
 .rv-clip-img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.rv-clip-grid { position: absolute; left: 9.375%; right: 9.375%; top: 20.73%; bottom: 7.32%; color: #2B2622; font-variant-numeric: tabular-nums; }
+.rv-clip-grid { position: absolute; left: 10%; width: 77.97%; top: 23.84%; height: 64.40%; color: #2B2622; font-variant-numeric: tabular-nums; }
 .rv-clip-grid table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
-.rv-clip-grid th, .rv-clip-grid td { text-align: center; font-size: 15px; padding: 0 2px; border-bottom: 1px solid transparent; }
+.rv-clip-grid col.c0 { width: 24.25%; } .rv-clip-grid col.c1 { width: 25.65%; } .rv-clip-grid col.c2 { width: 26.05%; } .rv-clip-grid col.c3 { width: 24.05%; }
+.rv-clip-grid tr.h { height: 11.70%; } .rv-clip-grid tr.r1 { height: 16.83%; } .rv-clip-grid tr.r2 { height: 17.47%; }
+.rv-clip-grid tr.r3 { height: 17.15%; } .rv-clip-grid tr.avg { height: 17.95%; } .rv-clip-grid tr.spd { height: 18.91%; }
+.rv-clip-grid th, .rv-clip-grid td { text-align: center; vertical-align: middle; padding: 0 1px; font-size: 16px; line-height: 1.1; }
 .rv-clip-grid th { font-size: 14px; font-weight: 700; }
 .rv-clip-grid tr.avg td, .rv-clip-grid tr.spd td { font-weight: 800; }
-.rv-clip-grid .rv-cap { position: absolute; top: -12%; left: 0; right: 0; text-align: center; font-weight: 700; font-size: 16px; }
+.rv-clip-grid .rv-cap { position: absolute; top: -17%; left: 0; right: 0; margin: 0; text-align: center; font-weight: 700; font-size: 15px; }
 
 .rv-results table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 .rv-results th, .rv-results td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--rv-line); font-size: 15px; }
 
-.rv-stopwatch { position: fixed; z-index: 20; right: 16px; bottom: 16px; width: 168px; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+/* stopwatch: Leo's 240 x 334 sprite (dial center 120, 203); live time in the dial, buttons below */
+.rv-stopwatch { position: fixed; z-index: 20; right: 16px; bottom: 16px; width: 132px; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none;
+  display: grid; justify-items: center; gap: 4px; }
 .rv-stopwatch.dragging { cursor: grabbing; }
-.rv-sw-img { display: block; width: 100%; height: auto; pointer-events: none; }
-/* face center (120,160) of 240 x 280 */
-.rv-sw-time { position: absolute; left: 0; right: 0; top: 50%; margin: 0; transform: translateY(-14%); text-align: center; font: 800 22px ui-monospace, Menlo, monospace; color: #2B2622; pointer-events: none; }
-.rv-sw-btns { position: absolute; left: 0; right: 0; top: 66%; display: flex; justify-content: center; gap: 4px; }
-.rv-sw-btns button { min-height: 44px; padding: 0 8px; font-size: 15px; background: #FFFDF5; color: #2B2622; border-color: #8C8170; }
-.rv-sw-cond { margin: 4px 0 0; text-align: center; font-size: 13px; background: var(--rv-card); border: 1px solid var(--rv-line); border-radius: 8px; padding: 2px 4px; }
+.rv-sw-face { position: relative; width: 100%; }
+.rv-sw-img { display: block; width: 100%; height: auto; pointer-events: none; filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.25)); }
+.rv-sw-time { position: absolute; left: 0; right: 0; top: 70%; margin: 0; text-align: center; font: 800 15px ui-monospace, Menlo, monospace; color: #2B2622; pointer-events: none;
+  background: rgba(252, 247, 235, 0.85); width: 64%; margin-left: 18%; border-radius: 6px; }
+.rv-sw-btns { display: flex; justify-content: center; gap: 4px; }
+.rv-sw-btns button { min-height: 44px; padding: 0 8px; font-size: 15px; }
+.rv-sw-cond { margin: 0; text-align: center; font-size: 13px; background: var(--rv-card); border: 1px solid var(--rv-line); border-radius: 8px; padding: 2px 6px; }
 
 @media (max-width: 860px) {
   .rv-grid { grid-template-columns: 1fr; }
-  .rv-stopwatch { width: 124px; right: 6px; bottom: 6px; }
-  .rv-sw-time { font-size: 16px; }
+  .rv-stopwatch { width: 104px; right: 6px; bottom: 6px; }
+  .rv-sw-time { font-size: 13px; }
   .rv-sw-btns button { padding: 0 6px; font-size: 14px; min-width: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
