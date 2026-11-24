@@ -28,7 +28,7 @@ export const TARGETS = {
   "machines": ["Simple Machines Sandbox", "study-machines.html", "physics101/tryit/thumbs/study-machines.svg"],
   "mechanics": ["Mechanics Playground", "study-mechanics.html", "physics101/tryit/thumbs/study-mechanics.svg"],
   "momentum-collisions": ["Momentum & Collisions Lab", "study-momentum-collisions.html", "physics101/tryit/thumbs/study-momentum-collisions.svg"],
-  "newtons-cannonball-fire": ["Newton's Cannonball Fire", "study-newtons-cannonball-fire.html", "physics101/tryit/thumbs/study-newtons-cannonball-fire.svg", "physics101/tryit/thumbs/study-newtons-cannonball-fire-dark.svg"],
+  "newtons-cannonball-fire": ["Newton's Cannonball Fire", "study-newtons-cannonball-fire.html", "physics101/tryit/thumbs/study-newtons-cannonball-fire.webp", "physics101/tryit/thumbs/study-newtons-cannonball-fire-dark.webp"],
   "optics": ["Optics", "study-optics.html", "physics101/tryit/thumbs/study-optics.svg"],
   "orbits": ["Orbital Mechanics & Gravity Playground", "study-orbits.html", "physics101/tryit/thumbs/study-orbits.svg"],
   "pendulum": ["Pendulum Physics Sandbox", "study-pendulum.html", "physics101/tryit/thumbs/study-pendulum.svg"],

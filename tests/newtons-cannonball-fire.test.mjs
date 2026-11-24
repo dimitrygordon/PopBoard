@@ -5,14 +5,16 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  GM_E, R_E, G, M_MOON, R_MOON, H_MOON, H_DEFAULT, H_MIN, ISS_ALTITUDE, PLANET_X, V_STEP
+  GM_E, R_E, G, M_MOON, R_MOON, H_MOON, H_DEFAULT, H_MIN, ISS_ALTITUDE, PLANET_X, V_STEP,
+  BLUE_LANDING_ANGLE, GREEN_GRAZE_CLEARANCE_MPS
 } from "../public/newtons-cannonball-fire/ncf-config.js";
 import {
   classify, samplePath, presetsAt, presetSpeed, practiceAnswers, applySandbox,
-  vOrbit, vEscape, gEarth, period, formatKmS, outcomeLabel, CIRCULAR_TOL_MPS
+  vOrbit, vEscape, gEarth, period, formatKmS, outcomeLabel, CIRCULAR_TOL_MPS,
+  vGraze, vForLandingAngle, landingAngle, blueFrac, greenFrac
 } from "../public/newtons-cannonball-fire/ncf-physics.js";
 import { PLACEHOLDER, TESLA_PENDING, STRINGS } from "../public/newtons-cannonball-fire/ncf-strings.js";
-import { ART } from "../public/newtons-cannonball-fire/ncf-art.js";
+import { ART_STEMS, layout, toCanvas } from "../public/newtons-cannonball-fire/ncf-art.js";
 
 const root = new URL("../", import.meta.url);
 const PUB = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
@@ -106,6 +108,43 @@ test("preset fractions match the sketch outcomes at the default height", () => {
   assert.equal(kinds.escape, "escape");
   const red = presets.find((p) => p.id === "red");
   close(red.v, vOrbit(R_E + H_DEFAULT), "red is v_orbit");
+});
+
+test("blue and green landing angles match the sketch, solved not faked, and stay clear of graze", () => {
+  const h = H_DEFAULT;
+  const vc = vOrbit(R_E + h);
+  const graze = vGraze(h);
+  close(blueFrac() * vc, vForLandingAngle(BLUE_LANDING_ANGLE, h), "blue is solved from a 1/8 turn");
+  close(greenFrac() * vc, graze - GREEN_GRAZE_CLEARANCE_MPS, "green is 2 slider steps below graze");
+  assert.ok(GREEN_GRAZE_CLEARANCE_MPS >= 2 * V_STEP);
+
+  const presets = presetsAt(h);
+  const blue = presets.find((p) => p.id === "blue");
+  const green = presets.find((p) => p.id === "green");
+  const red = presets.find((p) => p.id === "red");
+  const yellow = presets.find((p) => p.id === "yellow");
+  const esc = presets.find((p) => p.id === "escape");
+
+  const blueAng = landingAngle(blue.v, h);
+  assert.ok(blueAng != null, "blue lands");
+  // Roughly an eighth of the way around (45 deg): allow 35-55 deg.
+  assert.ok(blueAng >= (35 * Math.PI) / 180 && blueAng <= (55 * Math.PI) / 180,
+    `blue angle ${blueAng * 180 / Math.PI} deg should be near 45`);
+  close(blueAng, BLUE_LANDING_ANGLE, "blue is a 45 degree lob", 1e-6);
+
+  const greenAng = landingAngle(green.v, h);
+  assert.ok(greenAng != null, "green lands");
+  // Halfway around is the graze itself; two-thirds is past periapsis and is not a fall.
+  // Green is the farthest fall that stays at least 2*V_STEP below graze, about 113 deg.
+  assert.ok(greenAng >= (100 * Math.PI) / 180 && greenAng < Math.PI,
+    `green angle ${greenAng * 180 / Math.PI} deg should approach halfway but stay a fall`);
+  assert.ok(green.v <= graze - GREEN_GRAZE_CLEARANCE_MPS + 1e-9, "green stays clear of the miss-Earth window");
+  assert.ok(blue.v < green.v && green.v < graze, "blue then green then graze");
+  assert.equal(landingAngle(red.v, h), null);
+  assert.equal(landingAngle(yellow.v, h), null);
+  assert.equal(landingAngle(esc.v, h), null);
+  // Halfway is exactly the graze: not a safe green target, and not used.
+  close(vForLandingAngle(Math.PI, h), graze, "a 180 deg landing is the graze", 1e-6);
 });
 
 test("samplePath returns points for every outcome and does not go inside Earth on a circular shot", () => {
@@ -233,10 +272,41 @@ test("module is wired: page, library card, primary M7 L2 Try it card, thumbs exi
   assert.ok(map["m07-l02"].some((r) => r.id === "3d-cannon"));
   assert.ok(map["m07-l02"].some((r) => r.id === "3d-cannonball"));
   assert.ok(!Object.entries(map).some(([slug, rows]) => slug !== "m07-l02" && (rows || []).some((r) => r.id === "newtons-cannonball-fire")));
-  assert.ok(existsSync(join(PUB, "physics101/tryit/thumbs/study-newtons-cannonball-fire.svg")));
-  assert.ok(existsSync(join(PUB, "physics101/tryit/thumbs/study-newtons-cannonball-fire-dark.svg")));
-  assert.equal(Object.keys(ART).length, 5);
-  assert.match(read("public/newtons-cannonball-fire/art/README.md"), /space\.webp/);
+  assert.ok(existsSync(join(PUB, "physics101/tryit/thumbs/study-newtons-cannonball-fire.webp")));
+  assert.ok(existsSync(join(PUB, "physics101/tryit/thumbs/study-newtons-cannonball-fire-dark.webp")));
+  assert.ok(Object.keys(ART_STEMS).includes("earth"));
+  assert.ok(Object.keys(ART_STEMS).includes("barrel"));
+  const manifest = JSON.parse(read("public/newtons-cannonball-fire/art/manifest.json"));
+  for (const theme of ["dark", "light"]) {
+    for (const stem of Object.values(ART_STEMS)) {
+      const file = `${stem}_${theme}.webp`;
+      assert.ok(manifest.use.includes(file), file);
+      assert.ok(existsSync(join(PUB, "newtons-cannonball-fire/art", file)), file);
+    }
+  }
+  assert.ok(manifest.use.includes("chalk_grain_tile_512.webp"));
+  assert.match(read("public/newtons-cannonball-fire/art/README.md"), /space_tile_\{dark,light\}\.webp/);
+});
+
+test("Leo stage layout maps Earth, summit and muzzle, and stretches falls to the disc", () => {
+  const lay = layout(1600, 900);
+  close(lay.cx, 800, "Earth cx");
+  close(lay.cy, 468, "Earth cy");
+  close(lay.earthR, 270, "Earth r");
+  close(lay.launchX, 915.52, "muzzle x", 1e-6);
+  close(lay.launchY, 60.28, "muzzle y", 1e-6);
+  close(Math.hypot(lay.launchX - lay.cx, lay.launchY - lay.cy), 423.77, "muzzle distance", 0.05);
+  const half = layout(800, 450);
+  close(half.earthR, 135, "half-size Earth");
+  close(half.cx, 400, "half-size cx");
+  const h = H_DEFAULT;
+  const blue = presetsAt(h).find((p) => p.id === "blue");
+  const path = samplePath(blue.v, h);
+  const pts = toCanvas(path.points, lay, R_E, "falls");
+  const first = pts[0], last = pts[pts.length - 1];
+  close(first.x, lay.launchX, "fall starts at the muzzle x", 2);
+  close(first.y, lay.launchY, "fall starts at the muzzle y", 2);
+  close(Math.hypot(last.x - lay.cx, last.y - lay.cy), lay.earthR, "fall lands on Leo's Earth disc", 4);
 });
 
 test("formatters do not invent values", () => {

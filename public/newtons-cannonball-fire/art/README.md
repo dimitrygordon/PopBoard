@@ -1,17 +1,33 @@
 # Newton's Cannonball Fire art
 
-Leo is drawing chalk art into `/workspace/ncf/art/` against a SPEC.md. Until those files land, the module draws a chalk-on-black placeholder in `ncf-art.js`.
+Leo's chalk (dark) and pencil (light) set. The module picks the theme suffix (`_dark` or `_light`) from the page theme. List every runtime file in `manifest.json` under `use`; the loader fetches only those names, so a missing file never 404s.
 
-To swap in Leo's art, drop the files below into this folder (same names) and add each file name to `manifest.json` under `use`. The art layer loads only listed files and falls back to the placeholder otherwise. No other code change is required.
+Final runtime files are webp. PNG masters, mocks, contact sheets, and 3x3 seam checks stay in Leo's art drop, not in this folder.
 
-| File | Role | Notes |
-| --- | --- | --- |
-| `space.webp` | Black space backdrop, full stage | Stretched to the square canvas. |
-| `earth.webp` | Round Earth | Drawn as a circle over the backdrop. A transparent center or a filled disk both work; the code scales it to the Earth radius. |
-| `mountain.webp` | Tall mountain / mesa on the limb | Anchored at the top of the Earth. Not to scale with the 150 km teaching height. |
-| `cannon.webp` | Cannon on the mountain, barrel pointing right | Sits at the launch point. |
-| `ball.webp` | Cannonball | A small sprite, centered on the path. |
+Layout is Leo's 1600x900 stage, scaled to the canvas width:
 
-Reference: `/workspace/ncf/ref/dimitry-sketch.png` (round Earth, mountain and cannon at the top, blue and green falling trails, red near-circular, yellow wider orbit, black space, chalk stroke).
+| Thing | Stage px |
+| --- | --- |
+| Earth center | (800, 468) |
+| Earth radius | 270 |
+| Mountain top left | (665, 98), size 270x140 |
+| Barrel pivot | (808, 60.28) |
+| Muzzle, barrel level | (915.52, 60.28) |
+| Elevation | -5 to +20 deg (default 0, level fire) |
+| Recoil | 13 px or less, carriage 5 px |
 
-The drawn mountain is visually exaggerated. Physics uses the height slider (default 150 km). Trails are drawn in code (colored chalk strokes) and are not part of the still art.
+Draw order: space tile, earth, trails, mountain, barrel (with flash), carriage, cannonball. Trails are drawn in code, not baked into sprites. Falls use a radial stretch so they land on Leo's Earth disc; bound paths keep r / r_launch so a circular shot stays at the muzzle.
+
+| File | Role |
+| --- | --- |
+| `space_tile_{dark,light}.webp` | 2400 px seamless tile, shown at 1600 |
+| `earth_{dark,light}.webp` | Round Earth, Atlantic continents |
+| `mountain_{dark,light}.webp` | Rocky butte on the limb, not to scale |
+| `cannon_barrel_{dark,light}.webp` | Barrel, rotates about the pivot |
+| `cannon_carriage_{dark,light}.webp` | Carriage, drawn after the barrel |
+| `cannonball_{dark,light}.webp` | Ball on the path |
+| `muzzle_flash_{1,2,3}_{dark,light}.webp` | Flash frames |
+| `panel_chalkboard_{dark,light}.webp` | 9-slice chalkboard for Derive it and Practice |
+| `chalk_grain_tile_512.webp` | Optional trail grain mask |
+
+Try it thumbnails (640x360) live in `public/physics101/tryit/thumbs/study-newtons-cannonball-fire.webp` and `-dark.webp`.

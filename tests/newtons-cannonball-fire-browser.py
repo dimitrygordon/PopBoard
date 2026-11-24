@@ -69,6 +69,16 @@ def shot(page, name):
     print("SHOT", dest)
 
 
+def stage_shot(page, name):
+    """Canvas only, with the sticky header hidden so it cannot cover the cannon on phones."""
+    page.locator("#stage").scroll_into_view_if_needed()
+    page.evaluate("() => { const h = document.querySelector('.hud'); if (h) h.style.visibility = 'hidden'; }")
+    dest = OUT / name
+    page.locator("#stage").screenshot(path=str(dest))
+    page.evaluate("() => { const h = document.querySelector('.hud'); if (h) h.style.visibility = ''; }")
+    print("SHOT", dest)
+
+
 def track(page):
     page.errors = []
     page.bad = []
@@ -136,12 +146,14 @@ def run_module(ctx, base, tag, touch):
     page = ctx.new_page()
     track(page)
     page.goto(base + "/study-newtons-cannonball-fire", wait_until="networkidle")
-    page.wait_for_function("() => window.__ncf")
+    page.wait_for_function("() => window.__ncf && __ncf.artReady", timeout=20000)
     inp = Input(page, touch)
     no_overflow(page, tag, "load")
     errors_ok(page, tag, "load")
     check(js(page, "() => document.querySelector('h1').textContent.includes(\"Newton's Cannonball Fire\")"), f"{tag} title is present")
     check(js(page, "() => __ncf.trails.length === 0 && !__ncf.playing"), f"{tag} starts with a clear board")
+    check(js(page, "() => __ncf.artReady === true"), f"{tag} art loader finished")
+    check(js(page, "() => __ncf.hasLeoArt === true"), f"{tag} Leo art is on the stage")
     check(js(page, "() => !__ncf.PLACEHOLDER && !__ncf.TESLA_PENDING"), f"{tag} wording and numbers are signed off")
     check(js(page, "() => document.querySelector('.ncf-marks')?.hidden === true && !document.getElementById('socratesMark').textContent && !document.getElementById('teslaMark').textContent"),
           f"{tag} tesla and socrates marks are hidden")
@@ -155,13 +167,16 @@ def run_module(ctx, base, tag, touch):
     if tag == "desktop":
         check(js(page, "() => document.documentElement.dataset.theme") == "dark", f"{tag} default theme is dark")
         shot(page, f"{tag}-01-sandbox-dark.png")
+        stage_shot(page, f"{tag}-stage-empty-dark.png")
         inp.tap(page.locator("#themeBtn"))
         check(js(page, "() => document.documentElement.dataset.theme") == "light", f"{tag} theme toggle goes light")
         shot(page, f"{tag}-02-sandbox-light.png")
+        stage_shot(page, f"{tag}-stage-empty-light.png")
         inp.tap(page.locator("#themeBtn"))
         check(js(page, "() => document.documentElement.dataset.theme") == "dark", f"{tag} theme toggle back to dark")
     else:
         shot(page, f"{tag}-01-sandbox-dark.png")
+        stage_shot(page, f"{tag}-stage-empty-dark.png")
 
     # Real drag on the launch-speed slider (scroll it fully on-screen first; on a phone the stage is tall)
     slider = page.locator("#speed")
@@ -188,6 +203,7 @@ def run_module(ctx, base, tag, touch):
     check("falls" in kinds and "circular" in kinds and "ellipse" in kinds and "escape" in kinds,
           f"{tag} trails include falls, circular, ellipse, escape {kinds}")
     shot(page, f"{tag}-03-trails.png")
+    stage_shot(page, f"{tag}-stage-trails.png")
     no_overflow(page, tag, "after fire")
     errors_ok(page, tag, "after fire")
 
@@ -282,7 +298,7 @@ def run_reduced(browser, base):
     page = ctx.new_page()
     track(page)
     page.goto(base + "/study-newtons-cannonball-fire", wait_until="networkidle")
-    page.wait_for_function("() => window.__ncf")
+    page.wait_for_function("() => window.__ncf && __ncf.artReady", timeout=20000)
     check(js(page, "() => __ncf.reduced === true"), "reduced motion: flag is on")
     check(js(page, "() => !__ncf.playing && __ncf.trails.length === 0"), "reduced motion: nothing plays until asked")
     page.locator("#fireBtn").click()

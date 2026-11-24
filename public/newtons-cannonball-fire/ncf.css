@@ -3,6 +3,8 @@
 @font-face { font-family: "Architects Daughter"; src: url("../fonts/architects-daughter.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "Gochi Hand"; src: url("../fonts/gochi-hand.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "Jost"; src: url("../fonts/jost-latin-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Patrick Hand"; src: url("../fonts/patrick-hand.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Cabin Sketch"; src: url("../fonts/cabin-sketch-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
 :root {
   --ncf-paper: #FCF7EB;
@@ -15,7 +17,17 @@
   --ncf-accent: #4C6FA8;
   --ncf-board: #000000;
   --ncf-chalk: #F3EFE4;
+  --ncf-chalk-dim: #C9C3B4;
+  --ncf-chalk-yellow: #F7D774;
+  --ncf-chalk-green: #A8E6B4;
   --ncf-hit: 44px;
+  --ncf-trail-blue: #1F5FBF;
+  --ncf-trail-green: #1E7A3C;
+  --ncf-trail-red: #B83227;
+  --ncf-trail-yellow: #9A6A00;
+  --ncf-trail-escape: #2B2622;
+  --ncf-panel-img: url("art/panel_chalkboard_light.webp");
+  --ncf-panel-slate: #2D463B;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
@@ -27,6 +39,13 @@
   --ncf-btn: #2A2621;
   --ncf-tape: rgba(200, 184, 140, 0.35);
   --ncf-accent: #8FB3EA;
+  --ncf-trail-blue: #6AAEF5;
+  --ncf-trail-green: #6ACF85;
+  --ncf-trail-red: #F2705F;
+  --ncf-trail-yellow: #F5CC52;
+  --ncf-trail-escape: #EDE6D6;
+  --ncf-panel-img: url("art/panel_chalkboard_dark.webp");
+  --ncf-panel-slate: #1A1D1C;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -57,19 +76,22 @@ html, body.ncf { margin: 0; min-height: 100%; background: var(--ncf-paper); colo
 .ncf-card.tape::before { content: ""; position: absolute; top: -10px; left: 50%; width: 96px; height: 22px; margin-left: -48px;
   background: var(--ncf-tape); transform: rotate(-2.5deg); border-radius: 2px; pointer-events: none; }
 
-.ncf-stage-wrap { background: #000; border-radius: 4px; overflow: hidden; border: 1px solid #222; }
-.ncf-stage { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; touch-action: none; background: #000; }
+.ncf-stage-wrap { background: #181A19; border-radius: 4px; overflow: hidden; border: 1px solid #222; }
+.ncf-stage { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; touch-action: none;
+  background: #181A19 url("art/space_tile_dark.webp") 0 0 / 100% auto repeat; }
+:root:not([data-theme="dark"]) .ncf-stage-wrap { background: #FCF7EB; border-color: #D6CBB6; }
+:root:not([data-theme="dark"]) .ncf-stage { background: #FCF7EB url("art/space_tile_light.webp") 0 0 / 100% auto repeat; }
 .ncf-scale { margin: 8px 0 0; font-size: 14px; color: var(--ncf-dim); }
 
 .ncf-controls { display: grid; gap: 12px; margin-top: 12px; }
 .ncf-presets { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .ncf-presets .ncf-pl { color: var(--ncf-dim); font-size: 14px; margin-right: 2px; }
 .ncf-presets button { min-width: 64px; }
-.ncf-presets button[data-id="blue"] { box-shadow: inset 0 -3px 0 #5B9AE8; }
-.ncf-presets button[data-id="green"] { box-shadow: inset 0 -3px 0 #3FA86A; }
-.ncf-presets button[data-id="red"] { box-shadow: inset 0 -3px 0 #E23B3B; }
-.ncf-presets button[data-id="yellow"] { box-shadow: inset 0 -3px 0 #E0B43A; }
-.ncf-presets button[data-id="escape"] { box-shadow: inset 0 -3px 0 #EDE6D6; }
+.ncf-presets button[data-id="blue"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-blue); }
+.ncf-presets button[data-id="green"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-green); }
+.ncf-presets button[data-id="red"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-red); }
+.ncf-presets button[data-id="yellow"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-yellow); }
+.ncf-presets button[data-id="escape"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-escape); }
 
 .ncf-slider { display: grid; gap: 6px; }
 .ncf-slider span { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
@@ -119,4 +141,34 @@ html, body.ncf { margin: 0; min-height: 100%; background: var(--ncf-paper); colo
   .ncf-shell { padding-left: 10px; padding-right: 10px; }
   .ncf-readouts { grid-template-columns: 1fr; }
   .ncf .hud .title { font-size: 15px; }
+}
+
+#practice { margin-bottom: 16px; }
+#practice > .ncf-h { margin: 0 0 12px; }
+.ncf-chalk-panel {
+  border-style: solid; border-width: 20px; border-color: var(--ncf-panel-slate);
+  border-image-source: var(--ncf-panel-img);
+  border-image-slice: 56 fill; border-image-width: 28px; border-image-outset: 0; border-image-repeat: stretch;
+  background: var(--ncf-panel-slate); background-clip: padding-box;
+  padding: 14px 18px 16px;
+  color: var(--ncf-chalk);
+  font-family: "Patrick Hand", "Architects Daughter", "Comic Sans MS", cursive;
+  font-size: 20px; line-height: 1.5; letter-spacing: 0.01em;
+  box-shadow: 0 2px 0 rgba(0,0,0,.18), 0 6px 14px rgba(0,0,0,.18);
+  margin-bottom: 16px;
+}
+.ncf-chalk-panel .ncf-h, .ncf-chalk-panel .ncf-lead, .ncf-chalk-panel .ncf-prompt { color: var(--ncf-chalk); }
+.ncf-chalk-panel .ncf-lead, .ncf-chalk-panel .ncf-scale { color: var(--ncf-chalk-dim); }
+.ncf-chalk-panel .ncf-step { border-color: rgba(243,239,228,.35); background: rgba(0,0,0,.18); }
+.ncf-chalk-panel .ncf-step summary { color: var(--ncf-chalk-yellow); font-family: "Cabin Sketch", "Patrick Hand", cursive; font-weight: 700; font-size: 22px; }
+.ncf-chalk-panel .ncf-eq { font-size: 24px; }
+.ncf-chalk-panel .ncf-answer, .ncf-chalk-panel .ans { color: var(--ncf-chalk-green); }
+.ncf-chalk-panel .ncf-show, .ncf-chalk-panel .ncf-apply {
+  background: rgba(0,0,0,.18); color: var(--ncf-chalk); border-color: rgba(243,239,228,.55);
+}
+@media (min-width: 720px) {
+  .ncf-chalk-panel { font-size: 22px; border-width: 24px; padding: 18px 24px; }
+}
+@media (max-width: 430px) {
+  .ncf-chalk-panel { font-size: 20px; }
 }

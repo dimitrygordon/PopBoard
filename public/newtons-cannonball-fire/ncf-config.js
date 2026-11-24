@@ -28,17 +28,31 @@ export const V_STEP = 10;              // m/s
 // A made-up planet for the v = sqrt(r g) practice item. Tesla-verified (PR #190).
 export const PLANET_X = { r: 2.5e6, g: 4.0 };
 
-// Sketch colors: blue and green fall back, red circular, yellow wider ellipse, plus escape.
+// Blue and green fractions of v_orbit are solved in ncf-physics.js from landing
+// angles at the default 150 km mountain (no faked paths). Red, yellow, and
+// escape stay as authored here.
+export const BLUE_LANDING_ANGLE = Math.PI / 4; // one eighth of the way around
+// Halfway (pi rad) is exactly the graze; two-thirds is past periapsis and is
+// not a fall. Green stays 2 slider steps below graze so it remains a fall.
+export const GREEN_GRAZE_CLEARANCE_MPS = 2 * V_STEP;
+
 export const PRESETS = [
-  { id: "blue",   label: "Blue",   frac: 0.35, kind: "frac", color: "#5B9AE8" },
-  { id: "green",  label: "Green",  frac: 0.72, kind: "frac", color: "#3FA86A" },
-  { id: "red",    label: "Red",    frac: 1.00, kind: "frac", color: "#E23B3B" },
-  { id: "yellow", label: "Yellow", frac: 1.12, kind: "frac", color: "#E0B43A" },
+  { id: "blue",   label: "Blue",   kind: "eighth",  color: "#6AAEF5" },
+  { id: "green",  label: "Green",  kind: "far-fall", color: "#6ACF85" },
+  { id: "red",    label: "Red",    frac: 1.00, kind: "frac", color: "#F2705F" },
+  { id: "yellow", label: "Yellow", frac: 1.12, kind: "frac", color: "#F5CC52" },
   { id: "escape", label: "Escape", frac: 1.05, kind: "esc",  color: "#EDE6D6" },
 ];
 
+// Leo trail ink, dark (chalk on board) and light (graphite on cream).
+export const TRAIL_COLORS = {
+  dark:  { blue: "#6AAEF5", green: "#6ACF85", red: "#F2705F", yellow: "#F5CC52", escape: "#EDE6D6" },
+  light: { blue: "#1F5FBF", green: "#1E7A3C", red: "#B83227", yellow: "#9A6A00", escape: "#2B2622" },
+};
+
 export const TRAIL = {
-  width: 2.4,
+  // 3.2 stage px at the 1600 px design width; ncf-art.js scales with the stage.
+  width: 3.2,
   fade: 1,
 };
 

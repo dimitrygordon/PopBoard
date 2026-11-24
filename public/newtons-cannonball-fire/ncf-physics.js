@@ -4,7 +4,8 @@
 
 import { flight as olFlight, samplePath as olSamplePath, vCirc, vEsc, gAt, periodAt } from "../orbit-lab/ol-model.js";
 import {
-  GM_E, R_E, G, M_MOON, R_MOON, H_MOON, H_DEFAULT, H_MIN, ISS_ALTITUDE, PLANET_X, PRESETS, V_STEP
+  GM_E, R_E, G, M_MOON, R_MOON, H_MOON, H_DEFAULT, H_MIN, ISS_ALTITUDE, PLANET_X, PRESETS, V_STEP,
+  BLUE_LANDING_ANGLE, GREEN_GRAZE_CLEARANCE_MPS
 } from "./ncf-config.js";
 
 export { GM_E, R_E, G, vCirc, vEsc, gAt, periodAt };
@@ -111,11 +112,44 @@ function hyperbolaPoints(v, h, GM, R, steps) {
   return points;
 }
 
+/** Speed that just grazes Earth when launched horizontally from height h. */
+export function vGraze(h, GM = GM_E, R = R_E) {
+  const r0 = R + h;
+  return Math.sqrt(2 * GM * (1 / r0 - 1 / (r0 + R)));
+}
+
+/** Horizontal launch speed whose inverse-square lob lands at central angle `angle` (radians). */
+export function vForLandingAngle(angle, h, GM = GM_E, R = R_E) {
+  const r0 = R + h;
+  const c = -Math.cos(angle);
+  const e = (r0 - R) / (r0 + R * c);
+  if (!(e > 0) || !(e < 1)) return NaN;
+  const a = r0 / (1 + e);
+  const eps = -GM / (2 * a);
+  const v2 = 2 * (eps + GM / r0);
+  return v2 > 0 ? Math.sqrt(v2) : NaN;
+}
+
+export function landingAngle(v, h, GM = GM_E, R = R_E) {
+  const fly = classify(v, h, GM, R);
+  return fly.kind === "falls" && Number.isFinite(fly.angle) ? fly.angle : null;
+}
+
+/** Blue / green fractions of v_orbit, solved at the default 150 km mountain. */
+export function blueFrac() {
+  return vForLandingAngle(BLUE_LANDING_ANGLE, H_DEFAULT) / vOrbit(R_E + H_DEFAULT);
+}
+export function greenFrac() {
+  return (vGraze(H_DEFAULT) - GREEN_GRAZE_CLEARANCE_MPS) / vOrbit(R_E + H_DEFAULT);
+}
+
 export function presetSpeed(preset, h) {
   const r0 = launchRadius(h);
   const vc = vOrbit(r0);
   const vesc = vEscape(r0);
   if (preset.kind === "esc") return vesc * preset.frac;
+  if (preset.kind === "eighth" || preset.id === "blue") return vc * blueFrac();
+  if (preset.kind === "far-fall" || preset.id === "green") return vc * greenFrac();
   return vc * preset.frac;
 }
 
