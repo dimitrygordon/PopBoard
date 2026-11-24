@@ -7,16 +7,17 @@ export const RHO_SEA_LEVEL = 1.225;         // kg/m^3, ISA sea-level air density
 export const CD_SPHERE = 0.47;              // drag coefficient of a smooth sphere, subcritical Reynolds number
 export const IRON_DENSITY = 7870;           // kg/m^3
 
-// Surface gravity (m/s^2). Earth uses standard gravity; the rest are from the
-// NASA NSSDCA Planetary Fact Sheet (gas giants: at the 1 bar level).
+// Surface gravity (m/s^2). Earth uses standard gravity. Jupiter and Saturn are
+// equatorial GM/R^2 (24.79 and 10.44). The other worlds follow the NASA NSSDCA
+// Planetary Fact Sheet comparison-table Gravity row (gas giants: 1 bar), one decimal.
 export const WORLDS = Object.freeze({
   earth: Object.freeze({ name: "Earth", g: G_STANDARD }),
   moon: Object.freeze({ name: "Moon", g: 1.6 }),
   mars: Object.freeze({ name: "Mars", g: 3.7 }),
   mercury: Object.freeze({ name: "Mercury", g: 3.7 }),
   venus: Object.freeze({ name: "Venus", g: 8.9 }),
-  jupiter: Object.freeze({ name: "Jupiter", g: 23.1 }),
-  saturn: Object.freeze({ name: "Saturn", g: 9.0 }),
+  jupiter: Object.freeze({ name: "Jupiter", g: 24.79 }),
+  saturn: Object.freeze({ name: "Saturn", g: 10.44 }),
   uranus: Object.freeze({ name: "Uranus", g: 8.7 }),
   neptune: Object.freeze({ name: "Neptune", g: 11.0 }),
   pluto: Object.freeze({ name: "Pluto", g: 0.7 })
@@ -196,7 +197,15 @@ export function fmtNum(x, digits = 3) {
 export const fmtM = (x) => `${fmtNum(x)} m`;
 export const fmtS = (x) => `${fmtNum(x)} s`;
 export const fmtV = (x) => `${fmtNum(x)} m/s`;
-export const fmtG = (x) => `${fmtNum(x)} m/s\u00b2`;
+export const fmtG = (x) => {
+  // Keep two decimals when the value has them (24.79, 10.44). Smaller g stays
+  // on the shared three-significant-figure formatter, so 9.80665 still reads 9.81.
+  if (Number.isFinite(x) && Math.abs(x) >= 10) {
+    const t = x.toFixed(2).replace(/\.?0+$/, "");
+    return `${t} m/s\u00b2`;
+  }
+  return `${fmtNum(x)} m/s\u00b2`;
+};
 export const fmtDeg = (x) => `${fmtNum(x)}\u00b0`;
 export const fmtKg = (x) => (x < 1 ? `${fmtNum(x * 1000)} g` : `${fmtNum(x)} kg`);
 export const fmtD = (x) => `${fmtNum(x * 100)} cm`;

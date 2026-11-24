@@ -32,7 +32,7 @@ Claims in the captions, all checked in tests:
 - Launching from a height makes the best angle lower than 45 degrees (for 20 m/s from 20 m the best whole-degree angle is 35 degrees).
 - At the peak the velocity is horizontal (v_y = 0), not zero.
 - Strobe dots at equal time steps stay equally spaced horizontally and bunch up vertically near the peak.
-- Range, peak height and flight time all scale as 1/g for the same launch, so the shape is the same parabola stretched. Moon: 9.81 / 1.6 = about 6.1 times Earth's range. Jupiter: 9.81 / 23.1 = about 0.42 times.
+- Range, peak height and flight time all scale as 1/g for the same launch, so the shape is the same parabola stretched. Moon: 9.81 / 1.6 = about 6.1 times Earth's range. Jupiter: 9.81 / 24.79 = about 0.40 times.
 
 Example shown by default: 20 m/s at 45 degrees on Earth from the ground gives v_x = v_y0 = 14.1 m/s, t_peak = 1.44 s, T = 2.88 s, H = 10.2 m, R = 40.8 m.
 
@@ -70,7 +70,7 @@ Claims in the captions, checked in tests for a basketball at 20 m/s and 45 degre
 
 ## Gravity on each world
 
-Earth uses standard gravity g_n = 9.80665 m/s^2 (shown as 9.81 m/s^2), the defined value (3rd CGPM, 1901; NIST, https://physics.nist.gov/cgi-bin/cuu/Value?gn). The others are the "Gravity" row of the NASA NSSDCA Planetary Fact Sheet (https://nssdc.gsfc.nasa.gov/planetary/factsheet/, updated 18 March 2025), equatorial surface gravity; for the gas and ice giants it is at the 1 bar pressure level because they have no solid surface.
+Earth uses standard gravity g_n = 9.80665 m/s^2 (shown as 9.81 m/s^2), the defined value (3rd CGPM, 1901; NIST, https://physics.nist.gov/cgi-bin/cuu/Value?gn). Jupiter and Saturn use equatorial GM/R^2, 24.79 and 10.44 m/s^2. The NSSDCA comparison table's Gravity row (https://nssdc.gsfc.nasa.gov/planetary/factsheet/) instead lists the rotation-included equatorial acceleration, rounded to 23.1 and 9.0. The other worlds follow that comparison-table row at one decimal. Pluto is the exception still in the module: the table now says 0.6 and the Pluto page's mean surface gravity is 0.62.
 
 | World | g (m/s^2) |
 |---|---|
@@ -79,8 +79,8 @@ Earth uses standard gravity g_n = 9.80665 m/s^2 (shown as 9.81 m/s^2), the defin
 | Earth | 9.81 (9.80665) |
 | Moon | 1.6 |
 | Mars | 3.7 |
-| Jupiter | 23.1 |
-| Saturn | 9.0 |
+| Jupiter | 24.79 |
+| Saturn | 10.44 |
 | Uranus | 8.7 |
 | Neptune | 11.0 |
 | Pluto | 0.7 |
