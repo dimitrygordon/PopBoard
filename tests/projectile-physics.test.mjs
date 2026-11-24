@@ -12,7 +12,7 @@ test("constants and world gravity match the sources", () => {
   assert.equal(G, 9.80665);
   assert.equal(P.RHO_SEA_LEVEL, 1.225);
   assert.equal(P.CD_SPHERE, 0.47);
-  const nasa = { moon: 1.6, mars: 3.7, mercury: 3.7, venus: 8.9, jupiter: 24.79, saturn: 10.44, uranus: 8.7, neptune: 11.0, pluto: 0.7 };
+  const nasa = { moon: 1.6, mars: 3.7, mercury: 3.7, venus: 8.9, jupiter: 24.79, saturn: 10.44, uranus: 8.7, neptune: 11.0, pluto: 0.6 };
   for (const [k, g] of Object.entries(nasa)) assert.equal(P.WORLDS[k].g, g, k);
   assert.equal(P.WORLDS.earth.g, G);
   // 6 lb iron shot is about 8.7 cm across

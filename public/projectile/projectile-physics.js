@@ -20,7 +20,7 @@ export const WORLDS = Object.freeze({
   saturn: Object.freeze({ name: "Saturn", g: 10.44 }),
   uranus: Object.freeze({ name: "Uranus", g: 8.7 }),
   neptune: Object.freeze({ name: "Neptune", g: 11.0 }),
-  pluto: Object.freeze({ name: "Pluto", g: 0.7 })
+  pluto: Object.freeze({ name: "Pluto", g: 0.6 })
 });
 export const WORLD_IDS = Object.freeze(Object.keys(WORLDS));
 

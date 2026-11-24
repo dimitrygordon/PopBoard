@@ -10,7 +10,7 @@ import { periodYears, position, speedKmS, eccentricAnomaly } from "../public/ast
 import { crater, transitionDiameter, G_MOON } from "../public/astro-course/ac-impact.js";
 import { missionDose, RATE } from "../public/astro-course/ac-dose.js";
 import { conjunctions, SYSTEMS } from "../public/astro-course/ac-sb-resonance.js";
-import { EXTRAS, MODULES, tryItKeys } from "../public/astro-course/ac-extras.js";
+import { EXTRAS, MODULES, tryItKeys, tryItItems, tryItBlurb } from "../public/astro-course/ac-extras.js";
 
 const PUB = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
 const AC = join(PUB, "astro-course");
@@ -127,6 +127,23 @@ test("Beyond 3D, Periodic Table, Waves, and Space Sandbox sit on the mapped less
   assertTry("space-sandbox", "study-sandbox.html", [["d01", 17, "every mass"]]);
   assert.equal(EXTRAS["d24-5"].tryIt[12], undefined);
   assert.equal(MODULES.projectile, undefined);
+});
+
+test("a page caption overrides the module blurb, and only on that page", () => {
+  const doppler = "Hear the Doppler effect with sound waves. Light shifts the same way, but it needs no air, and for stars we use Doppler shift: (change in wavelength) / (wavelength) = (speed) / (speed of light).";
+  const geometry = "Explore the geometry of a fourth spatial dimension. This is a way to picture extra dimensions, not a model of string theory.";
+  const p4 = tryItItems(EXTRAS.d15.tryIt[4])[0];
+  assert.equal(p4.id, "waves");
+  assert.equal(p4.caption, "");
+  assert.equal(tryItBlurb(p4), MODULES.waves.blurb);
+  assert.equal(tryItBlurb("waves"), MODULES.waves.blurb);
+  const p7 = tryItItems(EXTRAS.d15.tryIt[7]).find((item) => item.id === "waves");
+  assert.equal(p7.caption, doppler);
+  assert.equal(tryItBlurb(p7), doppler);
+  const beyond = tryItItems(EXTRAS.d22.tryIt[7]).find((item) => item.id === "fourth-dimension");
+  assert.equal(beyond.caption, geometry);
+  assert.equal(tryItBlurb(beyond), geometry);
+  assert.equal(tryItBlurb("fourth-dimension"), MODULES["fourth-dimension"].blurb);
 });
 
 test("library search finds titles and words inside pages", () => {

@@ -2,7 +2,7 @@
 import { course, loadCatalog, pageKey, standardsLine } from "./ac-courses.js";
 import { renderSlide, readableHtml, noteHtml, boxText, esc } from "./ac-render.js";
 import { bindThemeButton, store, BACK_ICON, reduceMotion } from "./ac-common.js";
-import { EXTRAS, MODULES, tryItKeys } from "./ac-extras.js";
+import { EXTRAS, MODULES, tryItKeys, tryItItems, tryItBlurb } from "./ac-extras.js";
 import { mountOrbit } from "./ac-orbit.js";
 import { mountCrater } from "./ac-sb-crater.js";
 import { mountResonance } from "./ac-sb-resonance.js";
@@ -134,14 +134,14 @@ function toast(msg) {
   if (fb) fb.textContent = msg;
 }
 
-function tryItCard(key) {
-  const m = MODULES[key];
+function tryItCard(item) {
+  const m = MODULES[item.id];
   if (!m) return "";
   const p = forwardStudyQuery(location.search);
   p.set("story", `${meta.slug}-${page}`);
   return `<a class="tryit sketch" href="${esc(m.file)}?${esc(p.toString())}">
-    <img src="astro-course/thumbs/${esc(key)}.webp" alt="" loading="lazy" width="320" height="200">
-    <span><b>Try it: ${esc(m.name)}</b><span>${esc(m.blurb)}</span><span class="go">Open the module, then come back to this page.</span></span></a>`;
+    <img src="astro-course/thumbs/${esc(item.id)}.webp" alt="" loading="lazy" width="320" height="200">
+    <span><b>Try it: ${esc(m.name)}</b><span>${esc(tryItBlurb(item))}</span><span class="go">Open the module, then come back to this page.</span></span></a>`;
 }
 
 function renderTools(s) {
@@ -164,7 +164,7 @@ function renderTools(s) {
   const sv2 = v2 && v2.slides[String(s.n)];
   if (sv2 && ONPAGE[sv2.three]) out.push(`<section class="tool"><h2 class="panel-h">${esc(ONPAGE[sv2.three] || "3D")}</h2><p class="note">Drag the 3D scene on the page.</p><div class="pop-ctl"></div></section>`);
   if (sv2 && sv2.testIt) out.push(`<section class="tool test-it"><h2 class="panel-h">Test it: ${esc(sv2.testIt.name)}</h2><p class="note">${esc(sv2.testIt.how)}</p><div class="pop-ctl"></div><p class="feedback" aria-live="polite"></p></section>`);
-  const ti = tryItKeys(extra.tryIt && extra.tryIt[s.n]);
+  const ti = tryItItems(extra.tryIt && extra.tryIt[s.n]);
   if (ti.length) out.push(`<section class="tool"><h2 class="panel-h">Try it</h2><div class="tryit-list">${ti.map(tryItCard).join("")}</div></section>`);
   return out.join("");
 }

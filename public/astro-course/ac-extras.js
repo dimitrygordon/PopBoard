@@ -34,9 +34,22 @@ export const MODULES = {
 };
 
 // A page can link one module, or several. Order is the order of the cards.
-export function tryItKeys(entry) {
+// An entry is a module id, or { id, caption } when that page needs its own wording.
+function tryItItem(entry) {
+  if (entry && typeof entry === "object") return { id: entry.id, caption: entry.caption || "" };
+  return { id: entry, caption: "" };
+}
+export function tryItItems(entry) {
   if (entry == null || entry === "") return [];
-  return Array.isArray(entry) ? entry.filter(Boolean) : [entry];
+  const list = Array.isArray(entry) ? entry.filter(Boolean) : [entry];
+  return list.map(tryItItem);
+}
+export function tryItKeys(entry) {
+  return tryItItems(entry).map((item) => item.id);
+}
+export function tryItBlurb(item) {
+  const { id, caption } = item && typeof item === "object" && "id" in item ? item : tryItItem(item);
+  return caption || (MODULES[id] && MODULES[id].blurb) || "";
 }
 
 export const EXTRAS = {
@@ -59,7 +72,7 @@ export const EXTRAS = {
   d13: { tryIt: { 4: "climate", 6: "climate" } },
   d13b: { tryIt: { 10: "climate", 12: "climate" } },
   d14: { tryIt: { 7: "stars", 8: "atom-builder", 15: "em-spectrum" } },
-  d15: { tryIt: { 3: "em-spectrum", 4: "waves", 5: "spectra", 7: ["spectra", "waves"], 10: "optics", 13: "spaceships", 16: "luminosity", 20: "hrdiagram", 21: "hrdiagram" } },
+  d15: { tryIt: { 3: "em-spectrum", 4: "waves", 5: "spectra", 7: ["spectra", { id: "waves", caption: "Hear the Doppler effect with sound waves. Light shifts the same way, but it needs no air, and for stars we use Doppler shift: (change in wavelength) / (wavelength) = (speed) / (speed of light)." }], 10: "optics", 13: "spaceships", 16: "luminosity", 20: "hrdiagram", 21: "hrdiagram" } },
   d16: { tryIt: { 7: "stars", 13: "stars" } },
   d17: { tryIt: { 3: "stars", 6: "stars", 19: "black-hole", 21: ["black-hole", "periodic-table-studio"] } },
   "d17-5": { tryIt: { 13: "spaceships", 17: "orbits", 18: "kepler" } },
@@ -67,7 +80,7 @@ export const EXTRAS = {
   d19: { tryIt: { 4: "spectra", 9: "powers-of-ten", 14: "em-spectrum" } },
   d20: { tryIt: { 4: "exoplanets", 5: "exoplanets", 12: "exoplanets" } },
   d21: { tryIt: { 8: "relativity", 19: "black-hole" } },
-  d22: { tryIt: { 4: "quantum", 7: ["relativity", "fourth-dimension"] } },
+  d22: { tryIt: { 4: "quantum", 7: ["relativity", { id: "fourth-dimension", caption: "Explore the geometry of a fourth spatial dimension. This is a way to picture extra dimensions, not a model of string theory." }] } },
   d23: { tryIt: { 16: "stars", 18: "tides" } },
   d24: { tryIt: { 4: "relativity", 6: "rocket-mission", 8: "spaceships", 11: "relativity", 20: "spaceships" } },
   "d24-5": { sandboxes: { 5: "dose" }, tryIt: { 6: "spaceships", 11: "orbits", 14: "rocket-mission" } }

@@ -70,7 +70,7 @@ Claims in the captions, checked in tests for a basketball at 20 m/s and 45 degre
 
 ## Gravity on each world
 
-Earth uses standard gravity g_n = 9.80665 m/s^2 (shown as 9.81 m/s^2), the defined value (3rd CGPM, 1901; NIST, https://physics.nist.gov/cgi-bin/cuu/Value?gn). Jupiter and Saturn use equatorial GM/R^2, 24.79 and 10.44 m/s^2. The NSSDCA comparison table's Gravity row (https://nssdc.gsfc.nasa.gov/planetary/factsheet/) instead lists the rotation-included equatorial acceleration, rounded to 23.1 and 9.0. The other worlds follow that comparison-table row at one decimal. Pluto is the exception still in the module: the table now says 0.6 and the Pluto page's mean surface gravity is 0.62.
+Earth uses standard gravity g_n = 9.80665 m/s^2 (shown as 9.81 m/s^2), the defined value (3rd CGPM, 1901; NIST, https://physics.nist.gov/cgi-bin/cuu/Value?gn). Jupiter and Saturn use equatorial GM/R^2, 24.79 and 10.44 m/s^2. The NSSDCA comparison table's Gravity row (https://nssdc.gsfc.nasa.gov/planetary/factsheet/) instead lists the rotation-included equatorial acceleration, rounded to 23.1 and 9.0. The other worlds follow that comparison-table row at one decimal.
 
 | World | g (m/s^2) |
 |---|---|
@@ -83,7 +83,7 @@ Earth uses standard gravity g_n = 9.80665 m/s^2 (shown as 9.81 m/s^2), the defin
 | Saturn | 10.44 |
 | Uranus | 8.7 |
 | Neptune | 11.0 |
-| Pluto | 0.7 |
+| Pluto | 0.6 |
 
 In the Planets mode there is no air. In the sandbox, choosing a world other than Earth, Venus or Mars turns drag off (no meaningful surface air); drag can be turned back on and the density set by hand.
 
