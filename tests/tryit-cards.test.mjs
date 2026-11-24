@@ -11,8 +11,8 @@ test("try it map uses Leo's pairs: real lessons, known targets, no stretch fits"
   const map = JSON.parse(read("physics101/tryit/map.json"));
   const { DECKS } = await import("../public/physics101/p101-catalog.js");
   const slugs = new Set(DECKS.map((d) => d.slug));
-  assert.equal(Object.keys(map).length, 47);
-  assert.equal(Object.values(map).flat().length, 81);
+  assert.equal(Object.keys(map).length, 48);
+  assert.equal(Object.values(map).flat().length, 82);
   for (const [slug, rows] of Object.entries(map)) {
     assert.ok(slugs.has(slug), slug);
     for (const r of rows) { assert.match(r.caption, /\S/); assert.doesNotMatch(r.caption, /stretch|\u2014/); }
@@ -34,9 +34,10 @@ test("every mapped card points at an existing original page", () => {
   const map = JSON.parse(read("physics101/tryit/map.json"));
   const src = read("physics101/tryit.js");
   for (const rows of Object.values(map)) for (const r of rows) {
-    const m = src.match(new RegExp(`"${r.id}": \\[".+?", "([^"]+)", "([^"]+)"\\]`));
+    const m = src.match(new RegExp(`"${r.id}": \\[".+?", "([^"]+)", "([^"]+)"(?:, "([^"]+)")?\\]`));
     assert.ok(m, `target ${r.id} missing`);
     assert.ok(existsSync(join(PUB, m[1].split(/[?#]/)[0])), m[1]);
     assert.ok(existsSync(join(PUB, m[2])), m[2]);
+    if (m[3]) assert.ok(existsSync(join(PUB, m[3])), m[3]);
   }
 });
