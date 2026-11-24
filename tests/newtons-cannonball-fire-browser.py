@@ -263,7 +263,13 @@ def run_links(ctx, base, tag, touch):
     track(page)
     page.goto(base + "/study-physics101-story.html?lesson=m07-l02&tab=sq", wait_until="networkidle")
     link = page.locator("#sqTry a.tryit-card[href*='study-newtons-cannonball-fire']")
-    link.first.wait_for(timeout=15000)
+    # The story page can rewrite ?tab=sq to ?page=1 before sq-tab.js reads the URL,
+    # which leaves the Study Questions pane hidden. Open the tab if the card is not visible.
+    try:
+        link.first.wait_for(timeout=15000)
+    except Exception:
+        page.locator("#tabSq").click()
+        link.first.wait_for(timeout=20000)
     check(link.count() == 1, f"{tag} M7 L2 Study Questions shows the Try it card")
     # Primary card is first
     first_href = js(page, "() => document.querySelector('#sqTry a.tryit-card')?.getAttribute('href') || ''")
