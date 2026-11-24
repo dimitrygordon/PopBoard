@@ -76,6 +76,24 @@ for (const d of built) {
   });
 }
 
+test("Spaceships Try it sits on the spacecraft lessons", () => {
+  // Page text is the check that the slide number still names the craft the link is for.
+  const spots = [
+    ["d01", 18, "ISS"],
+    ["d15", 13, "Hubble"],
+    ["d17-5", 13, "Voyager"],
+    ["d24", 8, "Voyager"],
+    ["d24", 20, "STARSHIP"],
+    ["d24-5", 6, "Spacesuit"]
+  ];
+  assert.equal(MODULES.spaceships.file, "study-spaceships.html");
+  for (const [slug, n, word] of spots) {
+    assert.equal(EXTRAS[slug].tryIt[n], "spaceships", `${slug} p${n}`);
+    const deck = DECKS.find((d) => d.slug === slug);
+    assert.ok(deck.pages[n - 1].includes(word), `${slug} p${n} should mention ${word}`);
+  }
+});
+
 test("library search finds titles and words inside pages", () => {
   const d1 = DECKS[0];
   assert.equal(searchDeck(d1, "cosmic perspective").where, "title");
