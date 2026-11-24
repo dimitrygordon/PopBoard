@@ -142,6 +142,39 @@ def errors_ok(page, tag, where):
     check(not bad, f"{tag} {where}: no failed requests {bad}")
 
 
+# Is the stopwatch clear of every piece of River panel text and control? Returns the overlaps.
+SW_CLEAR = """() => {
+  const sw = document.getElementById('stopwatch').getBoundingClientRect();
+  const hit = (r) => r.width && r.height && !(r.right <= sw.left || r.left >= sw.right || r.bottom <= sw.top || r.top >= sw.bottom);
+  const sel = '#knownBox, #lenSlider, [data-heading], #valve, #valveLabel, #steps .rv-step-h, #steps .rv-step-b, #steps button, #steps input, #steps label, #undoTrial, #clearLab, .rv-panel-h, #stage, #playBtn, #actionBtn, #resetBtn, #slowNote, #readout .rv-eq, #readout h2, #frameBar button';
+  const out = [...document.querySelectorAll(sel)].filter((e) => e.offsetParent && hit(e.getBoundingClientRect())).map((e) => e.id || e.className || e.tagName);
+  if (sw.left < 0 || sw.right > innerWidth + 0.5) out.push('off screen');
+  return out;
+}"""
+# Bow tip vs the start gate, in screen px (Leo's bow tip is 7 px in from the image edge of 480).
+BOW_GATE = """() => {
+  const img = document.querySelector('[data-drag=boat] image').getBoundingClientRect();
+  const g = document.querySelector('[data-gate=start]').getBoundingClientRect();
+  const bow = __rv.lab.heading > 0 ? img.right - img.width * 7 / 480 : img.left + img.width * 7 / 480;
+  return [bow, g.left + g.width / 2];
+}"""
+# Leo's boat sprite inside the channel's water (0 to 5 m), with 3 px of slack for the outline.
+BOAT_IN_WATER = """() => {
+  const img = document.querySelector('[data-drag=boat] image').getBoundingClientRect();
+  const s = document.getElementById('sceneSvg').getBoundingClientRect(), k = s.width / 1600;
+  const w0 = s.left + (223 - __rv.st.shift * __rv.river.ppm) * k, w1 = w0 + 5 * __rv.river.ppm * k;
+  const stern = __rv.lab.heading > 0 ? img.left + img.width * 6 / 480 : img.right - img.width * 6 / 480;
+  const bow = __rv.lab.heading > 0 ? img.right - img.width * 7 / 480 : img.left + img.width * 7 / 480;
+  return [Math.min(stern, bow) >= w0 - 3 * k, Math.max(stern, bow) <= w1 + 3 * k, Math.min(stern, bow) - w0, w1 - Math.max(stern, bow)];
+}"""
+# Stage-coordinate boxes (viewBox units) of every arrow piece of a class, from getBBox.
+ARROW_BOXES = """(cls) => [...document.querySelectorAll('#sceneSvg .' + cls)].map((g) => { const b = g.getBBox(); return [b.x, b.y, b.x + b.width, b.y + b.height]; })"""
+INSIDE = """(sel) => {
+  const s = document.getElementById('sceneSvg').getBoundingClientRect(), r = document.querySelector(sel + ' image').getBoundingClientRect();
+  return r.left >= s.left - 0.5 && r.right <= s.right + 0.5;
+}"""
+
+
 def frame_btn(page, label):
     return page.locator("#frameBar button", has_text=label)
 
@@ -163,10 +196,32 @@ def run_module(ctx, base, tag, touch):
     imgs = js(page, "() => [...document.querySelectorAll('#sceneSvg image')].map(i => i.getAttribute('href'))")
     check(all(h.startswith("relative-velocity/art/") for h in imgs) and len(imgs) >= 4, f"{tag} river art from the art folder ({len(imgs)})")
     no_overflow(page, tag, "river")
+    # the stopwatch starts docked beside the valve, clear of the step text
+    page.locator("#steps").evaluate("e => e.scrollIntoView({ block: 'start' })")
+    over = js(page, SW_CLEAR)
+    check(over == [], f"{tag} stopwatch starts clear of the step text {over}")
+    page.locator("#sceneSvg").evaluate("e => e.scrollIntoView({ block: 'center' })")
+    bow, gate = js(page, BOW_GATE)
+    check(abs(bow - gate) < 1.5, f"{tag} boat bow sits on the start gate at t=0 ({bow:.1f} vs {gate:.1f})")
+    w = js(page, BOAT_IN_WATER)
+    check(w[0] and w[1], f"{tag} the whole boat starts inside the channel water {w}")
+    # no stray dot under the ruler in still water: the water arrow at the leaf only shows when it moves
+    low = page.evaluate(ARROW_BOXES, "rv-a-med")
+    check(not [b for b in low if b[1] > 600], f"{tag} still water: no water-arrow dot under the ruler {[b for b in low if b[1] > 600]}")
+    # valve off: the wheel stays red (no fade), a grey ring and an Off tag
+    v = js(page, "() => { const v = document.getElementById('valve'); return [getComputedStyle(v).opacity, getComputedStyle(v.querySelector('img')).opacity, v.dataset.state, document.getElementById('valveTag').textContent, getComputedStyle(v).boxShadow]; }")
+    check(v[0] == "1" and v[1] == "1" and v[2] == "off" and v[3] == "Off" and "142, 138, 132" in v[4], f"{tag} valve off: full-color wheel, grey ring, Off tag {v}")
+    # ruler readable: at least 24 px tall; on phones the channel scrolls sideways and the boat is in view
+    rh = js(page, "() => document.querySelector('[data-art=ruler]').getBoundingClientRect().height")
+    check(rh >= 23.9 or tag == "desktop", f"{tag} ruler is {rh:.1f} px tall (phones need 24 or more)")
+    if tag != "desktop":
+        sc = js(page, "() => { const s = document.getElementById('stageScroll'), b = document.querySelector('[data-drag=boat]').getBoundingClientRect(), r = s.getBoundingClientRect(); return [s.scrollWidth > s.clientWidth, b.left >= r.left - 1 && b.right <= r.right + 1]; }")
+        check(sc[0] and sc[1], f"{tag} the channel scrolls sideways and starts with the boat in view {sc}")
     shot(page, f"{tag}-01-river-lab.png")
 
     # draggables: bead (leaf) and boat
     def svg_center(sel):
+        page.evaluate(f"() => {{ const s = document.getElementById('stageScroll'), r = document.querySelector('{sel}').getBoundingClientRect(), b = s.getBoundingClientRect(); if (r.left < b.left || r.right > b.right) s.scrollLeft += (r.left + r.width / 2) - (b.left + b.width / 2); }}")
         return page.evaluate(f"() => {{ const r = document.querySelector('{sel}').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }}")
     page.locator("#sceneSvg").evaluate("e => e.scrollIntoView({ block: 'center' })")
     bx, by = svg_center("[data-drag=bead1]")
@@ -175,8 +230,9 @@ def run_module(ctx, base, tag, touch):
     after = js(page, "() => __rv.river.beads[1].x")
     check(after > before + 0.05, f"{tag} drag a bead along the channel ({before:.2f} -> {after:.2f} m)")
     bx, by = svg_center("[data-drag=boat]")
+    b0 = js(page, "() => __rv.river.boat.x")
     inp.drag(bx, by, bx + 50, by)
-    check(js(page, "() => __rv.river.boat.x") > 0.1, f"{tag} drag the idle boat")
+    check(js(page, "() => __rv.river.boat.x") > b0 + 0.1, f"{tag} drag the idle boat")
 
     # stopwatch: time a still-water trial, then drag it
     sw = page.locator("#swStart")
@@ -191,6 +247,8 @@ def run_module(ctx, base, tag, touch):
     inp.drag(sx, sy, sx - 60, sy - 80)
     box2 = page.locator("#stopwatch").bounding_box()
     check(abs(box2["x"] - box["x"]) > 30 and abs(box2["y"] - box["y"]) > 40, f"{tag} drag the stopwatch ({box['x']:.0f},{box['y']:.0f}) -> ({box2['x']:.0f},{box2['y']:.0f})")
+    js(page, "() => __rv.dockStopwatch()")  # park it back so it cannot sit on the next tap target
+    check(js(page, SW_CLEAR) == [], f"{tag} docked stopwatch is clear of the step text again")
 
     # frame switch on the river: Boat view keeps the boat at rest while it runs
     inp.tap(frame_btn(page, "Boat"))
@@ -205,6 +263,20 @@ def run_module(ctx, base, tag, touch):
     check(js(page, "() => !!document.querySelector('[data-eq=frame]')"), f"{tag} readout adds the boat-frame line")
     inp.tap(frame_btn(page, "Shore"))
     page.wait_for_function("() => !__rv.river.boat.running", timeout=15000)
+    # gate timing: the run started with the bow on the start gate and stopped with it on the finish gate
+    still = js(page, "() => __rv.lab.trials.still")
+    L = js(page, "() => __rv.lab.length")
+    check(len(still) == 2 and abs(still[-1] - L / 0.5) < 0.011, f"{tag} gates time the still run: {still[-1] if still else None} s for {L} m at 0.50 m/s")
+    fin = js(page, "() => [__rv.river.boat.x, __rv.river.gates()[1]]")
+    check(abs(fin[0] - fin[1]) < 1e-9, f"{tag} the boat stops with its bow on the finish gate {fin}")
+    w = js(page, BOAT_IN_WATER)
+    check(w[0] and w[1], f"{tag} the whole boat is inside the channel at the finish {w}")
+    inp.tap(page.locator("[data-heading='-1']"))
+    bow, gate = js(page, BOW_GATE)
+    check(abs(bow - gate) < 1.5, f"{tag} upstream: bow (facing left) on the start gate at the right ({bow:.1f} vs {gate:.1f})")
+    w = js(page, BOAT_IN_WATER)
+    check(w[0] and w[1], f"{tag} upstream: the whole boat starts inside the channel {w}")
+    inp.tap(page.locator("[data-heading='1']"))
 
     # Lab steps: predict box gates Step 3, valve turns the water on, then compare
     inp.tap(page.locator("[data-next='2']"))
@@ -217,6 +289,8 @@ def run_module(ctx, base, tag, touch):
     check(js(page, "() => __rv.lab.step") == 3, f"{tag} predictions lock and open step 3")
     inp.tap(page.locator("#valve"))
     check(abs(js(page, "() => __rv.river.flow") - 0.2) < 1e-9, f"{tag} tap the valve: water on at the known 0.20 m/s")
+    v = js(page, "() => [document.getElementById('valve').dataset.state, document.getElementById('valveTag').textContent]")
+    check(v == ["on", "On"], f"{tag} valve on: On tag and the amber ring {v}")
     for heading in ("1", "-1"):
         inp.tap(page.locator(f"[data-heading='{heading}']"))
         inp.tap(sw)
@@ -241,6 +315,10 @@ def run_module(ctx, base, tag, touch):
 
     # Truck: ground frame shows the drop straight down, truck frame the backward flight
     inp.tap(page.locator("[data-scene=truck]"))
+    inp.tap(page.locator("#resetBtn"))
+    check(page.evaluate(INSIDE, "[data-drag=truck]"), f"{tag} truck starts fully in frame")
+    ab = page.evaluate(ARROW_BOXES, "rv-a-med") + page.evaluate(ARROW_BOXES, "rv-a-obj") + page.evaluate(ARROW_BOXES, "rv-a-sum")
+    check(ab and max(b[3] for b in ab) < 300, f"{tag} truck arrows ride in the sky band above the trees (lowest y {max(b[3] for b in ab) if ab else -1:.0f}, tree tops at about 336)")
     page.wait_for_function("() => __rv.truck.released && __rv.truck.ball().landed", timeout=20000)
     xs = js(page, "() => [...document.querySelectorAll('#sceneSvg .rv-trail')].map(c => +c.getAttribute('cx'))")
     check(len(xs) > 5 and max(xs) - min(xs) < 1.0, f"{tag} truck, ground frame: trail is a vertical drop (spread {max(xs) - min(xs) if xs else -1:.2f} px over {len(xs)} dots)")
@@ -262,6 +340,8 @@ def run_module(ctx, base, tag, touch):
     time.sleep(0.9)  # let the camera glide settle
     w1 = screen_x(page, "[data-drag=walker]"); time.sleep(0.5); w2 = screen_x(page, "[data-drag=walker]")
     check(abs(w2 - w1) < 1.5, f"{tag} walkway, Walker frame: walker at rest ({w1:.1f} -> {w2:.1f})")
+    rail = js(page, "() => { const t = document.querySelector('#walkTile image').getBBox(), w = document.querySelector('[data-drag=walker] image').getBBox(); return [(245 - 10) * t.height / 390, w.height * 720 / 741]; }")
+    check(0.95 < rail[0] / rail[1] * 1.75 < 1.1, f"{tag} handrail is about 1 m above the belt: {rail[0]:.0f} px against a {rail[1]:.0f} px (1.75 m) walker = {rail[0] / rail[1] * 1.75:.2f} m")
     inp.tap(frame_btn(page, "Floor"))
     inp.tap(page.locator("[data-walk='-1']"))
     eqw = js(page, "() => document.querySelector('[data-eq=ground] .s').textContent")
@@ -280,6 +360,19 @@ def run_module(ctx, base, tag, touch):
     k0 = js(page, "() => __rv.kart.k0")
     inp.drag(kx, ky, kx + 50, ky)
     check(abs(js(page, "() => __rv.kart.k0") - k0) > 0.5, f"{tag} drag the kart")
+    ka = [b for b in page.evaluate(ARROW_BOXES, "rv-a-obj") + page.evaluate(ARROW_BOXES, "rv-a-med") + page.evaluate(ARROW_BOXES, "rv-a-sum") if b[1] > 600]
+    check(ka and min(b[1] for b in ka) > 777, f"{tag} kart arrows clear of the boost chevrons and the curb (top y {min(b[1] for b in ka) if ka else -1:.0f}; chevrons end at 739, curb at 777)")
+    # Reset and Start over in the Rival view put the player kart back inside the view
+    inp.tap(page.locator("#resetBtn"))
+    check(page.evaluate(INSIDE, "[data-drag=kart]") and page.evaluate(INSIDE, "[data-drag=rival]"), f"{tag} kart, Rival view: after Reset both karts start inside the view")
+    inp.tap(page.locator("#actionBtn"))
+    check(page.evaluate(INSIDE, "[data-drag=kart]"), f"{tag} kart, Rival view: after Start over the kart starts inside the view")
+    inp.tap(page.locator("#playBtn"))
+    for fr in ("Track", "Kart", "Rival"):
+        inp.tap(frame_btn(page, fr))
+        inp.tap(page.locator("#resetBtn"))
+        time.sleep(0.05)
+        check(page.evaluate(INSIDE, "[data-drag=kart]") and page.evaluate(INSIDE, "[data-drag=rival]"), f"{tag} kart, {fr} view: both karts inside after Reset")
     page.locator("#sceneSvg").evaluate("e => e.scrollIntoView({ block: 'center' })")
     shot(page, f"{tag}-06-kart-rival.png")
 
@@ -293,6 +386,7 @@ def run_module(ctx, base, tag, touch):
     shot(page, f"{tag}-07-river-dark.png")
     no_overflow(page, tag, "after all scenes")
     # Art review shots: each scene in both themes, play paused and the viewer fixed.
+    js(page, "() => __rv.dockStopwatch()")
     for dark in (False, True):
         if (js(page, "() => document.documentElement.dataset.theme") == "dark") != dark:
             inp.tap(page.locator("#themeBtn"))

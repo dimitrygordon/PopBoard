@@ -89,7 +89,13 @@ test("config holds Dimitry's defaults in one block", () => {
   assert.equal(C.truck.throwSpeedMph, 25);
   assert.equal(C.truck.throwDir, -1);
   assert.equal(C.river.lengthMin, 1);
-  assert.equal(C.river.lengthMax, 5);
+  assert.equal(C.river.lengthMax, 3);
+  // Bow-anchored boat: the gates are centered on the 5 m channel and the whole hull must fit behind
+  // the start gate going either way, at every length the slider allows.
+  const ppm = (1376.5 - 223) / 5, b = ART.boat;
+  const hull = ((b.anchor[0] - b.stern) * b.show[0]) / b.png[0] / ppm;
+  assert.ok(hull > 0.8 && hull < 0.9, "hull " + hull);
+  for (let L = C.river.lengthMin; L <= C.river.lengthMax + 1e-9; L += C.river.lengthStep) assert.ok((5 - L) / 2 >= hull, "fits at L=" + L);
   assert.ok(C.river.flowRate < C.river.boatSpeed, "upstream runs always make headway in the lab");
   assert.ok(C.river.flowRateMax < C.river.boatSpeed, "and in free runs");
   assert.deepEqual(Object.keys(P.FRAMES), ["river", "truck", "walkway", "kart"]);

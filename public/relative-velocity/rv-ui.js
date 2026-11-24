@@ -2,7 +2,7 @@
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import * as P from "./rv-physics.js";
 import { STRINGS } from "./rv-strings.js";
-import { artUrl, shown, BEADS } from "./rv-art.js";
+import { ART, artUrl, shown, BEADS } from "./rv-art.js";
 
 const C = P.CONFIG;
 const NS = "http://www.w3.org/2000/svg";
@@ -72,10 +72,12 @@ function vectorStack(parent, x, y, vObjMedium, vMediumViewer, scale) {
   arrow(parent, "rv-a-sum", x, x + a + b, y + 34, 15);
 }
 function wrap(v, lo, period) { return ((((v - lo) % period) + period) % period) + lo; }
-// Leo's backdrops are 1600 x 900 scenes, not tiles: repeat them mirrored so the edges always meet.
+// Leo's backdrops are 1600 x 900 scenes. One that tiles (ART tiles: true) repeats as is; the others repeat
+// mirrored so the edges always meet.
 function backdrop(defs, svgRoot, id, name) {
-  const p = el("pattern", { id, patternUnits: "userSpaceOnUse", width: 3200, height: 900 }, defs);
-  for (const flip of [false, true]) {
+  const tiles = !!ART[name].tiles;
+  const p = el("pattern", { id, patternUnits: "userSpaceOnUse", width: tiles ? 1600 : 3200, height: 900 }, defs);
+  for (const flip of tiles ? [false] : [false, true]) {
     const img = el("image", { href: artUrl(name, theme()), width: 1600, height: 900, preserveAspectRatio: "none" }, p);
     if (flip) img.setAttribute("transform", "translate(3200,0) scale(-1,1)");
     img.dataset.art = name;
@@ -114,8 +116,15 @@ const river = {
   W: 1600, H: 900, x0: 223, ppm: (1376.5 - 223) / 5, cy: 392 + (176.5 * 178) / 355, half: (129.5 * 178) / 355,
   span: 5, t: 0, flow: 0, boat: { x: 0, y: 0, running: false }, beads: [],
   get flowOn() { return this.flow > 0; },
+  // The boat is anchored at its bow: boat.x is the bow tip on the ruler (m). Gates are centered so the
+  // hull fits behind the start gate going either way. Timing runs on the scene clock from the moment
+  // the bow crosses the start gate to the moment it crosses the finish gate.
+  get hull() { const a = ART.boat, s = shown("boat"); return ((a.anchor[0] - a.stern) * s.w) / a.png[0] / this.ppm; },
+  gates() { const a = (this.span - lab.length) / 2; return lab.heading > 0 ? [a, a + lab.length] : [a + lab.length, a]; },
+  startX() { return this.gates()[0]; },
+  resetBoat() { this.boat = { x: this.startX(), y: 0, running: false, clock: 0, t0: null, t1: null }; },
   reset() {
-    this.boat = { x: lab.heading > 0 ? 0 : lab.length, y: 0, running: false };
+    this.resetBoat();
     this.beads = BEADS.map((name, i) => ({ name, x: ((i + 0.5) / BEADS.length) * this.span, y: [0.45, -0.5, 0.2, -0.15][i] }));
   },
   build() {
@@ -128,7 +137,7 @@ const river = {
     el("image", { href: artUrl("channel", theme()), x: 200, y: 392, width: ch.w, height: ch.h, "data-art": "channel" }, this.world);
     el("image", { href: artUrl("ruler", theme()), x: 200, y: 584, width: ru.w, height: ru.h, "data-art": "ruler" }, this.world);
     this.water = el("rect", { x: this.x0, y: this.cy - this.half, width: this.span * this.ppm, height: this.half * 2, fill: "url(#waterPat)" }, this.world);
-    this.gates = el("g", {}, this.world);
+    this.gatesG = el("g", {}, this.world);
     this.beadG = this.beads.map((b, i) => {
       const g = sprite(this.world, b.name, "rv-drag");
       g.dataset.drag = "bead" + i;
@@ -146,11 +155,12 @@ const river = {
   },
   // Start and finish gates mark the timed run, 0 m to L on the ruler.
   layoutChannel() {
-    this.gates.replaceChildren();
-    for (const [x, t] of [[0, "start"], [lab.length, "finish"]]) {
-      const px = this.sx(x);
-      el("line", { x1: px, y1: this.cy - this.half - 6, x2: px, y2: this.cy + this.half + 6, stroke: "var(--rv-sum)", "stroke-width": 4, "stroke-dasharray": "12 8" }, this.gates);
-      el("text", { class: "rv-svg-small", x: px, y: this.cy - this.half - 18, "text-anchor": x ? "end" : "start" }, this.gates).textContent = t;
+    this.gatesG.replaceChildren();
+    const [g0, g1] = this.gates();
+    for (const [x, t] of [[g0, "start"], [g1, "finish"]]) {
+      const px = this.sx(x), left = x === Math.min(g0, g1);
+      el("line", { x1: px, y1: this.cy - this.half - 6, x2: px, y2: this.cy + this.half + 6, stroke: "var(--rv-sum)", "stroke-width": 4, "stroke-dasharray": "12 8", "data-gate": t }, this.gatesG);
+      el("text", { class: "rv-svg-small", x: px, y: this.cy - this.half - 18, "text-anchor": left ? "end" : "start" }, this.gatesG).textContent = t;
     }
   },
   sx(xm) { return this.x0 + xm * this.ppm; },
@@ -159,13 +169,23 @@ const river = {
   step(dt) {
     this.t += dt;
     for (const b of this.beads) { b.x += this.flow * dt; if (b.x > this.span) b.x -= this.span; }
-    if (this.boat.running) {
-      this.boat.x += this.vBoat() * dt;
-      if (lab.heading > 0 && this.boat.x >= lab.length) { this.boat.x = lab.length; this.boat.running = false; }
-      if (lab.heading < 0 && this.boat.x <= 0) { this.boat.x = 0; this.boat.running = false; }
+    const b = this.boat;
+    if (b.running) {
+      const v = this.vBoat(), [g0, g1] = this.gates(), h = lab.heading, x = b.x;
+      b.x += v * dt;
+      // past(g): the bow is at or beyond gate g in the direction of travel. Crossings are interpolated
+      // inside the frame, so the time is exact whatever the frame rate.
+      const past = (p, g) => h * (p - g) >= -1e-12;
+      if (b.t0 == null && past(b.x, g0)) b.t0 = b.clock + (v ? Math.max(0, (g0 - x) / v) : 0);
+      if (b.t0 != null && past(b.x, g1)) {
+        b.t1 = b.clock + (g1 - x) / v; b.x = g1; b.running = false; b.clock = b.t1;
+        gateStop(b.t1 - b.t0);
+      } else b.clock += dt;
     }
   },
-  viewerX(f) { return f === "leaf" ? this.beads[0].x : f === "boat" ? this.boat.x : 0; },
+  // Frames follow the boat's middle so the Boat view does not jump when the heading flips.
+  boatMid() { return this.boat.x - lab.heading * this.hull / 2; },
+  viewerX(f) { return f === "leaf" ? this.beads[0].x : f === "boat" ? this.boatMid() : 0; },
   render(shift) {
     const sp = shift * this.ppm;
     this.world.setAttribute("transform", `translate(${(-sp).toFixed(2)},0)`);
@@ -176,24 +196,29 @@ const river = {
     this.arrows.replaceChildren();
     const r = P.readout("river", this.readParams(), st.frame.river);
     const scale = 420;
-    vectorStack(this.arrows, this.sx(this.boat.x) - sp, 300, r.objMedium, r.mediumViewer, scale);
+    vectorStack(this.arrows, this.sx(this.boatMid()) - sp, 300, r.objMedium, r.mediumViewer, scale);
     const lx = this.sx(this.beads[0].x) - sp;
-    arrow(this.arrows, "rv-a-med", lx, lx + r.mediumViewer * scale, 690, 10);
+    // The water's velocity at the leaf, under the ruler. Hidden when it is zero (still water, or the Leaf view),
+    // so there is no stray dot.
+    if (Math.abs(r.mediumViewer * scale) >= 4) arrow(this.arrows, "rv-a-med", lx, lx + r.mediumViewer * scale, 690, 10);
     this.label.textContent = this.boat.running ? "Boat running" : this.flowOn ? `Water on: ${this.flow.toFixed(2)} m/s` : "Still water";
   },
   readParams() { return { heading: lab.heading, boatSpeed: C.river.boatSpeed, flow: this.flow }; },
   actionLabel() { return this.boat.running ? "Stop boat" : "Run boat"; },
   action() {
-    if (this.boat.running) { this.boat.running = false; return; }
-    this.boat.x = lab.heading > 0 ? 0 : lab.length;
-    this.boat.running = true;
+    if (this.boat.running) { this.boat.running = false; gateAbort(); return; }
+    Object.assign(this.boat, { x: this.startX(), running: true, clock: 0, t0: null, t1: null });
+    gateStart();
     setPlaying(true);
   },
   drag(id, xm, ym) {
     const f = Math.max(-0.7, Math.min(0.7, (ym - this.cy) / this.half));
     if (id === "boat") {
       if (this.boat.running) return null;
-      this.boat.x = Math.max(0, Math.min(lab.length, (xm - this.x0) / this.ppm)); this.boat.y = f; return "boat";
+      // The finger holds the middle of the hull; the whole hull stays in the water.
+      const lo = lab.heading > 0 ? this.hull : 0, hi = lab.heading > 0 ? this.span : this.span - this.hull;
+      const bow = (xm - this.x0) / this.ppm + (lab.heading * this.hull) / 2;
+      this.boat.x = Math.max(lo, Math.min(hi, bow)); this.boat.y = f; return "boat";
     }
     const b = this.beads[+id.slice(4)];
     b.x = Math.max(0, Math.min(this.span, (xm - this.x0) / this.ppm)); b.y = f;
@@ -204,11 +229,14 @@ const river = {
 
 const truck = {
   W: 1600, H: 900, ppm: 1600 / C.truck.viewWidth, groundY: 700, bedBack: -1.55,
-  t: 0, marker: 9.5, released: false, trail: [], done: 0, lead: 1.0,
+  // The truck starts fully in frame (its middle at startX, the back of the 5.5 m sprite 0.35 m in) and
+  // reaches the flag after lead s. Its arrows ride in the sky band (y 40 to 140), above the trees.
+  t: 0, marker: 9.5, released: false, trail: [], done: 0, startHome: 3.1, startX: 3.1, arrowY: 70,
+  get lead() { const v = this.vt(); return v > 0 ? Math.max(0, this.marker - Math.min(this.startX, this.marker)) / v : 1.0; },
   anchorRange: { truck: [0.65, 0.8], ball: [0.3, 0.7] },
   vt() { return P.toMs(params.truck.truckSpeedMph); },
   vball() { return P.add(params.truck.throwDir * P.toMs(params.truck.throwSpeedMph), this.vt()); },
-  reset() { this.t = 0; this.released = false; this.trail = []; this.done = 0; },
+  reset() { this.t = 0; this.released = false; this.trail = []; this.done = 0; this.startX = this.startHome; },
   truckX() { return this.marker - this.vt() * this.lead + this.vt() * this.t; },
   ball() {
     const h = C.truck.releaseHeight;
@@ -264,9 +292,9 @@ const truck = {
     const r = P.readout("truck", this.readParams(), f);
     const scale = 14;
     const objMedium = this.released && !b.landed ? r.objMedium : 0;
-    if (this.released && b.landed) arrow(this.arrows, "rv-a-sum", bx, bx - r.viewerGround * scale, by - 110, 15);
-    else vectorStack(this.arrows, bx, by - 150, objMedium, r.mediumViewer, scale);
-    arrow(this.arrows, "rv-a-med", tx, tx + r.mediumViewer * scale, this.groundY - 280, 10);
+    if (this.released && b.landed) arrow(this.arrows, "rv-a-sum", bx, bx - r.viewerGround * scale, this.arrowY + 74, 15);
+    else vectorStack(this.arrows, bx, this.arrowY + 40, objMedium, r.mediumViewer, scale);
+    arrow(this.arrows, "rv-a-med", tx, tx + r.mediumViewer * scale, this.arrowY, 10);
     this.label.textContent = !this.released ? "Truck coming up to the flag" : b.landed ? "Ball landed" : "Ball in the air";
   },
   readParams() { return { ...params.truck, released: true }; },
@@ -274,16 +302,20 @@ const truck = {
   action() { this.reset(); setPlaying(true); },
   drag(id, xm) {
     const x = xm / this.ppm;
-    if (id === "marker") { this.marker = Math.max(2, Math.min(C.truck.viewWidth - 2, x)); this.reset(); return null; }
-    if (id === "truck" && !this.released) { this.marker = x + this.vt() * (this.lead - this.t); return "truck"; }
+    if (id === "marker") { this.marker = Math.max(this.startHome, Math.min(C.truck.viewWidth - 2, x)); this.reset(); return null; }
+    // Dragging the truck before the throw carries the flag (the release point) with it.
+    if (id === "truck" && !this.released) { const d = x - this.truckX(); this.startX += d; this.marker += d; return "truck"; }
     return null;
   },
   slowNote: () => `Slow motion x${C.truck.timeScale}`,
 };
 
 const walkway = {
-  // Walkway base on y 760; tile 277 x 195, belt surface 122.5 px below its top (SPEC.md).
-  W: 1600, H: 900, ppm: 1600 / C.walkway.viewWidth, beltY: 760 - 195 + 122.5,
+  // Walkway base on y 760 (SPEC.md). The tile is shown 1.8x SPEC's size (499 x 351) so the handrail is about
+  // 1 m above the belt next to the 1.75 m walker; the belt surface is 220.5 px below the tile top.
+  W: 1600, H: 900, ppm: 1600 / C.walkway.viewWidth, baseY: 760,
+  get tileTop() { return this.baseY - shown("walkway").h; },
+  get beltY() { return this.tileTop + shown("walkway").ay; },
   t: 0, w0: 1.5, m0: 4,
   reset() { this.t = 0; this.w0 = 1.5; this.m0 = 4; },
   vw() { return P.add(params.walkway.walkDir * params.walkway.walkSpeed, params.walkway.beltSpeed); },
@@ -292,11 +324,12 @@ const walkway = {
   build() {
     const defs = el("defs", {}, svg);
     this.bg = backdrop(defs, svg, "bgWalk", "bg-walkway");
-    this.tiles = tilePattern(defs, "walkTile", "walkway", 760 - 195);
-    this.treads = el("pattern", { id: "treads", patternUnits: "userSpaceOnUse", width: 40, height: 14, y: this.beltY - 2 }, defs);
-    el("rect", { x: 4, y: 0, width: 6, height: 14, fill: "var(--rv-tread)" }, this.treads);
-    el("rect", { x: 0, y: 760 - 195, width: this.W, height: 195, fill: "url(#walkTile)" }, svg);
-    el("rect", { x: 0, y: this.beltY - 2, width: this.W, height: 14, fill: "url(#treads)" }, svg);
+    const tile = shown("walkway");
+    this.tiles = tilePattern(defs, "walkTile", "walkway", this.tileTop);
+    this.treads = el("pattern", { id: "treads", patternUnits: "userSpaceOnUse", width: 48, height: 24, y: this.beltY - 2 }, defs);
+    el("rect", { x: 6, y: 0, width: 8, height: 24, fill: "var(--rv-tread)" }, this.treads);
+    el("rect", { x: 0, y: this.tileTop, width: this.W, height: tile.h, fill: "url(#walkTile)" }, svg);
+    el("rect", { x: 0, y: this.beltY - 2, width: this.W, height: 24, fill: "url(#treads)" }, svg);
     this.markG = el("g", { class: "rv-drag" }, svg);
     this.markG.dataset.drag = "mark";
     el("path", { d: "M-18 0 L0 -34 L18 0 Z", fill: "var(--rv-medium)", stroke: "var(--rv-ink-svg)", "stroke-width": 3 }, this.markG);
@@ -319,7 +352,7 @@ const walkway = {
     place(this.markG, mx, this.beltY);
     this.arrows.replaceChildren();
     const r = P.readout("walkway", params.walkway, f);
-    vectorStack(this.arrows, wx, 230, r.objMedium, r.mediumViewer, 150);
+    vectorStack(this.arrows, wx, 190, r.objMedium, r.mediumViewer, 150);
     arrow(this.arrows, "rv-a-med", mx, mx + r.mediumViewer * 150, 830, 10);
   },
   readParams: () => params.walkway,
@@ -335,9 +368,12 @@ const walkway = {
 };
 
 const kart = {
-  // Asphalt y 588 to 768: rival lane wheels on y 655, player (boost) lane wheels on y 750.
-  W: 1600, H: 900, ppm: 1600 / C.kart.viewWidth, laneY: 750, rivalY: 655,
+  // Asphalt y 591 to 755 between the curbs: rival lane wheels on y 655, player (boost) lane wheels on y 725.
+  // The player's arrows sit below the lower curb (y 777), clear of the boost chevrons.
+  W: 1600, H: 900, ppm: 1600 / C.kart.viewWidth, laneY: 725, rivalY: 655, arrowY: 812,
   t: 0, k0: 10, r0: 18,
+  // Start: player kart at 10 m, rival at 18 m. With the viewer in the middle of the 40 m view (20 m),
+  // the other kart sits 8 m (320 px) to one side, fully inside the view in every frame.
   reset() { this.t = 0; this.k0 = 10; this.r0 = 18; },
   vk() { return P.add(P.toMs(params.kart.kartSpeedMph), params.kart.boostOn ? P.toMs(params.kart.boostSpeedMph) : 0); },
   vr() { return P.toMs(params.kart.rivalSpeedMph); },
@@ -356,7 +392,7 @@ const kart = {
     this.kartG = sprite(svg, "kart", "rv-drag");
     this.kartG.dataset.drag = "kart";
     this.arrows = el("g", {}, svg);
-    this.laneText = el("text", { class: "rv-svg-small rv-svg-chip", x: 30, y: 870 }, svg);
+    this.laneText = el("text", { class: "rv-svg-small rv-svg-chip", x: 30, y: 70 }, svg);
   },
   step(dt) { this.t += dt; },
   viewerX(f) { return f === "kart" ? this.kartX() : f === "rival" ? this.rivalX() : 0; },
@@ -373,12 +409,13 @@ const kart = {
     this.arrows.replaceChildren();
     const r = P.readout("kart", this.readParams(), f);
     const scale = 8;
-    vectorStack(this.arrows, kx, 790, r.objMedium, r.mediumViewer, scale);
+    vectorStack(this.arrows, kx, this.arrowY, r.objMedium, r.mediumViewer, scale);
     arrow(this.arrows, "rv-a-sum", rx, rx + r.viewers.rival * scale, this.rivalY - 190, 12);
   },
   readParams: () => params.kart,
   actionLabel: () => "Start over",
-  action() { this.reset(); setPlaying(true); },
+  // Start over puts both karts back where Reset does, with the viewer back in the middle of the view.
+  action() { this.reset(); setFrame(st.frame.kart, { instant: true, anchor: startAnchor("kart", st.frame.kart) }); setPlaying(true); },
   drag(id, xm) {
     const x = xm / this.ppm;
     if (id === "kart") { this.k0 = x - this.vk() * this.t; return "kart"; }
@@ -451,12 +488,21 @@ function renderReadout() {
   $("readout").innerHTML = h;
 }
 
+// Where a moving viewer sits on screen at the start (m from the left edge): the middle of the view
+// (truck a bit right). The start positions in each scene keep every object inside the view from there.
+function startAnchor(name, f) {
+  const s = SCENES[name];
+  if (f === GROUND_FRAME[name]) return 0;
+  return (s.W / s.ppm) * (name === "truck" ? 0.7 : 0.5) - (name === "river" ? river.x0 / river.ppm : 0);
+}
+
 // ---------- scene switch ----------
 function setScene(name, frame) {
   st.scene = name;
   document.querySelectorAll(".rv-tab").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.scene === name)));
   document.querySelectorAll("[data-panel]").forEach((p) => { p.hidden = p.dataset.panel !== name || (p.id === "results" && !lab.complete); });
   $("stopwatch").hidden = name !== "river";
+  $("stage").dataset.view = name;
   const s = cur();
   svg.replaceChildren();
   svg.setAttribute("viewBox", `0 0 ${s.W} ${s.H}`);
@@ -466,11 +512,31 @@ function setScene(name, frame) {
   st.shift = 0;
   const f = frame && P.FRAMES[name].includes(frame) ? frame : st.frame[name];
   st.anchor = 0;
-  const mid = name === "truck" ? 0.7 : 0.5;
-  setFrame(f, { instant: true, anchor: f === GROUND_FRAME[name] ? 0 : (s.W / s.ppm) * mid - (name === "river" ? river.x0 / river.ppm : 0) });
+  setFrame(f, { instant: true, anchor: startAnchor(name, f) });
   $("slowNote").textContent = s.slowNote();
   syncAction();
   syncQuery();
+  requestAnimationFrame(() => stageFollow(true));
+}
+// The River status chip stays at the left edge of what is visible while the stage scrolls sideways.
+function pinRiverLabel() {
+  if (st.scene !== "river" || !river.label) return;
+  const sc = $("stageScroll"), k = svg.getBoundingClientRect().width / river.W;
+  river.label.setAttribute("x", (30 + (k ? sc.scrollLeft / k : 0)).toFixed(1));
+}
+$("stageScroll").addEventListener("scroll", pinRiverLabel, { passive: true });
+addEventListener("resize", pinRiverLabel);
+// When the River stage is wider than the phone, keep the boat in view: center it on a scene switch,
+// Reset or heading change, and follow it while it runs. Otherwise the scroller is the user's.
+function stageFollow(force) {
+  const sc = $("stageScroll");
+  if (st.scene !== "river" || sc.scrollWidth <= sc.clientWidth + 1) return;
+  const k = svg.getBoundingClientRect().width / river.W;
+  const x = (river.sx(river.boatMid()) - st.shift * river.ppm) * k;
+  const target = Math.max(0, Math.min(sc.scrollWidth - sc.clientWidth, x - sc.clientWidth / 2));
+  if (force || reduced()) { sc.scrollLeft = target; return; }
+  const rel = x - sc.scrollLeft;
+  if (rel < sc.clientWidth * 0.2 || rel > sc.clientWidth * 0.8 || Math.abs(target - sc.scrollLeft) > 1) sc.scrollLeft += (target - sc.scrollLeft) * 0.2;
 }
 function syncAction() { const t = cur().actionLabel(), b = $("actionBtn"); if (b.textContent !== t) b.textContent = t; }
 function syncQuery() {
@@ -548,6 +614,8 @@ function syncValve() {
   valve.setAttribute("aria-valuenow", String(Math.round(lab.valveAngle)));
   valve.setAttribute("aria-valuetext", river.flow > 0 ? `On, ${river.flow.toFixed(2)} m/s` : "Off");
   $("valveImg").style.transform = `rotate(${lab.valveAngle}deg)`;
+  valve.dataset.state = river.flow > 0 ? "on" : "off";
+  $("valveTag").textContent = river.flow > 0 ? "On" : "Off";
   $("valveLabel").textContent = locked ? "Valve: off (Step 3 turns the water on)" : river.flow > 0 ? `Valve: on, water ${river.flow.toFixed(2)} m/s` : "Valve: off";
   $("swCond").textContent = condition() ? "Records: " + COND_LABEL[condition()] : "Not recorded at this flow";
 }
@@ -645,8 +713,9 @@ function wireLab() {
     if (river.boat.running) return;
     lab.heading = +b.dataset.heading;
     document.querySelectorAll("[data-heading]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    river.boat.x = lab.heading > 0 ? 0 : lab.length;
+    river.resetBoat(); river.layoutChannel();
     syncValve(); renderReadout();
+    requestAnimationFrame(() => stageFollow(true));
   }));
   document.querySelectorAll("#steps .rv-next").forEach((b) => b.addEventListener("click", () => goStep(+b.dataset.next)));
   document.querySelectorAll("#steps .rv-step-h").forEach((h) => {
@@ -677,28 +746,63 @@ function wireLab() {
 }
 
 // ---------- stopwatch ----------
-const sw = { running: false, start: 0, elapsed: 0, condition: null, invalid: false };
-function swNow() { return sw.running ? (performance.now() - sw.start) / 1000 : sw.elapsed; }
+// The stopwatch runs by hand, or by the gates: Run boat hands it to the scene clock, which starts it when
+// the bow crosses the start gate and stops it (recording the trial) when the bow crosses the finish gate.
+const sw = { running: false, auto: false, start: 0, elapsed: 0, condition: null, invalid: false };
+function swNow() {
+  if (sw.auto) { const b = river.boat; return b.t0 == null ? 0 : Math.max(0, b.clock - b.t0); }
+  return sw.running ? (performance.now() - sw.start) / 1000 : sw.elapsed;
+}
+// Docked beside the valve on wide screens, in the controls row under the stage on phones (max 860 px).
+const phoneMQ = matchMedia("(max-width: 860px)");
+function swDock() { return $(phoneMQ.matches ? "swDockPhone" : "swDock"); }
+function dockStopwatch() {
+  const box = $("stopwatch");
+  box.classList.remove("floating"); box.style.left = box.style.top = "";
+  $("swDock").style.minHeight = $("swDockPhone").style.minHeight = "";
+  if (box.parentElement !== swDock()) swDock().appendChild(box);
+}
+phoneMQ.addEventListener("change", () => { if (!$("stopwatch").classList.contains("floating")) dockStopwatch(); });
+function swButtons() { $("swStart").textContent = sw.running ? "Stop" : "Start"; $("swStart").disabled = sw.auto; $("swReset").disabled = sw.auto; }
+function gateStart() {
+  Object.assign(sw, { running: true, auto: true, elapsed: 0, condition: condition(), invalid: false });
+  swButtons();
+}
+function gateStop(T) {
+  if (!sw.auto) return;
+  Object.assign(sw, { running: false, auto: false, elapsed: T });
+  swButtons();
+  recordTrial(T);
+}
+function gateAbort() { if (!sw.auto) return; sw.elapsed = swNow(); sw.running = false; sw.auto = false; swButtons(); }
+function recordTrial(T) {
+  const k = condition();
+  if (k && k === sw.condition && !sw.invalid && T > 0.1) { lab.trials[k].push(+T.toFixed(2)); syncSteps(); }
+}
 function wireStopwatch() {
   const box = $("stopwatch");
   $("swImg").src = artUrl("stopwatch", theme());
   $("swStart").addEventListener("click", () => {
+    if (sw.auto) return;
     if (!sw.running) {
-      sw.running = true; sw.start = performance.now(); sw.elapsed = 0;
-      sw.condition = condition(); sw.invalid = false; $("swStart").textContent = "Stop"; return;
+      Object.assign(sw, { running: true, start: performance.now(), elapsed: 0, condition: condition(), invalid: false });
+      swButtons(); return;
     }
-    sw.elapsed = swNow(); sw.running = false; $("swStart").textContent = "Start";
-    const k = condition();
-    if (k && k === sw.condition && !sw.invalid && sw.elapsed > 0.1) {
-      lab.trials[k].push(+sw.elapsed.toFixed(2)); syncSteps();
-    }
+    sw.elapsed = swNow(); sw.running = false; swButtons();
+    recordTrial(sw.elapsed);
   });
-  $("swReset").addEventListener("click", () => { sw.running = false; sw.elapsed = 0; $("swStart").textContent = "Start"; });
+  $("swReset").addEventListener("click", () => { if (sw.auto) return; sw.running = false; sw.elapsed = 0; swButtons(); });
   let d = null;
   box.addEventListener("pointerdown", (e) => {
     if (e.target.closest("button")) return;
     e.preventDefault();
     const r = box.getBoundingClientRect();
+    if (!box.classList.contains("floating")) {
+      // Leave its docked space behind so nothing in the panel jumps, then float it where it is.
+      box.parentElement.style.minHeight = r.height + "px";
+      box.classList.add("floating");
+      Object.assign(box.style, { left: r.left + "px", top: r.top + "px" });
+    }
     d = { dx: e.clientX - r.left, dy: e.clientY - r.top, pid: e.pointerId };
     box.classList.add("dragging");
     box.setPointerCapture(e.pointerId);
@@ -708,9 +812,15 @@ function wireStopwatch() {
     const w = box.offsetWidth, h = box.offsetHeight;
     const x = Math.max(0, Math.min(window.innerWidth - w, e.clientX - d.dx));
     const y = Math.max(0, Math.min(window.innerHeight - h, e.clientY - d.dy));
-    Object.assign(box.style, { left: x + "px", top: y + "px", right: "auto", bottom: "auto" });
+    Object.assign(box.style, { left: x + "px", top: y + "px" });
   });
   const end = () => { d = null; box.classList.remove("dragging"); };
+  window.addEventListener("resize", () => {
+    if (!box.classList.contains("floating")) return;
+    const x = Math.max(0, Math.min(window.innerWidth - box.offsetWidth, box.offsetLeft));
+    const y = Math.max(0, Math.min(window.innerHeight - box.offsetHeight, box.offsetTop));
+    Object.assign(box.style, { left: x + "px", top: y + "px" });
+  });
   box.addEventListener("pointerup", end);
   box.addEventListener("pointercancel", end);
 }
@@ -779,10 +889,12 @@ function frame(now) {
   st.shift = viewerShift() + st.glide;
   s.render(st.shift);
   if (st.scene === "river") {
+    if (sw.auto && !river.boat.running) gateAbort();
     if (sw.running && condition() !== sw.condition) sw.invalid = true;
     const t = swNow().toFixed(2) + " s";
     if ($("swTime").textContent !== t) $("swTime").textContent = t;
   }
+  if (st.scene === "river" && river.boat.running) stageFollow(false);
   syncAction();
   requestAnimationFrame(frame);
 }
@@ -800,12 +912,14 @@ $("resetBtn").addEventListener("click", () => {
   const s = cur();
   s.reset();
   if (s === river) river.layoutChannel();
-  setFrame(st.frame[st.scene], { instant: true });
+  setFrame(st.frame[st.scene], { instant: true, anchor: s === kart ? startAnchor("kart", st.frame.kart) : undefined });
+  requestAnimationFrame(() => stageFollow(true));
 });
 
 applyStrings();
 wireLab();
 wireStopwatch();
+dockStopwatch();
 wireSandboxes();
 syncTheme();
 const q = new URLSearchParams(location.search);
@@ -815,5 +929,5 @@ setPlaying(!reduced());
 setScene(startScene, q.get("frame"));
 syncSteps();
 // test hook: read-only snapshot for the browser test
-window.__rv = { st, lab, params, river, truck, walkway, kart, P };
+window.__rv = { st, lab, params, river, truck, walkway, kart, P, sw, dockStopwatch };
 requestAnimationFrame(frame);

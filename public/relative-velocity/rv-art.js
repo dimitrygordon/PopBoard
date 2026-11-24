@@ -10,7 +10,7 @@ export const ART = {
   "bg-river":    { png: [1600, 900], themed: true, src: "bg_lab_{theme}.png", note: "lab bench, empty tabletop (y 204 to 795)" },
   channel:       { png: [2400, 355], show: [1200, 178], anchor: [0, 0], src: "channel_topdown.png", note: "water interior x 46 to 2353, y 47 to 306; placed at x 200, y 392" },
   ruler:         { png: [2400, 110], show: [1200, 55], anchor: [0, 0], src: "channel_ruler_0-5m.png", note: "0 m at x 46, 5 m at x 2353; placed at x 200, y 584" },
-  boat:          { png: [480, 158], show: [200, 66], anchor: [240, 79], src: "boat_topdown_right.png", note: "bow right" },
+  boat:          { png: [480, 158], show: [200, 66], anchor: [473, 79], stern: 6, src: "boat_topdown_right.png", note: "bow right; anchored at the bow tip (473, 79), stern at x 6" },
   "bead-yellow": { png: [80, 80], show: [40, 40], anchor: [40, 40], src: "bead_yellow.png", note: "the leaf" },
   "bead-green":  { png: [80, 80], show: [40, 40], anchor: [40, 40], src: "bead_green.png" },
   "bead-violet": { png: [80, 80], show: [40, 40], anchor: [40, 40], src: "bead_violet.png" },
@@ -24,10 +24,11 @@ export const ART = {
   basketball:    { png: [160, 158], show: [56, 55], anchor: [80, 79], src: "basketball.png" },
   // Airport walkway
   "bg-walkway":  { png: [1600, 900], themed: true, src: "bg_airport_{theme}.png", note: "walkway base on y 760" },
-  walkway:       { png: [554, 390], show: [277, 195], anchor: [0, 245], src: "walkway_tile.png", note: "tiles sideways, belt surface y 245" },
+  // Shown 1.8x SPEC's suggestion so the handrail (PNG y 10 to 245) is about 1 m against the 1.75 m walker.
+  walkway:       { png: [554, 390], show: [499, 351], anchor: [0, 245], src: "walkway_tile.png", note: "tiles sideways, belt surface y 245, rail top y 10; shown 1.8x SPEC so the rail is about 1 m" },
   walker:        { png: [400, 741], show: [200, 371], anchor: [200, 730], src: "walker_side_right.png", note: "feet at (200, 730)" },
   // Kart boost road
-  "bg-kart":     { png: [1600, 900], themed: true, src: "bg_kart_{theme}.png", note: "asphalt y 588 to 768, wheels on y 720" },
+  "bg-kart":     { png: [1600, 900], themed: true, tiles: true, src: "bg_kart_{theme}.png", note: "Leo's seamless redraw: tiles edge to edge; asphalt y 591 to 755 between the curbs, wheels on about y 720" },
   kart:          { png: [800, 420], show: [300, 158], anchor: [400, 410], src: "kart_blue_side_right.png", note: "wheels y 410" },
   "kart-rival":  { png: [800, 420], show: [300, 158], anchor: [400, 410], src: "kart_rival_red_side_right.png", note: "wheels y 410" },
   "boost-pad":   { png: [640, 285], show: [240, 36], anchor: [320, 142], src: "boost_pad_right.png", note: "squashed to lie on the road" },

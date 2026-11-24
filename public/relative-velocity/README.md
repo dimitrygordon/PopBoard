@@ -19,7 +19,13 @@ The Explore group holds three free sandboxes: Truck and basketball, Airport walk
 Leo's finished set (SPEC.md in `/workspace/relvel/art/`) ships as webp in `art/`, converted from the PNGs
 with no visible loss (16.3 MB of PNG down to about 1.6 MB). Every scene is a 1600 x 900 stage that matches the
 backdrops. Sprites are shared by both themes; only backdrops (and the Try it card) have -light and -dark files.
-The channel is always shown 1200 px wide (5 m); the chosen length L is marked with start and finish gates.
+The channel is always shown 1200 px wide (5 m); the chosen length L is marked with start and finish gates,
+centered on the channel. The boat is anchored at its bow tip: a run starts with the bow on the start gate and
+the page times it from the bow crossing the start gate to the bow crossing the finish gate. The whole hull
+(about 0.84 m) fits behind the start gate either way, which caps L at 3 m. On phones the River stage is at
+least 700 px wide (ruler at least 24 px tall) and scrolls sideways, following the boat while it runs.
+The kart backdrop is Leo's seamless redraw and tiles as is; the other backdrops repeat mirrored.
+The walkway tile is shown 1.8x SPEC's suggested size so the handrail is about 1 m against the walker.
 
 To replace a file: export it at the same pixel size and save it over `art/<name>.webp`
 (backdrops: `art/<name>-light.webp` and `art/<name>-dark.webp`). Geometry lives in `rv-art.js`.
@@ -29,7 +35,7 @@ To replace a file: export it at the same pixel size and save it over `art/<name>
 | `bg-river-light.webp`<br>`bg-river-dark.webp` | `bg_lab_{theme}.png` | 1600 x 900 | 1600 x 900 | n/a | lab bench, empty tabletop (y 204 to 795) |
 | `channel.webp` | `channel_topdown.png` | 2400 x 355 | 1200 x 178 | 0, 0 | water interior x 46 to 2353, y 47 to 306; placed at x 200, y 392 |
 | `ruler.webp` | `channel_ruler_0-5m.png` | 2400 x 110 | 1200 x 55 | 0, 0 | 0 m at x 46, 5 m at x 2353; placed at x 200, y 584 |
-| `boat.webp` | `boat_topdown_right.png` | 480 x 158 | 200 x 66 | 240, 79 | bow right |
+| `boat.webp` | `boat_topdown_right.png` | 480 x 158 | 200 x 66 | 473, 79 | bow right; anchored at the bow tip (473, 79), stern at x 6 |
 | `bead-yellow.webp` | `bead_yellow.png` | 80 x 80 | 40 x 40 | 40, 40 | the leaf |
 | `bead-green.webp` | `bead_green.png` | 80 x 80 | 40 x 40 | 40, 40 |  |
 | `bead-violet.webp` | `bead_violet.png` | 80 x 80 | 40 x 40 | 40, 40 |  |
@@ -41,9 +47,9 @@ To replace a file: export it at the same pixel size and save it over `art/<name>
 | `truck.webp` | `truck_side_right.png` | 1100 x 447 | 550 x 224 | 550, 436 | wheels y 436, bed rail top y 171, bed x 10 to 470 |
 | `basketball.webp` | `basketball.png` | 160 x 158 | 56 x 55 | 80, 79 |  |
 | `bg-walkway-light.webp`<br>`bg-walkway-dark.webp` | `bg_airport_{theme}.png` | 1600 x 900 | 1600 x 900 | n/a | walkway base on y 760 |
-| `walkway.webp` | `walkway_tile.png` | 554 x 390 | 277 x 195 | 0, 245 | tiles sideways, belt surface y 245 |
+| `walkway.webp` | `walkway_tile.png` | 554 x 390 | 499 x 351 | 0, 245 | tiles sideways, belt surface y 245, rail top y 10; shown 1.8x SPEC so the rail is about 1 m |
 | `walker.webp` | `walker_side_right.png` | 400 x 741 | 200 x 371 | 200, 730 | feet at (200, 730) |
-| `bg-kart-light.webp`<br>`bg-kart-dark.webp` | `bg_kart_{theme}.png` | 1600 x 900 | 1600 x 900 | n/a | asphalt y 588 to 768, wheels on y 720 |
+| `bg-kart-light.webp`<br>`bg-kart-dark.webp` | `bg_kart_{theme}.png` | 1600 x 900 | 1600 x 900 | n/a | Leo's seamless redraw: tiles edge to edge; asphalt y 591 to 755 between the curbs, wheels on about y 720 |
 | `kart.webp` | `kart_blue_side_right.png` | 800 x 420 | 300 x 158 | 400, 410 | wheels y 410 |
 | `kart-rival.webp` | `kart_rival_red_side_right.png` | 800 x 420 | 300 x 158 | 400, 410 | wheels y 410 |
 | `boost-pad.webp` | `boost_pad_right.png` | 640 x 285 | 240 x 36 | 320, 142 | squashed to lie on the road |

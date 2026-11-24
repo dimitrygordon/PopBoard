@@ -59,13 +59,19 @@
       <section class="rv-card tape rv-stagecard" aria-label="Scene">
         <div class="rv-framebar" id="frameBar" role="group" aria-label="Who is watching"></div>
         <div class="rv-stage" id="stage">
+          <div class="rv-stage-scroll" id="stageScroll">
           <svg id="sceneSvg" role="img" aria-label="Scene view" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
         </div>
         <div class="rv-playbar">
-          <button type="button" id="playBtn" aria-pressed="true">Pause</button>
-          <button type="button" id="actionBtn">Run boat</button>
-          <button type="button" id="resetBtn">Reset</button>
-          <span class="rv-slow" id="slowNote"></span>
+          <div class="rv-playbtns">
+            <button type="button" id="playBtn" aria-pressed="true">Pause</button>
+            <button type="button" id="actionBtn">Run boat</button>
+            <button type="button" id="resetBtn">Reset</button>
+            <span class="rv-slow" id="slowNote"></span>
+          </div>
+          <!-- On phones the stopwatch docks here, in the controls row (it moves beside the valve on wider screens). -->
+          <div class="rv-sw-dock rv-sw-dock-phone" id="swDockPhone"></div>
         </div>
       </section>
 
@@ -85,8 +91,23 @@
         <div class="rv-valve-row">
           <div class="rv-valve" id="valve" role="slider" tabindex="0" aria-label="Flow valve" aria-valuemin="0" aria-valuemax="270" aria-valuenow="0">
             <img id="valveImg" alt="" draggable="false" width="200" height="200">
+            <span class="rv-valve-tag" id="valveTag" aria-hidden="true">Off</span>
           </div>
           <p class="rv-valve-label" id="valveLabel"></p>
+          <!-- The stopwatch starts docked here, beside the valve and above the steps; drag it to float it. -->
+          <div class="rv-sw-dock" id="swDock">
+            <div class="rv-stopwatch" id="stopwatch" hidden aria-label="Stopwatch">
+              <div class="rv-sw-face">
+                <img class="rv-sw-img" id="swImg" alt="" draggable="false" width="240" height="334">
+                <p class="rv-sw-time" id="swTime" aria-live="off">0.00 s</p>
+              </div>
+              <div class="rv-sw-btns">
+                <button type="button" id="swStart">Start</button>
+                <button type="button" id="swReset">Reset</button>
+              </div>
+              <p class="rv-sw-cond" id="swCond"></p>
+            </div>
+          </div>
         </div>
         <ol class="rv-steps" id="steps">
           <li data-step="1"><p class="rv-step-h" data-str="lab.step1Title"></p><p class="rv-step-b" data-str="lab.step1Body"></p>
@@ -151,17 +172,6 @@
   </div>
 </main>
 
-<div class="rv-stopwatch" id="stopwatch" hidden aria-label="Stopwatch">
-  <div class="rv-sw-face">
-    <img class="rv-sw-img" id="swImg" alt="" draggable="false" width="240" height="334">
-    <p class="rv-sw-time" id="swTime" aria-live="off">0.00 s</p>
-  </div>
-  <div class="rv-sw-btns">
-    <button type="button" id="swStart">Start</button>
-    <button type="button" id="swReset">Reset</button>
-  </div>
-  <p class="rv-sw-cond" id="swCond"></p>
-</div>
 
 <script type="module" src="relative-velocity/rv-ui.js"></script>
 </body>

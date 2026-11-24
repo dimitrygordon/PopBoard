@@ -13,10 +13,11 @@ export const CONFIG = {
     flowRate: 0.20,           // m/s
     flowRateMax: 0.40,        // m/s, top of the valve dial after the lab (free run)
     flowRateStep: 0.01,       // m/s, valve dial detent in free run
-    // Channel length on the 0 to 5 m ruler.
+    // Timed length between the gates on the 0 to 5 m ruler. The gates sit centered on the channel and
+    // the whole boat (about 0.84 m) must fit behind the start gate either way, so the max is 3 m.
     lengthDefault: 2.0,       // m
     lengthMin: 1.0,           // m
-    lengthMax: 5.0,           // m
+    lengthMax: 3.0,           // m
     lengthStep: 0.5,          // m
     beadCount: 4,
     trialsPerCondition: 3,    // suggested timed trials per condition (still, downstream, upstream)
