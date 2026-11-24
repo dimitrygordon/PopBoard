@@ -20,7 +20,7 @@ Draw order: space tile, earth, trails, mountain, barrel (with flash), carriage, 
 
 | File | Role |
 | --- | --- |
-| `space_tile_{dark,light}.webp` | 2400 px seamless tile, shown at 1600 |
+| `space_tile_{dark,light}.webp` | 2400 px seamless tile, shown at 1600. Leo's lossy webp (about 235 KB dark, 153 KB light; about 45 dB vs his PNG masters) |
 | `earth_{dark,light}.webp` | Round Earth, Atlantic continents |
 | `mountain_{dark,light}.webp` | Rocky butte on the limb, not to scale |
 | `cannon_barrel_{dark,light}.webp` | Barrel, rotates about the pivot |

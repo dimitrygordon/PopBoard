@@ -177,6 +177,12 @@ def run_module(ctx, base, tag, touch):
     else:
         shot(page, f"{tag}-01-sandbox-dark.png")
         stage_shot(page, f"{tag}-stage-empty-dark.png")
+        inp.tap(page.locator("#themeBtn"))
+        check(js(page, "() => document.documentElement.dataset.theme") == "light", f"{tag} theme toggle goes light")
+        light_name = "iphone-390-stage-light.png" if tag == "iphone-390" else f"{tag}-stage-empty-light.png"
+        stage_shot(page, light_name)
+        inp.tap(page.locator("#themeBtn"))
+        check(js(page, "() => document.documentElement.dataset.theme") == "dark", f"{tag} theme toggle back to dark")
 
     # Real drag on the launch-speed slider (scroll it fully on-screen first; on a phone the stage is tall)
     slider = page.locator("#speed")
