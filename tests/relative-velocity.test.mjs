@@ -107,7 +107,13 @@ test("config holds Dimitry's defaults in one block", () => {
 
 test("art slots: Leo's set as webp, one file per object, light and dark backdrops", () => {
   for (const n of ["channel", "ruler", "boat", ...BEADS, "truck", "basketball", "walkway", "walker", "kart", "kart-rival", "boost-pad", "stopwatch", "valve-knob", "clipboard"]) assert.ok(ART[n], n);
-  for (const s of ["river", "truck", "walkway", "kart"]) assert.ok(ART["bg-" + s].themed, s);
+  for (const s of ["river", "truck", "walkway", "kart"]) assert.ok(ART["bg-" + s].themed && ART["bg-" + s].tiles, s + " is a themed, seamless tile");
+  assert.equal(ART["bg-river"].src, "bg_lab_{theme}.png", "the lab repeats bg_lab_*, never the with_channel files");
+  // backdrops repeat directly: one 1600 px image per pattern, no mirrored copy
+  const ui = read("relative-velocity/rv-ui.js");
+  const bd = ui.slice(ui.indexOf("function backdrop("), ui.indexOf("function tilePattern("));
+  assert.match(bd, /width: 1600, height: 900/);
+  assert.doesNotMatch(bd, /scale\(-1|3200|flip/);
   const shipped = readdirSync(new URL("relative-velocity/art/", pub));
   for (const f of artFiles()) assert.ok(shipped.includes(f + ".webp"), "missing " + f);
   for (const f of shipped) assert.ok(artFiles().includes(f.replace(/\.webp$/, "")) && f.endsWith(".webp"), "unused " + f);

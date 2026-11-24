@@ -72,16 +72,12 @@ function vectorStack(parent, x, y, vObjMedium, vMediumViewer, scale) {
   arrow(parent, "rv-a-sum", x, x + a + b, y + 34, 15);
 }
 function wrap(v, lo, period) { return ((((v - lo) % period) + period) % period) + lo; }
-// Leo's backdrops are 1600 x 900 scenes. One that tiles (ART tiles: true) repeats as is; the others repeat
-// mirrored so the edges always meet.
+// Leo's backdrops are seamless 1600 x 900 tiles: repeat one copy directly (never mirrored) as the camera moves.
 function backdrop(defs, svgRoot, id, name) {
-  const tiles = !!ART[name].tiles;
-  const p = el("pattern", { id, patternUnits: "userSpaceOnUse", width: tiles ? 1600 : 3200, height: 900 }, defs);
-  for (const flip of tiles ? [false] : [false, true]) {
-    const img = el("image", { href: artUrl(name, theme()), width: 1600, height: 900, preserveAspectRatio: "none" }, p);
-    if (flip) img.setAttribute("transform", "translate(3200,0) scale(-1,1)");
-    img.dataset.art = name;
-  }
+  if (!ART[name].tiles) throw new Error(name + " is not a seamless tile");
+  const p = el("pattern", { id, patternUnits: "userSpaceOnUse", width: 1600, height: 900, "data-backdrop": name }, defs);
+  const img = el("image", { href: artUrl(name, theme()), width: 1600, height: 900, preserveAspectRatio: "none" }, p);
+  img.dataset.art = name;
   el("rect", { width: 1600, height: 900, fill: `url(#${id})` }, svgRoot);
   return p;
 }
@@ -313,7 +309,8 @@ const truck = {
 const walkway = {
   // Walkway base on y 760 (SPEC.md). The tile is shown 1.8x SPEC's size (499 x 351) so the handrail is about
   // 1 m above the belt next to the 1.75 m walker; the belt surface is 220.5 px below the tile top.
-  W: 1600, H: 900, ppm: 1600 / C.walkway.viewWidth, baseY: 760,
+  // Leo's seamless airport: floor from about y 510, walkway base on y 760, so the base sits on the floor.
+  W: 1600, H: 900, ppm: 1600 / C.walkway.viewWidth, baseY: 760, floorY: 510,
   get tileTop() { return this.baseY - shown("walkway").h; },
   get beltY() { return this.tileTop + shown("walkway").ay; },
   t: 0, w0: 1.5, m0: 4,
@@ -530,6 +527,7 @@ addEventListener("resize", pinRiverLabel);
 // Reset or heading change, and follow it while it runs. Otherwise the scroller is the user's.
 function stageFollow(force) {
   const sc = $("stageScroll");
+  pinRiverLabel();
   if (st.scene !== "river" || sc.scrollWidth <= sc.clientWidth + 1) return;
   const k = svg.getBoundingClientRect().width / river.W;
   const x = (river.sx(river.boatMid()) - st.shift * river.ppm) * k;

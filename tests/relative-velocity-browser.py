@@ -217,6 +217,8 @@ def run_module(ctx, base, tag, touch):
     if tag != "desktop":
         sc = js(page, "() => { const s = document.getElementById('stageScroll'), b = document.querySelector('[data-drag=boat]').getBoundingClientRect(), r = s.getBoundingClientRect(); return [s.scrollWidth > s.clientWidth, b.left >= r.left - 1 && b.right <= r.right + 1]; }")
         check(sc[0] and sc[1], f"{tag} the channel scrolls sideways and starts with the boat in view {sc}")
+        lb = js(page, "() => { const s = document.getElementById('stageScroll').getBoundingClientRect(), l = __rv.river.label.getBoundingClientRect(); return [l.left >= s.left - 1 && l.right <= s.right + 1, l.width > 20]; }")
+        check(lb[0] and lb[1], f"{tag} the River status label stays in view while the channel scrolls {lb}")
     shot(page, f"{tag}-01-river-lab.png")
 
     # draggables: bead (leaf) and boat
@@ -330,6 +332,8 @@ def run_module(ctx, base, tag, touch):
     time.sleep(0.9)
     xs2 = js(page, "() => [...document.querySelectorAll('#sceneSvg .rv-trail')].map(c => +c.getAttribute('cx'))")
     check(len(xs2) > 5 and max(xs2) - min(xs2) > 20, f"{tag} truck frame: same trail flies backward (spread {max(xs2) - min(xs2) if xs2 else -1:.0f} px)")
+    n, bad = js(page, NO_MIRROR)
+    check(n == 1 and not bad, f"{tag} truck frame (moving camera): backdrop repeats directly, no mirror ({n}, {bad})")
     t1 = screen_x(page, "[data-drag=truck]"); time.sleep(0.5); t2 = screen_x(page, "[data-drag=truck]")
     check(abs(t2 - t1) < 1.5, f"{tag} truck frame: truck at rest on screen ({t1:.1f} -> {t2:.1f})")
     shot(page, f"{tag}-04-truck-frame.png")
@@ -341,6 +345,8 @@ def run_module(ctx, base, tag, touch):
     w1 = screen_x(page, "[data-drag=walker]"); time.sleep(0.5); w2 = screen_x(page, "[data-drag=walker]")
     check(abs(w2 - w1) < 1.5, f"{tag} walkway, Walker frame: walker at rest ({w1:.1f} -> {w2:.1f})")
     rail = js(page, "() => { const t = document.querySelector('#walkTile image').getBBox(), w = document.querySelector('[data-drag=walker] image').getBBox(); return [(245 - 10) * t.height / 390, w.height * 720 / 741]; }")
+    fl = js(page, "() => [__rv.walkway.baseY, __rv.walkway.floorY, __rv.walkway.tileTop, document.querySelector('#walkTile').getAttribute('y')]")
+    check(fl[0] == 760 and fl[0] > fl[1] and abs(float(fl[3]) - fl[2]) < 0.01, f"{tag} walkway base on y 760, on the airport floor (from y 510), tile at y {fl[2]:.1f}")
     check(0.95 < rail[0] / rail[1] * 1.75 < 1.1, f"{tag} handrail is about 1 m above the belt: {rail[0]:.0f} px against a {rail[1]:.0f} px (1.75 m) walker = {rail[0] / rail[1] * 1.75:.2f} m")
     inp.tap(frame_btn(page, "Floor"))
     inp.tap(page.locator("[data-walk='-1']"))
@@ -397,11 +403,54 @@ def run_module(ctx, base, tag, touch):
                 inp.tap(page.locator("#playBtn"))
             page.locator("#sceneSvg").evaluate("e => e.scrollIntoView({ block: 'center' })")
             page.wait_for_function("() => [...document.querySelectorAll('#sceneSvg image')].every(i => i.getAttribute('href').endsWith('.webp'))")
+            n, bad = js(page, NO_MIRROR)
+            check(n == 1 and not bad, f"{tag} {scene} {'dark' if dark else 'light'}: one backdrop, repeated directly, no mirrored copy ({n}, {bad})")
             time.sleep(0.2)
             shot(page, f"{tag}-art-{scene}-{'dark' if dark else 'light'}.png")
         no_overflow(page, tag, "art review " + ("dark" if dark else "light"))
     errors_ok(page, tag, "module")
     page.close()
+
+
+# Seams: every backdrop is repeated directly (one image per 1600 px pattern, nothing mirrored), and each
+# served webp wraps: in every one of 30 horizontal bands the step from its right edge to its left edge is no
+# bigger than the 99.5th percentile of the image's own column-to-column steps in that band. Leo's old
+# non-tiling backdrops score 2 to 9 on this ratio; the seamless set scores under 1.5.
+SEAM_MAX = 1.6
+NO_MIRROR = """() => {
+  const pats = [...document.querySelectorAll('#sceneSvg pattern[data-backdrop]')];
+  const bad = [];
+  for (const p of pats) {
+    const imgs = p.querySelectorAll('image');
+    if (p.getAttribute('width') !== '1600' || imgs.length !== 1) bad.push(p.id + ' width ' + p.getAttribute('width') + ' images ' + imgs.length);
+    for (const i of imgs) if (i.getAttribute('transform')) bad.push(p.id + ' transform ' + i.getAttribute('transform'));
+  }
+  for (const i of document.querySelectorAll('#sceneSvg image[data-art^="bg-"]')) if (!i.closest('pattern[data-backdrop]') || (i.getAttribute('transform') || '').includes('-1')) bad.push('loose or flipped ' + i.dataset.art);
+  return [pats.length, bad];
+}"""
+
+
+def seam_ratio(data):
+    import io
+    import numpy as np
+    from PIL import Image
+    b = np.asarray(Image.open(io.BytesIO(data)).convert("RGB")).astype(float)
+    worst = 0.0
+    for i in range(30):
+        s = b[i * b.shape[0] // 30:(i + 1) * b.shape[0] // 30]
+        steps = np.abs(s[:, 1:] - s[:, :-1]).mean(axis=(0, 2))
+        worst = max(worst, float(np.abs(s[:, 0] - s[:, -1]).mean() / np.percentile(steps, 99.5)))
+    return worst
+
+
+def run_seams(base):
+    import urllib.request
+    for scene in ("river", "truck", "walkway", "kart"):
+        for theme in ("light", "dark"):
+            name = f"relative-velocity/art/bg-{scene}-{theme}.webp"
+            data = urllib.request.urlopen(f"{base}/{name}?seam=1").read()
+            r = seam_ratio(data)
+            check(r <= SEAM_MAX, f"seam: {name} wraps left to right with no visible step (ratio {r:.2f}, limit {SEAM_MAX})")
 
 
 def run_links(ctx, base, tag, touch):
@@ -461,6 +510,7 @@ def main():
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(channel="chrome", headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"])
+            run_seams(base)
             for tag, opts in DEVICES:
                 ctx = browser.new_context(**opts)
                 run_module(ctx, base, tag, opts["has_touch"])
