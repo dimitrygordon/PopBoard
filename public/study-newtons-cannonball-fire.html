@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#141311">
+<title>Newton's Cannonball Fire // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else dark (blackboard).
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.newtons-cannonball-fire.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = "dark";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="stylesheet" href="newtons-cannonball-fire/ncf.css">
+</head>
+<body class="ncf">
+<h1 class="sr-only">Newton's Cannonball Fire</h1>
+<p class="sr-only">Fire a cannon from a tall mountain on a round Earth. Faster shots land farther away until one goes into orbit. Then derive orbital speed and period, and work practice problems step by step.</p>
+
+<header class="hud">
+  <button id="studyBackBtn" class="study-back-btn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="back-label">Back</span>
+  </button>
+  <p class="title" id="pageTitle">Newton's Cannonball Fire</p>
+  <button id="themeBtn" class="theme-btn" type="button" aria-pressed="true" aria-label="Switch to light mode">Light</button>
+</header>
+
+<main class="ncf-shell">
+  <p class="ncf-intro" id="intro"></p>
+  <p class="ncf-marks"><span id="socratesMark"></span> <span id="teslaMark"></span></p>
+
+  <nav class="ncf-nav" aria-label="Sections">
+    <a href="#sandbox">Sandbox</a>
+    <a href="#derive">Derive it</a>
+    <a href="#practice">Practice</a>
+  </nav>
+
+  <section class="ncf-card tape" id="sandbox" aria-labelledby="sandboxTitle">
+    <h2 class="ncf-h" id="sandboxTitle"></h2>
+    <div class="ncf-sandbox">
+      <div>
+        <div class="ncf-stage-wrap">
+          <canvas id="stage" class="ncf-stage" width="900" height="900" role="img" aria-label="Round Earth with a mountain cannon and colored shot trails"></canvas>
+        </div>
+        <p class="ncf-scale" id="scaleNote"></p>
+      </div>
+      <div class="ncf-controls">
+        <div class="ncf-presets" id="presets" role="group" aria-label="Preset shots"></div>
+        <label class="ncf-slider">
+          <span>Launch speed <output id="speedVal" for="speed">0 km/s</output></span>
+          <input id="speed" type="range" min="0" max="16000" step="10" value="0">
+        </label>
+        <label class="ncf-slider">
+          <span>Mountain height <output id="heightVal" for="height">150 km</output></span>
+          <input id="height" type="range" min="8000" max="1000000" step="10000" value="150000">
+        </label>
+        <div class="ncf-playbar">
+          <button type="button" class="primary" id="fireBtn">Fire</button>
+          <button type="button" id="clearBtn">Clear</button>
+        </div>
+        <div class="ncf-readouts" id="readouts">
+          <p><span class="k">v</span> <span id="readV">-</span></p>
+          <p><span class="k">v_orbit = √(GM / r)</span> <span id="readOrbit">-</span></p>
+          <p><span class="k">v_esc = √(2GM / r)</span> <span id="readEsc">-</span></p>
+          <p><span class="k">Period</span> <span id="readT">-</span></p>
+          <p><span class="k">Outcome</span> <span id="readOut">-</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ncf-card tape" id="derive" aria-labelledby="deriveTitle">
+    <h2 class="ncf-h" id="deriveTitle"></h2>
+    <p class="ncf-lead" id="deriveLead"></p>
+    <ol class="ncf-steps" id="deriveSteps"></ol>
+  </section>
+
+  <section class="ncf-card tape" id="practice" aria-labelledby="practiceTitle">
+    <h2 class="ncf-h" id="practiceTitle">Practice</h2>
+    <div id="problems"></div>
+  </section>
+</main>
+
+<script type="module" src="newtons-cannonball-fire/ncf-ui.js"></script>
+<script type="module" src="astro-course/story-return.js"></script>
+</body>
+</html>

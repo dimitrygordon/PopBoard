@@ -119,6 +119,10 @@
  ],
  "m07-l02": [
   {
+   "id": "newtons-cannonball-fire",
+   "caption": "Fire a mountain cannon faster until the shot never lands, then derive orbital speed"
+  },
+  {
    "id": "checkride",
    "caption": "PRAXIS exam drills span the whole course; best as a Study Questions extra, not tied to one lesson"
   },
