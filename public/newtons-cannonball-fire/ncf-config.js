@@ -6,7 +6,7 @@ export const GM_E = 398000000000000.0; // m^3 s^-2, Orbit Lab orbits.json consta
 export const R_E = 6380000.0;          // m, Orbit Lab orbits.json constants.R_E
 
 // Textbook G used in the m07-l02 Moon-cannon Study Question work step.
-// TESLA: pending. Kept only so the Moon problem stays consistent with that question.
+// Tesla-verified (PR #190): G, Moon mass and radius, and the 75 km height.
 export const G = 6.67e-11;             // N m^2 kg^-2
 export const M_MOON = 7.35e22;         // kg, m07-l02 SQ "16"
 export const R_MOON = 1.74e6;          // m, m07-l02 SQ "16"
@@ -25,7 +25,7 @@ export const ISS_ALTITUDE = 400000;    // m
 export const V_MAX = 16000;            // m/s
 export const V_STEP = 10;              // m/s
 
-// A made-up planet for the v = sqrt(r g) practice item. TESLA: pending.
+// A made-up planet for the v = sqrt(r g) practice item. Tesla-verified (PR #190).
 export const PLANET_X = { r: 2.5e6, g: 4.0 };
 
 // Sketch colors: blue and green fall back, red circular, yellow wider ellipse, plus escape.

@@ -4,7 +4,7 @@
 
 import { flight as olFlight, samplePath as olSamplePath, vCirc, vEsc, gAt, periodAt } from "../orbit-lab/ol-model.js";
 import {
-  GM_E, R_E, G, M_MOON, R_MOON, H_MOON, H_DEFAULT, H_MIN, ISS_ALTITUDE, PLANET_X, PRESETS
+  GM_E, R_E, G, M_MOON, R_MOON, H_MOON, H_DEFAULT, H_MIN, ISS_ALTITUDE, PLANET_X, PRESETS, V_STEP
 } from "./ncf-config.js";
 
 export { GM_E, R_E, G, vCirc, vEsc, gAt, periodAt };
@@ -16,6 +16,19 @@ export function period(r, GM = GM_E) { return periodAt(r, GM); }
 
 export function launchRadius(h) { return R_E + h; }
 
+// Tesla asked for a ±0.5% circular band, or at least ±V_STEP/2, unless 0.5%
+// collides with falls or escape at any height. 0.5% of v_orbit is ~39 m/s,
+// but the miss-Earth window is 0 at the surface, only 2.47 m/s at H_MIN
+// (8 km), and 45.5 m/s at 150 km. A raw 0.5% band would label falling shots
+// as circular at low peaks, and would call 7.78 km/s at 150 km circular
+// instead of a smaller ellipse. Use ±V_STEP/2 (5 m/s) and never relabel a
+// shot that hits Earth.
+export const CIRCULAR_TOL_MPS = V_STEP / 2;
+
+function hitsEarth(olKind) {
+  return olKind === "lob" || olKind === "drop";
+}
+
 export function classify(v, h, GM = GM_E, R = R_E) {
   const fly = olFlight(v, h, GM, R);
   const r0 = R + h;
@@ -24,11 +37,11 @@ export function classify(v, h, GM = GM_E, R = R_E) {
   let kind = fly.kind;
   // Orbit Lab treats a hair-negative energy as bound; treat v at or above v_esc as escape.
   if (v >= vesc - 1e-6) kind = "escape";
-  else if (kind === "circular" || Math.abs(v - vc) <= 1e-6) kind = "circular";
-  else if (kind === "orbit") kind = "ellipse";
+  else if (Math.abs(v - vc) <= CIRCULAR_TOL_MPS && !hitsEarth(fly.kind)) kind = "circular";
+  else if (kind === "orbit" || kind === "ellipse") kind = v < vc ? "ellipseApo" : "ellipse";
   else if (kind === "lob" || kind === "drop") kind = "falls";
   else if (kind === "escape") kind = "escape";
-  const bound = kind === "circular" || kind === "ellipse";
+  const bound = kind === "circular" || kind === "ellipse" || kind === "ellipseApo";
   const T = bound ? 2 * Math.PI * Math.sqrt(((fly.a || r0) ** 3) / GM) : null;
   return { ...fly, kind, vc, vesc, r0, bound, period: T, g: gAt(r0, GM) };
 }
@@ -39,6 +52,7 @@ export function outcomeLabel(kind) {
     falls: "Falls back to Earth.",
     drop: "Falls back to Earth.",
     circular: "Circular orbit.",
+    ellipseApo: "Elliptical orbit (launch at its high point)",
     ellipse: "Wider elliptical orbit.",
     orbit: "Wider elliptical orbit.",
     escape: "Escapes.",
@@ -49,7 +63,11 @@ export function outcomeLabel(kind) {
 export function samplePath(v, h, GM = GM_E, R = R_E, steps = 360) {
   const fly = classify(v, h, GM, R);
   if (fly.kind === "escape") return { ...fly, points: hyperbolaPoints(v, h, GM, R, steps) };
-  if (fly.kind === "circular" || fly.kind === "ellipse") {
+  if (fly.kind === "circular") {
+    // Draw a true circle even when the slider is a few m/s off v_orbit.
+    return { ...fly, points: ellipsePoints(fly.vc, h, GM, R, steps) };
+  }
+  if (fly.kind === "ellipse" || fly.kind === "ellipseApo") {
     return { ...fly, points: ellipsePoints(v, h, GM, R, steps) };
   }
   const sampled = olSamplePath(v, h, GM, R, steps);

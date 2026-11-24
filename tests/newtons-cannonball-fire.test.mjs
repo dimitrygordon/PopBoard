@@ -5,11 +5,11 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  GM_E, R_E, G, M_MOON, R_MOON, H_MOON, H_DEFAULT, ISS_ALTITUDE, PLANET_X
+  GM_E, R_E, G, M_MOON, R_MOON, H_MOON, H_DEFAULT, H_MIN, ISS_ALTITUDE, PLANET_X, V_STEP
 } from "../public/newtons-cannonball-fire/ncf-config.js";
 import {
   classify, samplePath, presetsAt, presetSpeed, practiceAnswers, applySandbox,
-  vOrbit, vEscape, gEarth, period, formatKmS
+  vOrbit, vEscape, gEarth, period, formatKmS, outcomeLabel, CIRCULAR_TOL_MPS
 } from "../public/newtons-cannonball-fire/ncf-physics.js";
 import { PLACEHOLDER, TESLA_PENDING, STRINGS } from "../public/newtons-cannonball-fire/ncf-strings.js";
 import { ART } from "../public/newtons-cannonball-fire/ncf-art.js";
@@ -46,12 +46,54 @@ test("thresholds: falls, circular, ellipse, escape at the default mountain", () 
   assert.equal(classify(vc * 1.22, h).kind, "ellipse");
   assert.equal(classify(vesc, h).kind, "escape");
   assert.equal(classify(vesc * 1.05, h).kind, "escape");
-  // A hair below circular still hits Earth at 150 km (window to a lower ellipse is tiny).
+  // 1% below circular still hits Earth at 150 km (the miss-Earth window is about 45 m/s).
   assert.equal(classify(vc * 0.99, h).kind, "falls");
   const mid = classify(vc * 1.22, h);
   assert.ok(mid.bound && mid.period > 0, "wider ellipse is bound");
   const circ = classify(vc, h);
   close(circ.period, period(r0), "circular period", 1e-6);
+});
+
+test("circular band is ±V_STEP/2 and does not swallow falls or the 7.78 km/s smaller ellipse", () => {
+  assert.equal(CIRCULAR_TOL_MPS, V_STEP / 2);
+  const h = H_DEFAULT;
+  const vc = vOrbit(R_E + h);
+  // 0.5% of v_orbit would collide with falls at low peaks and with 7.78 km/s at 150 km.
+  const halfPct = 0.005 * vc;
+  assert.ok(halfPct > CIRCULAR_TOL_MPS, "0.5% is wider than the band we use");
+  assert.equal(classify(vc, h).kind, "circular");
+  assert.equal(classify(vc + CIRCULAR_TOL_MPS, h).kind, "circular");
+  assert.equal(classify(vc - CIRCULAR_TOL_MPS, h).kind, "circular");
+  assert.equal(classify(vc + CIRCULAR_TOL_MPS + 1, h).kind, "ellipse");
+  // Nearest 10 m/s slider step above v_orbit still reads as circular.
+  const stepAbove = Math.ceil(vc / V_STEP) * V_STEP;
+  assert.ok(Math.abs(stepAbove - vc) <= CIRCULAR_TOL_MPS);
+  assert.equal(classify(stepAbove, h).kind, "circular");
+  // At 8 km the miss-Earth window is only ~2.5 m/s, so a 5 m/s deficit still falls.
+  const vcMin = vOrbit(R_E + H_MIN);
+  assert.equal(classify(vcMin, H_MIN).kind, "circular");
+  assert.equal(classify(vcMin - CIRCULAR_TOL_MPS, H_MIN).kind, "falls");
+  assert.equal(classify(vcMin + CIRCULAR_TOL_MPS, H_MIN).kind, "circular");
+});
+
+test("a miss below v_orbit is a smaller ellipse with launch at apoapsis", () => {
+  const h = H_DEFAULT;
+  const vc = vOrbit(R_E + h);
+  const low = classify(7780, h); // 7.78 km/s, ~27 m/s below v_orbit, inside the 45 m/s window
+  assert.equal(low.kind, "ellipseApo");
+  assert.equal(outcomeLabel(low.kind), "Elliptical orbit (launch at its high point)");
+  assert.ok(low.bound && low.period > 0);
+  const path = samplePath(7780, h);
+  const radii = path.points.map((pt) => Math.hypot(pt.x, pt.y));
+  assert.ok(Math.min(...radii) >= R_E - 1, "smaller ellipse clears Earth");
+  close(Math.max(...radii), R_E + h, "apoapsis is the launch radius", 1);
+  const wide = classify(vc * 1.12, h);
+  assert.equal(wide.kind, "ellipse");
+  assert.equal(outcomeLabel(wide.kind), "Wider elliptical orbit.");
+  const widePath = samplePath(vc * 1.12, h);
+  const wideR = widePath.points.map((pt) => Math.hypot(pt.x, pt.y));
+  close(Math.min(...wideR), R_E + h, "wider ellipse has periapsis at launch", 1);
+  assert.ok(Math.max(...wideR) > R_E + h + 1000);
 });
 
 test("preset fractions match the sketch outcomes at the default height", () => {
@@ -123,26 +165,56 @@ test("derivation identity: sqrt(r g) equals sqrt(GM/r), and T formulas agree", (
   close(2 * Math.PI * r / Math.sqrt(r * g), period(r), "T from chalkboard form");
 });
 
-test("applySandbox points the Earth problems at the sandbox sliders", () => {
+test("applySandbox points the Earth problems at the sandbox sliders with exact v", () => {
   const a = practiceAnswers();
   const s = applySandbox("surface");
-  assert.ok(s.h > 0 && s.v > 0);
+  close(s.h, H_MIN, "surface uses the 8 km peak");
+  close(s.v, vOrbit(R_E + H_MIN), "surface apply is exact v_orbit at 8 km, not slider-snapped");
+  assert.equal(classify(s.v, s.h).kind, "circular");
+  const esc = applySandbox("escapeSurface");
+  close(esc.h, H_MIN, "escape uses the 8 km peak");
+  close(esc.v, vEscape(R_E + H_MIN), "escape apply is exact v_esc at 8 km");
+  assert.equal(classify(esc.v, esc.h).kind, "escape");
   const iss = applySandbox("iss");
   close(iss.h, a.iss.h, "ISS height");
-  close(iss.v, a.iss.vOrbit, "ISS speed");
+  close(iss.v, a.iss.vOrbit, "ISS speed is exact");
+  assert.equal(classify(iss.v, iss.h).kind, "circular");
   const m = applySandbox("mountain");
   close(m.h, H_DEFAULT, "mountain height");
-  close(m.v, a.mountain.vOrbit, "mountain speed");
+  close(m.v, a.mountain.vOrbit, "mountain speed is exact");
+  assert.equal(classify(m.v, m.h).kind, "circular");
   assert.equal(applySandbox("moon"), null);
 });
 
-test("wording is marked as a Socrates placeholder and numbers as pending Tesla", () => {
-  assert.equal(PLACEHOLDER, true);
-  assert.equal(TESLA_PENDING, true);
+test("Socrates wording is signed off, Tesla numbers are cleared, and practice steps fill in", () => {
+  assert.equal(PLACEHOLDER, false);
+  assert.equal(TESLA_PENDING, false);
   assert.ok(STRINGS.problems.length >= 6);
   assert.equal(STRINGS.problems[3].id, "moon");
   assert.match(STRINGS.problems[3].prompt, /7\.35|1\.74|75 km/);
-  assert.doesNotMatch(JSON.stringify(STRINGS), /\u2014/);
+  assert.doesNotMatch(JSON.stringify(STRINGS), /\u2014|\u2013/);
+  assert.match(STRINGS.peakNote, /8 km peak/);
+  assert.doesNotMatch(STRINGS.peakNote, /\u2014|\u2013/);
+  for (const id of ["escapeSurface", "planetX", "mountain"]) {
+    const p = STRINGS.problems.find((row) => row.id === id);
+    assert.equal(p.steps.length, 4, `${id} has four steps`);
+    assert.equal(p.steps[2].title, "Work");
+    assert.equal(p.steps[3].title, "Solve");
+  }
+  const placeholders = new Set();
+  JSON.stringify(STRINGS, (_, v) => {
+    if (typeof v === "string") {
+      for (const m of v.matchAll(/\{(\w+)\}/g)) placeholders.add(m[1]);
+    }
+    return v;
+  });
+  const expected = ["R", "GM", "v", "Tsec", "Tmin", "h", "r", "g", "vOrbit", "vEsc", "vSci"];
+  for (const k of expected) assert.ok(placeholders.has(k), `keeps {${k}}`);
+  const html = read("public/study-newtons-cannonball-fire.html");
+  assert.match(html, /id="peakNote"/);
+  const ui = read("public/newtons-cannonball-fire/ncf-ui.js");
+  assert.match(ui, /marks\.hidden = !PLACEHOLDER && !TESLA_PENDING/);
+  assert.match(ui, /setExactV\(next\.v\)/);
 });
 
 test("module is wired: page, library card, primary M7 L2 Try it card, thumbs exist", () => {

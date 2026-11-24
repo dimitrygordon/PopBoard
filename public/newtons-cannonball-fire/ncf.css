@@ -81,6 +81,7 @@ html, body.ncf { margin: 0; min-height: 100%; background: var(--ncf-paper); colo
 
 .ncf-readouts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; font-variant-numeric: tabular-nums; }
 .ncf-readouts p { margin: 0; }
+.ncf-peak { grid-column: 1 / -1; font-size: 13px; color: var(--ncf-dim); }
 .ncf-readouts .k { display: block; font-size: 13px; color: var(--ncf-dim); }
 .ncf-eq { font-family: "Architects Daughter", "Gochi Hand", cursive, system-ui, sans-serif; font-size: 1.15em; line-height: 1.5; margin: 8px 0; overflow-wrap: anywhere; }
 .ncf-h { margin: 0 0 8px; font-size: 18px; }

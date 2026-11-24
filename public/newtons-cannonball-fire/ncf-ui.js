@@ -52,6 +52,10 @@ $("deriveTitle").textContent = STRINGS.derive.title;
 $("deriveLead").textContent = STRINGS.derive.lead;
 $("socratesMark").textContent = PLACEHOLDER ? STRINGS.socratesMark : "";
 $("teslaMark").textContent = TESLA_PENDING ? STRINGS.teslaMark : "";
+$("socratesMark").hidden = !PLACEHOLDER;
+$("teslaMark").hidden = !TESLA_PENDING;
+const marks = $("socratesMark").parentElement;
+if (marks) marks.hidden = !PLACEHOLDER && !TESLA_PENDING;
 $("fireBtn").textContent = STRINGS.fire;
 $("clearBtn").textContent = STRINGS.clear;
 
@@ -68,6 +72,16 @@ $("speed").max = V_MAX;
 $("speed").step = V_STEP;
 $("speed").value = st.v;
 
+function setExactV(v) {
+  st.v = clamp(v, 0, V_MAX);
+  $("speed").value = String(st.v);
+}
+
+function setExactH(h) {
+  st.h = clamp(h, H_MIN, H_MAX);
+  $("height").value = String(st.h);
+}
+
 function syncLabels() {
   $("speedVal").value = formatKmS(st.v);
   $("heightVal").value = `${(st.h / 1000).toFixed(0)} km`;
@@ -77,6 +91,12 @@ function syncLabels() {
   $("readEsc").textContent = formatKmS(info.vesc);
   $("readT").textContent = info.bound ? formatMin(info.period) : "-";
   $("readOut").textContent = outcomeLabel(info.kind);
+  const note = $("peakNote");
+  if (note) {
+    const show = st.h === H_MIN;
+    note.hidden = !show;
+    note.textContent = show ? STRINGS.peakNote : "";
+  }
 }
 
 function fillPresets() {
@@ -94,8 +114,7 @@ function fillPresets() {
     b.textContent = p.label;
     b.style.color = theme() === "dark" ? p.color : undefined;
     b.addEventListener("click", () => {
-      st.v = p.v;
-      $("speed").value = Math.round(st.v);
+      setExactV(p.v);
       syncLabels();
       fire(p.color);
     });
@@ -182,7 +201,7 @@ function fire(color) {
 
 function colorFor(kind) {
   if (kind === "circular") return "#E23B3B";
-  if (kind === "ellipse") return "#E0B43A";
+  if (kind === "ellipse" || kind === "ellipseApo") return "#E0B43A";
   if (kind === "escape") return "#EDE6D6";
   if (st.v < vHalf()) return "#5B9AE8";
   return "#3FA86A";
@@ -414,10 +433,8 @@ function fillProblems() {
       btn.addEventListener("click", () => {
         const next = applySandbox(p.apply);
         if (!next) return;
-        st.h = next.h;
-        st.v = next.v;
-        $("height").value = st.h;
-        $("speed").value = Math.round(st.v);
+        setExactH(next.h);
+        setExactV(next.v);
         fillPresets();
         syncLabels();
         $("sandbox").scrollIntoView({ block: "start" });
@@ -453,7 +470,7 @@ window.__ncf = {
   st,
   classify, practiceAnswers, STRINGS, PLACEHOLDER, TESLA_PENDING,
   fire, clear() { $("clearBtn").click(); },
-  setV(v) { st.v = clamp(v, 0, V_MAX); $("speed").value = st.v; syncLabels(); },
-  setH(h) { st.h = clamp(h, H_MIN, H_MAX); $("height").value = st.h; fillPresets(); syncLabels(); paint(); },
+  setV(v) { setExactV(v); syncLabels(); },
+  setH(h) { setExactH(h); fillPresets(); syncLabels(); paint(); },
   paint,
 };

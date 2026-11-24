@@ -142,6 +142,15 @@ def run_module(ctx, base, tag, touch):
     errors_ok(page, tag, "load")
     check(js(page, "() => document.querySelector('h1').textContent.includes(\"Newton's Cannonball Fire\")"), f"{tag} title is present")
     check(js(page, "() => __ncf.trails.length === 0 && !__ncf.playing"), f"{tag} starts with a clear board")
+    check(js(page, "() => !__ncf.PLACEHOLDER && !__ncf.TESLA_PENDING"), f"{tag} wording and numbers are signed off")
+    check(js(page, "() => document.querySelector('.ncf-marks')?.hidden === true && !document.getElementById('socratesMark').textContent && !document.getElementById('teslaMark').textContent"),
+          f"{tag} tesla and socrates marks are hidden")
+    for pid in ("escapeSurface", "planetX", "mountain"):
+        nsteps = js(page, f"() => document.querySelectorAll('#prob-{pid} .ncf-step').length")
+        check(nsteps == 4, f"{tag} problem {pid} has four reveal steps ({nsteps})")
+    leftover = js(page, "() => [...document.querySelectorAll('#problems .ncf-step-body')].map(e => e.textContent).join(' ')")
+    check("{" not in leftover or all(tok not in leftover for tok in ("{R}", "{GM}", "{v}", "{Tsec}", "{Tmin}", "{h}", "{r}", "{g}", "{vOrbit}", "{vEsc}", "{vSci}")),
+          f"{tag} practice placeholders are filled")
     # default theme is dark (blackboard)
     if tag == "desktop":
         check(js(page, "() => document.documentElement.dataset.theme") == "dark", f"{tag} default theme is dark")
@@ -214,7 +223,14 @@ def run_module(ctx, base, tag, touch):
     apply.click()
     page.wait_for_function("() => !__ncf.playing && __ncf.trails.length >= 1", timeout=12000)
     check(js(page, "() => Math.abs(__ncf.h - 150000) < 1"), f"{tag} practice apply sets the 150 km mountain")
+    check(js(page, "() => Math.abs(__ncf.v - __ncf.practiceAnswers().mountain.vOrbit) < 1e-6"), f"{tag} practice apply sets the exact v_orbit")
     check(js(page, "() => __ncf.trails.some(t => t.kind === 'circular')"), f"{tag} practice apply fires a circular shot")
+    # 8 km peak note appears only at the sandbox floor
+    js(page, "() => { __ncf.setH(8000); return true; }")
+    check(js(page, "() => { const n = document.getElementById('peakNote'); return n && !n.hidden && n.textContent.includes('8 km peak'); }"),
+          f"{tag} 8 km peak note appears at the minimum height")
+    js(page, "() => { __ncf.setH(150000); return true; }")
+    check(js(page, "() => document.getElementById('peakNote')?.hidden === true"), f"{tag} 8 km peak note hides at 150 km")
     errors_ok(page, tag, "practice")
     page.close()
 
