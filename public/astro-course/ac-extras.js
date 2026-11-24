@@ -6,11 +6,14 @@ export const MODULES = {
   "em-spectrum": { file: "study-em-spectrum.html", name: "EM Spectrum", blurb: "Slide along the spectrum from radio to gamma rays." },
   "spectra": { file: "study-spectra.html", name: "Spectra", blurb: "Match emission and absorption lines to their elements." },
   "kepler": { file: "study-kepler.html", name: "Kepler's Laws", blurb: "Sweep equal areas and test P\u00b2 = a\u00b3 on real planets." },
+  "kepler-circles": { file: "study-kepler-circles.html", name: "Kepler and Circles", blurb: "Watch a tangent velocity and an inward pull, then compare Earth, Mars, and a comet as ellipses." },
+  "orbit-lab": { file: "study-orbit-lab.html", name: "Orbit Lab", blurb: "Fire Newton's cannon, then open the ISS, GPS, and geostationary orbits." },
   "seasons-eclipses": { file: "study-seasons-eclipses.html", name: "Seasons & Eclipses", blurb: "Tilt Earth and watch the seasons follow the tilt, not the distance." },
   "moon": { file: "study-moon.html", name: "Moon", blurb: "Phases, orbit, and why we always see the same face." },
   "eclipses": { file: "study-eclipses.html", name: "Eclipses", blurb: "Line up the Sun, Earth, and Moon and watch shadows fall." },
   "tides": { file: "study-tides.html", name: "Tides", blurb: "Pull the oceans with the Moon and Sun: spring and neap tides." },
   "orbits": { file: "study-orbits.html", name: "Orbits", blurb: "Launch a body and watch gravity bend its path into an orbit." },
+  "space-sandbox": { file: "study-sandbox.html", name: "Space Sandbox", blurb: "Place masses and watch gravity pull them into orbits, collisions, and mergers." },
   "gravity-well-golf": { file: "study-gravity-well-golf.html", name: "Gravity Well Golf", blurb: "Curve a shot around planets using their gravity." },
   "climate": { file: "study-climate.html", name: "Climate", blurb: "Tune the greenhouse and watch the temperature respond." },
   "plate-tectonics": { file: "study-plate-tectonics.html", name: "Plate Tectonics", blurb: "Push plates together and apart and see what the crust does." },
@@ -24,17 +27,26 @@ export const MODULES = {
   "optics": { file: "study-optics.html", name: "Optics", blurb: "Bend light with lenses and mirrors, like a telescope." },
   "atom-builder": { file: "study-atom-builder.html", name: "Atom Builder", blurb: "Build atoms from protons, neutrons, and electrons." },
   "relativity": { file: "study-relativity.html", name: "Relativity", blurb: "Speed up and watch clocks and lengths change." },
-  "quantum": { file: "study-quantum.html", name: "Quantum", blurb: "Light and matter in packets: photons and energy levels." }
+  "quantum": { file: "study-quantum.html", name: "Quantum", blurb: "Light and matter in packets: photons and energy levels." },
+  "fourth-dimension": { file: "study-fourth-dimension.html", name: "Beyond 3D", blurb: "Build a line, a square, a cube, and a tesseract, then turn the tesseract's shadow." },
+  "periodic-table-studio": { file: "study-periodic-table-studio.html", name: "Periodic Table", blurb: "Open any element and read its mass, configuration, and isotopes." },
+  "waves": { file: "study-waves.html", name: "Waves", blurb: "Match wavelength and frequency, then watch a moving source bunch the waves." }
 };
+
+// A page can link one module, or several. Order is the order of the cards.
+export function tryItKeys(entry) {
+  if (entry == null || entry === "") return [];
+  return Array.isArray(entry) ? entry.filter(Boolean) : [entry];
+}
 
 export const EXTRAS = {
   d01: {
     sandboxes: { 19: "kepler", 20: "kepler" },
-    tryIt: { 8: "powers-of-ten", 12: "em-spectrum", 13: "spectra", 18: "spaceships", 19: "kepler", 21: "seasons-eclipses" },
+    tryIt: { 8: "powers-of-ten", 12: "em-spectrum", 13: "spectra", 17: "space-sandbox", 18: ["spaceships", "orbit-lab"], 19: ["kepler", "kepler-circles"], 21: "seasons-eclipses" },
     choices: { 2: { options: ["across the room?", "across town?", "across the country?"], answer: "across the country?" } }
   },
   d02: { tryIt: { 8: "seasons-eclipses", 15: "seasons-eclipses", 20: "moon", 22: "eclipses", 25: "tides", 26: "tides" } },
-  d03: { tryIt: { 13: "kepler", 15: "kepler", 21: "orbits", 22: "tides" } },
+  d03: { tryIt: { 13: ["kepler", "kepler-circles"], 14: "kepler-circles", 15: "kepler", 21: ["orbits", "orbit-lab"], 22: "tides" } },
   d04: { sandboxes: { 14: "kepler", 22: "kepler" }, tryIt: { 12: "gravity-well-golf", 22: "orbits" } },
   d05: { tryIt: { 19: "climate", 25: "plate-tectonics" } },
   d06: { sandboxes: { 18: "resonance" }, tryIt: { 14: "tides", 17: "tides", 24: "orbits" } },
@@ -47,15 +59,15 @@ export const EXTRAS = {
   d13: { tryIt: { 4: "climate", 6: "climate" } },
   d13b: { tryIt: { 10: "climate", 12: "climate" } },
   d14: { tryIt: { 7: "stars", 8: "atom-builder", 15: "em-spectrum" } },
-  d15: { tryIt: { 3: "em-spectrum", 5: "spectra", 7: "spectra", 10: "optics", 13: "spaceships", 16: "luminosity", 20: "hrdiagram", 21: "hrdiagram" } },
+  d15: { tryIt: { 3: "em-spectrum", 4: "waves", 5: "spectra", 7: ["spectra", "waves"], 10: "optics", 13: "spaceships", 16: "luminosity", 20: "hrdiagram", 21: "hrdiagram" } },
   d16: { tryIt: { 7: "stars", 13: "stars" } },
-  d17: { tryIt: { 3: "stars", 6: "stars", 19: "black-hole", 21: "black-hole" } },
+  d17: { tryIt: { 3: "stars", 6: "stars", 19: "black-hole", 21: ["black-hole", "periodic-table-studio"] } },
   "d17-5": { tryIt: { 13: "spaceships", 17: "orbits", 18: "kepler" } },
   d18: { tryIt: { 9: "black-hole", 10: "black-hole" } },
   d19: { tryIt: { 4: "spectra", 9: "powers-of-ten", 14: "em-spectrum" } },
   d20: { tryIt: { 4: "exoplanets", 5: "exoplanets", 12: "exoplanets" } },
   d21: { tryIt: { 8: "relativity", 19: "black-hole" } },
-  d22: { tryIt: { 4: "quantum", 7: "relativity" } },
+  d22: { tryIt: { 4: "quantum", 7: ["relativity", "fourth-dimension"] } },
   d23: { tryIt: { 16: "stars", 18: "tides" } },
   d24: { tryIt: { 4: "relativity", 6: "rocket-mission", 8: "spaceships", 11: "relativity", 20: "spaceships" } },
   "d24-5": { sandboxes: { 5: "dose" }, tryIt: { 6: "spaceships", 11: "orbits", 14: "rocket-mission" } }

@@ -2,7 +2,7 @@
 import { course, loadCatalog, pageKey, standardsLine } from "./ac-courses.js";
 import { renderSlide, readableHtml, noteHtml, boxText, esc } from "./ac-render.js";
 import { bindThemeButton, store, BACK_ICON, reduceMotion } from "./ac-common.js";
-import { EXTRAS, MODULES } from "./ac-extras.js";
+import { EXTRAS, MODULES, tryItKeys } from "./ac-extras.js";
 import { mountOrbit } from "./ac-orbit.js";
 import { mountCrater } from "./ac-sb-crater.js";
 import { mountResonance } from "./ac-sb-resonance.js";
@@ -164,8 +164,8 @@ function renderTools(s) {
   const sv2 = v2 && v2.slides[String(s.n)];
   if (sv2 && ONPAGE[sv2.three]) out.push(`<section class="tool"><h2 class="panel-h">${esc(ONPAGE[sv2.three] || "3D")}</h2><p class="note">Drag the 3D scene on the page.</p><div class="pop-ctl"></div></section>`);
   if (sv2 && sv2.testIt) out.push(`<section class="tool test-it"><h2 class="panel-h">Test it: ${esc(sv2.testIt.name)}</h2><p class="note">${esc(sv2.testIt.how)}</p><div class="pop-ctl"></div><p class="feedback" aria-live="polite"></p></section>`);
-  const ti = extra.tryIt && extra.tryIt[s.n];
-  if (ti) out.push(`<section class="tool"><h2 class="panel-h">Try it</h2>${tryItCard(ti)}</section>`);
+  const ti = tryItKeys(extra.tryIt && extra.tryIt[s.n]);
+  if (ti.length) out.push(`<section class="tool"><h2 class="panel-h">Try it</h2><div class="tryit-list">${ti.map(tryItCard).join("")}</div></section>`);
   return out.join("");
 }
 
@@ -399,7 +399,7 @@ function buildSbMenu() {
   for (const [n, sv] of Object.entries(v2.slides)) {
     if (sv.sandbox && (SANDBOXES[sv.sandbox] || ONPAGE[sv.sandbox])) rows.push(`<li><button type="button" data-go="${n}" data-sb="${SANDBOXES[sv.sandbox] && !ONPAGE[sv.sandbox] ? sv.sandbox : ""}"><span class="n">${n}</span>${esc(SANDBOXES[sv.sandbox] ? SANDBOXES[sv.sandbox].name : ONPAGE[sv.sandbox])}</button></li>`);
   }
-  for (const [n, key] of Object.entries(extra.tryIt || {})) if (MODULES[key]) {
+  for (const [n, entry] of Object.entries(extra.tryIt || {})) for (const key of tryItKeys(entry)) if (MODULES[key]) {
     const p = forwardStudyQuery(location.search); p.set("story", `${meta.slug}-${n}`);
     rows.push(`<li><a href="${esc(MODULES[key].file)}?${esc(p.toString())}"><span class="n">${n}</span>Try it: ${esc(MODULES[key].name)}</a></li>`);
   }
