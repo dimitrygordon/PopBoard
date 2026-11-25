@@ -58,9 +58,10 @@ body { overflow: hidden; display: flex; flex-direction: column; }
 :root[data-theme="dark"] .tool .feedback[data-ok="1"] { color: #a9d39a; }
 :root[data-theme="dark"] .tool .feedback[data-ok="0"] { color: #f0a796; }
 
-/* "Try it" card: a small pencil-sketched link to a study module */
-.tryit { display: grid; grid-template-columns: 112px 1fr; gap: 10px; align-items: center; padding: 8px; color: var(--ac-card-ink); background: var(--ac-card); text-decoration: none;
-  border: 2px solid #6d6457; border-radius: 255px 12px 225px 12px / 12px 225px 12px 255px; transform: rotate(-0.6deg); min-height: 44px; }
+/* "Try it" card: a small pencil-sketched link to a study module. A page may have two. */
+.tryit-list { display: grid; gap: 10px; min-width: 0; }
+.tryit { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 10px; align-items: center; padding: 8px; color: var(--ac-card-ink); background: var(--ac-card); text-decoration: none;
+  border: 2px solid #6d6457; border-radius: 255px 12px 225px 12px / 12px 225px 12px 255px; transform: rotate(-0.6deg); min-height: 44px; min-width: 0; }
 .tryit img { width: 112px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 6px; border: 1.5px solid #8c8170; display: block; }
 .tryit b { display: block; font-family: var(--ac-head-font); font-weight: 400; font-size: 17px; color: #2f2b26; }
 .tryit span { display: block; font-size: 16px; color: #4a443b; line-height: 1.25; }
@@ -201,6 +202,12 @@ body.v2 .read .rich p { font-size: 17px; line-height: 1.45; }
 :root[data-theme="dark"] .kp canvas { background: var(--slide-paper); border-color: #E2B654; }
 :root[data-theme="dark"] .kp input[type="range"] { accent-color: #E2B654; }
 @media (max-width: 480px) { .tryit-tab { font-size: 14px; padding: 6px 10px; } }
+@media (max-width: 699px) {
+  .tryit { grid-template-columns: 88px minmax(0, 1fr); gap: 8px; padding: 6px; }
+  .tryit img { width: 88px; }
+  .tryit b { font-size: 16px; }
+  .tryit span { font-size: 15px; overflow-wrap: anywhere; }
+}
 /* on a phone the short stage has no free corner, and the controls sit right under it in the sheet */
 @media (max-width: 480px) { .stage.immersive .tryit-tab.at-foot { display: none; } }
 /* labels finish writing on even if the entry is cut short */

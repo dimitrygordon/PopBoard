@@ -12,7 +12,7 @@ test("constants and world gravity match the sources", () => {
   assert.equal(G, 9.80665);
   assert.equal(P.RHO_SEA_LEVEL, 1.225);
   assert.equal(P.CD_SPHERE, 0.47);
-  const nasa = { moon: 1.6, mars: 3.7, mercury: 3.7, venus: 8.9, jupiter: 23.1, saturn: 9.0, uranus: 8.7, neptune: 11.0, pluto: 0.7 };
+  const nasa = { moon: 1.6, mars: 3.7, mercury: 3.7, venus: 8.9, jupiter: 24.79, saturn: 10.44, uranus: 8.7, neptune: 11.0, pluto: 0.6 };
   for (const [k, g] of Object.entries(nasa)) assert.equal(P.WORLDS[k].g, g, k);
   assert.equal(P.WORLDS.earth.g, G);
   // 6 lb iron shot is about 8.7 cm across
@@ -58,7 +58,12 @@ test("range, peak and time all scale as 1/g across worlds", () => {
   assert.ok(close(m.range / e.range, G / 1.6, 1e-12));
   assert.ok(close(m.tFlight / e.tFlight, G / 1.6, 1e-12));
   assert.ok(close(m.maxHeight / e.maxHeight, G / 1.6, 1e-12));
-  assert.ok(Math.abs(e.range / P.ideal({ v: 20, angle: 45, g: 23.1 }).range - 23.1 / G) < 1e-12);
+  const jg = P.WORLDS.jupiter.g;
+  assert.equal(jg, 24.79);
+  assert.equal(P.WORLDS.saturn.g, 10.44);
+  assert.equal(P.fmtG(jg), "24.79 m/s\u00b2");
+  assert.equal(P.fmtG(P.WORLDS.saturn.g), "10.44 m/s\u00b2");
+  assert.ok(Math.abs(e.range / P.ideal({ v: 20, angle: 45, g: jg }).range - jg / G) < 1e-12);
 });
 
 test("integrator with no drag matches the closed form", () => {

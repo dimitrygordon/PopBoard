@@ -10,7 +10,7 @@ import { periodYears, position, speedKmS, eccentricAnomaly } from "../public/ast
 import { crater, transitionDiameter, G_MOON } from "../public/astro-course/ac-impact.js";
 import { missionDose, RATE } from "../public/astro-course/ac-dose.js";
 import { conjunctions, SYSTEMS } from "../public/astro-course/ac-sb-resonance.js";
-import { EXTRAS, MODULES } from "../public/astro-course/ac-extras.js";
+import { EXTRAS, MODULES, tryItKeys, tryItItems, tryItBlurb } from "../public/astro-course/ac-extras.js";
 
 const PUB = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
 const AC = join(PUB, "astro-course");
@@ -68,7 +68,7 @@ for (const d of built) {
       for (const o of c.options) assert.ok(html.includes(`data-opt="${o}"`), o);
       assert.ok(c.options.includes(c.answer));
     }
-    for (const k of Object.values(ex.tryIt || {})) {
+    for (const k of Object.values(ex.tryIt || {}).flatMap(tryItKeys)) {
       assert.ok(MODULES[k] && existsSync(join(PUB, MODULES[k].file)), k);
       assert.ok(existsSync(join(AC, "thumbs", k + ".webp")), "thumb " + k);
       assert.match(readFileSync(join(PUB, MODULES[k].file), "utf8"), /astro-course\/story-return\.js/, "Back to the story in " + k);
@@ -88,10 +88,62 @@ test("Spaceships Try it sits on the spacecraft lessons", () => {
   ];
   assert.equal(MODULES.spaceships.file, "study-spaceships.html");
   for (const [slug, n, word] of spots) {
-    assert.equal(EXTRAS[slug].tryIt[n], "spaceships", `${slug} p${n}`);
+    assert.ok(tryItKeys(EXTRAS[slug].tryIt[n]).includes("spaceships"), `${slug} p${n}`);
     const deck = DECKS.find((d) => d.slug === slug);
     assert.ok(deck.pages[n - 1].includes(word), `${slug} p${n} should mention ${word}`);
   }
+});
+
+function assertTry(id, file, spots) {
+  assert.equal(MODULES[id].file, file);
+  for (const [slug, n, word] of spots) {
+    assert.ok(tryItKeys(EXTRAS[slug].tryIt[n]).includes(id), `${slug} p${n}`);
+    const deck = DECKS.find((d) => d.slug === slug);
+    assert.ok(deck.pages[n - 1].includes(word), `${slug} p${n} should mention ${word}`);
+  }
+}
+
+test("Orbit Lab Try it sits beside the cannon and the floating astronauts", () => {
+  assertTry("orbit-lab", "study-orbit-lab.html", [
+    ["d03", 21, "CANNONBALL"],
+    ["d01", 18, "FLOAT"]
+  ]);
+  assert.deepEqual(tryItKeys(EXTRAS.d03.tryIt[21]), ["orbits", "orbit-lab"]);
+  assert.deepEqual(tryItKeys(EXTRAS.d01.tryIt[18]), ["spaceships", "orbit-lab"]);
+});
+
+test("Kepler and Circles Try it sits on the first law, the second law, and Kepler's laws", () => {
+  assertTry("kepler-circles", "study-kepler-circles.html", [
+    ["d03", 13, "1ST LAW"],
+    ["d03", 14, "2ND LAW"],
+    ["d01", 19, "KEPLER'S LAWS"]
+  ]);
+});
+
+test("Beyond 3D, Periodic Table, Waves, and Space Sandbox sit on the mapped lessons", () => {
+  assertTry("fourth-dimension", "study-fourth-dimension.html", [["d22", 7, "EXTRA DIMENSIONS"]]);
+  assertTry("periodic-table-studio", "study-periodic-table-studio.html", [["d17", 21, "STAR STUFF"]]);
+  assertTry("waves", "study-waves.html", [["d15", 4, "wavelength"], ["d15", 7, "Doppler"]]);
+  assertTry("space-sandbox", "study-sandbox.html", [["d01", 17, "every mass"]]);
+  assert.equal(EXTRAS["d24-5"].tryIt[12], undefined);
+  assert.equal(MODULES.projectile, undefined);
+});
+
+test("a page caption overrides the module blurb, and only on that page", () => {
+  const doppler = "Hear the Doppler effect with sound waves. Light shifts the same way, but it needs no air, and for stars we use Doppler shift: (change in wavelength) / (wavelength) = (speed) / (speed of light).";
+  const geometry = "Explore the geometry of a fourth spatial dimension. This is a way to picture extra dimensions, not a model of string theory.";
+  const p4 = tryItItems(EXTRAS.d15.tryIt[4])[0];
+  assert.equal(p4.id, "waves");
+  assert.equal(p4.caption, "");
+  assert.equal(tryItBlurb(p4), MODULES.waves.blurb);
+  assert.equal(tryItBlurb("waves"), MODULES.waves.blurb);
+  const p7 = tryItItems(EXTRAS.d15.tryIt[7]).find((item) => item.id === "waves");
+  assert.equal(p7.caption, doppler);
+  assert.equal(tryItBlurb(p7), doppler);
+  const beyond = tryItItems(EXTRAS.d22.tryIt[7]).find((item) => item.id === "fourth-dimension");
+  assert.equal(beyond.caption, geometry);
+  assert.equal(tryItBlurb(beyond), geometry);
+  assert.equal(tryItBlurb("fourth-dimension"), MODULES["fourth-dimension"].blurb);
 });
 
 test("library search finds titles and words inside pages", () => {
