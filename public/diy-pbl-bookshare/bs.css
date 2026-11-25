@@ -266,7 +266,7 @@ body.fl-full .bs-side-q { display: none !important; }
   font-family: var(--f-head);
   font-size: clamp(14px, 1.8cqw, 26px);
   background: rgba(255,253,246,.9);
-  padding: 0.6cqh 1cqw; border-radius: 0.6cqw;
+  padding: 0.6cqh 1cqw; border-radius: calc(0.6cqw * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   box-shadow: var(--shadow);
 }
 .s10-eq span { white-space: nowrap; }
@@ -284,7 +284,7 @@ body.fl-full .bs-side-q { display: none !important; }
   overflow: hidden;
   background: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   box-shadow: none !important;
   min-height: 0 !important;
   padding: 0 !important;
@@ -303,7 +303,7 @@ body.fl-full .bs-side-q { display: none !important; }
 .bs-dq-card {
   background: none;
   border: none;
-  border-radius: 0;
+  border-radius: 0; corner-shape: round; --sq: 0;
   padding: 0;
   font-family: "Patrick Hand", cursive;
   font-size: clamp(13px, 1.35cqw, 24px);
@@ -319,7 +319,7 @@ body.fl-full .bs-side-q { display: none !important; }
   position: absolute;
   z-index: 7; overflow: hidden;
   background: none;
-  border-radius: 0;
+  border-radius: 0; corner-shape: round; --sq: 0;
   padding: 0;
   box-shadow: none;
   display: flex; flex-direction: column; gap: 0.5cqh;
@@ -356,7 +356,7 @@ body.fl-full .bs-apa li { font-size: max(26px, 1.35cqw); }
 }
 .bs-apa li::before {
   content: ""; position: absolute; left: 0; top: 0.45em;
-  width: 0.35em; height: 0.35em; border-radius: 50%; background: #2F7A40;
+  width: 0.35em; height: 0.35em; border-radius: 50%; corner-shape: round; --sq: 0; background: #2F7A40;
 }
 .bs-apa i { font-style: italic; }
 .bs-apa a { color: inherit; word-break: break-word; }
@@ -430,7 +430,7 @@ body.fl-full .bs-apa li { font-size: max(26px, 1.35cqw); }
   position: absolute; left: 3%; top: 8%; width: 42%;
   z-index: 5;
   background: rgba(255,253,246,.95);
-  border-radius: 0.8cqw;
+  border-radius: calc(0.8cqw * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 1.4cqh 1.4cqw;
   box-shadow: var(--shadow);
 }
@@ -587,7 +587,7 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   max-height: 78%;
   padding: 0;
   background: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   box-shadow: none !important;
   mix-blend-mode: multiply;
 }
@@ -622,7 +622,7 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   font-family: "Architects Daughter", cursive;
   font-size: clamp(13px, 1.55cqw, 24px);
   background: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   box-shadow: none !important;
   color: var(--ink);
   white-space: nowrap;
@@ -644,7 +644,7 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   color: #24339E;
   background: rgba(255,253,246,0.85);
   padding: 0.25cqh 0.5cqw;
-  border-radius: 0.35cqw;
+  border-radius: calc(0.35cqw * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   white-space: nowrap;
   transform: translate(-50%, -50%);
 }
@@ -704,7 +704,7 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   background: none !important;
   box-shadow: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   z-index: 6;
@@ -890,7 +890,7 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   background: none !important;
   box-shadow: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   overflow: visible;
 }
 .bs-resources-panel .bs-res-h {
@@ -913,7 +913,7 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   background: none !important;
   box-shadow: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
 }
 .bs-takeaways h3 {
   font-family: "Cabin Sketch", cursive !important;
@@ -971,7 +971,7 @@ body:not(.fl-transiting) .bs-scene.is-settled .bs-reveal { opacity: 1; transform
   background: none !important;
   box-shadow: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
 }
 body.fl-full .bs-resources-panel--compact {
   background: none !important;
@@ -1076,7 +1076,7 @@ body.fl-full .bs-resources-panel--compact {
   background: none !important;
   box-shadow: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   padding: 0 !important;
   margin: 0 !important;
   outline: none !important;
@@ -1094,7 +1094,7 @@ body.fl-full .bs-resources-panel--compact {
   background: none !important;
   box-shadow: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   border-left: none !important;
   padding: 0 0 1.1cqh 0 !important;
   margin: 0 !important;
@@ -1225,7 +1225,7 @@ body.fl-full .bs-resources-panel--compact {
 .bs-surface--genre {
   background: none !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   padding: 0 !important;
   text-shadow: none !important;
 }
@@ -1248,7 +1248,7 @@ body.fl-full .bs-resources-panel--compact {
   overflow: visible !important; /* no clip-rect frame around left half */
   background: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   box-shadow: none !important;
   outline: none !important;
 }
@@ -1261,7 +1261,7 @@ body[data-kind="conclude"] .bs-paper-group {
   overflow: visible !important;
   background: none !important;
   border: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   box-shadow: none !important;
   outline: none !important;
   -webkit-mask-image: none !important;
@@ -1319,7 +1319,7 @@ body[data-kind="conclude"] .bs-paper-group {
   color: #26376e !important;
   background: none !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   padding: 0 !important;
 }
 
@@ -1342,7 +1342,7 @@ body[data-kind="resources"] .bs-paper-group {
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
+  border-radius: 0 !important; corner-shape: round; --sq: 0;
   -webkit-mask-image: none !important;
   mask-image: none !important;
 }

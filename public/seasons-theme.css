@@ -18,15 +18,15 @@ html, body { margin: 0; background: var(--se-space); color: var(--se-text); font
 button { font: inherit; }
 .se-top { display: flex; align-items: center; gap: 12px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; background: var(--se-bar); position: sticky; top: 0; z-index: 3; }
 .se-top h1 { font-size: 18px; font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; min-width: 0; }
-.se-theme { margin-left: auto; padding: 0 12px; border-radius: 10px; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 13px; }
+.se-theme { margin-left: auto; padding: 0 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 13px; }
 .se-hit, .se-tabs button, .se-chip, .se-play { min-height: var(--se-hit); min-width: var(--se-hit); }
-.study-back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--se-btn-line); background: transparent; color: var(--se-text); cursor: pointer; }
+.study-back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--se-btn-line); background: transparent; color: var(--se-text); cursor: pointer; }
 .se-tabs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
-.se-tabs button { padding: 0 12px; border-radius: 10px; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 14px; }
+.se-tabs button { padding: 0 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 14px; }
 .se-tabs button[aria-selected="true"] { background: var(--se-gold); color: #1a1a1a; border-color: var(--se-gold); font-weight: 600; }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--se-gold); outline-offset: 2px; }
 .se-main { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr); gap: 12px; padding: 12px; height: calc(100vh - 60px); height: calc(100dvh - 60px - env(safe-area-inset-top)); }
-.se-stage-wrap { min-height: 0; border-radius: 14px; overflow: hidden; background: var(--se-panel); }
+.se-stage-wrap { min-height: 0; border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; overflow: hidden; background: var(--se-panel); }
 .se-stage { width: 100%; height: 100%; display: block; touch-action: none; }
 .se-side { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 .se-controls { display: flex; flex-direction: column; gap: 6px; }
@@ -35,10 +35,10 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--se-gold); o
 .se-row output { font: 500 13px "JetBrains Mono", ui-monospace, monospace; color: var(--se-dim); }
 .se-row input[type=range] { grid-column: 1 / -1; width: 100%; height: var(--se-hit); margin: 0; accent-color: var(--se-gold); }
 .se-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.se-chip, .se-play { padding: 0 12px; border-radius: 10px; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 13px; }
+.se-chip, .se-play { padding: 0 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--se-btn-line); background: var(--se-btn); color: var(--se-text); cursor: pointer; font-size: 13px; }
 .se-chip[aria-pressed="true"] { background: var(--se-gold); color: #1a1a1a; border-color: var(--se-gold); }
 .se-play { font-weight: 600; }
-.se-diagram { width: 100%; height: 220px; flex: 0 0 auto; border-radius: 12px; background: var(--se-panel); display: block; }
+.se-diagram { width: 100%; height: 220px; flex: 0 0 auto; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--se-panel); display: block; }
 .se-readouts { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 13px; }
 .se-readouts dt { color: var(--se-dim); }
 .se-readouts dd { margin: 0; text-align: right; font: 500 13px "JetBrains Mono", ui-monospace, monospace; }

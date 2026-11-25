@@ -17,7 +17,7 @@
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--cb-bg); color: var(--cb-ink);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-button { font: inherit; color: var(--cb-ink); background: var(--cb-btn); border: 1px solid var(--cb-border); border-radius: 12px;
+button { font: inherit; color: var(--cb-ink); background: var(--cb-btn); border: 1px solid var(--cb-border); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   min-width: var(--cb-hit); min-height: var(--cb-hit); padding: 0 12px; cursor: pointer; }
 button:disabled { opacity: 0.45; cursor: default; }
 button[aria-pressed="true"], button[aria-selected="true"], button.primary { background: var(--cb-accent); border-color: var(--cb-accent); color: #fff; font-weight: 700; }
@@ -33,10 +33,10 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--cb-accent)
 .status .readout { color: var(--cb-dim); font-variant-numeric: tabular-nums; white-space: pre-line; }
 .stage { position: fixed; inset: 0; }
 #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
-.toast { margin: 0; padding: 6px 12px; border-radius: 10px; background: var(--cb-btn); border: 1px solid var(--cb-accent); font-weight: 700; font-size: 0.9rem; }
+.toast { margin: 0; padding: 6px 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--cb-btn); border: 1px solid var(--cb-accent); font-weight: 700; font-size: 0.9rem; }
 
 .controls { position: fixed; z-index: 5; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(560px, calc(100% - 24px));
-  padding: 12px 14px; border-radius: 16px; background: var(--cb-chip); border: 1px solid var(--cb-border); display: grid; gap: 8px; }
+  padding: 12px 14px; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--cb-chip); border: 1px solid var(--cb-border); display: grid; gap: 8px; }
 .controls .fun-handle { display: none; }
 .tabs { display: flex; gap: 6px; }
 .tabs button { flex: 1 1 0; }
@@ -54,7 +54,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--cb-accent)
 .canvas-box .fun-pop { top: calc(max(8px, env(safe-area-inset-top)) + 108px); right: 12px; }
 
 .caveat-wrap { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px; background: rgba(5, 8, 14, 0.55); }
-.caveat { width: min(460px, 100%); padding: 18px 18px 14px; border-radius: 16px; background: var(--pj-paper); color: var(--cb-ink); border: 1px solid var(--cb-border); display: grid; gap: 10px; }
+.caveat { width: min(460px, 100%); padding: 18px 18px 14px; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--pj-paper); color: var(--cb-ink); border: 1px solid var(--cb-border); display: grid; gap: 10px; }
 .caveat p { margin: 0; }
 .caveat-title { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; line-height: 1.05; }
 .caveat-small { font-size: 0.85rem; color: var(--cb-dim); }
@@ -74,7 +74,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--cb-accent)
   .status .big { font-size: 1.25rem; }
   .status { right: 164px; }
   .status .readout { font-size: 0.85rem; line-height: 1.3; }
-    .controls.fun-sheet-on { left: 0; right: 0; bottom: 0; transform: none; width: auto; border-radius: 16px 16px 0 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); align-content: start; overflow: hidden; }
+    .controls.fun-sheet-on { left: 0; right: 0; bottom: 0; transform: none; width: auto; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)) calc(var(--r-16, 16px) * var(--sq-fit, 1)) 0 0; corner-shape: squircle; --sq: 1; padding-bottom: max(12px, env(safe-area-inset-bottom)); align-content: start; overflow: hidden; }
   .controls.fun-sheet-on .fun-handle { display: flex; }
 }
 .cap { position: absolute; z-index: 3; margin: 0; transform: translateX(-50%); font-size: 0.85rem; color: var(--cb-dim); text-align: center; pointer-events: none; width: max-content; }

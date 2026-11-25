@@ -17,7 +17,7 @@
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--kc-bg); color: var(--kc-ink);
   font-family: "Jost", system-ui, sans-serif; line-height: 1.45; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-button { font: inherit; color: inherit; background: #111; border: 1px solid var(--kc-border); border-radius: 12px;
+button { font: inherit; color: inherit; background: #111; border: 1px solid var(--kc-border); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   min-width: var(--kc-hit); min-height: var(--kc-hit); padding: 0 12px; cursor: pointer; }
 button.primary, button[aria-pressed="true"] { background: var(--kc-accent); border-color: var(--kc-accent); color: #000; font-weight: 600; }
 button:disabled { opacity: 0.45; cursor: default; }
@@ -36,7 +36,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--kc-accent)
   color: inherit;
   background: #111;
   border: 1px solid var(--kc-border);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   min-width: var(--kc-hit);
   min-height: var(--kc-hit);
   padding: 0 12px;
@@ -54,7 +54,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--kc-accent)
   padding: 10px 12px;
   background: rgba(12, 12, 12, 0.94);
   border: 1px solid var(--kc-border);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   font-size: 0.75rem;
   color: #ccc;
   line-height: 1.4;
@@ -69,7 +69,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--kc-accent)
   color: inherit;
   background: #111;
   border: 1px solid var(--kc-border);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   min-width: var(--kc-hit);
   min-height: var(--kc-hit);
   padding: 0 12px;
@@ -89,7 +89,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--kc-accent)
   padding: 10px 12px;
   background: rgba(12, 12, 12, 0.94);
   border: 1px solid var(--kc-border);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   font-size: 0.85rem;
   color: #ccc;
   line-height: 1.4;
@@ -106,7 +106,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--kc-accent)
   width: min(560px, calc(100% - 16px)); display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
 .dock .status { position: static; bottom: auto; left: auto; right: auto; max-width: none; flex: 0 0 auto; padding: 0 12px 2px; text-shadow: 0 1px 2px #000, 0 0 8px #000; }
 
-.controls { padding: 12px 14px; border-radius: 16px; background: var(--kc-chip); border: 1px solid var(--kc-border);
+.controls { padding: 12px 14px; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--kc-chip); border: 1px solid var(--kc-border);
   display: grid; gap: 8px; pointer-events: auto; }
 .controls .row { display: flex; flex-wrap: wrap; gap: 6px; }
 .controls .row button { flex: 1 1 auto; }
@@ -126,7 +126,7 @@ input[type="range"] {
 }
 input[type="range"]::-webkit-slider-runnable-track {
   height: 6px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   background: linear-gradient(to right, #4caf50 0 var(--slide), #cccccc var(--slide) 100%);
 }
 input[type="range"]::-webkit-slider-thumb {
@@ -136,18 +136,18 @@ input[type="range"]::-webkit-slider-thumb {
   height: 22px;
   margin-top: -8px;
   border: none;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: #4caf50;
 }
 input[type="range"]::-moz-range-track {
   height: 6px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   background: #cccccc;
   border: none;
 }
 input[type="range"]::-moz-range-progress {
   height: 6px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   background: #4caf50;
   border: none;
 }
@@ -155,7 +155,7 @@ input[type="range"]::-moz-range-thumb {
   width: 22px;
   height: 22px;
   border: none;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: #4caf50;
 }
 
@@ -183,7 +183,7 @@ input[type="range"]::-moz-range-thumb {
   .hud .back-label { display: none; }
   .credits summary { padding: 0 8px; }
   .dock { left: 0; right: 0; width: auto; transform: none; bottom: 0; }
-  .controls { border-radius: 16px 16px 0 0;
+  .controls { border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)) calc(var(--r-16, 16px) * var(--sq-fit, 1)) 0 0; corner-shape: squircle; --sq: 1;
     padding-bottom: max(12px, env(safe-area-inset-bottom)); }
 }
 

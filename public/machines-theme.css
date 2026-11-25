@@ -120,7 +120,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   margin: 8px auto 0;
   background: rgba(15, 18, 22, 0.92);
   border: 1px solid var(--border-lit);
-  border-radius: 14px;
+  border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 12px 14px;
   text-align: center;
 }
@@ -150,7 +150,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   flex: 1 1 108px;
   min-height: var(--hit);
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1px solid var(--border-lit);
   background: var(--panel-2);
   color: var(--text-dim);
@@ -170,7 +170,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border: 1px solid var(--border-lit);
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   padding: 2px 6px;
   color: var(--effort);
 }
@@ -178,7 +178,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .card {
   background: linear-gradient(180deg, var(--panel-2), var(--panel));
   border: 1.5px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 14px;
   margin-top: 14px;
   min-width: 0;
@@ -205,7 +205,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 canvas.view {
   width: 100%;
   display: block;
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background: var(--canvas);
   touch-action: none;
   border: 1px solid var(--border);
@@ -225,7 +225,7 @@ canvas.view {
   color: var(--text-dim);
 }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
-.swatch { width: 18px; height: 8px; border-radius: 2px; display: inline-block; }
+.swatch { width: 18px; height: 8px; border-radius: 2px; corner-shape: round; --sq: 0; display: inline-block; }
 .swatch.effort { background: var(--effort); }
 .swatch.load { background: var(--load); }
 .swatch.ghost { background: transparent; border-top: 2px dashed var(--ideal-ghost); height: 0; width: 22px; }
@@ -262,7 +262,7 @@ canvas.view {
 .tile {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 8px 6px;
   text-align: center;
   min-width: 0;
@@ -300,12 +300,12 @@ canvas.view {
 .track {
   position: relative;
   height: 12px;
-  border-radius: 99px;
+  border-radius: 99px; corner-shape: round; --sq: 0;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border);
   overflow: hidden;
 }
-.track .fill { height: 100%; width: 0; border-radius: inherit; }
+.track .fill { height: 100%; width: 0; border-radius: inherit; corner-shape: inherit; }
 .track .fill.effort { background: var(--effort); }
 .track .fill.load { background: var(--load); }
 
@@ -351,7 +351,7 @@ input[type="range"] {
 }
 input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
-  border-radius: 2px;
+  border-radius: 2px; corner-shape: round; --sq: 0;
   background: #48484a;
 }
 input[type="range"]::-webkit-slider-thumb {
@@ -359,21 +359,21 @@ input[type="range"]::-webkit-slider-thumb {
   width: 28px;
   height: 28px;
   margin-top: -12px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: #fff;
   cursor: pointer;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 input[type="range"]::-moz-range-track {
   height: 4px;
-  border-radius: 2px;
+  border-radius: 2px; corner-shape: round; --sq: 0;
   background: #48484a;
   border: none;
 }
 input[type="range"]::-moz-range-thumb {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: #fff;
   border: none;
   cursor: pointer;
@@ -385,7 +385,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   flex: 1 1 120px;
   min-height: var(--hit);
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1px solid var(--border-lit);
   background: var(--panel-3);
   color: var(--text);
@@ -400,7 +400,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 .chip {
   min-height: var(--hit);
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   border: 1px solid var(--border-lit);
   background: var(--panel-2);
   color: var(--text);
@@ -422,7 +422,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   font-family: var(--font-mono);
   background: rgba(0, 0, 0, 0.28);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px 12px;
   font-size: 12.5px;
   line-height: 1.65;
@@ -444,7 +444,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   text-align: left;
   background: var(--panel-3);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   color: var(--text);
   padding: 10px;
   cursor: pointer;
@@ -494,7 +494,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 .meter-track {
   position: relative;
   height: 14px;
-  border-radius: 99px;
+  border-radius: 99px; corner-shape: round; --sq: 0;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border);
   overflow: hidden;
@@ -552,7 +552,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 }
 .hidden { display: none !important; }
 
-.swatch.machine { width: 10px; height: 10px; border-radius: 99px; }
+.swatch.machine { width: 10px; height: 10px; border-radius: 99px; corner-shape: round; --sq: 0; }
 .swatch.m-lever { background: var(--m-lever); }
 .swatch.m-pulley { background: var(--m-pulley); }
 .swatch.m-incline { background: var(--m-incline); }
@@ -562,7 +562,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 
 .goal {
   border: 1px solid var(--border-lit);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 12px 14px;
   margin-top: 12px;
   background: rgba(0, 0, 0, 0.2);
@@ -591,7 +591,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   scroll-snap-align: start;
   background: var(--stage-card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px;
   min-width: 0;
 }
@@ -604,7 +604,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   align-items: center;
   min-height: 28px;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   border: 1px solid var(--effort);
   color: var(--effort);
   font-family: var(--font-mono);
@@ -647,7 +647,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   flex: 0 0 220px;
   scroll-snap-align: start;
   border: 1px solid var(--border-lit);
-  border-radius: 14px;
+  border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px;
   background: var(--panel);
 }
@@ -662,7 +662,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 .loss-stack {
   display: flex;
   height: 16px;
-  border-radius: 99px;
+  border-radius: 99px; corner-shape: round; --sq: 0;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border);
@@ -699,7 +699,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   gap: 6px;
   min-height: var(--hit);
   padding: 12px 8px;
-  border-radius: 14px;
+  border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1px solid var(--border);
   background: var(--panel-2);
   color: var(--text);
@@ -767,7 +767,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 .step {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px 12px;
 }
 .step.current { border-color: var(--effort); }
@@ -789,7 +789,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 .step input[type="number"] {
   width: 100%;
   min-height: var(--hit);
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1px solid var(--border-lit);
   background: var(--canvas);
   color: var(--text);
@@ -811,7 +811,7 @@ input[type="range"]:disabled { opacity: 0.4; }
   margin-top: 6px;
 }
 .ghost-val, .measured-val {
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 8px;
   text-align: center;
   min-width: 0;

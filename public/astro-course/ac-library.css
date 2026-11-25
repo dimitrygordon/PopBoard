@@ -16,7 +16,7 @@
 
 .lib-grid { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
 .lib-card { position: relative; display: flex; flex-direction: column; height: 100%; color: var(--ac-card-ink); background: var(--ac-card); text-decoration: none;
-  border: 2px solid #6d6457; border-radius: 6px 18px 8px 16px / 16px 8px 18px 6px; box-shadow: 3px 4px 0 rgba(60, 45, 20, 0.16); overflow: hidden; }
+  border: 2px solid #6d6457; border-radius: 6px 18px 8px 16px / 16px 8px 18px 6px; corner-shape: round; --sq: 0; box-shadow: 3px 4px 0 rgba(60, 45, 20, 0.16); overflow: hidden; }
 :root[data-theme="dark"] .lib-card { border-color: var(--ac-line); box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.35); }
 a.lib-card:hover { transform: rotate(-0.4deg) translateY(-2px); }
 @media (prefers-reduced-motion: no-preference) { a.lib-card { transition: transform 0.18s ease; } }
@@ -31,5 +31,5 @@ a.lib-card:hover { transform: rotate(-0.4deg) translateY(-2px); }
 .lib-card .sub { margin: 0; font-size: 17px; color: #4a443b; }
 .lib-card .meta { margin: 4px 0 0; font-family: var(--ac-note-font); font-size: 16px; color: #4a443b; }
 .lib-card .hit { margin: 4px 0 0; font-size: 16px; color: #3a3530; background: linear-gradient(transparent 55%, rgba(242, 196, 90, 0.45) 55%); }
-.lib-card .badge { font-family: var(--ac-note-font); font-size: 15px; padding: 0 8px; border-radius: 10px; border: 1.5px solid #6d6457; background: #fbf6e8; color: #3d3d3d; white-space: nowrap; }
+.lib-card .badge { font-family: var(--ac-note-font); font-size: 15px; padding: 0 8px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1.5px solid #6d6457; background: #fbf6e8; color: #3d3d3d; white-space: nowrap; }
 .lib-card[aria-disabled="true"] .cover { opacity: 0.88; }

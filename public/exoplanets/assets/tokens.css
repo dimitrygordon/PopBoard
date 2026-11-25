@@ -70,7 +70,7 @@
   padding: 8px 12px calc(8px + var(--ob-safe-bottom));
   background: var(--ob-hud-bg);
   border: var(--ob-hud-border);
-  border-radius: var(--ob-hud-radius);
+  border-radius: calc(var(--ob-hud-radius) * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   box-shadow: var(--ob-hud-shadow);
   -webkit-backdrop-filter: var(--ob-hud-blur);
   backdrop-filter: var(--ob-hud-blur);
@@ -78,7 +78,7 @@
 .ob-hud button {
   width: var(--ob-hud-hit); height: var(--ob-hud-hit);
   display: grid; place-items: center; border: 0; background: none;
-  color: var(--ob-ink-dim); border-radius: 50%;
+  color: var(--ob-ink-dim); border-radius: 50%; corner-shape: round; --sq: 0;
   transition: color var(--ob-dur-fast) var(--ob-ease-out), transform var(--ob-dur-fast) var(--ob-ease-spring);
   -webkit-tap-highlight-color: transparent;
 }
@@ -129,7 +129,7 @@
   --ex-limb-u: 0.6;   /* linear limb darkening coefficient used in sprites and sample curve */
   --ex-marker-idle: 0.45; --ex-marker-hover: 0.8; --ex-marker-selected: 1;
 }
-.ex-panel { background: var(--ex-panel-bg); border: var(--ex-panel-border); border-radius: var(--ex-panel-radius); -webkit-backdrop-filter: var(--ob-hud-blur); backdrop-filter: var(--ob-hud-blur); }
+.ex-panel { background: var(--ex-panel-bg); border: var(--ex-panel-border); border-radius: calc(var(--ex-panel-radius) * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; -webkit-backdrop-filter: var(--ob-hud-blur); backdrop-filter: var(--ob-hud-blur); }
 .ex-marker { opacity: var(--ex-marker-idle); transition: opacity var(--ob-dur-fast), transform var(--ob-dur-fast) var(--ob-ease-spring); }
 .ex-marker:hover { opacity: var(--ex-marker-hover); transform: scale(1.08); }
 .ex-marker[aria-selected="true"] { opacity: 1; animation: ob-glow-breathe 3s ease-in-out infinite; }

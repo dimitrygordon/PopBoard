@@ -17,7 +17,7 @@
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--ab-bg); color: var(--ab-ink);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-button { font: inherit; color: var(--ab-ink); background: var(--ab-btn); border: 1px solid var(--ab-border); border-radius: 12px;
+button { font: inherit; color: var(--ab-ink); background: var(--ab-btn); border: 1px solid var(--ab-border); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   min-width: var(--ab-hit); min-height: var(--ab-hit); padding: 0 12px; cursor: pointer; }
 button:disabled { opacity: 0.45; cursor: default; }
 button[aria-pressed="true"], button[aria-selected="true"], button.primary { background: var(--ab-accent); border-color: var(--ab-accent); color: #fff; font-weight: 700; }
@@ -34,11 +34,11 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--ab-accent)
 #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 .model-label { position: fixed; z-index: 4; left: 16px; margin: 0; font-size: 0.8rem; color: var(--ab-dim); pointer-events: none; bottom: calc(var(--ab-ctl, 120px) + 10px); max-width: calc(100% - 32px); }
 /* Toast: placed by toast() in the header band (the title's slot), never over the atom. */
-.toast { position: fixed; z-index: 7; box-sizing: border-box; display: flex; align-items: center; justify-content: center; text-align: center; margin: 0; padding: 4px 12px; border-radius: 999px;
+.toast { position: fixed; z-index: 7; box-sizing: border-box; display: flex; align-items: center; justify-content: center; text-align: center; margin: 0; padding: 4px 12px; border-radius: 999px; corner-shape: round; --sq: 0;
   background: var(--ab-chip); border: 1px solid var(--ab-border); font-weight: 700; font-size: 0.85rem; line-height: 1.15; pointer-events: none; }
 
 .controls { position: fixed; z-index: 5; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(560px, calc(100% - 24px));
-  padding: 12px 14px; border-radius: 16px; background: var(--ab-chip); border: 1px solid var(--ab-border); display: grid; gap: 8px; }
+  padding: 12px 14px; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--ab-chip); border: 1px solid var(--ab-border); display: grid; gap: 8px; }
 .controls .fun-handle { display: none; }
 .tabs { display: flex; gap: 6px; }
 .tabs button { flex: 1 1 0; }
@@ -56,7 +56,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--ab-accent)
 .canvas-box .fun-pop { top: calc(max(8px, env(safe-area-inset-top)) + 108px); right: 12px; }
 
 .caveat-wrap { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px; background: rgba(5, 8, 14, 0.55); }
-.caveat { width: min(460px, 100%); padding: 18px 18px 14px; border-radius: 16px; background: var(--pj-paper); color: var(--ab-ink); border: 1px solid var(--ab-border); display: grid; gap: 10px; }
+.caveat { width: min(460px, 100%); padding: 18px 18px 14px; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--pj-paper); color: var(--ab-ink); border: 1px solid var(--ab-border); display: grid; gap: 10px; }
 .caveat p { margin: 0; }
 .caveat-title { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; line-height: 1.05; }
 .caveat-small { font-size: 0.85rem; color: var(--ab-dim); }
@@ -69,7 +69,7 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--ab-accent)
 .stepper { display: grid !important; grid-template-columns: 6.5em auto auto 2.5em; }
 .stepper output { text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; }
 .ptable { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; }
-.ptable .cell { aspect-ratio: 1; display: grid; place-items: center; border-radius: 4px; font-size: 0.7rem; font-weight: 700; border: 1px dashed var(--ab-border); color: var(--ab-dim); line-height: 1; }
+.ptable .cell { aspect-ratio: 1; display: grid; place-items: center; border-radius: 4px; corner-shape: round; --sq: 0; font-size: 0.7rem; font-weight: 700; border: 1px dashed var(--ab-border); color: var(--ab-dim); line-height: 1; }
 .ptable .cell.got { background: var(--ab-accent); border: 1px solid var(--ab-accent); color: #fff; }
 .ptable .cell small { display: block; font-size: 0.55rem; font-weight: 500; }
 /* Phones held sideways get the side panel too, so the sheet never covers the atom and its captions. */
@@ -97,11 +97,11 @@ button:focus-visible, canvas:focus-visible { outline: 3px solid var(--ab-accent)
   .status { right: 164px; }
   .status .facts { font-size: 0.85rem; line-height: 1.3; }
   .model-label { font-size: 0.75rem; line-height: 1.3; }
-  .controls.fun-sheet-on { left: 0; right: 0; bottom: 0; transform: none; width: auto; border-radius: 16px 16px 0 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); align-content: start; overflow: hidden; }
+  .controls.fun-sheet-on { left: 0; right: 0; bottom: 0; transform: none; width: auto; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)) calc(var(--r-16, 16px) * var(--sq-fit, 1)) 0 0; corner-shape: squircle; --sq: 1; padding-bottom: max(12px, env(safe-area-inset-bottom)); align-content: start; overflow: hidden; }
   .controls.fun-sheet-on .fun-handle { display: flex; }
 }
 @media (min-width: 900px) { .status { max-width: 260px; } }
 /* Door to Periodic Table Studio (its own library module). */
-.pt-door { display: inline-flex; align-items: center; gap: 6px; min-height: var(--ab-hit); padding: 0 12px; border-radius: 12px; border: 1px solid var(--ab-border); background: var(--ab-btn); color: var(--ab-ink); text-decoration: none; font-size: .9rem; white-space: nowrap; }
+.pt-door { display: inline-flex; align-items: center; gap: 6px; min-height: var(--ab-hit); padding: 0 12px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--ab-border); background: var(--ab-btn); color: var(--ab-ink); text-decoration: none; font-size: .9rem; white-space: nowrap; }
 .pt-door:focus-visible { outline: 3px solid var(--ab-accent); outline-offset: 2px; }
 @media (max-width: 600px) { .pt-door .door-label { display: none; } .pt-door { padding: 0; width: var(--ab-hit); justify-content: center; } }

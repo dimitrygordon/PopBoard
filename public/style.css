@@ -179,7 +179,7 @@ a.study-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(255, 255, 255, 0.62);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
@@ -244,12 +244,12 @@ header {
 
 #pollCreation {
   background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
-  border: 1.5px solid var(--border-color); border-radius: 24px;
+  border: 1.5px solid var(--border-color); border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-md);
   position: relative;
 }
 #pollCreation::after {
-  content: ""; position: absolute; inset: 0; border-radius: 24px;
+  content: ""; position: absolute; inset: 0; border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   opacity: var(--noise-opacity); pointer-events: none;
 }
@@ -262,7 +262,7 @@ header {
 .mc-option-row input[type="text"] { flex: 1; margin-bottom: 0; }
 .correct-toggle {
   padding: 4px 10px !important; font-size: 0.8rem !important;
-  min-width: 36px !important; border-radius: 999px; font-weight: 700;
+  min-width: 36px !important; border-radius: 999px; corner-shape: round; --sq: 0; font-weight: 700;
   background: transparent; border: 1.5px solid var(--button-border);
   color: var(--button-text); cursor: pointer; transition: all 0.2s;
 }
@@ -270,7 +270,7 @@ header {
   background: #34c759 !important; color: white !important; border-color: #34c759 !important;
 }
 .add-option-btn {
-  width: 36px !important; height: 36px !important; border-radius: 50% !important;
+  width: 36px !important; height: 36px !important; border-radius: 50% !important; corner-shape: round; --sq: 0;
   padding: 0 !important; font-size: 1.3rem !important; line-height: 1 !important;
   display: flex !important; align-items: center !important; justify-content: center !important;
   align-self: flex-start;
@@ -283,7 +283,7 @@ header {
   width: 18px; height: 18px; margin: 0; cursor: pointer;
   appearance: none; -webkit-appearance: none;
   background: var(--checkbox-bg); border: 1.5px solid var(--input-border);
-  border-radius: 4px; position: relative; transition: all 0.2s;
+  border-radius: 4px; corner-shape: round; --sq: 0; position: relative; transition: all 0.2s;
 }
 .require-all-row input[type="checkbox"]:checked { background: var(--checkbox-checked); border-color: var(--checkbox-checked); }
 .require-all-row input[type="checkbox"]:checked::after {
@@ -301,7 +301,7 @@ input[type="email"],
 #newStudentNameInput, #studentEditNameInput, #studentEditNicknameInput {
   width: 100%; padding: 16px 20px; margin-bottom: 12px;
   background: var(--input-bg); color: var(--input-text);
-  border: 1.5px solid var(--input-border); border-radius: 16px;
+  border: 1.5px solid var(--input-border); border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   font-size: 1rem; font-family: inherit; transition: all 0.2s ease;
   resize: vertical; min-height: 52px;
 }
@@ -316,7 +316,7 @@ textarea::placeholder, input::placeholder { color: var(--text-secondary); opacit
 
 select {
   padding: 10px 16px; background: var(--input-bg); color: var(--text-color);
-  border: 1.5px solid var(--input-border); border-radius: 12px;
+  border: 1.5px solid var(--input-border); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   font-size: 1rem; font-family: inherit; cursor: pointer; transition: all 0.2s;
 }
 select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(10,132,255,0.1); }
@@ -324,7 +324,7 @@ select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px
 button {
   padding: 12px 28px; font-size: 0.95rem; font-weight: 600; letter-spacing: 0.01em;
   cursor: pointer; background: var(--button-bg); color: var(--button-text);
-  border: 1.5px solid var(--button-border); border-radius: 999px;
+  border: 1.5px solid var(--button-border); border-radius: 999px; corner-shape: round; --sq: 0;
   transition: all 0.2s ease; font-family: inherit; white-space: nowrap;
   /* mobile-native: kill the 300ms tap delay, prevent long-press text selection */
   touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
@@ -372,9 +372,9 @@ button:active { transform: scale(0.97); }
      card" surfaces. ::after is already taken on these by the noise-texture
      overlay, so this uses ::before, which is free everywhere. --glow-x/-y
      are written by wireMotionGlow() in app.js on pointermove; border-radius:
-     inherit clips it to each shape (rounded cards, circular buttons/seats). */
+     inherit clips it to each shape (rounded cards, circular buttons/seats). */; corner-shape: round; --sq: 0
   .post::before, .poll::before, .confusion-btn::before, .seat::before, .metric-card::before, .board-card::before {
-    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    content: ""; position: absolute; inset: 0; border-radius: inherit; corner-shape: inherit;
     background: radial-gradient(circle at var(--glow-x, 50%) var(--glow-y, 50%), var(--motion-glow-color) 0%, transparent 60%);
     opacity: 0; transition: opacity 0.25s ease; pointer-events: none;
   }
@@ -406,7 +406,7 @@ button.hide-toggle, .reply button.hide-toggle {
 
 .post, .poll, .teacher-panel, #newPost, .metric-card {
   background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
-  border: 1.5px solid var(--border-color); border-radius: 24px;
+  border: 1.5px solid var(--border-color); border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow-sm);
   transition: all 0.3s ease; position: relative; overflow: hidden;
 }
@@ -421,7 +421,7 @@ button.hide-toggle, .reply button.hide-toggle {
   box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.08);
 }
 .post::after, .poll::after, .metric-card::after, .board-card::after {
-  content: ""; position: absolute; inset: 0; border-radius: 24px;
+  content: ""; position: absolute; inset: 0; border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   opacity: var(--noise-opacity); pointer-events: none;
 }
@@ -439,7 +439,7 @@ button.hide-toggle, .reply button.hide-toggle {
   padding: 8px 16px;
   font-size: 0.95rem; font-weight: 600; color: var(--text-color);
   background: var(--input-bg); border: 1.5px solid var(--border-color);
-  border-radius: 999px; cursor: pointer; user-select: none; transition: all 0.2s ease;
+  border-radius: 999px; corner-shape: round; --sq: 0; cursor: pointer; user-select: none; transition: all 0.2s ease;
 }
 .upvote:active { transform: scale(0.98); }
 
@@ -469,10 +469,10 @@ button.hide-toggle, .reply button.hide-toggle {
 .reply {
   margin-left: 24px; margin-top: 12px; padding: 14px 18px;
   font-size: 0.9rem; background: var(--input-bg);
-  border-left: 3px solid var(--border-color); border-radius: 12px;
+  border-left: 3px solid var(--border-color); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
 }
 .reply strong { font-size: 0.9rem; margin-bottom: 4px; }
-.reply-input { margin-top: 12px; border-radius: 12px; }
+.reply-input { margin-top: 12px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 
 .poll {
   background: linear-gradient(135deg, rgba(10,132,255,0.05) 0%, var(--card-gradient-end) 100%);
@@ -539,7 +539,7 @@ button.hide-toggle, .reply button.hide-toggle {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  border-radius: inherit; corner-shape: inherit;
   pointer-events: none;
   background: conic-gradient(red, orange, yellow, green, blue, violet, red);
   mask-image: radial-gradient(circle, transparent 45%, black 100%);
@@ -556,7 +556,7 @@ button.hide-toggle, .reply button.hide-toggle {
   width: 36px;
   height: 36px;
   min-width: 36px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -571,7 +571,7 @@ button.hide-toggle, .reply button.hide-toggle {
 
 .poll-stat {
   margin-top: 12px; margin-bottom: 8px; padding: 10px 14px;
-  background: var(--input-bg); border-radius: 12px;
+  background: var(--input-bg); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   font-size: 0.85rem; color: var(--text-secondary);
 }
 .poll-stat strong { font-size: 0.85rem; display: inline; margin-bottom: 0; }
@@ -579,8 +579,8 @@ button.hide-toggle, .reply button.hide-toggle {
 .mc-bar-chart { margin: 16px 0; }
 .mc-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .mc-bar-label { width: 120px; font-size: 0.85rem; text-align: right; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mc-bar-track { flex: 1; background: var(--input-bg); border-radius: 999px; height: 28px; position: relative; overflow: hidden; border: 1.5px solid var(--border-color); }
-.mc-bar-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; min-width: 4px; background: var(--upvote-active); }
+.mc-bar-track { flex: 1; background: var(--input-bg); border-radius: 999px; corner-shape: round; --sq: 0; height: 28px; position: relative; overflow: hidden; border: 1.5px solid var(--border-color); }
+.mc-bar-fill { height: 100%; border-radius: 999px; corner-shape: round; --sq: 0; transition: width 0.4s ease; min-width: 4px; background: var(--upvote-active); }
 .mc-bar-fill.correct-bar { background: #34c759; }
 .mc-bar-fill.wrong-bar { background: #ff453a; }
 .mc-bar-count { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.78rem; font-weight: 700; color: var(--text-color); }
@@ -590,7 +590,7 @@ button.hide-toggle, .reply button.hide-toggle {
   width: 18px; height: 18px; margin: 0; cursor: pointer;
   appearance: none; -webkit-appearance: none;
   background: var(--checkbox-bg); border: 1.5px solid var(--input-border);
-  border-radius: 4px; position: relative; transition: all 0.2s;
+  border-radius: 4px; corner-shape: round; --sq: 0; position: relative; transition: all 0.2s;
 }
 .post-options input[type="checkbox"]:checked { background: var(--checkbox-checked); border-color: var(--checkbox-checked); }
 .post-options input[type="checkbox"]:checked::after {
@@ -608,7 +608,7 @@ button.hide-toggle, .reply button.hide-toggle {
 
 .comment-upvote-history {
   margin-top: 16px; padding: 14px 18px; background: var(--input-bg);
-  border-left: 3px solid var(--border-color); border-radius: 12px;
+  border-left: 3px solid var(--border-color); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   font-size: 0.7rem !important; line-height: 1.5; color: var(--text-secondary);
 }
 .comment-upvote-history strong { display: block; margin-bottom: 8px; font-size: 0.75rem !important; color: var(--text-color); }
@@ -616,7 +616,7 @@ button.hide-toggle, .reply button.hide-toggle {
 
 .poll-log {
   margin-top: 16px; padding: 14px 18px; background: var(--input-bg);
-  border-left: 3px solid var(--border-color); border-radius: 12px;
+  border-left: 3px solid var(--border-color); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   font-size: 0.7rem !important; line-height: 1.5; color: var(--text-secondary);
 }
 .poll-log strong { display: block; margin-bottom: 8px; font-size: 0.75rem !important; color: var(--text-color); }
@@ -629,7 +629,7 @@ button.hide-toggle, .reply button.hide-toggle {
   display: inline-flex;
   align-items: center;
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   background: var(--input-bg);
   border: 1.5px solid var(--border-color);
   font-size: 0.8rem;
@@ -661,7 +661,7 @@ button.hide-toggle, .reply button.hide-toggle {
 
 .create-board-section {
   background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
-  border: 1.5px solid var(--border-color); border-radius: 24px;
+  border: 1.5px solid var(--border-color); border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 24px; margin-bottom: 24px; display: flex; gap: 12px; align-items: center;
 }
 .create-board-section input { flex: 1; margin-bottom: 0; }
@@ -670,7 +670,7 @@ button.hide-toggle, .reply button.hide-toggle {
 
 .board-card {
   background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
-  border: 1.5px solid var(--border-color); border-radius: 24px; padding: 24px;
+  border: 1.5px solid var(--border-color); border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; padding: 24px;
   display: flex; justify-content: space-between; align-items: center;
   transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;
 }
@@ -691,9 +691,9 @@ button.hide-toggle, .reply button.hide-toggle {
   cursor: grabbing; opacity: 0.95; box-shadow: var(--shadow-lg); pointer-events: none;
 }
 .drag-reorder-placeholder {
-  border-radius: 24px; border: 2px dashed var(--accent); background: transparent;
+  border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 2px dashed var(--accent); background: transparent;
 }
-.poll-reorder-list .drag-reorder-placeholder { border-radius: 12px; }
+.poll-reorder-list .drag-reorder-placeholder { border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 /* Belt-and-suspenders scroll lock while a reorder drag is in progress or
    the poll-reorder overlay is open -- the actual fix for the drag itself
    not working on touch is wireDragReorder's switch to Pointer Events. */
@@ -715,7 +715,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 .study-sessions-list { display: flex; flex-direction: column; gap: 8px; max-height: 260px; overflow-y: auto; }
 .study-session-row {
   display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center;
-  padding: 8px 10px; border-radius: 10px; background: var(--input-bg); font-size: 0.85rem;
+  padding: 8px 10px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--input-bg); font-size: 0.85rem;
 }
 .study-session-date { color: var(--text-secondary); white-space: nowrap; }
 .study-session-mode { font-weight: 600; }
@@ -723,14 +723,14 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 .study-session-empty { color: var(--text-secondary); font-size: 0.9rem; padding: 8px 0; }
 
 .leaderboard-summary-box {
-  background: var(--input-bg); border-radius: 16px; padding: 16px 20px;
+  background: var(--input-bg); border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; padding: 16px 20px;
   margin-top: 8px; font-size: 1.05rem; line-height: 2;
 }
 
 #leaderboardSection { max-width: 720px; margin: 0 auto 20px auto; }
 .leaderboard-card {
   background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
-  border: 1.5px solid var(--border-color); border-radius: 24px;
+  border: 1.5px solid var(--border-color); border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 20px 24px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
   /* apple-design §15: tier-1 real glass -- this is the one surface in the
      app that's position:sticky and visibly overlaps scrolling content
@@ -739,7 +739,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
 .leaderboard-card::after {
-  content: ""; position: absolute; inset: 0; border-radius: 24px;
+  content: ""; position: absolute; inset: 0; border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   opacity: var(--noise-opacity); pointer-events: none;
 }
@@ -748,8 +748,8 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 .lb-name { width: 110px; font-size: 0.88rem; text-align: right; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 5px; justify-content: flex-end; }
 .lb-name-text { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-emoji { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 1.1rem; font-size: 0.68rem; }
-.lb-bar-track { flex: 1; background: var(--input-bg); border-radius: 999px; height: 30px; position: relative; overflow: visible; border: 1.5px solid var(--border-color); }
-.lb-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--upvote-active), #e9c46a); transition: width 0.5s ease; min-width: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; }
+.lb-bar-track { flex: 1; background: var(--input-bg); border-radius: 999px; corner-shape: round; --sq: 0; height: 30px; position: relative; overflow: visible; border: 1.5px solid var(--border-color); }
+.lb-bar-fill { height: 100%; border-radius: 999px; corner-shape: round; --sq: 0; background: linear-gradient(90deg, var(--upvote-active), #e9c46a); transition: width 0.5s ease; min-width: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; }
 .lb-score { font-size: 0.78rem; font-weight: 700; color: white; white-space: nowrap; }
 /* apple-design §19: fixed width regardless of content (medal emoji, "#4",
    or empty) -- the medal column previously sized to its own content, so a
@@ -776,7 +776,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 }
 
 #emojiCircle {
-  width: 52px; height: 52px; border-radius: 50%;
+  width: 52px; height: 52px; border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--input-bg); border: 1.5px solid var(--border-color);
   display: inline-flex; align-items: center; justify-content: center;
   cursor: pointer; font-size: 1rem; transition: all 0.2s;
@@ -787,12 +787,12 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 
 .daily-dashboard-card {
   background: linear-gradient(135deg, var(--card-gradient-start) 0%, var(--card-gradient-end) 100%);
-  border: 1.5px solid var(--border-color); border-radius: 24px;
+  border: 1.5px solid var(--border-color); border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
   position: relative; overflow: hidden;
 }
 .daily-dashboard-card::after {
-  content: ""; position: absolute; inset: 0; border-radius: 24px;
+  content: ""; position: absolute; inset: 0; border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   opacity: var(--noise-opacity); pointer-events: none;
 }
@@ -825,7 +825,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 .class-confusion-timeline-row {
   flex: 1 1 auto;
   height: 7px;
-  border-radius: 2px;
+  border-radius: 2px; corner-shape: round; --sq: 0;
   background: var(--confusion-none-color);
   flex-shrink: 0;
 }
@@ -833,20 +833,20 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   position: relative;
   width: 100%;
   min-height: 480px;
-  border-radius: 16px;
+  border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background: var(--bg-secondary);
   border: 1.5px solid var(--border-color);
 }
 
 .image-preview { margin: 12px 0; position: relative; }
-.image-preview img { max-width: 100%; max-height: 300px; border-radius: 12px; border: 1.5px solid var(--border-color); }
+.image-preview img { max-width: 100%; max-height: 300px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1.5px solid var(--border-color); }
 .image-preview .remove-image {
   position: absolute; top: 8px; right: 8px; background: var(--delete-color); color: var(--delete-text-color);
-  border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1.2rem;
+  border: none; border-radius: 50%; corner-shape: round; --sq: 0; width: 32px; height: 32px; font-size: 1.2rem;
   cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;
 }
 .comment-image, .poll-image {
-  max-width: 100%; max-height: 400px; border-radius: 12px; margin-top: 12px;
+  max-width: 100%; max-height: 400px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; margin-top: 12px;
   border: 1.5px solid var(--border-color); cursor: pointer; transition: all 0.2s ease;
 }
 .image-lightbox {
@@ -854,21 +854,21 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   background: rgba(0,0,0,0.9); display: flex; align-items: center;
   justify-content: center; z-index: 1000; cursor: pointer;
 }
-.image-lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+.image-lightbox img { max-width: 90%; max-height: 90%; border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .pixel-art-lightbox-canvas {
   width: 90vmin;
   height: 90vmin;
   max-width: 90%;
   max-height: 90%;
   image-rendering: pixelated;
-  border-radius: 8px;
+  border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
 }
 
 .master-admin-section { margin-top: 48px; padding-top: 32px; border-top: 2px solid var(--border-color); }
 .master-admin-section h2 { color: var(--hidden-text-color); font-size: 1.5rem; margin-bottom: 16px; }
 .teacher-card {
   background: linear-gradient(135deg, rgba(255,69,58,0.05) 0%, var(--card-gradient-end) 100%);
-  border: 1.5px solid rgba(255,69,58,0.2); border-radius: 24px; padding: 20px; margin-bottom: 16px;
+  border: 1.5px solid rgba(255,69,58,0.2); border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; padding: 20px; margin-bottom: 16px;
 }
 .teacher-card h4 { margin: 0 0 12px 0; color: var(--hidden-text-color); font-size: 1.1rem; }
 .teacher-boards { margin-left: 20px; margin-top: 12px; }
@@ -876,7 +876,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 
 .confetti-piece {
   position: absolute; pointer-events: none; z-index: 100; width: 10px; height: 10px;
-  border-radius: 50%; background: var(--upvote-active); opacity: 0;
+  border-radius: 50%; corner-shape: round; --sq: 0; background: var(--upvote-active); opacity: 0;
   transform-origin: center; animation: confetti-burst 0.6s ease-out forwards;
 }
 @keyframes confetti-burst {
@@ -924,7 +924,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 .hold-delete-fill {
   position: absolute; inset: 0; width: 0%;
   background: currentColor; opacity: 0.25; pointer-events: none;
-  border-radius: inherit;
+  border-radius: inherit; corner-shape: inherit;
 }
 .delete-icon-shaking { animation: delete-icon-shake 0.3s linear infinite; }
 @keyframes delete-icon-shake {
@@ -947,12 +947,12 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 999px; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 999px; corner-shape: round; --sq: 0; }
 
 @media (max-width: 640px) {
   body { padding: 12px; }
   #login h2, #boardNameEntry h2, #teacherLogin h2, #teacherSignup h2 { font-size: 2rem; }
-  .post, .poll, .teacher-panel, #newPost { padding: 18px; border-radius: 20px; }
+  .post, .poll, .teacher-panel, #newPost { padding: 18px; border-radius: calc(var(--r-20, 20px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
   button { padding: 10px 20px; font-size: 0.9rem; }
   .poll > button { min-width: 120px; padding: 12px 20px; }
   header { flex-direction: column; align-items: flex-start; }
@@ -992,7 +992,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  border-radius: inherit; corner-shape: inherit;
   background: linear-gradient(115deg, transparent 35%, var(--glass-specular) 50%, transparent 65%);
   background-size: 220% 220%;
   background-position: var(--scroll-highlight, -60%) 0%;
@@ -1032,7 +1032,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1.5px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: calc(var(--r-20, 20px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 12px 16px;
   box-shadow: var(--shadow-lg);
   transform-origin: var(--identity-popup-origin, top center);
@@ -1043,7 +1043,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 #emojiCircle {
   width: 56px;
   height: 56px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--card-bg);
   border: 2px solid var(--border);
   display: flex;
@@ -1062,7 +1062,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   min-width: 200px;
   background: var(--card-bg);
   border: 2px solid var(--border);
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
 }
 
 #nicknameInputContainer {
@@ -1073,7 +1073,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   min-width: 200px;
   background: var(--card-bg);
   border: 2px solid var(--border);
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   box-sizing: border-box;
 }
 
@@ -1104,13 +1104,13 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   background: var(--card-bg-translucent);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1.5px solid var(--border-color); border-radius: 20px;
+  border: 1.5px solid var(--border-color); border-radius: calc(var(--r-20, 20px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   text-align: center;
 }
 .lb-entry-box-title { margin: 0 0 12px 0; font-size: 0.88rem; color: var(--text-secondary); }
 .lb-entry-box .leaderboard-identity-group { flex-wrap: wrap; }
 #lbEntryEmojiCircle {
-  width: 56px; height: 56px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--card-bg); border: 2px solid var(--border-color);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; flex-shrink: 0; font-size: 1.4rem; position: relative;
@@ -1118,7 +1118,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 #lbEntryEmojiDisplay { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; text-align: center; max-width: 44px; }
 #lbEntryNicknameContainer {
   display: flex; align-items: center; padding: 0 16px; height: 56px; min-width: 200px;
-  background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 999px;
+  background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 999px; corner-shape: round; --sq: 0;
   box-sizing: border-box;
 }
 #lbEntryNicknameContainer input {
@@ -1133,7 +1133,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
    element IDs so none of the three surfaces collide. */
 #studentEditPopup .leaderboard-identity-group { margin: 16px auto; }
 #studentEditEmojiCircle {
-  width: 56px; height: 56px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--card-bg); border: 2px solid var(--border-color);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; flex-shrink: 0; font-size: 1.4rem; position: relative;
@@ -1141,7 +1141,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 #studentEditEmojiDisplay { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.2; text-align: center; max-width: 44px; }
 .student-edit-nickname-wrap {
   display: flex; align-items: center; height: 56px; min-width: 200px;
-  background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 999px;
+  background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 999px; corner-shape: round; --sq: 0;
   box-sizing: border-box; padding: 0 16px;
 }
 .student-edit-nickname-wrap input { background: transparent; border: none; outline: none; margin-bottom: 0; padding: 0; height: 100%; text-align: center; }
@@ -1214,7 +1214,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   padding: 4px 0;
   max-width: 100%;
   margin: 0 0 20px 0;
-  border-radius: 24px;
+  border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
 }
 
 .leaderboard-card {
@@ -1326,7 +1326,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px)) 16px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
-  border-radius: 0;
+  border-radius: 0; corner-shape: round; --sq: 0;
   margin-bottom: 0;
 }
 
@@ -1338,7 +1338,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   height: 40px;
   min-height: 40px;
   max-height: 40px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   padding: 0 20px;
   line-height: 40px;
   resize: none;
@@ -1360,7 +1360,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 #newPost.comment-expanded #postInput {
   height: 80px;
   min-height: 80px;
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px 16px;
   line-height: normal;
   resize: none;
@@ -1447,7 +1447,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   min-height: 18px !important;
   background: var(--checkbox-bg) !important;
   border: 1.5px solid var(--input-border) !important;
-  border-radius: 4px !important;
+  border-radius: 4px !important; corner-shape: round; --sq: 0;
   position: relative !important;
   cursor: pointer !important;
   padding: 0 !important;
@@ -1473,12 +1473,12 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 }
 
 .lb-compressed .leaderboard-card {
-  border-radius: 24px;
+  border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   overflow: hidden;
 }
 
 #leaderboardSection.lb-compressed {
-  border-radius: 24px;
+  border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
 }
 
 /* ── Seating Map ─────────────────────────────────────────────────── */
@@ -1516,7 +1516,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   margin: auto;
   background: var(--card-bg);
   border: 1.5px solid var(--border-color);
-  border-radius: 24px;
+  border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   box-shadow: var(--shadow-lg);
   padding: 48px 24px 24px;
 }
@@ -1528,7 +1528,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   height: 32px;
   min-width: auto;
   padding: 0;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1548,12 +1548,12 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 .simple-picker-card {
   position: relative; width: 100%; max-width: 420px; max-height: 80vh;
   overflow-y: auto; background: var(--card-bg); border: 1.5px solid var(--border-color);
-  border-radius: 24px; box-shadow: var(--shadow-lg); padding: 48px 20px 20px;
+  border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; box-shadow: var(--shadow-lg); padding: 48px 20px 20px;
 }
 .simple-picker-card h3 { margin: 0 0 16px 0; text-align: center; }
 .simple-picker-list { display: flex; flex-direction: column; gap: 8px; }
 .simple-picker-row {
-  width: 100%; text-align: left; padding: 12px 16px; border-radius: 12px;
+  width: 100%; text-align: left; padding: 12px 16px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background: var(--bg-secondary); border: 1.5px solid var(--border-color); font-size: 0.95rem;
 }
 .simple-picker-row:hover { border-color: var(--accent); }
@@ -1561,7 +1561,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 .poll-reorder-hint { margin: -8px 0 12px 0; text-align: center; font-size: 0.82rem; color: var(--text-secondary); }
 .poll-reorder-list { display: flex; flex-direction: column; gap: 8px; }
 .poll-reorder-row {
-  padding: 12px 16px; border-radius: 12px; background: var(--bg-secondary);
+  padding: 12px 16px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--bg-secondary);
   border: 1.5px solid var(--border-color); font-size: 0.95rem; cursor: grab;
 }
 
@@ -1573,7 +1573,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   background-image: radial-gradient(circle, var(--border-color) 1px, transparent 1px);
   background-size: 24px 24px;
   border: 1.5px solid var(--border-color);
-  border-radius: 24px;
+  border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   overflow: hidden;
   touch-action: none;
 }
@@ -1581,7 +1581,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
 #unassignedStudentsList h3 { margin: 24px 0 12px 0; font-size: 1rem; font-weight: 600; color: var(--text-secondary); }
 .unassigned-students-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .unassigned-student-pill {
-  padding: 6px 14px; border-radius: 999px; background: var(--bg-secondary);
+  padding: 6px 14px; border-radius: 999px; corner-shape: round; --sq: 0; background: var(--bg-secondary);
   border: 1.5px solid var(--border-color); font-size: 0.9rem;
 }
 
@@ -1591,7 +1591,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   height: 68px;
   margin-left: -34px;
   margin-top: -34px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1650,7 +1650,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   gap: 10px;
   margin-bottom: 16px;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background: var(--bg-secondary);
   border: 1.5px solid var(--border-color);
   font-size: 0.85rem;
@@ -1667,7 +1667,7 @@ body.drag-reorder-active, body.simple-picker-open { overflow: hidden; }
   display: block;
   margin-top: 10px;
   width: 100%;
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   cursor: pointer;
 }
 canvas.seat-response-thumb { image-rendering: pixelated; }
@@ -1678,7 +1678,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   right: -6px;
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--delete-color, #ff453a);
   color: var(--delete-text-color, #fff);
   font-size: 0.7rem;
@@ -1697,7 +1697,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1.5px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 16px;
   width: 240px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.25);
@@ -1769,7 +1769,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .confusion-timeline .tick {
   flex: 1 1 auto;
   height: 100%;
-  border-radius: 2px;
+  border-radius: 2px; corner-shape: round; --sq: 0;
   min-width: 3px;
 }
 .confusion-timeline .tick.red { background: #8c1f4b; }
@@ -1819,7 +1819,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   position: relative;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1837,12 +1837,12 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
    already have position:relative with no overflow:hidden, so no clipping or
    stacking-context work is needed here. */
 .confusion-btn.confusion-active::after, #raiseHandBtn.hand-is-raised::after {
-  content: ""; position: absolute; inset: -8px; border-radius: 50%; z-index: -1; pointer-events: none;
+  content: ""; position: absolute; inset: -8px; border-radius: 50%; corner-shape: round; --sq: 0; z-index: -1; pointer-events: none;
   background: conic-gradient(red, orange, yellow, green, blue, violet, red);
   filter: blur(8px) hue-rotate(0deg); opacity: 0.5;
   animation: hand-raise-glow-pulse 3s linear infinite;
 }
-.confusion-dot { display: block; width: 11px; height: 11px; border-radius: 50%; }
+.confusion-dot { display: block; width: 11px; height: 11px; border-radius: 50%; corner-shape: round; --sq: 0; }
 .confusion-dot-green { background: #8fdba8; }
 .confusion-dot-orange { background: #c76a17; }
 .confusion-dot-red { background: #8c1f4b; }
@@ -1860,7 +1860,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
    effect, which isn't semantically relevant to a one-off hand-raise action. */
 .confusion-divider { width: 1px; height: 24px; background: var(--border-color); }
 #raiseHandBtn {
-  position: relative; width: 40px; height: 40px; border-radius: 50%;
+  position: relative; width: 40px; height: 40px; border-radius: 50%; corner-shape: round; --sq: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.1rem; padding: 0; min-width: auto;
   background: var(--bg-secondary); border: 2px solid var(--border-color);
@@ -1892,13 +1892,13 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .hand-raise-queue { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; }
 .hand-raise-item { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
 .hand-raise-circle {
-  position: relative; width: 40px; height: 40px; border-radius: 50%;
+  position: relative; width: 40px; height: 40px; border-radius: 50%; corner-shape: round; --sq: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.1rem; font-weight: 700; color: var(--text-color);
   background: var(--bg-secondary); border: 2px solid var(--accent);
 }
 .hand-raise-mini-badge {
-  position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; border-radius: 50%;
+  position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center;
 }
 .hand-raise-mini-badge .icon-svg { width: 10px; height: 10px; margin-right: 0; }
@@ -1922,7 +1922,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
    for the glow; a deliberately off-center margin for the badge). */
 .seat-hand-raise-glow {
   position: absolute; width: 76px; height: 76px; margin-left: -38px; margin-top: -38px;
-  border-radius: 50%; pointer-events: none;
+  border-radius: 50%; corner-shape: round; --sq: 0; pointer-events: none;
   background: conic-gradient(red, orange, yellow, green, blue, violet, red);
   filter: blur(10px) hue-rotate(0deg); opacity: 0.6;
   animation: hand-raise-glow-pulse 3s linear infinite;
@@ -1934,7 +1934,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 }
 .seat-hand-raise-badge {
   position: absolute; width: 18px; height: 18px; margin-left: 12px; margin-top: -30px;
-  border-radius: 50%; pointer-events: none; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; corner-shape: round; --sq: 0; pointer-events: none; display: flex; align-items: center; justify-content: center;
   background: var(--accent); color: #fff;
 }
 .seat-hand-raise-badge .icon-svg { width: 11px; height: 11px; margin-right: 0; }
@@ -1970,7 +1970,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1.5px solid var(--border-color);
-  border-radius: 24px;
+  border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 24px 28px;
   box-shadow: var(--shadow-lg);
   text-align: center;
@@ -2017,7 +2017,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .draw-color {
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   border: 2px solid var(--border-color);
   padding: 0;
   min-width: auto;
@@ -2043,7 +2043,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   aspect-ratio: 1 / 1;
   background: #ffffff;
   border: 1.5px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   touch-action: none;
   display: block;
   cursor: crosshair;
@@ -2060,7 +2060,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--card-bg-translucent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -2073,7 +2073,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
 .draw-eraser-cursor {
   position: absolute;
   border: 1.5px solid var(--text-color);
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: rgba(255, 255, 255, 0.35);
   pointer-events: none;
   z-index: 5;
@@ -2112,7 +2112,7 @@ canvas.seat-response-thumb { image-rendering: pixelated; }
   width: 110px;
   height: 110px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1.5px solid var(--border-color);
   cursor: pointer;
 }

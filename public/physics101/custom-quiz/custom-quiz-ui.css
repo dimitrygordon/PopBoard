@@ -35,7 +35,7 @@
   --cq-heat-3: rgba(224,122,106,.40); --cq-heat-4: rgba(224,122,106,.58);
   --cq-card-border: 1px solid #3A362F; --cq-shadow: none;
 }
-.cq-card { background: var(--cq-ticket); color: var(--cq-ink); border: var(--cq-card-border); border-radius: var(--cq-radius); box-shadow: var(--cq-shadow); }
+.cq-card { background: var(--cq-ticket); color: var(--cq-ink); border: var(--cq-card-border); border-radius: calc(var(--cq-radius) * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; box-shadow: var(--cq-shadow); }
 .cq-icon { width: var(--cq-icon); height: var(--cq-icon); color: var(--cq-ink); }
 .cq-tap { min-width: var(--cq-tap); min-height: var(--cq-tap); }
 @media (prefers-reduced-motion: reduce) { .cq-reveal, .cq-knob { transition: none !important; animation: none !important; } }

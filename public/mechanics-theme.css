@@ -177,7 +177,7 @@ button:focus-visible {
   justify-content: center;
   gap: 4px;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   border: 1px solid var(--mp-cardboard-edge);
   background: var(--mp-paper);
   color: var(--mp-stitch);
@@ -202,7 +202,7 @@ button:focus-visible {
   margin: 0;
   max-width: min(92vw, 520px);
   padding: 6px 12px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   background: rgba(36, 25, 16, 0.78);
   color: var(--mp-paper);
   font-family: var(--font-mono);
@@ -243,7 +243,7 @@ button:focus-visible {
   min-height: 76px;
   padding: 0;
   border: 0;
-  border-radius: 18px;
+  border-radius: calc(var(--r-18, 18px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   overflow: visible;
   background: transparent;
   touch-action: none;
@@ -453,7 +453,7 @@ button:focus-visible {
   transform: translate(-50%, -50%);
   min-width: 44px;
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   border: 1px solid var(--mp-cardboard-edge);
   background: var(--mp-paper);
   color: var(--mp-stitch);

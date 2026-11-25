@@ -52,19 +52,19 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px s
 .title { margin: 0; font-size: 18px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
 .hud button, .toolbar .tool {
   min-width: var(--wv-hit); min-height: var(--wv-hit); display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 8px 14px; border-radius: 8px; border: 1px solid var(--wv-btn-border); background: var(--wv-btn); color: var(--wv-text);
+  padding: 8px 14px; border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--wv-btn-border); background: var(--wv-btn); color: var(--wv-text);
   font-size: 14px; cursor: pointer; touch-action: manipulation; }
 .toolbar .tool[aria-pressed="true"], .theme-btn[aria-pressed="true"] { background: var(--wv-accent); border-color: var(--wv-accent); color: #1c1c1c; font-weight: 600; }
 
 .stage { flex: 1; overflow: auto; padding: 10px 12px 12px; display: grid; grid-template-columns: minmax(0, 3fr) minmax(300px, 2fr); gap: 12px; min-height: 420px; }
-.paper { background: var(--wv-paper); color: var(--wv-ink); border-radius: 10px; }
+.paper { background: var(--wv-paper); color: var(--wv-ink); border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 :root[data-theme="dark"] .paper { border: 1px solid #343846; }
 .canvas-box { position: relative; min-height: 380px; overflow: hidden; }
 .canvas-box canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 .canvas-hint { position: absolute; left: 10px; right: 10px; bottom: 8px; margin: 0; font-size: 13px; color: var(--wv-ink-dim); pointer-events: none; }
 .controls { padding: 14px; overflow: auto; display: flex; flex-direction: column; gap: 10px; }
 .row { display: flex; flex-wrap: wrap; gap: 6px; }
-.controls button { min-width: var(--wv-hit); min-height: var(--wv-hit); padding: 6px 12px; border-radius: 8px;
+.controls button { min-width: var(--wv-hit); min-height: var(--wv-hit); padding: 6px 12px; border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1px solid var(--wv-chip-border); background: var(--wv-chip); color: var(--wv-ink); font-size: 14px; cursor: pointer; touch-action: manipulation; }
 .controls button[aria-pressed="true"] { background: var(--wv-ink); color: var(--wv-paper); border-color: var(--wv-ink); font-weight: 600; }
 .slider { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 14px; align-items: center; }

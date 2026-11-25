@@ -21,7 +21,7 @@ body.ss-gallery { overflow-x: hidden; }
 body.ss-viewer { height: 100%; overflow: hidden; overscroll-behavior: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 button, input, label { font: inherit; color: inherit; }
-button { background: #111; border: 1px solid var(--ss-border); border-radius: 12px; min-width: var(--ss-hit); min-height: var(--ss-hit); padding: 0 12px; cursor: pointer; }
+button { background: #111; border: 1px solid var(--ss-border); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; min-width: var(--ss-hit); min-height: var(--ss-hit); padding: 0 12px; cursor: pointer; }
 button.primary, button[aria-pressed="true"] { background: var(--ss-accent); border-color: var(--ss-accent); color: #000; font-weight: 600; }
 button:focus-visible, input:focus-visible, a:focus-visible, model-viewer:focus-visible { outline: 3px solid var(--ss-accent); outline-offset: 2px; }
 a { color: var(--ss-accent); }
@@ -35,14 +35,14 @@ body.ss-viewer .hud > * { pointer-events: auto; }
 .study-back-btn { display: inline-flex; gap: 4px; align-items: center; }
 
 .search { flex: 1 1 12rem; min-width: 0; display: flex; }
-.search input { width: 100%; min-height: var(--ss-hit); padding: 0 12px; background: #111; border: 1px solid var(--ss-border); border-radius: 12px; }
+.search input { width: 100%; min-height: var(--ss-hit); padding: 0 12px; background: #111; border: 1px solid var(--ss-border); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .filters { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
 .filters button { min-height: 40px; padding: 0 10px; font-size: 0.85rem; }
 
 .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
   padding: 8px max(12px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
 .card { display: flex; flex-direction: column; min-width: 0; color: inherit; text-decoration: none;
-  background: #0c0c0c; border: 1px solid var(--ss-border); border-radius: 14px; overflow: hidden; }
+  background: #0c0c0c; border: 1px solid var(--ss-border); border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; overflow: hidden; }
 .card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #000; }
 .card .meta { padding: 8px 10px 10px; min-width: 0; }
 .card h2 { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.25; color: #fff; }
@@ -58,7 +58,7 @@ body.ss-viewer .hud > * { pointer-events: auto; }
 .poster { display: grid; place-items: center; width: 100%; height: 100%; background: #000; color: var(--ss-ink); }
 .poster img { max-width: 70%; max-height: 70%; object-fit: contain; }
 .banner { position: absolute; left: 12px; right: 12px; bottom: 12px; margin: 0; padding: 8px 10px;
-  background: var(--ss-chip); border: 1px solid var(--ss-border); border-radius: 12px; font-size: 0.85rem; z-index: 2; }
+  background: var(--ss-chip); border: 1px solid var(--ss-border); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; font-size: 0.85rem; z-index: 2; }
 .missing { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; height: 100%; padding: 16px; text-align: center; }
 .missing h2 { margin: 0 0 8px; color: #fff; font-size: 1.1rem; }
 
@@ -83,7 +83,7 @@ body.ss-viewer .hud > * { pointer-events: auto; }
 @media (min-width: 700px) {
   .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
   .dock { left: 50%; right: auto; transform: translateX(-50%); width: min(560px, calc(100% - 16px));
-    bottom: max(12px, env(safe-area-inset-bottom)); border: 1px solid var(--ss-border); border-radius: 16px;
+    bottom: max(12px, env(safe-area-inset-bottom)); border: 1px solid var(--ss-border); border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
     padding-bottom: 12px; }
   .stage { inset: 0; }
   .banner { left: 50%; right: auto; transform: translateX(-50%); width: min(560px, calc(100% - 16px));

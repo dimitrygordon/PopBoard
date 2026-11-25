@@ -21,7 +21,7 @@ body.la-on #login, body.la-on #teacherLogin, body.la-on #teacherSignup { positio
 /* card */
 .la-card {
   --mx: 50%; --my: 0%;
-  padding: 36px 40px 32px; border-radius: 28px;
+  padding: 36px 40px 32px; border-radius: calc(var(--r-28, 28px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background:
     radial-gradient(420px circle at var(--mx) var(--my), var(--la-glow), transparent 60%),
     var(--la-card-bg);
@@ -73,10 +73,10 @@ body.la-on #login, body.la-on #teacherLogin, body.la-on #teacherSignup { positio
 .la-logo.la-ready .la-rig { opacity: 1; }
 .la-rig img { position: absolute; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; will-change: transform; max-width: none; }
 .la-rig .la-base { inset: 0; width: 100%; height: 100%; }
-.la-blush { position: absolute; width: 9%; height: 5%; border-radius: 50%; background: rgba(255, 110, 110, .55); filter: blur(2px); opacity: 0; transition: opacity .35s ease; }
+.la-blush { position: absolute; width: 9%; height: 5%; border-radius: 50%; corner-shape: round; --sq: 0; background: rgba(255, 110, 110, .55); filter: blur(2px); opacity: 0; transition: opacity .35s ease; }
 .la-logo.la-shy .la-blush { opacity: 1; }
 .la-kernel { position: absolute; width: 14%; height: 14%; left: 43%; top: 30%; pointer-events: none; }
-.la-logo:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 24px; }
+.la-logo:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: calc(var(--r-24, 24px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 
 @media (prefers-reduced-motion: reduce) {
   .la-card.la-enter { animation: la-fade .4s ease both; }
@@ -126,12 +126,12 @@ body.la-on::before {
   box-shadow: 0 1px 0 rgba(255,255,255,.5) inset, 0 24px 60px -20px rgba(20, 12, 40, .35), var(--shadow-lg);
 }
 .la-card::before { /* grain */
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+  content: ""; position: absolute; inset: 0; border-radius: inherit; corner-shape: inherit; pointer-events: none; z-index: -1;
   opacity: .14; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .la-card::after { /* gradient border */
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; padding: 1.5px;
+  content: ""; position: absolute; inset: 0; border-radius: inherit; corner-shape: inherit; pointer-events: none; padding: 1.5px;
   background:
     radial-gradient(260px circle at var(--mx) var(--my), rgba(255, 170, 60, .95), rgba(255, 110, 140, .55) 40%, transparent 70%),
     linear-gradient(160deg, rgba(255,255,255,.7), rgba(255,255,255,.12) 40%, rgba(255, 196, 92, .35));
@@ -177,7 +177,7 @@ body.la-on #la-sky, body.la-sendoff #la-sky { display: block; }
 /* subtle glass pill links (Teacher Login / Request Account / Back) */
 .la-card .login-link-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 .la-card a.login-link.la-pill {
-  display: inline-flex; align-items: center; padding: 7px 16px; border-radius: 999px; font-size: 13.5px; font-weight: 500;
+  display: inline-flex; align-items: center; padding: 7px 16px; border-radius: 999px; corner-shape: round; --sq: 0; font-size: 13.5px; font-weight: 500;
   text-decoration: none !important; color: inherit; opacity: .86;
   background: rgba(255, 255, 255, .38); border: 1px solid rgba(255, 255, 255, .55);
   box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 2px 8px rgba(20, 12, 40, .08);

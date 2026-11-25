@@ -14,7 +14,7 @@ html.ls-mode body > *:not(.ls-root) { display: none !important; }
 html.ls-mode, html.ls-mode body { margin: 0; background: var(--ls-bg); color: var(--ls-ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; -webkit-tap-highlight-color: transparent; overflow: hidden; }
 .ls-root [hidden] { display: none !important; }
 .ls-root .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.ls-root button { font: inherit; color: var(--ls-ink); background: var(--ls-btn); border: 1px solid var(--ls-border); border-radius: 12px;
+.ls-root button { font: inherit; color: var(--ls-ink); background: var(--ls-btn); border: 1px solid var(--ls-border); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   min-width: var(--ls-hit); min-height: var(--ls-hit); padding: 0 12px; cursor: pointer; }
 .ls-root button[aria-pressed="true"], .ls-root button[aria-selected="true"], .ls-root button.primary { background: var(--ls-accent); border-color: var(--ls-accent); color: #fff; font-weight: 700; }
 .ls-root button:focus-visible, .ls-root canvas:focus-visible, .ls-root input:focus-visible { outline: 3px solid var(--ls-accent); outline-offset: 2px; }
@@ -25,16 +25,16 @@ html.ls-mode, html.ls-mode body { margin: 0; background: var(--ls-bg); color: va
 .ls-status { position: fixed; z-index: 4; top: calc(max(8px, env(safe-area-inset-top)) + 56px); left: 16px; right: 200px; pointer-events: none; }
 .ls-status p { margin: 0; }
 .ls-big { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.ls-meter { width: min(260px, 100%); height: 6px; margin: 4px 0; border-radius: 3px; background: var(--ls-border); overflow: hidden; }
+.ls-meter { width: min(260px, 100%); height: 6px; margin: 4px 0; border-radius: 3px; corner-shape: round; --sq: 0; background: var(--ls-border); overflow: hidden; }
 .ls-meter i { display: block; height: 100%; width: 0; background: var(--ls-accent); }
 .ls-readout { color: var(--ls-dim); font-variant-numeric: tabular-nums; white-space: pre-line; font-size: 0.9rem; line-height: 1.35; }
 .ls-stage { position: fixed; inset: 0; }
 #lsScene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .ls-cap { position: absolute; z-index: 3; margin: 0; transform: translateX(-50%); font-size: 0.85rem; line-height: 1.3; color: var(--ls-dim); text-align: center; pointer-events: none; width: max-content; }
-.ls-toast { margin: 0; padding: 6px 12px; border-radius: 10px; background: var(--ls-btn); border: 1px solid var(--ls-accent); font-weight: 700; font-size: 0.9rem; }
+.ls-toast { margin: 0; padding: 6px 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--ls-btn); border: 1px solid var(--ls-accent); font-weight: 700; font-size: 0.9rem; }
 
 .ls-controls { position: fixed; z-index: 5; bottom: max(12px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(560px, calc(100% - 24px));
-  padding: 12px 14px; border-radius: 16px; background: var(--ls-chip); border: 1px solid var(--ls-border); display: grid; gap: 8px; box-sizing: border-box; }
+  padding: 12px 14px; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--ls-chip); border: 1px solid var(--ls-border); display: grid; gap: 8px; box-sizing: border-box; }
 .ls-controls .fun-handle { display: none; }
 .ls-tabs { display: flex; gap: 6px; }
 .ls-tabs button { flex: 1 1 0; }
@@ -57,7 +57,7 @@ html.ls-mode[data-theme="light"] .ls-link-row a { color: #22615e; }
 .ls-funbox .fun-pop { top: calc(max(8px, env(safe-area-inset-top)) + 108px); right: 12px; }
 
 .ls-about-wrap { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px; background: rgba(5, 8, 14, 0.55); }
-.ls-about { width: min(480px, 100%); max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box; padding: 18px 18px 14px; border-radius: 16px; background: var(--pj-paper); color: var(--ls-ink); border: 1px solid var(--ls-border); display: grid; gap: 10px; }
+.ls-about { width: min(480px, 100%); max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box; padding: 18px 18px 14px; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--pj-paper); color: var(--ls-ink); border: 1px solid var(--ls-border); display: grid; gap: 10px; }
 .ls-about p { margin: 0; }
 .ls-about-title { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; line-height: 1.1; }
 .ls-small { font-size: 0.85rem; color: var(--ls-dim); }
@@ -76,6 +76,6 @@ html.ls-mode[data-theme="light"] .ls-link-row a { color: #22615e; }
   .ls-status { right: 140px; }
   .ls-readout { font-size: 0.78rem; line-height: 1.3; }
   .ls-cap { font-size: 0.75rem; }
-  .ls-controls.fun-sheet-on { left: 0; right: 0; bottom: 0; transform: none; width: auto; border-radius: 16px 16px 0 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); align-content: start; overflow: hidden; }
+  .ls-controls.fun-sheet-on { left: 0; right: 0; bottom: 0; transform: none; width: auto; border-radius: calc(var(--r-16, 16px) * var(--sq-fit, 1)) calc(var(--r-16, 16px) * var(--sq-fit, 1)) 0 0; corner-shape: squircle; --sq: 1; padding-bottom: max(12px, env(safe-area-inset-bottom)); align-content: start; overflow: hidden; }
   .ls-controls.fun-sheet-on .fun-handle { display: flex; }
 }
