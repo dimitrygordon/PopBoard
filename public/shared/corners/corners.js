@@ -108,8 +108,13 @@
         }
       }
     }).observe(d.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
-    let t = 0; // media queries can change radii
-    addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => scan(d.body), 250); }, { passive: true });
+    // A full rescan is ~2 ms. Run it when radii can change without a DOM mutation: a stylesheet that arrives late
+    // (module CSS, links in the body), page load, and media queries on resize.
+    let t = 0;
+    const later = (ms) => { clearTimeout(t); t = setTimeout(() => scan(d.body), ms); };
+    d.addEventListener("load", (e) => { if (e.target && e.target.nodeName === "LINK") later(30); }, true);
+    addEventListener("load", () => later(0));
+    addEventListener("resize", () => later(250), { passive: true });
   };
   if (d.body && d.readyState !== "loading") start(); else d.addEventListener("DOMContentLoaded", start, { once: true });
   window.__pbCornersScan = () => scan(d.body);
