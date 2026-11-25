@@ -53,7 +53,9 @@
     "test:spaceships": "node --test spaceships-scaffold.test.mjs",
     "test:spaceships:browser": "python3 spaceships-browser.py",
     "test:relvel": "node --test relative-velocity.test.mjs tryit-cards.test.mjs",
-    "test:relvel:browser": "python3 relative-velocity-browser.py"
+    "test:relvel:browser": "python3 relative-velocity-browser.py",
+    "test:ncf": "node --test newtons-cannonball-fire.test.mjs tryit-cards.test.mjs && python3 newtons-cannonball-fire-art.py",
+    "test:ncf:browser": "python3 newtons-cannonball-fire-browser.py"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",

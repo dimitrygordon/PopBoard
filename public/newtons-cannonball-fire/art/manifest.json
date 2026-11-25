@@ -1,0 +1,25 @@
+{
+  "use": [
+    "space_tile_dark.webp",
+    "space_tile_light.webp",
+    "earth_dark.webp",
+    "earth_light.webp",
+    "mountain_dark.webp",
+    "mountain_light.webp",
+    "cannon_barrel_dark.webp",
+    "cannon_barrel_light.webp",
+    "cannon_carriage_dark.webp",
+    "cannon_carriage_light.webp",
+    "cannonball_dark.webp",
+    "cannonball_light.webp",
+    "muzzle_flash_1_dark.webp",
+    "muzzle_flash_1_light.webp",
+    "muzzle_flash_2_dark.webp",
+    "muzzle_flash_2_light.webp",
+    "muzzle_flash_3_dark.webp",
+    "muzzle_flash_3_light.webp",
+    "panel_chalkboard_dark.webp",
+    "panel_chalkboard_light.webp",
+    "chalk_grain_tile_512.webp"
+  ]
+}

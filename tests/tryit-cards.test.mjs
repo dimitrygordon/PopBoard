@@ -12,7 +12,7 @@ test("try it map uses Leo's pairs: real lessons, known targets, no stretch fits"
   const { DECKS } = await import("../public/physics101/p101-catalog.js");
   const slugs = new Set(DECKS.map((d) => d.slug));
   assert.equal(Object.keys(map).length, 48);
-  assert.equal(Object.values(map).flat().length, 82);
+  assert.equal(Object.values(map).flat().length, 83);
   for (const [slug, rows] of Object.entries(map)) {
     assert.ok(slugs.has(slug), slug);
     for (const r of rows) { assert.match(r.caption, /\S/); assert.doesNotMatch(r.caption, /stretch|\u2014/); }

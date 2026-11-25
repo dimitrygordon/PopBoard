@@ -1,0 +1,174 @@
+/* Newton's Cannonball Fire: blackboard stage, Physics 101 chrome around it.
+   16 px text floor, 44 px hit targets. Cream paper in light mode, charcoal in dark mode. */
+@font-face { font-family: "Architects Daughter"; src: url("../fonts/architects-daughter.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Gochi Hand"; src: url("../fonts/gochi-hand.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Jost"; src: url("../fonts/jost-latin-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Patrick Hand"; src: url("../fonts/patrick-hand.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Cabin Sketch"; src: url("../fonts/cabin-sketch-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+
+:root {
+  --ncf-paper: #FCF7EB;
+  --ncf-ink: #2B2622;
+  --ncf-dim: #5A534A;
+  --ncf-card: #FFFDF5;
+  --ncf-line: #D6CBB6;
+  --ncf-btn: #FFFDF5;
+  --ncf-tape: rgba(232, 214, 160, 0.72);
+  --ncf-accent: #4C6FA8;
+  --ncf-board: #000000;
+  --ncf-chalk: #F3EFE4;
+  --ncf-chalk-dim: #C9C3B4;
+  --ncf-chalk-yellow: #F7D774;
+  --ncf-chalk-green: #A8E6B4;
+  --ncf-hit: 44px;
+  --ncf-trail-blue: #1F5FBF;
+  --ncf-trail-green: #1E7A3C;
+  --ncf-trail-red: #B83227;
+  --ncf-trail-yellow: #9A6A00;
+  --ncf-trail-escape: #2B2622;
+  --ncf-panel-img: url("art/panel_chalkboard_light.webp");
+  --ncf-panel-slate: #2D463B;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --ncf-paper: #141311;
+  --ncf-ink: #EDE6D6;
+  --ncf-dim: #B9B0A0;
+  --ncf-card: #1F1C18;
+  --ncf-line: #3A352E;
+  --ncf-btn: #2A2621;
+  --ncf-tape: rgba(200, 184, 140, 0.35);
+  --ncf-accent: #8FB3EA;
+  --ncf-trail-blue: #6AAEF5;
+  --ncf-trail-green: #6ACF85;
+  --ncf-trail-red: #F2705F;
+  --ncf-trail-yellow: #F5CC52;
+  --ncf-trail-escape: #EDE6D6;
+  --ncf-panel-img: url("art/panel_chalkboard_dark.webp");
+  --ncf-panel-slate: #1A1D1C;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body.ncf { margin: 0; min-height: 100%; background: var(--ncf-paper); color: var(--ncf-ink);
+  font: 16px/1.45 Jost, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+[hidden] { display: none !important; }
+
+.ncf button { font: inherit; font-size: 16px; color: var(--ncf-ink); background: var(--ncf-btn); border: 1.5px solid var(--ncf-line);
+  border-radius: 12px; min-width: var(--ncf-hit); min-height: var(--ncf-hit); padding: 0 12px; cursor: pointer; touch-action: manipulation; }
+.ncf button[aria-pressed="true"] { border-color: var(--ncf-ink); box-shadow: inset 0 0 0 1.5px var(--ncf-ink); font-weight: 650; }
+.ncf button:disabled { opacity: 0.5; cursor: not-allowed; }
+.ncf button:focus-visible, .ncf a:focus-visible, .ncf input:focus-visible, .ncf [tabindex]:focus-visible { outline: 3px solid var(--ncf-accent); outline-offset: 2px; }
+
+.ncf .hud { position: sticky; top: 0; z-index: 6; display: flex; gap: 8px; align-items: center;
+  padding: max(8px, env(safe-area-inset-top)) 12px 8px; background: var(--ncf-paper); border-bottom: 1.5px solid var(--ncf-line); }
+.ncf .hud .title { margin: 0 auto 0 4px; font-weight: 700; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ncf .study-back-btn, .ncf .theme-btn { display: inline-flex; gap: 6px; align-items: center; }
+
+.ncf-shell { max-width: 1100px; margin: 0 auto; padding: 14px 14px calc(48px + env(safe-area-inset-bottom)); }
+.ncf-intro { margin: 2px 0 8px; color: var(--ncf-dim); }
+.ncf-marks { margin: 0 0 12px; font-size: 13px; color: var(--ncf-dim); }
+
+.ncf-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.ncf-card { position: relative; background: var(--ncf-card); border: 1.5px solid var(--ncf-line); border-radius: 6px; padding: 14px;
+  box-shadow: 2px 3px 0 rgba(60, 45, 20, 0.12); margin-bottom: 16px; }
+:root[data-theme="dark"] .ncf-card { box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.4); }
+.ncf-card.tape::before { content: ""; position: absolute; top: -10px; left: 50%; width: 96px; height: 22px; margin-left: -48px;
+  background: var(--ncf-tape); transform: rotate(-2.5deg); border-radius: 2px; pointer-events: none; }
+
+.ncf-stage-wrap { background: #181A19; border-radius: 4px; overflow: hidden; border: 1px solid #222; }
+.ncf-stage { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; touch-action: none;
+  background: #181A19 url("art/space_tile_dark.webp") 0 0 / 100% auto repeat; }
+:root:not([data-theme="dark"]) .ncf-stage-wrap { background: #FCF7EB; border-color: #D6CBB6; }
+:root:not([data-theme="dark"]) .ncf-stage { background: #FCF7EB url("art/space_tile_light.webp") 0 0 / 100% auto repeat; }
+.ncf-scale { margin: 8px 0 0; font-size: 14px; color: var(--ncf-dim); }
+
+.ncf-controls { display: grid; gap: 12px; margin-top: 12px; }
+.ncf-presets { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ncf-presets .ncf-pl { color: var(--ncf-dim); font-size: 14px; margin-right: 2px; }
+.ncf-presets button { min-width: 64px; }
+.ncf-presets button[data-id="blue"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-blue); }
+.ncf-presets button[data-id="green"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-green); }
+.ncf-presets button[data-id="red"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-red); }
+.ncf-presets button[data-id="yellow"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-yellow); }
+.ncf-presets button[data-id="escape"] { box-shadow: inset 0 -3px 0 var(--ncf-trail-escape); }
+
+.ncf-slider { display: grid; gap: 6px; }
+.ncf-slider span { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.ncf-slider output { font-variant-numeric: tabular-nums; font-weight: 650; }
+.ncf-slider input[type="range"] { width: 100%; height: var(--ncf-hit); margin: 0; touch-action: none; accent-color: var(--ncf-accent); }
+
+.ncf-playbar { display: flex; flex-wrap: wrap; gap: 8px; }
+.ncf-playbar .primary { font-weight: 700; background: var(--ncf-ink); color: var(--ncf-paper); border-color: var(--ncf-ink); }
+
+.ncf-readouts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; font-variant-numeric: tabular-nums; }
+.ncf-readouts p { margin: 0; }
+.ncf-peak { grid-column: 1 / -1; font-size: 13px; color: var(--ncf-dim); }
+.ncf-readouts .k { display: block; font-size: 13px; color: var(--ncf-dim); }
+.ncf-eq { font-family: "Architects Daughter", "Gochi Hand", cursive, system-ui, sans-serif; font-size: 1.15em; line-height: 1.5; margin: 8px 0; overflow-wrap: anywhere; }
+.ncf-h { margin: 0 0 8px; font-size: 18px; }
+.ncf-lead { margin: 0 0 12px; color: var(--ncf-dim); }
+
+.ncf-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ncf-step { border: 1.5px solid var(--ncf-line); border-radius: 8px; background: var(--ncf-btn); overflow: hidden; }
+.ncf-step summary { cursor: pointer; list-style: none; min-height: var(--ncf-hit); display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-weight: 650; }
+.ncf-step summary::-webkit-details-marker { display: none; }
+.ncf-step summary::before { content: "▸"; color: var(--ncf-dim); }
+.ncf-step[open] summary::before { content: "▾"; }
+.ncf-step .ncf-step-body { padding: 0 12px 12px 32px; }
+.ncf-step .ncf-answer { font-weight: 650; }
+.ncf-cover { position: relative; }
+.ncf-cover[data-hidden="1"] .ncf-answer { filter: blur(7px); user-select: none; }
+.ncf-show { margin-top: 8px; }
+
+.ncf-problem { margin-top: 14px; }
+.ncf-prompt { margin: 0 0 8px; }
+.ncf-apply { margin-top: 10px; }
+
+.ncf-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 14px; }
+
+@media (min-width: 880px) {
+  .ncf-sandbox { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr); gap: 16px; align-items: start; }
+  .ncf-sandbox .ncf-stage-wrap { margin: 0; }
+  .ncf-readouts { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ncf-stage, .ncf button, .ncf-step { transition: none !important; }
+}
+
+@media (max-width: 430px) {
+  .ncf-shell { padding-left: 10px; padding-right: 10px; }
+  .ncf-readouts { grid-template-columns: 1fr; }
+  .ncf .hud .title { font-size: 15px; }
+}
+
+#practice { margin-bottom: 16px; }
+#practice > .ncf-h { margin: 0 0 12px; }
+.ncf-chalk-panel {
+  border-style: solid; border-width: 20px; border-color: var(--ncf-panel-slate);
+  border-image-source: var(--ncf-panel-img);
+  border-image-slice: 56 fill; border-image-width: 28px; border-image-outset: 0; border-image-repeat: stretch;
+  background: var(--ncf-panel-slate); background-clip: padding-box;
+  padding: 14px 18px 16px;
+  color: var(--ncf-chalk);
+  font-family: "Patrick Hand", "Architects Daughter", "Comic Sans MS", cursive;
+  font-size: 20px; line-height: 1.5; letter-spacing: 0.01em;
+  box-shadow: 0 2px 0 rgba(0,0,0,.18), 0 6px 14px rgba(0,0,0,.18);
+  margin-bottom: 16px;
+}
+.ncf-chalk-panel .ncf-h, .ncf-chalk-panel .ncf-lead, .ncf-chalk-panel .ncf-prompt { color: var(--ncf-chalk); }
+.ncf-chalk-panel .ncf-lead, .ncf-chalk-panel .ncf-scale { color: var(--ncf-chalk-dim); }
+.ncf-chalk-panel .ncf-step { border-color: rgba(243,239,228,.35); background: rgba(0,0,0,.18); }
+.ncf-chalk-panel .ncf-step summary { color: var(--ncf-chalk-yellow); font-family: "Cabin Sketch", "Patrick Hand", cursive; font-weight: 700; font-size: 22px; }
+.ncf-chalk-panel .ncf-eq { font-size: 24px; }
+.ncf-chalk-panel .ncf-answer, .ncf-chalk-panel .ans { color: var(--ncf-chalk-green); }
+.ncf-chalk-panel .ncf-show, .ncf-chalk-panel .ncf-apply {
+  background: rgba(0,0,0,.18); color: var(--ncf-chalk); border-color: rgba(243,239,228,.55);
+}
+@media (min-width: 720px) {
+  .ncf-chalk-panel { font-size: 22px; border-width: 24px; padding: 18px 24px; }
+}
+@media (max-width: 430px) {
+  .ncf-chalk-panel { font-size: 20px; }
+}
