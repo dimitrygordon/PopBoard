@@ -48,11 +48,11 @@ body::before {
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Sketchy, slightly uneven pencil edges */
-.sketch { border: 2px solid var(--ac-line); border-radius: 255px 14px 225px 14px / 14px 225px 14px 255px; }
+.sketch { border: 2px solid var(--ac-line); border-radius: 255px 14px 225px 14px / 14px 225px 14px 255px; corner-shape: round; --sq: 0; }
 
 button, .btn {
   font: inherit; font-family: var(--ac-head-font); font-size: 16px; color: var(--ac-text); background: var(--ac-chip);
-  border: 2px solid var(--ac-line); border-radius: 14px 255px 14px 225px / 225px 14px 255px 14px;
+  border: 2px solid var(--ac-line); border-radius: 14px 255px 14px 225px / 225px 14px 255px 14px; corner-shape: round; --sq: 0;
   min-width: var(--ac-hit); min-height: var(--ac-hit); padding: 0 14px; cursor: pointer; text-decoration: none;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
 }
@@ -71,7 +71,7 @@ button[aria-pressed="true"], button[aria-selected="true"] { background: var(--ac
 .study-back-btn svg { flex: none; }
 
 /* Sun and moon toggle, drawn in pencil */
-.ac-theme-btn { width: var(--ac-hit); padding: 0; border-radius: 50%; }
+.ac-theme-btn { width: var(--ac-hit); padding: 0; border-radius: 50%; corner-shape: round; --sq: 0; }
 .ac-theme-btn svg { width: 26px; height: 26px; }
 .ac-theme-btn .moon { display: none; }
 :root[data-theme="dark"] .ac-theme-btn .moon { display: block; }

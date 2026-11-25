@@ -1,0 +1,72 @@
+/* PopBoard corners: Apple-style continuous (squircle) corners.
+   One radius scale for the whole site. Use the tokens, never a bare px radius:
+     border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
+   - Chromium (and any browser with corner-shape): native squircle, R raised by --sq-k so it reads as soft as the old arc.
+   - iPhone Safari (no corner-shape yet): corners.js adds html.sq-fb and a squircle mask per marked element ([data-sq-m]).
+   - No JS and no corner-shape: plain border-radius at the original R. Nothing breaks.
+   Circles (50%), pills (999px) and radii under 6px stay plain on purpose: a squircle there is invisible or wrong.
+   Nested corners: inner R = outer R minus the gap, e.g. calc((var(--r-16) - 6px) * var(--sq-fit, 1)). */
+@property --sq { syntax: "<number>"; inherits: false; initial-value: 0; }
+@property --sq-fit { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --sq-mbi { syntax: "*"; inherits: false; }
+:root {
+  --sq-k: 1;
+  --r-6: calc(6px * var(--sq-k));
+  --r-7: calc(7px * var(--sq-k));
+  --r-8: calc(8px * var(--sq-k));
+  --r-9: calc(9px * var(--sq-k));
+  --r-10: calc(10px * var(--sq-k));
+  --r-11: calc(11px * var(--sq-k));
+  --r-12: calc(12px * var(--sq-k));
+  --r-13: calc(13px * var(--sq-k));
+  --r-14: calc(14px * var(--sq-k));
+  --r-15: calc(15px * var(--sq-k));
+  --r-16: calc(16px * var(--sq-k));
+  --r-17: calc(17px * var(--sq-k));
+  --r-18: calc(18px * var(--sq-k));
+  --r-19: calc(19px * var(--sq-k));
+  --r-20: calc(20px * var(--sq-k));
+  --r-21: calc(21px * var(--sq-k));
+  --r-22: calc(22px * var(--sq-k));
+  --r-23: calc(23px * var(--sq-k));
+  --r-24: calc(24px * var(--sq-k));
+  --r-25: calc(25px * var(--sq-k));
+  --r-26: calc(26px * var(--sq-k));
+  --r-27: calc(27px * var(--sq-k));
+  --r-28: calc(28px * var(--sq-k));
+  --r-29: calc(29px * var(--sq-k));
+  --r-30: calc(30px * var(--sq-k));
+  --r-31: calc(31px * var(--sq-k));
+  --r-32: calc(32px * var(--sq-k));
+  --r-33: calc(33px * var(--sq-k));
+  --r-34: calc(34px * var(--sq-k));
+  --r-35: calc(35px * var(--sq-k));
+  --r-36: calc(36px * var(--sq-k));
+  --r-37: calc(37px * var(--sq-k));
+  --r-38: calc(38px * var(--sq-k));
+  --r-39: calc(39px * var(--sq-k));
+  /* Semantic aliases for new work. Existing components keep their own scale step. */
+  --r-chip: var(--r-8);
+  --r-input: var(--r-10);
+  --r-button: var(--r-10);
+  --r-card: var(--r-14);
+  --r-panel: var(--r-16);
+  --r-modal: var(--r-20);
+}
+/* A squircle at the same R reads tighter than a circle, so R grows 1.4x wherever the squircle really renders. */
+@supports (corner-shape: squircle) {
+  :root { --sq-k: 1.4; }
+}
+html.sq-fb { --sq-k: 1.4; }
+/* Safari fallback. The box keeps a plain arc at 0.543 R' (the largest arc that still contains the squircle, within 0.02 R'),
+   so its border, shadow and focus ring stay put. The mask trims the last sliver to the squircle. The mask reaches
+   past the box by the element's own shadow reach (at least 48px), so shadows, focus rings and small overhangs are not cut. */
+html.sq-fb [data-sq-m] {
+  --sq-fit: 0.543;
+  corner-shape: round !important;
+  -webkit-mask-box-image: var(--sq-mbi);
+}
+/* ?sq=mask forces the Safari path in any browser (for side-by-side checks); this keeps native squircles out of it. */
+html.sq-fb.sq-force * { corner-shape: round !important; }
+/* Radii set inline (style="" or from JS) are left as plain arcs, and never pick up a squircle from a class rule. */
+[style*="border-radius"] { corner-shape: round !important; --sq: 0 !important; }

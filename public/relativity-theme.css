@@ -108,7 +108,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 #statusBanner {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px 14px;
   margin: 10px 0;
 }
@@ -131,7 +131,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   flex: 0 0 auto;
   min-height: var(--hit);
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text-dim);
@@ -161,7 +161,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 14px;
   box-shadow: var(--shadow);
 }
@@ -174,7 +174,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   height: 250px;
   display: block;
   background: var(--rel-bg);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   touch-action: none;
 }
 .view.tall { height: 420px; }
@@ -191,7 +191,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   background: #0c1220;
-  border-radius: 14px;
+  border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 12px;
   max-height: 320px;
   overflow: auto;
@@ -217,7 +217,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   font-size: 10px;
   line-height: 1;
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   margin-bottom: 8px;
 }
 .pill-measured {
@@ -231,17 +231,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 
 .illus-frame {
   border: 1px dashed rgba(154, 166, 200, 0.7);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
 }
 .measured-frame {
   border: 1px solid var(--rel-measured);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
 }
 
 .banner {
   border: 1px dashed rgba(154, 166, 200, 0.7);
   color: var(--rel-illus);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px 12px;
   font-size: 13px;
   line-height: 1.5;
@@ -274,14 +274,14 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   background: #33405c;
-  border-radius: 2px;
+  border-radius: 2px; corner-shape: round; --sq: 0;
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 22px;
   height: 22px;
   margin-top: -9px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--rel-measured);
   border: 0;
   cursor: pointer;
@@ -289,12 +289,12 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="range"]::-moz-range-track {
   height: 4px;
   background: #33405c;
-  border-radius: 2px;
+  border-radius: 2px; corner-shape: round; --sq: 0;
 }
 input[type="range"]::-moz-range-thumb {
   width: 22px;
   height: 22px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: var(--rel-measured);
   border: 0;
   cursor: pointer;
@@ -304,7 +304,7 @@ input[type="range"]::-moz-range-thumb {
 .chip {
   min-height: var(--hit);
   padding: 8px 10px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   border: 1px solid var(--border);
   background: var(--panel-2);
   color: var(--text);
@@ -317,7 +317,7 @@ input[type="range"]::-moz-range-thumb {
 .btn {
   min-height: var(--hit);
   padding: 8px 12px;
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1px solid var(--border);
   background: var(--panel-2);
   color: var(--text);
@@ -329,7 +329,7 @@ input[type="range"]::-moz-range-thumb {
 .gamma-meter {
   margin-top: 8px;
   border: 1px solid var(--rel-measured);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px;
   color: var(--rel-measured);
   font-family: var(--font-mono);
@@ -338,7 +338,7 @@ input[type="range"]::-moz-range-thumb {
 .gamma-track {
   position: relative;
   height: 8px;
-  border-radius: 4px;
+  border-radius: 4px; corner-shape: round; --sq: 0;
   background: #24304a;
   margin: 8px 0 4px;
 }
@@ -347,7 +347,7 @@ input[type="range"]::-moz-range-thumb {
   left: 0;
   top: 0;
   bottom: 0;
-  border-radius: 4px;
+  border-radius: 4px; corner-shape: round; --sq: 0;
   background: var(--rel-measured);
 }
 .gamma-mark {
@@ -411,7 +411,7 @@ input[type="range"]::-moz-range-thumb {
   -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 18px), transparent);
           mask-image: linear-gradient(180deg, #000 calc(100% - 18px), transparent);
 }
-.measured .row { transition: background .25s; border-radius: 4px; }
+.measured .row { transition: background .25s; border-radius: 4px; corner-shape: round; --sq: 0; }
 .measured .row:hover { background: rgba(244, 247, 255, 0.05); }
 .measured .val { color: #fff; }
 

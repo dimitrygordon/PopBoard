@@ -34,7 +34,7 @@ html, body.energy-lab {
   color: var(--el-ink);
   background: var(--el-btn);
   border: 1.5px solid var(--el-line);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   min-width: var(--el-hit);
   min-height: var(--el-hit);
   padding: 0 12px;
@@ -90,7 +90,7 @@ html, body.energy-lab {
   aspect-ratio: 960 / 540;
   object-fit: cover;
   border: 1.5px solid var(--el-line);
-  border-radius: 14px;
+  border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background: var(--el-card);
 }
 .el-lede {
@@ -113,7 +113,7 @@ html, body.energy-lab {
   min-width: 0;
   background: var(--el-card);
   border: 1.5px solid var(--el-line);
-  border-radius: 14px;
+  border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   overflow: hidden;
   box-shadow: 1px 2px 0 rgba(43, 38, 34, 0.14);
 }
@@ -153,7 +153,7 @@ html, body.energy-lab {
   padding: 6px 12px;
   box-sizing: border-box;
   border: 1.5px solid var(--el-line);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   text-decoration: none;
   color: inherit;
   font: inherit;

@@ -19,4 +19,4 @@
 :root[data-theme="light"] input[type="range"]::-moz-range-thumb { background: var(--pp-ink); }
 /* Night-sky and space stages stay dark inside their frame (as in Lightspeed); chrome over them gets a paper chip. */
 :root[data-theme="light"] [data-paper="keep"] { background-color: #0b0f17; }
-:root[data-theme="light"] .pp-over-sky .bar button { background: rgba(251, 248, 241, 0.94); border: 1px solid var(--pp-line-2); border-radius: 999px; padding: 6px 12px; }
+:root[data-theme="light"] .pp-over-sky .bar button { background: rgba(251, 248, 241, 0.94); border: 1px solid var(--pp-line-2); border-radius: 999px; corner-shape: round; --sq: 0; padding: 6px 12px; }

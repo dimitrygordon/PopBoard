@@ -11,11 +11,11 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .sq-set-blurb { margin: 4px 0 14px; color: var(--ac-dim); }
 .sq-card { background: var(--ac-panel); padding: 16px 18px; margin: 0 0 18px; }
 .sq-q-title { display: flex; gap: 10px; align-items: baseline; margin: 0 0 8px; font-family: var(--ac-head-font); font-size: 19px; }
-.sq-num { flex: none; min-width: 30px; height: 30px; display: inline-grid; place-items: center; border-radius: 50%; background: var(--mod-accent); color: #2f2b26; font-size: 15px; }
+.sq-num { flex: none; min-width: 30px; height: 30px; display: inline-grid; place-items: center; border-radius: 50%; corner-shape: round; --sq: 0; background: var(--mod-accent); color: #2f2b26; font-size: 15px; }
 .sq-card p { margin: 6px 0; }
 .sq-eq { display: block; margin: 6px auto; height: auto; }
 .sq-fig { position: relative; margin: 10px auto; padding: 10px; width: fit-content; max-width: 100%; }
-.sq-fig-img { display: block; height: auto; border-radius: 6px; background: #fff; }
+.sq-fig-img { display: block; height: auto; border-radius: calc(var(--r-6, 6px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: #fff; }
 .sq-fig-dark, :root[data-theme="dark"] .sq-fig-light { display: none; }
 :root[data-theme="dark"] .sq-fig-dark { display: block; background: none; }
 .sq-fig-light { background: none; }
@@ -67,7 +67,7 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .sq-lesson-title { font-family: var(--ac-title-font); font-size: clamp(26px, 5vw, 38px); margin: 0 0 6px; line-height: 1.1; }
 .sq-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
 .sq-chip { min-height: 40px; padding: 4px 14px; font: inherit; font-family: var(--ac-head-font); color: var(--ac-text); background: var(--ac-panel);
-  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; cursor: pointer; }
+  border: 1.5px solid var(--ac-line); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)) calc(var(--r-9, 9px) * var(--sq-fit, 1)) calc(var(--r-13, 13px) * var(--sq-fit, 1)) calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; cursor: pointer; }
 .sq-chip[aria-pressed="true"] { background: var(--mod-accent); border-color: var(--mod-accent); color: #1f1c18; }
 
 /* ---------- storybook tab row: Read this page | Study Questions | Test it ---------- */
@@ -85,7 +85,7 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .sq-pane-top { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; }
 .sq-pick { flex: 1 1 200px; display: grid; gap: 2px; font-family: var(--ac-note-font); color: var(--ac-dim); }
 .sq-pick select { min-height: 44px; width: 100%; font: inherit; font-family: var(--ac-body-font); font-size: 17px; color: var(--ac-text); background: var(--ac-paper);
-  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; padding: 4px 8px; }
+  border: 1.5px solid var(--ac-line); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)) calc(var(--r-9, 9px) * var(--sq-fit, 1)) calc(var(--r-13, 13px) * var(--sq-fit, 1)) calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; padding: 4px 8px; }
 .sq-pane #soundBtn { min-height: 44px; }
 .sq-pane .sq-set-h { font-size: 22px; }
 .sq-pane .sq-card { padding: 12px; }
@@ -102,13 +102,13 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 .lib-filter-row .lib-filters { flex: 0 1 auto; min-width: 0; }
 .lib-filter-row .lib-filters { margin: 0; }
 .pq-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 16px 6px 8px; text-decoration: none; white-space: nowrap;
-  font-family: var(--ac-head-font); font-size: 18px; color: #7a2e22; background: #FBF1DF; border: 2px solid #E07A5F; border-radius: 16px 11px 18px 10px / 11px 18px 10px 16px; box-shadow: 2px 3px 0 #E07A5F55; }
+  font-family: var(--ac-head-font); font-size: 18px; color: #7a2e22; background: #FBF1DF; border: 2px solid #E07A5F; border-radius: 16px 11px 18px 10px / 11px 18px 10px 16px; corner-shape: round; --sq: 0; box-shadow: 2px 3px 0 #E07A5F55; }
 .pq-btn svg { flex: none; }
 .pq-btn:hover, .pq-btn:focus-visible { background: #F9E3C8; }
 :root[data-theme="dark"] .pq-btn { color: #F6C3B3; background: #2A2622; border-color: #E8907A; box-shadow: 2px 3px 0 #0006; }
 @media (max-width: 600px) { .lib-filter-row { flex-direction: column; align-items: stretch; } .pq-btn { justify-content: center; width: 100%; box-sizing: border-box; } }
 /* Leo's pencil art: cream card in both themes; movable objects slide */
-.sq-art { border-radius: 14px; }
+.sq-art { border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .sq-art .sq-drag { cursor: grab; touch-action: none; outline: none; }
 .sq-art .sq-drag:focus-visible { filter: drop-shadow(0 0 3px var(--mod-accent)); }
 .sq-drag-note { margin: 2px 0 0; font-family: var(--ac-note-font); color: var(--ac-dim); text-align: center; }
@@ -116,23 +116,23 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 /* Try it cards (pencil style): tiny thumbnail slot, one-line caption, link to the original */
 .tryit-row { display: grid; gap: 10px; margin: 14px 0 4px; }
 .tryit-card { display: flex; align-items: center; gap: 12px; padding: 8px 12px; color: inherit; text-decoration: none;
-  border: 1.5px solid var(--ac-line); border-radius: 12px 9px 13px 8px; background: var(--ac-paper, transparent); }
+  border: 1.5px solid var(--ac-line); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)) calc(var(--r-9, 9px) * var(--sq-fit, 1)) calc(var(--r-13, 13px) * var(--sq-fit, 1)) calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--ac-paper, transparent); }
 .tryit-card:hover, .tryit-card:focus-visible { border-color: var(--mod-accent, #E07A5F); outline: none; }
-.tryit-thumb { flex: 0 0 56px; height: 42px; border: 1.5px dashed var(--ac-line); border-radius: 8px 6px 9px 5px; overflow: hidden; }
+.tryit-thumb { flex: 0 0 56px; height: 42px; border: 1.5px dashed var(--ac-line); border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)) calc(var(--r-6, 6px) * var(--sq-fit, 1)) calc(var(--r-9, 9px) * var(--sq-fit, 1)) 5px; corner-shape: squircle; --sq: 1; overflow: hidden; }
 .tryit-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .tryit-thumb img.tryit-dark, :root[data-theme="dark"] .tryit-thumb img.tryit-light { display: none; }
 :root[data-theme="dark"] .tryit-thumb img.tryit-dark { display: block; }
 .tryit-text { display: grid; min-width: 0; }
 .tryit-name { font-weight: 700; }
 .tryit-cap { color: var(--ac-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sq-where { display: inline-block; margin: -4px 0 6px 44px; padding: 1px 10px; font-family: var(--ac-note-font); font-size: 14px; color: var(--ac-dim); border: 1.2px dashed var(--ac-line); border-radius: 10px 7px 11px 6px; }
+.sq-where { display: inline-block; margin: -4px 0 6px 44px; padding: 1px 10px; font-family: var(--ac-note-font); font-size: 14px; color: var(--ac-dim); border: 1.2px dashed var(--ac-line); border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)) calc(var(--r-7, 7px) * var(--sq-fit, 1)) calc(var(--r-11, 11px) * var(--sq-fit, 1)) calc(var(--r-6, 6px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 /* worked solution expands from the pinned question (Study Questions cards and Read this page examples) */
-.sq-pin.sq-head { cursor: pointer; border-radius: 10px; }
+.sq-pin.sq-head { cursor: pointer; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .sq-expand { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 6px 0 2px; padding: 6px 14px; font-size: 16px; }
 .sq-expand svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
 .sq-head.open .sq-expand svg { transform: rotate(180deg); }
 .sq-expand:focus-visible { outline: 3px solid var(--mod-accent, var(--ac-ink)); outline-offset: 2px; }
-.sq-placeholder { font-family: var(--ac-note-font); color: var(--ac-dim); border: 1.5px dashed var(--ac-line); padding: 2px 8px; border-radius: 8px; }
+.sq-placeholder { font-family: var(--ac-note-font); color: var(--ac-dim); border: 1.5px dashed var(--ac-line); padding: 2px 8px; border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .wk-steps .sq-step p { margin: 4px 0; }
 .wk-answer { position: relative; min-height: 96px; }
 .wk-answer .sq-cover { inset: 0; }
@@ -147,18 +147,18 @@ body.sq-lib .sq { position: relative; z-index: 1; max-width: 900px; margin: 0 au
 /* ---- Step cards: Leo's step-cards.css (physics101/step-cards). Light is the default; dark follows PopBoard's toggle
    (:root[data-theme="dark"]), not the browser setting. */
 .pb-steps{display:flex;flex-direction:column;gap:14px;margin:18px 0;font-family:"Comic Relief",var(--sq-glyph-fallback)}
-.pb-step{position:relative;background:#FBF6EA;border:1.5px solid #8A7A5C;border-radius:12px;padding:14px 16px 14px 52px;box-shadow:2px 3px 0 rgba(90,70,40,.18);color:#2B2620;line-height:1.5}
-.pb-step::before{content:attr(data-n);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%;background:#E8B44A;color:#2B2620;font-weight:700;display:grid;place-items:center;border:1.5px solid #8A6A20}
+.pb-step{position:relative;background:#FBF6EA;border:1.5px solid #8A7A5C;border-radius:calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;padding:14px 16px 14px 52px;box-shadow:2px 3px 0 rgba(90,70,40,.18);color:#2B2620;line-height:1.5}
+.pb-step::before{content:attr(data-n);position:absolute;left:12px;top:12px;width:28px;height:28px;border-radius:50%; corner-shape: round; --sq: 0;background:#E8B44A;color:#2B2620;font-weight:700;display:grid;place-items:center;border:1.5px solid #8A6A20}
 .pb-step-label{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#7A5C2E;margin-bottom:4px}
 .pb-step[data-kind="givens"] .pb-step-label{color:#3E7A4A}
 .pb-step[data-kind="equation"] .pb-step-label{color:#2F5FA0}
 .pb-step[data-kind="substitute"] .pb-step-label{color:#A0522D}
 .pb-step .pb-math{font-size:1.08rem;padding:4px 0}
 .pb-step .pb-unit{color:#6B5A3E}
-.pb-step-sketch{display:block;max-width:100%;margin:10px auto 0;border-radius:12px}
-.pb-answer{border:2.5px solid #C0392B;border-radius:10px;padding:10px 14px;background:#FFF3E6;font-weight:700;display:inline-block}
+.pb-step-sketch{display:block;max-width:100%;margin:10px auto 0;border-radius:calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1}
+.pb-answer{border:2.5px solid #C0392B;border-radius:calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;padding:10px 14px;background:#FFF3E6;font-weight:700;display:inline-block}
 .pb-step[hidden]{display:none}
-.pb-step-reveal{align-self:flex-start;background:#2F5FA0;color:#FBF6EA;border:0;border-radius:999px;padding:8px 16px;font:inherit;cursor:pointer}
+.pb-step-reveal{align-self:flex-start;background:#2F5FA0;color:#FBF6EA;border:0;border-radius:999px; corner-shape: round; --sq: 0;padding:8px 16px;font:inherit;cursor:pointer}
 .pb-step-reveal:focus-visible{outline:3px solid #E8B44A;outline-offset:2px}
 :root[data-theme="dark"] .pb-step{background:#26231F;border-color:#3A362F;color:#EDE6D6;box-shadow:none}
 :root[data-theme="dark"] .pb-step::before{background:#C99A3A;color:#1F1D1A;border-color:#3A362F}

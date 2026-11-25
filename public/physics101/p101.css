@@ -31,7 +31,7 @@
 .ac-soon { position: absolute; inset: 0; display: grid; place-content: center; gap: 6px; padding: 6%; text-align: center; color: var(--ac-card-ink, #2f2b26); }
 .ac-soon h2 { margin: 0; font-family: var(--ac-title-font); font-weight: 700; font-size: clamp(26px, 5vw, 56px); line-height: 1.05; }
 .ac-soon-tag, .ac-soon-sub { margin: 0; color: #4a443b; font-size: clamp(15px, 2vw, 20px); }
-.ac-soon-badge { justify-self: center; margin: 10px 0 0; padding: 4px 14px; border: 2px solid var(--ac-accent); border-radius: 14px 6px 12px 8px; font-family: var(--ac-note-font); font-size: 18px; color: #2f2b26; }
+.ac-soon-badge { justify-self: center; margin: 10px 0 0; padding: 4px 14px; border: 2px solid var(--ac-accent); border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)) calc(var(--r-6, 6px) * var(--sq-fit, 1)) calc(var(--r-12, 12px) * var(--sq-fit, 1)) calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; font-family: var(--ac-note-font); font-size: 18px; color: #2f2b26; }
 /* Standards line under a cover title: small handwritten lettering. */
 .lib-card .stds, .ac-soon .ac-stds { margin: 0; font-family: var(--ac-note-font); font-size: 14px; letter-spacing: 0.02em; color: #5a5348; }
 .ac-soon .ac-stds { font-size: clamp(13px, 1.6vw, 17px); color: #5a5348; }
@@ -39,19 +39,19 @@
 /* standards line under the title on a built lesson's first page (same lettering as the library cover) */
 .stage .ac-stds.on-cover { position: absolute; left: 3%; top: 2%; z-index: 3; margin: 0; padding: 0.15em 0.5em;
   font-family: var(--ac-note-font, "Gochi Hand", cursive); font-size: calc(var(--u, 1px) * 13); color: #3d3d3d;
-  background: rgba(251, 246, 234, 0.85); border-radius: 0.4em; pointer-events: none; }
+  background: rgba(251, 246, 234, 0.85); border-radius: calc(0.4em * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; pointer-events: none; }
 :root[data-theme="dark"] .stage .ac-stds.on-cover { color: var(--slide-ink); background: color-mix(in srgb, var(--slide-paper) 85%, transparent); }
 
 /* Test it scenes on hand-drawn pages: an overlay in 1600x900 page coordinates above the art */
 .stage .p-scene { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .stage .p-scene > * { position: absolute; }
 .stage .p-scene .hit { pointer-events: auto; cursor: grab; touch-action: none; background: transparent; border: 0; padding: 0; }
-.stage .p-scene .hit:focus-visible { outline: 3px solid #E2B654; outline-offset: 2px; border-radius: 6px; }
+.stage .p-scene .hit:focus-visible { outline: 3px solid #E2B654; outline-offset: 2px; border-radius: calc(var(--r-6, 6px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .stage .p-scene .hit.dragging { cursor: grabbing; }
 .stage .p-scene .live { font-family: "Patrick Hand", cursive; color: #3d3d3d; line-height: 1.05; white-space: nowrap; }
 :root[data-theme="dark"] .stage .p-scene .live { color: var(--slide-ink); }
 .stage .p-scene .live.card { color: #3d3d3d; text-align: center; display: grid; place-items: center; }
-.stage .p-scene .cap { font-family: "Patrick Hand", cursive; color: #3d3d3d; background: rgba(251, 246, 234, 0.9); border-radius: 0.5em; padding: 0.2em 0.6em; white-space: normal; }
+.stage .p-scene .cap { font-family: "Patrick Hand", cursive; color: #3d3d3d; background: rgba(251, 246, 234, 0.9); border-radius: calc(0.5em * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; padding: 0.2em 0.6em; white-space: normal; }
 :root[data-theme="dark"] .stage .p-scene .cap { color: var(--slide-ink); background: color-mix(in srgb, var(--slide-paper) 90%, transparent); }
 .stage .p-scene svg { overflow: visible; }
 .story .read .p101-def { font-family: var(--ac-head-font); font-size: 19px; border-left: 4px solid var(--p101-m1, #E2B654); padding-left: 10px; }
@@ -105,16 +105,16 @@
 .stage.artpage, .stage.artpage .art-scene { background-color: #FBF6EA; background-image: none !important; }
 .lib-card .cover-soon { background: var(--ac-card); }
 :root[data-theme="dark"] .stage.artpage { background-color: #1F1D1A; }
-:root[data-theme="dark"] .stage.artpage .art-scene { background-color: #FBF6EA; border-radius: var(--slide-art-radius); overflow: hidden; }
+:root[data-theme="dark"] .stage.artpage .art-scene { background-color: #FBF6EA; border-radius: calc(var(--slide-art-radius) * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; overflow: hidden; }
 
 /* ---- Drag engine (scenes/drag.js): a lifted cutout casts a wider shadow; handles are at least 44 px ---- */
-.stage .p-scene .drag-hit { min-width: 44px; min-height: 44px; border-radius: 8px; }
+.stage .p-scene .drag-hit { min-width: 44px; min-height: 44px; border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .art-scene .art-l.drag-lift { filter: var(--slide-art-filter, none) drop-shadow(0 10px 8px rgba(40, 30, 10, 0.35)); z-index: 5; }
 @media (prefers-reduced-motion: reduce) { .art-scene .art-l.drag-lift { filter: var(--slide-art-filter, none); } }
 
 /* Module filter pills on the course index: one per module, tinted with the module accent; the row wraps on phones. */
 .lib-filters[data-auto] { max-width: 920px; margin-inline: auto; gap: 8px 6px; }
-.lib-filters .mod-pill { min-width: 52px; min-height: 44px; padding: 4px 12px; border-radius: 999px; border: 2px solid var(--pill); background: color-mix(in srgb, var(--pill) 22%, var(--ac-card)); color: var(--ac-card-ink); font-weight: 600; }
+.lib-filters .mod-pill { min-width: 52px; min-height: 44px; padding: 4px 12px; border-radius: 999px; corner-shape: round; --sq: 0; border: 2px solid var(--pill); background: color-mix(in srgb, var(--pill) 22%, var(--ac-card)); color: var(--ac-card-ink); font-weight: 600; }
 .lib-filters .mod-pill[aria-pressed="true"] { background: var(--pill); border-color: var(--pill); color: var(--pill-ink, #1f1c18); box-shadow: 0 0 0 2px var(--ac-card-ink); }
 :root[data-theme="dark"] .lib-filters .mod-pill { background: color-mix(in srgb, var(--pill) 30%, var(--ac-card)); color: var(--ac-card-ink); }
 :root[data-theme="dark"] .lib-filters .mod-pill[aria-pressed="true"] { background: var(--pill); color: var(--pill-ink, #1f1c18); box-shadow: 0 0 0 2px var(--ac-text); }
@@ -130,7 +130,7 @@
   body:has(.stage .e3d-host) { overflow-y: auto; height: auto; min-height: 100%; }
   body:has(.stage .e3d-host) .story { overflow: visible; }
   .stage:has(.e3d-host) { aspect-ratio: auto !important; width: 100% !important; height: clamp(460px, 68svh, 580px) !important; /* round 2: room for the in-stage HUD */ }
-  body:has(.stage .e3d-host) .panel { position: static; height: auto !important; max-height: none; border-radius: 0; box-shadow: none; padding-bottom: 24px; }
+  body:has(.stage .e3d-host) .panel { position: static; height: auto !important; max-height: none; border-radius: 0; corner-shape: round; --sq: 0; box-shadow: none; padding-bottom: 24px; }
   body:has(.stage .e3d-host) .panel .sheet-handle { display: none; }
 }
 /* energy3d covers: the takeaway caption owns the top edge, so the standards tag drops into the footer strip */
@@ -143,9 +143,9 @@
 /* energy3d prediction targets (Leo general): 44 x 44 px minimum, ring fills when picked */
 .e3d-predict { display: flex; flex-wrap: wrap; gap: 6px; }
 .e3d-predict legend { flex-basis: 100%; }
-.e3d-target { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; min-width: 44px; padding: 4px 12px 4px 6px; border: 1.5px solid currentColor; border-radius: 22px; cursor: pointer; box-sizing: border-box; }
+.e3d-target { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; min-width: 44px; padding: 4px 12px 4px 6px; border: 1.5px solid currentColor; border-radius: calc(var(--r-22, 22px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; cursor: pointer; box-sizing: border-box; }
 .e3d-target input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.e3d-ring { flex: 0 0 26px; height: 26px; border-radius: 50%; border: 2px solid currentColor; box-sizing: border-box; background: radial-gradient(circle, transparent 0 40%, transparent 41%); }
+.e3d-ring { flex: 0 0 26px; height: 26px; border-radius: 50%; corner-shape: round; --sq: 0; border: 2px solid currentColor; box-sizing: border-box; background: radial-gradient(circle, transparent 0 40%, transparent 41%); }
 .e3d-target:has(input:checked) { background: rgba(232, 194, 26, .22); }
 .e3d-target:has(input:checked) .e3d-ring { background: radial-gradient(circle, currentColor 0 38%, transparent 40%); }
 .e3d-target:has(input:focus-visible) { outline: 2px solid #4C6FA8; outline-offset: 2px; }

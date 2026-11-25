@@ -121,7 +121,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   margin: 8px auto 0;
   background: rgba(15, 18, 22, 0.92);
   border: 1px solid var(--border-lit);
-  border-radius: 14px;
+  border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 12px 14px;
   text-align: center;
 }
@@ -151,7 +151,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   flex: 1 1 120px;
   min-height: var(--hit);
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1px solid var(--border-lit);
   background: var(--panel-2);
   color: var(--text-dim);
@@ -171,7 +171,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border: 1px solid var(--border-lit);
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   padding: 2px 6px;
   color: var(--amber);
 }
@@ -179,7 +179,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .card {
   background: linear-gradient(180deg, var(--panel-2), var(--panel));
   border: 1.5px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) * var(--sq-k, 1) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 14px;
   margin-top: 14px;
   min-width: 0;
@@ -206,7 +206,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 canvas.view {
   width: 100%;
   display: block;
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   background: var(--canvas);
   touch-action: pan-y;
 }
@@ -226,11 +226,11 @@ canvas.view {
   color: var(--text-dim);
 }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
-.swatch { width: 18px; height: 4px; border-radius: 2px; display: inline-block; }
+.swatch { width: 18px; height: 4px; border-radius: 2px; corner-shape: round; --sq: 0; display: inline-block; }
 .swatch.bob { background: var(--bob); height: 4px; }
 .swatch.ghost { background: transparent; border-top: 2px dashed var(--ghost); height: 0; width: 22px; }
 .swatch.play { background: var(--playhead); width: 2px; height: 14px; }
-.swatch.student { background: var(--student); width: 8px; height: 8px; border-radius: 50%; }
+.swatch.student { background: var(--student); width: 8px; height: 8px; border-radius: 50%; corner-shape: round; --sq: 0; }
 .swatch.pair-a { background: var(--pair-a); }
 .swatch.pair-b { background: var(--pair-b); }
 
@@ -243,7 +243,7 @@ canvas.view {
 .tile {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 8px 6px;
   text-align: center;
   min-width: 0;
@@ -304,7 +304,7 @@ input[type="range"] {
 }
 input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
-  border-radius: 2px;
+  border-radius: 2px; corner-shape: round; --sq: 0;
   background: #48484a;
 }
 input[type="range"]::-webkit-slider-thumb {
@@ -312,20 +312,20 @@ input[type="range"]::-webkit-slider-thumb {
   width: 28px;
   height: 28px;
   margin-top: -12px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: #fff;
   cursor: pointer;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 input[type="range"]::-moz-range-track {
   height: 4px;
-  border-radius: 2px;
+  border-radius: 2px; corner-shape: round; --sq: 0;
   background: #48484a;
 }
 input[type="range"]::-moz-range-thumb {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: 50%; corner-shape: round; --sq: 0;
   background: #fff;
   border: none;
   cursor: pointer;
@@ -336,7 +336,7 @@ input[type="range"]::-moz-range-thumb {
   flex: 1 1 120px;
   min-height: var(--hit);
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   border: 1px solid var(--border-lit);
   background: var(--panel-3);
   color: var(--text);
@@ -350,7 +350,7 @@ input[type="range"]::-moz-range-thumb {
 .chip {
   min-height: var(--hit);
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 999px; corner-shape: round; --sq: 0;
   border: 1px solid var(--border-lit);
   background: var(--panel-2);
   color: var(--text);
@@ -372,7 +372,7 @@ input[type="range"]::-moz-range-thumb {
   font-family: var(--font-mono);
   background: rgba(0, 0, 0, 0.28);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 10px 12px;
   font-size: 12.5px;
   line-height: 1.65;
@@ -413,7 +413,7 @@ input[type="range"]::-moz-range-thumb {
 
 .callout {
   border: 1px dashed var(--border-lit);
-  border-radius: 12px;
+  border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1;
   padding: 12px;
   background: rgba(0, 0, 0, 0.2);
   font-size: 14px;

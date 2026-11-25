@@ -18,7 +18,7 @@ button, input, a { font: inherit; }
 .bar h1 { margin: 0; flex: 1; min-width: 0; font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bar .brand { color: var(--gold); font-size: 14px; }
 .study-back-btn, .theme-btn { min-width: var(--hit); min-height: var(--hit); display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px;
-  border-radius: 999px; border: 1px solid #3a3a3a; background: #222; color: #fff; cursor: pointer; font-weight: 600; font-size: 14px; }
+  border-radius: 999px; corner-shape: round; --sq: 0; border: 1px solid #3a3a3a; background: #222; color: #fff; cursor: pointer; font-weight: 600; font-size: 14px; }
 
 .lab { display: grid; gap: 16px 28px; padding: 16px 24px 24px; max-width: 1280px; margin: 0 auto;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "stage controls" "fate fate"; }
@@ -35,12 +35,12 @@ button, input, a { font: inherit; }
 .helium { display: block; }
 input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: var(--hit); background: transparent; margin: 0; cursor: pointer;
   --fill: 50%; }
-input[type=range]::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(90deg, var(--gold) var(--fill), var(--track) var(--fill)); border-radius: 2px; }
+input[type=range]::-webkit-slider-runnable-track { height: 3px; background: linear-gradient(90deg, var(--gold) var(--fill), var(--track) var(--fill)); border-radius: 2px; corner-shape: round; --sq: 0; }
 input[type=range]::-moz-range-track { height: 3px; background: linear-gradient(90deg, var(--gold) var(--fill), var(--track) var(--fill)); }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7.5px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); }
-input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7.5px; border-radius: 50%; corner-shape: round; --sq: 0; background: var(--paper); border: 2px solid var(--ink); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; corner-shape: round; --sq: 0; background: var(--paper); border: 2px solid var(--ink); }
 .time-row { display: flex; gap: 8px; align-items: center; }
-.pill { min-height: var(--hit); min-width: var(--hit); padding: 6px 14px; border-radius: 999px; border: 1.5px solid var(--ink); background: var(--chip); color: var(--ink);
+.pill { min-height: var(--hit); min-width: var(--hit); padding: 6px 14px; border-radius: 999px; corner-shape: round; --sq: 0; border: 1.5px solid var(--ink); background: var(--chip); color: var(--ink);
   cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; -webkit-tap-highlight-color: transparent; }
 .pill[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .theme-btn[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #141414; }
@@ -65,7 +65,7 @@ input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 
 .fate-strip { display: grid; grid-template-columns: repeat(4, 1fr) 2px repeat(4, 1fr); gap: 6px; align-items: center; padding-top: 10px; }
 .fate-strip .div { width: 2px; align-self: stretch; background: var(--gold); }
 .fate-slot { min-height: var(--hit); border: 0; background: none; padding: 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
-  color: var(--ink-3); font-size: 12px; border-radius: 10px; }
+  color: var(--ink-3); font-size: 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .fate-slot canvas { width: 100%; max-width: 110px; aspect-ratio: 1; display: block; opacity: .28; filter: grayscale(.6); transition: opacity .2s; }
 .fate-slot.on canvas { opacity: 1; filter: none; }
 .fate-slot.on { color: var(--ink); }

@@ -14,10 +14,10 @@ a.study-pill:hover, a.study-pill:focus-visible {
   box-shadow: 0 10px 34px rgba(10, 8, 30, 0.35), 0 0 22px rgba(255, 226, 160, 0.28);
 }
 a.study-pill:active { transform: translateX(-50%) scale(0.97); }
-.study-pill-moon { width: 18px; height: 18px; border-radius: 50%; position: relative; }
+.study-pill-moon { width: 18px; height: 18px; border-radius: 50%; corner-shape: round; --sq: 0; position: relative; }
 .study-pill-moon svg { width: 18px; height: 18px; overflow: visible; }
 .study-pill-moon::after {
-  content: ""; position: absolute; inset: -5px; border-radius: 50%;
+  content: ""; position: absolute; inset: -5px; border-radius: 50%; corner-shape: round; --sq: 0;
   background: radial-gradient(circle, rgba(255, 232, 170, 0.45), transparent 70%);
   opacity: .55; transition: opacity .3s, transform .3s; pointer-events: none;
 }
