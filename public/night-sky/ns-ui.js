@@ -32,7 +32,7 @@ export function panelModel(st, info) {
       { label: "Speed", items: SPEEDS.map(([s, t]) => b("speed" + s, t, { type: "setSpeed", speed: s }, st.clock.speed === s, "time")) },
       { label: "Step", items: [b("h-", "-1 hour", { type: "jump", deltaMs: -H }, 0, "time"), b("h+", "+1 hour", { type: "jump", deltaMs: H }, 0, "time"), b("d-", "-1 day", { type: "jump", deltaMs: -DAY }, 0, "time"), b("d+", "+1 day", { type: "jump", deltaMs: DAY }, 0, "time"),
         b("m-", "-1 month", { type: "jump", months: -1 }, 0, "time"), b("m+", "+1 month", { type: "jump", months: 1 }, 0, "time"), b("m6", "+6 months", { type: "jump", months: 6 }, 0, "time")] },
-      { label: "Season (about, 10 PM)", items: [["mar", "Mar 20"], ["jun", "Jun 21"], ["sep", "Sep 22"], ["dec", "Dec 21"]].map(([k, t]) => b("season-" + k, t, { type: "season", season: k }, 0, "time")) },
+      { label: "Season (about 10 PM)", items: [["mar", "Mar 20"], ["jun", "Jun 21"], ["sep", "Sep 22"], ["dec", "Dec 21"]].map(([k, t]) => b("season-" + k, t, { type: "season", season: k }, 0, "time")) },
       ...(st.clampNote ? [{ note: "Dates are limited to 1900 to 2050." }] : []),
       ...(locked("time") ? [{ note: "Time is locked for this lab." }] : []),
     ],

@@ -55,7 +55,14 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     if (LOOKS[state.look]) return LOOKS[state.look];
     const [az, alt] = state.look.split(",").map(Number); return [az, alt];
   }
-  function applyLook() { const [az, alt] = lookAzAlt(); view.yaw = -az * D2R; view.pitch = alt * D2R; }
+  function applyLook() {
+    const [az, alt] = lookAzAlt();
+    view.yaw = -az * D2R;
+    // Named looks (south, etc.) start 10 deg higher on narrow flat screens so less of the view is ground. Headset and
+    // explicit look=az,alt or look=polaris keep the pitch they asked for.
+    const narrow = !renderer.xr.isPresenting && (canvas.clientWidth || window.innerWidth || 1280) <= 820;
+    view.pitch = (alt + (LOOKS[state.look] && narrow ? 10 : 0)) * D2R;
+  }
   applyLook();
 
   // ---- picking ----

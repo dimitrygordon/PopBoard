@@ -34,6 +34,7 @@ PRESETS = {
     "polaris-grid": f"{T1}&look=polaris&hl=polaris&lines=1&names=1&grid=altaz",
     "sydney-planets": "loc=sydney&date=2026-06-21&time=21:00&speed=0&look=south&lines=1&art=1&names=1&planets=1",
     "twilight": "loc=jasper&utc=2026-12-20T22:25Z&speed=0&look=west&sky=real",
+    "ecliptic-planets": "loc=jasper&utc=2026-12-21T03:00Z&speed=0&look=south&planets=1&grid=ecl&starnames=1",
 }
 XR_MOCK = """
 window.__xrCalls = [];
@@ -124,6 +125,13 @@ def main():
                     check(st["theme"] == theme, f"{tag}/{theme}/{name}: theme {st['theme']}")
                     if name == "off-south":
                         check(not (st["lines"] or st["art"] or st["names"]), f"{tag}/{theme}: constellation toggles all off by default")
+                    if name in ("off-south", "on-south", "ecliptic-planets"):
+                        pitch = page.evaluate("window.__nightSky.getView().pitch") * 180 / 3.141592653589793
+                        expect = 30 if tag == "phone-390" else 20
+                        check(abs(pitch - expect) < 1, f"{tag}/{theme}/{name}: named look pitch {pitch:.1f} (want {expect})")
+                    if name == "off-south" and tag == "desktop":
+                        lab = page.evaluate("[...document.querySelectorAll('.ns-row-label')].map(e=>e.textContent).join('|')")
+                        check("Season (about 10 PM)" in lab and "about, 10" not in lab, f"desktop Time sidebar label: {lab!r}")
                     if "art=1" in q:
                         page.wait_for_function("window.__nightSky.artStatus() === 'ready'", timeout=30000)
                         page.wait_for_timeout(400)
@@ -140,6 +148,8 @@ def main():
             # interactions (dark)
             ctx, page, errs = open_page(browser, base, dev, "dark", f"{T1}&look=110,25")
             check(page.locator("#vrBtn").is_hidden() and page.locator("#vrNote").is_visible(), f"{tag}: no navigator.xr -> Enter VR hidden, note shown")
+            pitch0 = page.evaluate("window.__nightSky.getView().pitch") * 180 / 3.141592653589793
+            check(abs(pitch0 - 25) < 1, f"{tag}: explicit look=110,25 keeps pitch 25 (got {pitch0:.1f})")
             v0 = page.evaluate("window.__nightSky.getView().yaw")
             box = page.locator("#sky").bounding_box()
             cx, cy = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
