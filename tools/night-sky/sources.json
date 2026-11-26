@@ -1,0 +1,45 @@
+{
+  "hyg": {
+    "name": "HYG database v4.4",
+    "url": "https://codeberg.org/astronexus/hyg/media/branch/main/data/hyg/CURRENT/hyg_v44.csv.gz",
+    "file": "hyg_v44.csv.gz",
+    "sha256": "00b349893b9a53106dd488d8371e8d2fa586043e500bb3cdb8bff3931682197d",
+    "license": "CC BY-SA 4.0",
+    "expect": {
+      "nonSolRows": 119613,
+      "magLimit": 6.5,
+      "starsAtLimit": 8920
+    }
+  },
+  "stellarium": {
+    "name": "Stellarium sky culture 'western' (the modern IAU constellations)",
+    "repo": "https://github.com/Stellarium/stellarium-skycultures",
+    "commit": "2d80ce70984c14bba7da2d31a0f9b27e292861c9",
+    "path": "western",
+    "rawBase": "https://raw.githubusercontent.com/Stellarium/stellarium-skycultures/2d80ce70984c14bba7da2d31a0f9b27e292861c9/western/",
+    "dir": "stellarium-western",
+    "indexSha256": "a861accd345249a185a5ecfc2a516f34291c0aa52f4bb8d8337ffc53e9cef6b9",
+    "license": {
+      "linesAndNames": "CC BY-SA (description.md: 'Text and data: CC BY-SA')",
+      "illustrations": "Free Art License 1.3 (Johan Meuris)"
+    },
+    "expect": {
+      "constellations": 88,
+      "segments": 674,
+      "withArt": 85
+    },
+    "note": "Lines contain a 'thin' style token in 6 polylines; build-data skips non-integer tokens. Integer-only segment count is 674 here; design_v1 says 695, which was the older skycultures/modern culture in Stellarium/stellarium."
+  },
+  "jpl": {
+    "name": "JPL Approximate Positions of the Planets, Table 1 (1800 AD to 2050 AD)",
+    "url": "https://ssd.jpl.nasa.gov/planets/approx_pos.html",
+    "copiedTo": "tools/night-sky/jpl-approx-pos-table1.txt",
+    "license": "US Government work (JPL/Caltech), cited"
+  },
+  "artAtlas": {
+    "manifest": "public/night-sky/data/art/art-atlas.json",
+    "atlas": "public/night-sky/data/art/constellations-atlas.webp",
+    "webpSha256": "4bd2f7e260ee50c0fa79a8fdf4c69dca5859452de52793dc43c597161ed5c19c",
+    "builtBy": "Leo (tools/night-sky/build-art-atlas.py), from the same stellarium-skycultures commit"
+  }
+}

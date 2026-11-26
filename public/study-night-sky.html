@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0A0D20">
+<title>Night Sky VR // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<script>
+  // Theme before first paint: a saved choice wins, else the system setting.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("popboard.night-sky.theme"); } catch (e) {}
+    if (t !== "dark" && t !== "light") t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
+<link rel="preload" as="font" type="font/woff2" href="night-sky/ui/fonts/inter-latin-var.woff2" crossorigin>
+<link rel="stylesheet" href="night-sky/ns-theme.css">
+<link rel="stylesheet" href="/shared/corners/corners.css?v=20261124a">
+<script defer src="/shared/corners/corners.js?v=20261124a"></script>
+<script type="module" src="night-sky/ns-page-ui.js"></script>
+</head>
+<body>
+<h1 class="sr-only">Night Sky VR</h1>
+<p class="sr-only">A sky simulator for any date, time and place from 1900 to 2050. Drag to look around, tap a star for its name, magnitude, colour, distance and position, and turn constellation lines, art and names on or off. On a Meta Quest 3, press Enter VR to stand under the sky in the headset.</p>
+
+<header class="ns-header">
+  <button id="studyBackBtn" class="ns-hbtn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="lbl">Back</span>
+  </button>
+  <p class="title">Night Sky VR</p>
+  <button id="vrBtn" class="ns-hbtn ns-vr" type="button" hidden>
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h18v8h-6l-1.5-2.5h-3L9 16H3z"/></svg>
+    <span class="lbl" id="vrLabel">Enter VR</span>
+  </button>
+  <p id="vrNote" class="ns-vrnote" hidden>VR needs a headset browser (Meta Quest 3).</p>
+  <button id="copyBtn" class="ns-hbtn" type="button" aria-label="Copy a link to this sky">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+    <span class="lbl" id="copyLabel">Copy link</span>
+  </button>
+  <button id="themeBtn" class="ns-hbtn" type="button" aria-pressed="false" aria-label="Dark mode">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <span class="lbl" id="themeLabel">Dark</span>
+  </button>
+</header>
+
+<main class="ns-layout">
+  <section id="stage" class="ns-stage" aria-label="Sky view">
+    <canvas id="sky" role="img" aria-label="The sky seen from the chosen place and time. Drag to look around, tap a star for details."></canvas>
+    <p id="status" class="ns-status" role="status">Loading stars...</p>
+    <p class="ns-hint">Drag to look. Tap a star.</p>
+    <p id="hud" class="ns-hud" hidden></p>
+    <div id="card" class="ns-card" role="dialog" aria-live="polite" aria-labelledby="cardTitle" hidden>
+      <button id="cardClose" class="x" type="button" aria-label="Close">&times;</button>
+      <h2 id="cardTitle"></h2>
+      <div id="cardBody"></div>
+    </div>
+  </section>
+  <aside class="ns-side" aria-label="Controls">
+    <div id="panel"></div>
+    <details class="ns-credits">
+      <summary>Credits and licenses</summary>
+      <p>Stars: <a href="https://github.com/astronexus/HYG-Database" rel="noopener" target="_blank">HYG database v4.4</a>, astronexus (David Nash), CC BY-SA 4.0. Filtered to magnitude 6.5 and repacked.</p>
+      <p>Constellation lines and names: <a href="https://github.com/Stellarium/stellarium-skycultures" rel="noopener" target="_blank">Stellarium sky cultures</a> (western, commit 2d80ce7), CC BY-SA.</p>
+      <p>Constellation art: Johan Meuris for Stellarium, Free Art License 1.3, restyled into one atlas by Leo (see night-sky/data/art/README.md).</p>
+      <p>Planets: JPL approximate positions (Standish). Sun, Moon, sidereal time and precession: Meeus, Astronomical Algorithms. Font: Inter, SIL Open Font License 1.1.</p>
+      <p>Full list: <a href="night-sky/data/CREDITS.md" target="_blank">night-sky/data/CREDITS.md</a>.</p>
+    </details>
+  </aside>
+</main>
+</body>
+</html>
