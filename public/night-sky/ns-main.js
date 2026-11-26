@@ -1,7 +1,7 @@
 // Night Sky: boot, renderer, XR session, frame loop, picking. The page glue (HTML panel, card, buttons) is ns-page-ui.js.
 import * as THREE from "../vendor/three/three.module.min.js";
 import { parseQuery, serialize, reduce, simTimeMs, LOOKS } from "./ns-state.js";
-import { skyMatrix, dateMatrix, worldToAltAz, colorClass, LY_PER_PC, centuriesSinceJ2000, lstDeg } from "./ns-astro.js";
+import { skyMatrix, dateMatrix, worldToAltAz, colorClass, LY_PER_PC, centuriesSinceJ2000, lstDeg, refractDir, unrefractDir } from "./ns-astro.js";
 import { sunPosition } from "./ns-ephem.js";
 import { loadCatalog } from "./ns-catalog.js";
 import { registerLayer, initLayers, updateLayers, getLayer } from "./ns-layers.js";
@@ -12,7 +12,7 @@ import { constellationsLayer } from "./layers/constellations.js";
 import { groundLayer } from "./layers/ground.js";
 import { gridLayer } from "./layers/grid.js";
 import { trailsLayer } from "./layers/trails.js";
-import { solarLayer } from "./layers/solar.js";
+import { solarLayer, PLANET_SIZE_NOTE } from "./layers/solar.js";
 import { starNamesLayer } from "./layers/starnames.js";
 import { LabelCard, TextBillboards } from "./ns-labels.js";
 import { VRPanel, loadPanelAssets, UNITS } from "./ns-vrpanel.js";
@@ -39,7 +39,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   skyGroup.matrixAutoUpdate = false; dateGroup.matrixAutoUpdate = false;
   skyRoot.add(skyGroup, dateGroup); scene.add(skyRoot, groundGroup);
 
-  const frame = { simMs: 0, M: null, Md: null, viewportH: 800, daylight: 0, fallbackUp: [0, 0, -1], solar: [], sunDir: [0, -1, 0] };
+  const frame = { simMs: 0, M: null, Md: null, viewportH: 800, daylight: 0, fallbackUp: [0, 0, -1], solar: [], sunDir: [0, -1, 0], sunLocal: [0, -1, 0], uRefract: { value: 0 }, refract: false, flat: true, starScale: 1 };
   const ctx = { THREE, scene, skyRoot, skyGroup, dateGroup, groundGroup, catalog, renderer, camera, skin: SKIN, frame, baseUrl,
     get state() { return state; }, observer: () => ({ type: "surface", latDeg: state.lat, lonDeg: state.lon, tz: state.tz }),
     clock: { get simTimeMs() { return simTimeMs(state, wallNow()); } }, highlightDir: () => highlight(), onLayerStatus: () => refresh() };
@@ -68,12 +68,13 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
       }
       if (best) return bodyInfo(best);
     }
-    const s = applyT(frame.M, local), st = catalog.stars, cosLim = Math.cos(PICK_STAR_DEG * D2R);
+    const trueLocal = unrefractDir(local, frame.refract); // Real Sky draws apparent positions; the catalogue is geometric
+    const s = applyT(frame.M, trueLocal), st = catalog.stars, cosLim = Math.cos(PICK_STAR_DEG * D2R);
     let bi = -1;
     for (let i = 0; i < st.n; i++) {
       if (st.mag[i] > state.mag) break; // sorted by magnitude: first hit inside the cone is the brightest
       const d = st.vec[3 * i] * s[0] + st.vec[3 * i + 1] * s[1] + st.vec[3 * i + 2] * s[2];
-      if (d > cosLim) { if (state.ground && apply(frame.M, st.starVec(i))[1] < -0.0087) continue; bi = i; break; }
+      if (d > cosLim) { if (state.ground && refractDir(apply(frame.M, st.starVec(i)), frame.refract)[1] < -0.0087) continue; bi = i; break; }
     }
     return bi >= 0 ? starInfo(bi) : null;
   }
@@ -81,7 +82,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   const altAzLine = (d) => { const a = worldToAltAz(d); return `Altitude ${a.alt.toFixed(1)}°, azimuth ${a.az.toFixed(1)}° (${azWord(a.az)})`; };
   function starInfo(i) {
     const st = catalog.stars, con = conName.get(st.con(i)), bv = st.bv[i], dist = st.dist[i];
-    const dir = apply(frame.M, st.starVec(i));
+    const dir = refractDir(apply(frame.M, st.starVec(i)), frame.refract);
     return { kind: "star", index: i, dir, title: st.label(i), lines: [
       con ? `${con.latin} (${con.english})` : st.con(i) || "No constellation listed",
       `Magnitude ${st.mag[i].toFixed(2)}`,
@@ -94,7 +95,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     const lines = [];
     if (b.id === "moon") { const p = frame.moonPhase; lines.push(`${Math.round(p.fraction * 100)}% lit, ${p.waxing ? "waxing" : "waning"}`, `Distance about ${Math.round(b.body.distKm / 100) * 100} km`); }
     else if (b.id === "sun") lines.push("Our star. Never look at the real Sun.", `Distance ${b.body.distAu.toFixed(3)} AU`);
-    else lines.push("Planet", `Distance ${b.body.distAu.toFixed(2)} AU`);
+    else lines.push("Planet", `Distance ${b.body.distAu.toFixed(2)} AU`, PLANET_SIZE_NOTE);
     lines.push(altAzLine(b.dir));
     return { kind: "body", id: b.id, dir: b.dir, title: b.name, lines };
   }
@@ -104,12 +105,12 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     const hl = state.hl; if (!hl) return null; const st = catalog.stars;
     let i = -1;
     if (hl === "polaris") i = st.indexOfHip.get(11767); else if (hl.startsWith("hip:")) i = st.indexOfHip.get(+hl.slice(4)) ?? -1;
-    if (i >= 0) return { dir: apply(frame.M, st.starVec(i)), radiusDeg: 2.2 };
+    if (i >= 0) return { dir: refractDir(apply(frame.M, st.starVec(i)), frame.refract), radiusDeg: 2.2 };
     const c = catalog.constellations.constellations.find((x) => x.id.toLowerCase() === hl);
     if (!c) return null;
     const center = raDecVec(c.labelRa * 15, c.labelDec); let r = 3;
     for (const l of c.lines) for (const k of l) { const v = st.starVec(k); r = Math.max(r, Math.acos(Math.min(1, v[0] * center[0] + v[1] * center[1] + v[2] * center[2])) / D2R); }
-    return { dir: apply(frame.M, center), radiusDeg: Math.min(r + 2, 25) };
+    return { dir: refractDir(apply(frame.M, center), frame.refract), radiusDeg: Math.min(r + 2, 25) };
   }
 
   // ---- XR ----
@@ -219,7 +220,10 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     setMatrix3(skyGroup.matrix, frame.M); skyGroup.matrixWorldNeedsUpdate = true;
     setMatrix3(dateGroup.matrix, frame.Md); dateGroup.matrixWorldNeedsUpdate = true;
     const s = sunPosition(frame.simMs); const sd = apply(frame.Md, raDecVec(s.raDeg, s.decDeg));
-    frame.sunAlt = Math.asin(sd[1]) / D2R;
+    frame.refract = state.sky === "real";
+    frame.uRefract.value = frame.refract ? 1 : 0;
+    frame.sunLocal = frame.refract ? refractDir(sd) : sd; // local frame (x E, y up, z S), read by the sky dome glow
+    frame.sunAlt = Math.asin(frame.sunLocal[1]) / D2R; // apparent in Real Sky so sunrise matches the lifted Sun
     // real sky: daylight washes stars out (civil 6, nautical 12, astronomical 18 degrees of Sun depression)
     frame.daylight = state.sky === "real" ? Math.pow(Math.min(1, Math.max(0, (frame.sunAlt + 18) / 18)), 2) : 0;
   }
@@ -257,6 +261,8 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
       }
       hud.mesh.visible = state.debug;
     } else frame.viewportH = renderer.domElement.height;
+    frame.flat = !xr; // flat screens: stars (and planets) get a size boost; the headset keeps true angular size
+    frame.starScale = frame.flat ? Math.min(2.2, Math.max(1, 22 / (0.5 * frame.viewportH * (camera.projectionMatrix.elements[5] || 1) * Math.PI / 180))) : 1;
     TextBillboards.scale = xr ? 1 : Math.min(1, Math.max(0.6, (canvas.clientHeight || 700) / 700)); // Leo's sizes are for the headset; smaller on phones
     vignette.visible = state.vignette && Math.abs(state.clock.speed) >= 600; // comfort vignette at 600x and above
     updateLayers(ctx, dt);

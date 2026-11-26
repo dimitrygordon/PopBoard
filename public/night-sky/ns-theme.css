@@ -1,6 +1,6 @@
 /* Night Sky page chrome. Leo hook: every colour, font and size the HTML UI uses is a custom property here.
    The sky itself is always dark (ns-skin.js); light/dark only changes the page chrome around it.
-   Dark tokens follow Leo's panel palette (ui/ui-spec.md section 2). Light tokens: Turing placeholders. */
+   Dark tokens follow Leo's panel palette (ui/ui-spec.md section 2). Light tokens are ratified. */
 @font-face { font-family: "Inter"; src: url("ui/fonts/inter-latin-var.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 
 :root {

@@ -2,7 +2,7 @@
 // angle 15.041 deg per hour), built in the date frame so the tail is exactly the star's path over the last k hours.
 // A uniform hides the tail beyond the chosen length. Rebuilt only when the date moves by more than 2 years (P drifts).
 import { SKY_R, apply } from "../ns-util.js";
-import { precessionMatrix, centuriesSinceJ2000, SIDEREAL_DAY_S } from "../ns-astro.js";
+import { precessionMatrix, centuriesSinceJ2000, SIDEREAL_DAY_S, REFRACT_GLSL } from "../ns-astro.js";
 
 export const TRAIL_CONFIG = { stars: 600, segments: 32, hours: 12 };
 const DEG_PER_HOUR = 360 * 3600 / SIDEREAL_DAY_S; // 15.041
@@ -26,8 +26,8 @@ export function trailsLayer() {
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3)); g.setAttribute("aK", new THREE.BufferAttribute(kk, 1)); g.setAttribute("aMag", new THREE.BufferAttribute(mg, 1));
     if (!lines) {
       lines = new THREE.LineSegments(g, new THREE.ShaderMaterial({
-        uniforms: { uHours: { value: 0 }, uDir: { value: 1 } },
-        vertexShader: "attribute float aK; attribute float aMag; uniform float uHours; varying float vA; void main(){ vA = (aK <= uHours + 1e-3 ? 1.0 - aK / max(uHours, 0.01) * 0.85 : 0.0) * clamp(1.2 - aMag * 0.25, 0.25, 1.0); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+        uniforms: { uRefract: ctx.frame.uRefract, uHours: { value: 0 }, uDir: { value: 1 } },
+        vertexShader: REFRACT_GLSL + "attribute float aK; attribute float aMag; uniform float uHours; varying float vA; void main(){ vA = (aK <= uHours + 1e-3 ? 1.0 - aK / max(uHours, 0.01) * 0.85 : 0.0) * clamp(1.2 - aMag * 0.25, 0.25, 1.0); vec4 wp = modelMatrix * vec4(position, 1.0); wp.xyz = nsRefractWorld(wp.xyz); gl_Position = projectionMatrix * viewMatrix * wp; }",
         fragmentShader: "varying float vA; void main(){ if (vA < 0.01) discard; gl_FragColor = vec4(vec3(0.75, 0.82, 1.0) * vA, vA); }",
         transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
       }));

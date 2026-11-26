@@ -135,8 +135,39 @@ export function raDecToAltAz(raHours, decDeg, unixMs, latDeg, lonDeg, opts = {})
 /** Saemundsson (1986) refraction, Meeus eq. 16.4, for a TRUE altitude; returns degrees to add. Off by default. */
 export function refractionDeg(altDeg) {
   if (altDeg < -1) return 0;
-  return 1.02 / Math.tan((altDeg + 10.3 / (altDeg + 5.11)) * DEG) / 60;
+  return Math.max(0, 1.02 / Math.tan((altDeg + 10.3 / (altDeg + 5.11)) * DEG) / 60);
 }
+/** Lift a local-frame direction to apparent altitude (Saemundsson). Used in Real Sky mode. Off leaves the vector unchanged. */
+export function refractDir(dir, on = true) {
+  if (!on) return dir;
+  const a = worldToAltAz(dir), r = refractionDeg(a.alt);
+  return r ? altAzToWorld(a.alt + r, a.az) : dir;
+}
+/** Inverse of refractDir, two iterations (picking a geometric catalogue against an apparent ray). */
+export function unrefractDir(dir, on = true) {
+  if (!on) return dir;
+  const app = worldToAltAz(dir);
+  let t = app.alt - refractionDeg(app.alt);
+  t = app.alt - refractionDeg(t);
+  return altAzToWorld(t, app.az);
+}
+/** GLSL twin of refractionDeg + refractDir, for layer shaders. uRefract is 1 in Real Sky mode, else 0. wp is a world/local-frame position. */
+export const REFRACT_GLSL = /* glsl */`
+uniform float uRefract;
+vec3 nsRefractWorld(vec3 wp) {
+  if (uRefract < 0.5) return wp;
+  float R = length(wp);
+  if (R < 1e-3) return wp;
+  vec3 d = wp / R;
+  float alt = degrees(asin(clamp(d.y, -1.0, 1.0)));
+  if (alt < -1.0) return wp;
+  float ref = 1.02 / tan(radians(alt + 10.3 / (alt + 5.11))) / 60.0;
+  if (ref <= 0.0) return wp;
+  float a = radians(alt + ref), az = atan(d.x, -d.z), ca = cos(a);
+  return vec3(ca * sin(az), sin(a), -ca * cos(az)) * R;
+}
+`;
+
 /** Kasten and Young (1989) relative airmass, altitude in degrees. */
 export function airmass(altDeg) {
   if (altDeg <= -6.07995 + 1e-9) return 40;
@@ -176,7 +207,7 @@ export function colorClass(bv) {
   if (!Number.isFinite(bv)) return "unknown";
   if (bv < 0.0) return "blue-white";
   if (bv < 0.3) return "white";
-  if (bv < 0.8) return "yellow";
+  if (bv < 0.8) return "yellow-white";
   if (bv < 1.4) return "orange";
   return "red";
 }

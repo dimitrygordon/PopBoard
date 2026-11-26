@@ -13,13 +13,18 @@ export function groundLayer() {
       const c = (h) => new THREE.Color(h);
       // sky gradient by altitude (night): zenith, 30 deg, horizon. "Real sky" mixes toward twilight and day by Sun altitude.
       dome = new THREE.Mesh(new THREE.SphereGeometry(1800, 48, 24), new THREE.ShaderMaterial({
-        uniforms: { uZen: { value: c(K.zenith) }, uMid: { value: c(K.mid) }, uHor: { value: c(K.horizon) }, uTw: { value: c(K.twilight) }, uDay: { value: c(K.day) }, uDayHor: { value: c(K.dayHorizon) }, uTwi: { value: 0 }, uDaylight: { value: 0 } },
+        uniforms: { uZen: { value: c(K.zenith) }, uMid: { value: c(K.mid) }, uHor: { value: c(K.horizon) }, uTw: { value: c(K.twilightZenith) }, uTwMid: { value: c(K.twilight) }, uTwGlow: { value: c(K.twilightGlow) }, uSun: { value: new THREE.Vector3(0, -1, 0) }, uGlow: { value: 0 }, uDay: { value: c(K.day) }, uDayHor: { value: c(K.dayHorizon) }, uTwi: { value: 0 }, uDaylight: { value: 0 } },
         vertexShader: "varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
-        fragmentShader: `uniform vec3 uZen, uMid, uHor, uTw, uDay, uDayHor; uniform float uTwi, uDaylight; varying vec3 vP;
+        fragmentShader: `uniform vec3 uZen, uMid, uHor, uTw, uTwMid, uTwGlow, uDay, uDayHor, uSun; uniform float uTwi, uDaylight, uGlow; varying vec3 vP;
           void main(){ float alt = degrees(asin(clamp(normalize(vP).y, -1.0, 1.0)));
             vec3 n = alt > 30.0 ? mix(uMid, uZen, clamp((alt - 30.0) / 60.0, 0.0, 1.0)) : mix(uHor, uMid, clamp(alt / 30.0, 0.0, 1.0));
             vec3 d = mix(uDayHor, uDay, clamp(alt / 50.0, 0.0, 1.0));
-            vec3 col = mix(mix(n, uTw, uTwi), d, uDaylight);
+            vec3 tw = mix(uTwMid, uTw, smoothstep(0.0, 70.0, alt));                 // twilight blue, lighter toward the horizon
+            float toSun = 0.5 + 0.5 * dot(normalize(vP.xz + 1e-4), normalize(uSun.xz + 1e-4));  // 1 facing the Sun, 0 opposite
+            d = mix(d, uDayHor, 0.25 * pow(max(dot(normalize(vP), normalize(uSun)), 0.0), 6.0) * step(0.0, uSun.y + 0.2)); // faint haze around the Sun
+            vec3 col = mix(mix(n, tw, uTwi), d, uDaylight);
+            float glow = uGlow * exp(-max(alt, 0.0) / 12.0) * (0.15 + 0.85 * pow(toSun, 3.0));  // warm band hugging the horizon, strongest on the Sun side
+            col = mix(col, uTwGlow, clamp(glow * 1.1, 0.0, 0.85));
             gl_FragColor = vec4(col, 1.0);
             #include <colorspace_fragment>
           }`, // uniforms are linear (THREE.Color); encode so the hex values in ns-skin show as written
@@ -47,7 +52,9 @@ export function groundLayer() {
       disc.material.depthWrite = st.ground;
       cards.update(cardDirs, ctx.frame.fallbackUp);
       const real = st.sky === "real";
-      u.uDaylight.value = real ? Math.min(1, Math.max(0, (f.sunAlt + 6) / 12)) : 0;          // day blue from -6 deg up
+      u.uDaylight.value = real ? Math.min(1, Math.max(0, (f.sunAlt + 3) / 11)) : 0;          // day blue from -3 deg up (was -6: it washed out the sunset glow)
+      if (f.sunLocal) u.uSun.value.set(f.sunLocal[0], f.sunLocal[1], f.sunLocal[2]);
+      u.uGlow.value = real ? Math.max(0, Math.min(1, (f.sunAlt + 12) / 10)) * (1 - Math.max(0, Math.min(1, (f.sunAlt + 2) / 10))) : 0; // peaks near Sun altitude -2 deg
       u.uTwi.value = real ? Math.min(1, Math.max(0, (f.sunAlt + 18) / 12)) : 0;               // twilight from -18 deg (astronomical)
     },
     setVisible(on) { disc.visible = ring.visible = cards.mesh.visible = on; },

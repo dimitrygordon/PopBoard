@@ -33,6 +33,7 @@ PRESETS = {
     "on-south": f"{T1}&look=south&lines=1&art=1&names=1",
     "polaris-grid": f"{T1}&look=polaris&hl=polaris&lines=1&names=1&grid=altaz",
     "sydney-planets": "loc=sydney&date=2026-06-21&time=21:00&speed=0&look=south&lines=1&art=1&names=1&planets=1",
+    "twilight": "loc=jasper&utc=2026-12-20T22:25Z&speed=0&look=west&sky=real",
 }
 XR_MOCK = """
 window.__xrCalls = [];
@@ -199,7 +200,7 @@ def main():
 
         # VR panel canvas (drawn off-headset for a look; the same draw path runs in the headset)
         ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", f"{T1}&lines=1")
-        for tab, pg in (("time", 0), ("time", 1), ("sky", 0), ("sky", 1), ("place", 0), ("help", 0)):
+        for tab, pg in (("time", 0), ("time", 1), ("sky", 0), ("sky", 1), ("place", 0), ("help", 0), ("help", 1)):
             url = page.evaluate("""async ([tab, pg]) => { const m = await import('./night-sky/ns-vrpanel.js'); const a = window.__nightSky;
               const assets = await m.loadPanelAssets(new URL('./night-sky/', location.href)); const p = new m.VRPanel(a.THREE, assets);
               p.tab = tab; if (p.page[tab] !== undefined) p.page[tab] = pg; p.draw(a.state, { simMs: a.frame.simMs, artStatus: 'ready' });

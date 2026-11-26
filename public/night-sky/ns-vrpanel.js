@@ -104,8 +104,7 @@ export class VRPanel {
       row(null, [{ id: "d-", text: "-1 day", action: { type: "jump", deltaMs: -86400e3 } }, { id: "d+", text: "+1 day", action: { type: "jump", deltaMs: 86400e3 } }], lockT);
       row(null, [{ id: "mo-", text: "-1 month", action: { type: "jump", months: -1 } }, { id: "mo+", text: "+1 month", action: { type: "jump", months: 1 } }], lockT);
       text(g, "SEASONS (ABOUT)", 64, y + 52, THEME.type.header, THEME.text.tertiary, "left", 6); y += 72;
-      row(null, [["mar", "Mar 20"], ["jun", "Jun 21"]].map(([k, t]) => ({ id: "season-" + k, text: t, action: { type: "season", season: k } })), lockT);
-      row(null, [["sep", "Sep 22"], ["dec", "Dec 21"]].map(([k, t]) => ({ id: "season-" + k, text: t, action: { type: "season", season: k } })), lockT);
+      row(null, [["mar", "Mar 20"], ["jun", "Jun 21"], ["sep", "Sep 22"], ["dec", "Dec 21"]].map(([k, t]) => ({ id: "season-" + k, text: t, action: { type: "season", season: k } })), lockT); // one row of four: the back arrow (856,900) used to sit on Dec 21
       if (st.clampNote) text(g, "Dates stop at 1900 and 2050", 64, y + 52, THEME.type.label, THEME.accent);
       this.pageDots(g, 2, 1, 960, 262); this.backArrow(g, hit);
     } else if (this.tab === "sky") { // page 2: Display. 7 rows of 112 px (Leo's row height) fit 176..996 with 6 px gaps
@@ -138,7 +137,7 @@ export class VRPanel {
         lines(["Trigger or pinch: pick a star, press a button.", "Grip and sweep: scrub time.", "Thumbstick: scrub time.", "B or Y: show or hide this panel.", "Top edge: drag the panel."]);
       } else {
         text(g, "CREDITS", 64, 262, THEME.type.header, THEME.text.tertiary, "left", 6); y = 290;
-        lines(["Stars: HYG v4.4, astronexus, CC BY-SA 4.0", "Lines and names: Stellarium, CC BY-SA", "Art: Johan Meuris, restyled by Leo, FAL 1.3", "Font: Inter, SIL OFL 1.1", "Planets: JPL. Moon and Sun: Meeus"], THEME.type.body, THEME.text.secondary, 66);
+        lines(["Stars: HYG v4.4, astronexus, CC BY-SA 4.0", "Lines and names: Stellarium, CC BY-SA", "Art: Johan Meuris, restyled by Leo, FAL 1.3", "Font: Inter, SIL OFL 1.1", "Planets: JPL. Moon and Sun: Meeus", "Planets are enlarged so you can find them. Through your eyes they look like bright stars."], THEME.type.body, THEME.text.secondary, 56);
       }
       this.pageDots(g, 2, this.page.help, 960, 262);
       if (this.page.help === 0) { surface(g, 856, 900, 128, 92, 40, this.hover === "next" ? "hover" : "off"); icon(g, this.icons["step-forward"], 920, 946, 52, 0.85); hit("next", 856, 900, 128, 92, null, { page: 1 }); }

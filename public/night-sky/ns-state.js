@@ -25,7 +25,7 @@ export const LOCK_GROUPS = ["time", "place", "sky"];
 const KNOWN = ["v", "loc", "lat", "lon", "tz", "date", "time", "utc", "speed", "lines", "art", "names", "artalpha", "starnames", "grid",
   "planets", "trails", "ground", "sky", "mag", "look", "hl", "ui", "lock", "lab", "debug"];
 
-const SKY_DEFAULTS = { lines: false, art: false, names: false, artalpha: 0.35, starnames: false, grid: [], planets: true, trails: 0, ground: true, sky: "night", mag: 6.5 };
+const SKY_DEFAULTS = { lines: false, art: false, names: false, artalpha: 0.40, starnames: false, grid: [], planets: true, trails: 0, ground: true, sky: "night", mag: 6.5 };
 
 export function defaultState(wallMs = Date.now()) {
   const p = PLACES.jasper;

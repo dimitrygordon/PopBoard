@@ -59,7 +59,7 @@ export function panelModel(st, info) {
       { readout: info.vr
         ? ["Point and pull the trigger to pick a star or press a button.", "Hold grip and sweep to scrub time. Thumbstick left/right scrubs too.", "B or Y shows and hides this panel. Drag the top bar to move it."]
         : ["Drag to look around. Click or tap a star for its card.", "Keys: Space play/pause, arrows step 1 hour (Shift: 1 day),", "L lines, A art, N names."], id: "controls" },
-      { label: "Credits", readout: ["Stars: HYG database v4.4, astronexus (David Nash), CC BY-SA 4.0.", "Lines and names: Stellarium sky culture (western), CC BY-SA.", "Art: Johan Meuris (Stellarium), restyled by Leo, Free Art License 1.3.", "Font: Inter, SIL Open Font License 1.1.", "Planets: JPL approximate elements. Sun and Moon: Meeus."], id: "credits" },
+      { label: "Credits", readout: ["Stars: HYG database v4.4, astronexus (David Nash), CC BY-SA 4.0.", "Lines and names: Stellarium sky culture (western), CC BY-SA.", "Art: Johan Meuris (Stellarium), restyled by Leo, Free Art License 1.3.", "Font: Inter, SIL Open Font License 1.1.", "Planets: JPL approximate elements. Sun and Moon: Meeus.", "Planets are enlarged so you can find them. Through your eyes they look like bright stars."], id: "credits" },
     ],
   };
   return { tabs: TABS, rows: tabs };
