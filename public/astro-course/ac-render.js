@@ -1,3 +1,4 @@
+import { artUrl } from "../shared/pack/pack.js";
 // Astronomy Course: turns one slide from a deck file into storybook page markup.
 // Pure functions (no DOM), so the tests can check that every word of every slide survives.
 // Positions are percentages of the 16:9 page; font sizes are in deck points and scale with
@@ -69,7 +70,7 @@ export function renderSlide(slide, opts = {}) {
     const [x, y, w, h] = it.box;
     const pos = `left:${x}%;top:${y}%;width:${w}%;height:${h}%`;
     if (it.t === "img") {
-      parts.push(`<img class="ac-art" src="${esc(base + it.src)}" alt="" style="${pos}" draggable="false" decoding="async">`);
+      parts.push(`<img class="ac-art" src="${esc(artUrl(base + it.src))}" alt="" style="${pos}" draggable="false" decoding="async">`);
       continue;
     }
     if (it.t !== "text") continue;

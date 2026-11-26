@@ -104,9 +104,9 @@ test("Practice Questions pill sits just left of the module filters and opens the
 const PACK = new Map();
 const packs = (id) => { const m = id.slice(id.startsWith("mq") ? 2 : 3, id.indexOf("-")); if (!PACK.has(m)) PACK.set(m, JSON.parse(read(`physics101/sq/art/${m === "ms" ? "ms" : "m" + m}.json`))); return PACK.get(m); };
 
-test("Study Questions assets stay packed: public/ under Cloudflare Pages' 20,000-file cap", () => {
+test("assets stay packed: public/ far under Cloudflare Pages' 20,000-file cap", () => {
   const walk = (d) => readdirSync(d, { withFileTypes: true }).reduce((n, e) => n + (e.isDirectory() ? walk(join(d, e.name)) : 1), 0);
-  const n = walk(PUB); assert.ok(n < 19000, `${n} files under public/`);
+  const n = walk(PUB); assert.ok(n < 9000, `${n} files under public/ (7,4xx after deck art was packed; the cap is 20,000)`);
   assert.deepEqual(readdirSync(join(PUB, "physics101/sq/art")).filter((f) => !/^(index|m\d\d|ms)\.json$/.test(f)), []);
   // only images a rich page links to directly stay loose
   assert.deepEqual(readdirSync(join(PUB, "physics101/sq/img")), ["mq-01-e14.webp"]);

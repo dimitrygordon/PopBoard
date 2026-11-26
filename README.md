@@ -31,6 +31,10 @@ boards/{boardId}                     { name, ownerUid, teacherAccount, ...settin
   polls/{id} (+ drawings/{id}), leaderboard/{username}, seats/{id}
 ```
 
+## Storybook art is packed (Cloudflare Pages: 20,000 files per deploy)
+
+Each Astronomy Course and Physics 101 deck keeps its `.webp` art in `decks/<slug>/art-pack.bin` plus an index, `art-pack.json`, instead of thousands of loose files. A page's art is read with one HTTP Range request (`public/shared/pack/pack.js`). After building art with the lesson tools, run `node tools/pack-art/pack-art.mjs` (idempotent: loose `.webp` files merge into the pack and are removed). `--unpack` turns packs back into loose files for editing, `--check` verifies them. `tests/study-questions.test.mjs` fails if `public/` grows past 9,000 files.
+
 ## Publishing the security rules (works on an iPad)
 
 1. Firebase console → **Firestore Database** → **Rules**. Replace everything with the contents of `firestore.rules`, then tap **Publish**.

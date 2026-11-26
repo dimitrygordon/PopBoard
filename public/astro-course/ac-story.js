@@ -12,6 +12,7 @@ import { halfUnder } from "../shared/layout/layout.js";
 import { createPopup, darkInk, webglOk } from "./ac-popup.js";
 import { hasArt, mountArt, registerArt, REVEAL } from "./ac-artscene.js";
 import { mountFx } from "./ac-fx.js";
+import { openArtPack, artUrl } from "../shared/pack/pack.js";
 import { createNarrator } from "./ac-narrate.js";
 import { mountPowers, mountEclipse, mountWaves, mountDoppler, mountGravity } from "./ac-sb-v2.js";
 
@@ -49,7 +50,7 @@ const ONPAGE = { rings: "Cosmic address rings (3D)", cannon: "Newton's cannon (3
   diurnal: "Diurnal motion (3D)", latitude: "Polaris & latitude (3D)", phases: "Moon phases (3D)", eclipses: "Why eclipses are rare (3D)",
   // D03 per-page scene modules (js/astro-scenes/d03)
   retrograde: "Copernicus's way (3D)", kepler2: "Kepler's 2nd law (3D)", venus: "Venus's phases (3D)", cannonball: "Newton's cannonball (3D)" };
-let v2 = null, popup = null, fxh = null, arth = null;
+let v2 = null, popup = null, fxh = null, arth = null, pack = null, showTok = 0;
 // a course can ship text only (C.narration === false): no player, no audio fetches
 const narrator = C.narration === false ? { load() {}, stop() {} } : createNarrator($("narr"), C.root);
 // a course can draw each page in code (C.pageMount module: mount(stage, tools, slide, meta) -> { destroy })
@@ -187,14 +188,22 @@ function markOptions(s) {
   }
 }
 
+// Deck art ships packed (shared/pack/pack.js): a page's art arrives in one Range request before the page draws.
+// Pages already fetched (the next page is warmed ahead) draw in the same tick, as before.
 function show(n, dir = 0) {
+  const t = Math.max(1, Math.min(deck.slides.length, n)), tok = ++showTok;
+  if (!pack || pack.ready(t)) return showNow(t, dir);
+  pack.warm(t).then(() => { if (tok === showTok) showNow(t, dir); });
+}
+function showNow(n, dir = 0) {
+  showTok++;
   const total = deck.slides.length;
   page = Math.max(1, Math.min(total, n));
   const s = deck.slides[page - 1];
   const choice = extra.choices && extra.choices[s.n];
   const sv = v2 && v2.slides[String(s.n)];
   if (sv && dir && !reduceMotion()) flipSheet(dir);
-  stage.style.backgroundImage = s.bg ? `url("${base}${s.bg}")` : "";
+  stage.style.backgroundImage = s.bg ? `url("${artUrl(base + s.bg)}")` : "";
   if (sv) {
     const textOnly = { ...s, items: s.items.filter((i) => i.t !== "img") };
     stage.innerHTML = inkVars(renderSlide(textOnly, { base, options: !!s.answer, choices: choice ? choice.options : null }));
@@ -226,7 +235,7 @@ function show(n, dir = 0) {
   $("panelBody").scrollTop = 0;
   // warm the next page's art
   const nx = deck.slides[page];
-  if (nx) for (const it of nx.items) if (it.t === "img") { const im = new Image(); im.src = base + it.src; }
+  if (nx) (pack ? pack.warm(page + 1) : Promise.resolve()).then(() => { for (const it of nx.items) if (it.t === "img") { const im = new Image(); im.src = artUrl(base + it.src); } });
 }
 
 // Dark paper recolors the words (cream ink, gold and blue accents); the art is never recolored.
@@ -352,9 +361,9 @@ let dragSpecs = {};
 function dropPageScene() { pageSceneTok++; if (pageScene && pageScene.destroy) pageScene.destroy(); pageScene = null; for (const l of stage.querySelectorAll(".p-scene")) l.remove(); }
 const webglReady = () => webglOk();
 // Short slide words become billboards floating in front of the art; long text stays in the panel only.
-function slideArt(s) { const im = (s.items || []).find((it) => it.t === "img" && /^s\d/.test(it.src)); return im ? base + im.src : ""; }
+function slideArt(s) { const im = (s.items || []).find((it) => it.t === "img" && /^s\d/.test(it.src)); return im ? artUrl(base + im.src) : ""; }
 // only the current page is mounted; the next page's art is fetched ahead
-function prewarm() { const nx = v2 && v2.slides[String(page + 1)]; if (nx) for (const l of nx.layers) { const im = new Image(); im.src = base + l.src; } }
+function prewarm() { const nx = v2 && v2.slides[String(page + 1)]; if (nx) (pack ? pack.warm(page + 1) : Promise.resolve()).then(() => { for (const l of nx.layers) { const im = new Image(); im.src = artUrl(base + l.src); } }); }
 let ctlHtml = "";
 // Controls a scene module builds in the side panel (ctx.ui). The panel renders after the scene starts,
 // so each control waits for its .pop-ctl box. slider(o, fn) and button(label, fn) return { set } so the
@@ -506,6 +515,7 @@ function comingSoon() {
   if (C.pageScenes) try { const ra = await fetch(base + "v2/art.json"); if (ra.ok) registerArt(meta.slug, await ra.json()); } catch (e) { /* art stays off */ }
   if (C.pageScenes) try { const rd = await fetch(base + "v2/drag.json"); if (rd.ok) dragSpecs = await rd.json(); } catch (e) { dragSpecs = {}; }
   try { const r3 = C.scenes ? await fetch(C.scenes) : null; if (r3 && r3.ok) sceneMods = new Set((await r3.json())[meta.slug] || []); } catch (e) { sceneMods = new Set(); }
+  pack = await openArtPack(base);
   if (v2) {
     // v2 sandboxes come from the deck's spec (story.json); Try it link-outs stay from EXTRAS.
     const sbs = {}; for (const [n, sv] of Object.entries(v2.slides)) if (sv.sandbox && SANDBOXES[sv.sandbox]) sbs[n] = sv.sandbox;

@@ -2,6 +2,7 @@
 // cutouts of the original slide art, lines are wobbly pencil strokes on paper sheets, nothing is lit
 // or glossy. Reveal order: pencil lines, then the colored art, then labels.
 import { pencilTexture } from "./ac-pop3d.js";
+import { artUrl } from "../shared/pack/pack.js";
 import { touchHints } from "./ac-touch.js";
 
 
@@ -40,7 +41,7 @@ function tag(T, text, o) { const sp = label(T, text, PHONE && !o.raw ? { ...o, h
 // ---- colored-pencil kit (Leo's style kit: palette sampled from the D01 art, hatch tile, paper grain) ----
 export const KIT = { paper: "#F7F6F2", graphite: "#403D42", dash: "#454545", fill: "#CFCFCF", red: "#BB3428", label: "#3D3D3D", label2: "#6B6B6B", darkInk: "#F3EAD7" };
 const imgs = new Map();
-function img(url) { if (!imgs.has(url)) imgs.set(url, new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = url; })); return imgs.get(url); }
+function img(url) { if (!imgs.has(url)) imgs.set(url, new Promise((ok) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = artUrl(url); })); return imgs.get(url); }
 function canvasTex(T, c) { const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 8; return t; } // mipmaps stay on
 // A drawing cut out of the original slide art (rect in 1600x900 page px), as a camera-facing paper cutout.
 // clean(r,g,b) -> replacement [r,g,b] or null strips baked marks (e.g. the red arrows on the s17 masses).
@@ -139,7 +140,7 @@ const BUILDERS = {
   gravityPair(T, g, o) {
     const ink = o.dark ? KIT.darkInk : KIT.graphite;
     // Leo's clean mass cutouts (the slide's left pair, with the baked arrows removed)
-    const mass = (src) => { const sp = new T.Sprite(new T.SpriteMaterial({ map: new T.TextureLoader().load(o.kit + src, (tx) => { tx.colorSpace = T.SRGBColorSpace; tx.anisotropy = 8; tx.needsUpdate = true; }), transparent: true, depthWrite: false })); sp.scale.set(1.15 * 104 / 102, 1.15, 1); return sp; };
+    const mass = (src) => { const sp = new T.Sprite(new T.SpriteMaterial({ map: new T.TextureLoader().load(artUrl(o.kit + src), (tx) => { tx.colorSpace = T.SRGBColorSpace; tx.anisotropy = 8; tx.needsUpdate = true; }), transparent: true, depthWrite: false })); sp.scale.set(1.15 * 104 / 102, 1.15, 1); return sp; };
     const m1 = mass("p17-mass1.webp"), m2 = mass("p17-mass2.webp");
     g.add(m1, m2);
     // a pencil arrow: the shaft stretches with the force, the hand-drawn heads keep their shape
@@ -219,7 +220,7 @@ export function runModule(mod, T, scene, o) {
     sketch(obj, { delay = 0 } = {}) { sketches.push(sketcher(obj, () => delay)); return obj; },
     label(text, pos = [0, 0, 0], { layer = "fg", color, h = 0.4 } = {}) { const s = tag(T, text, { color, raw: true, h: o.phone ? Math.min(h * 1.45, Math.max(h, 1.1)) : h }); s.position.set(...pos); layers[layer].add(s); return s; },
     art(src, { layer = "mid", z = 0, box = [0, 0, 100, 100], opacity = 1, ink = true } = {}) {
-      const p = o.place(box, LAYER_Z[layer] + z), tex = o.dark && ink ? inkTexture(T, o.base + src) : new T.TextureLoader().load(o.base + src); tex.colorSpace = T.SRGBColorSpace; loaders.push(tex);
+      const p = o.place(box, LAYER_Z[layer] + z), tex = o.dark && ink ? inkTexture(T, artUrl(o.base + src)) : new T.TextureLoader().load(artUrl(o.base + src)); tex.colorSpace = T.SRGBColorSpace; loaders.push(tex);
       const m = new T.Mesh(new T.PlaneGeometry(p.w, p.h), new T.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, opacity }));
       m.position.set(p.cx, p.cy, z); layers[layer].add(m); return m;
     },
