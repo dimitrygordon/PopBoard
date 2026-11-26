@@ -33,7 +33,7 @@ boards/{boardId}                     { name, ownerUid, teacherAccount, ...settin
 
 ## Storybook art is packed (Cloudflare Pages: 20,000 files per deploy)
 
-Each Astronomy Course and Physics 101 deck keeps its `.webp` art in `decks/<slug>/art-pack.bin` plus an index, `art-pack.json`, instead of thousands of loose files. A page's art is read with one HTTP Range request (`public/shared/pack/pack.js`). After building art with the lesson tools, run `node tools/pack-art/pack-art.mjs` (idempotent: loose `.webp` files merge into the pack and are removed). `--unpack` turns packs back into loose files for editing, `--check` verifies them. `tests/study-questions.test.mjs` fails if `public/` grows past 9,000 files.
+Each Astronomy Course and Physics 101 deck keeps its `.webp` art in one small pack file per page, `decks/<slug>/art-pack/<NN>.bin`, listed in `decks/<slug>/art-pack.json`, instead of thousands of loose files. The storybook fetches a page's pack when the page is shown and the next page's pack ahead of time (`public/shared/pack/pack.js`; plain GETs, no Range requests). After building art with the lesson tools, run `node tools/pack-art/pack-art.mjs` (idempotent: loose `.webp` files merge into the packs and are removed). `--unpack` turns packs back into loose files for editing, `--check` verifies them. `tests/study-questions.test.mjs` fails if `public/` grows past 11,000 files.
 
 ## Publishing the security rules (works on an iPad)
 
