@@ -64,3 +64,13 @@ Placeholder stills in `public/spaceships/stills/` and the 1 m box `public/spaces
 ## meshoptimizer meshopt decoder 1.2
 
 `public/vendor/model-viewer/meshopt_decoder.js` is the meshopt decoder from meshoptimizer 1.2 (https://github.com/zeux/meshoptimizer), copied from Angelo's Spaceships handoff. MIT License (Copyright (c) 2016-2026 Arseny Kapoulkine); full text in `public/vendor/model-viewer/meshopt.LICENSE`. model-viewer loads it only when `ModelViewerElement.meshoptDecoderLocation` is set, which the Spaceships detail page does so the meshopt-compressed NASA GLBs can decode. Do not load this from a CDN.
+
+## Night Sky (public/night-sky)
+
+- **HYG database v4.4** by astronexus (David Nash), https://codeberg.org/astronexus/hyg . CC BY-SA 4.0. Filtered (V <= 6.5 plus constellation stars) and repacked into `public/night-sky/data/stars.bin` and `stars-meta.json`; those derived files are published under CC BY-SA 4.0. Details in `public/night-sky/data/CREDITS.md`.
+- **Stellarium modern sky culture** ("western" in https://github.com/Stellarium/stellarium-skycultures, commit 2d80ce70), constellation lines and names by the Stellarium team. CC BY-SA. Reindexed into `public/night-sky/data/constellations.json`, published under CC BY-SA 4.0.
+- **Constellation illustrations by Johan Meuris** (Stellarium project), Free Art License 1.3. Restyled and repacked by Leo into `public/night-sky/data/art/constellations-atlas.webp` (modifications listed in `public/night-sky/data/art/README.md`), distributed under FAL 1.3; license text in `public/night-sky/data/art/LICENSE-FAL.txt`, changes in `public/night-sky/data/art/README.md`.
+- **JPL Approximate Positions of the Planets**, Table 1 (Standish and Williams), https://ssd.jpl.nasa.gov/planets/approx_pos.html . US Government work, cited; copied to `tools/night-sky/jpl-approx-pos-table1.txt`.
+- Formulas from Jean Meeus, *Astronomical Algorithms* (2nd ed., 1998); B-V to temperature from Ballesteros (2012); CIE colour-matching fit from Wyman, Sloan and Shirley (2013). Cited in `public/night-sky/ns-astro.js` and `ns-ephem.js`.
+- **Inter** font (`public/night-sky/ui/fonts/inter-latin-var.woff2`, Latin subset) by The Inter Project Authors, https://github.com/rsms/inter . SIL Open Font License 1.1; full text in `public/night-sky/ui/fonts/OFL-Inter.txt`.
+- Night Sky panel icons (sources in `tools/night-sky/icons-src/*.svg`, packed unchanged into `public/night-sky/ui/icons.json`) are PopBoard originals by Leo.

@@ -1,0 +1,113 @@
+/* Night Sky page chrome. Leo hook: every colour, font and size the HTML UI uses is a custom property here.
+   The sky itself is always dark (ns-skin.js); light/dark only changes the page chrome around it.
+   Dark tokens follow Leo's panel palette (ui/ui-spec.md section 2). Light tokens are ratified. */
+@font-face { font-family: "Inter"; src: url("ui/fonts/inter-latin-var.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+
+:root {
+  --ns-font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ns-bg: #F3F4FA;
+  --ns-surface: #FFFFFF;
+  --ns-surface-2: #EEF0F8;
+  --ns-border: rgba(20, 23, 43, 0.14);
+  --ns-text: #14172B;
+  --ns-text-2: #3E4463;
+  --ns-text-3: #5B6180;
+  --ns-accent: #2F6FE0;
+  --ns-accent-2: #6B4FD8;
+  --ns-on-accent: #FFFFFF;
+  --ns-btn-on-bg: linear-gradient(135deg, rgba(47, 111, 224, 0.16), rgba(107, 79, 216, 0.12));
+  --ns-btn-on-border: rgba(47, 111, 224, 0.75);
+  --ns-focus: #2F6FE0;
+  --ns-card-bg: rgba(16, 20, 44, 0.92);   /* the card sits on the sky, so it stays dark in both themes */
+  --ns-card-text: #FFFFFF;
+  --ns-card-text-2: #C3C9E6;
+  --ns-stage-bg: #04081A;
+  --ns-radius: 14px;
+  --ns-radius-sm: 10px;
+  --ns-side-w: 360px;
+  --ns-header-h: 56px;
+}
+html[data-theme="dark"] {
+  --ns-bg: #0A0D20;
+  --ns-surface: #181D3C;
+  --ns-surface-2: #1F2550;
+  --ns-border: rgba(255, 255, 255, 0.16);
+  --ns-text: #FFFFFF;
+  --ns-text-2: #C3C9E6;
+  --ns-text-3: #A9B0D0;
+  --ns-accent: #7FB2FF;
+  --ns-accent-2: #A48CFF;
+  --ns-on-accent: #0A0D20;
+  --ns-btn-on-bg: linear-gradient(135deg, rgba(127, 178, 255, 0.30), rgba(164, 140, 255, 0.22));
+  --ns-btn-on-border: rgba(170, 205, 255, 0.85);
+  --ns-focus: #AACDFF;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--ns-bg); color: var(--ns-text); font-family: var(--ns-font); display: flex; flex-direction: column; min-height: var(--pb-vh, 100vh); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ns-focus); outline-offset: 2px; }
+
+.ns-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; min-height: var(--ns-header-h); background: var(--ns-surface); border-bottom: 1px solid var(--ns-border); flex-wrap: wrap; }
+.ns-header .title { margin: 0 auto 0 4px; font-weight: 650; font-size: 17px; }
+.ns-hbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--ns-border); background: var(--ns-surface-2); cursor: pointer; font-size: 14px; }
+.ns-hbtn:hover { border-color: var(--ns-btn-on-border); }
+.ns-hbtn[hidden] { display: none; }
+.ns-vr { background: linear-gradient(135deg, var(--ns-accent), var(--ns-accent-2)); color: var(--ns-on-accent); border: 0; font-weight: 650; }
+.ns-look.is-on, .ns-ar.is-on { background: var(--ns-btn-on-bg); border-color: var(--ns-btn-on-border); }
+.ns-vrnote { font-size: 13px; color: var(--ns-text-3); margin: 0; }
+.ns-crosshair { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; pointer-events: none; z-index: 2; }
+.ns-crosshair::before, .ns-crosshair::after { content: ""; position: absolute; background: rgba(170, 205, 255, 0.9); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45); }
+.ns-crosshair::before { left: 10px; top: 3px; width: 2px; height: 16px; }
+.ns-crosshair::after { left: 3px; top: 10px; width: 16px; height: 2px; }
+.ns-crosshair.is-hot::before, .ns-crosshair.is-hot::after { background: #ffd45e; }
+.ns-crosshair[hidden] { display: none; }
+.ns-card-common { margin: 0 28px 6px 0; color: var(--ns-card-text-2); font-size: 13px; }
+.ns-card-common[hidden] { display: none; }
+
+.ns-layout { flex: 1; display: grid; grid-template-columns: 1fr var(--ns-side-w); min-height: 0; }
+.ns-stage { position: relative; background: var(--ns-stage-bg); min-height: 360px; overflow: hidden; }
+.ns-stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.ns-stage canvas:active { cursor: grabbing; }
+.ns-status { position: absolute; inset: 0; display: grid; place-items: center; color: #C3C9E6; font-size: 15px; pointer-events: none; }
+.ns-status:empty { display: none; }
+.ns-hint { position: absolute; left: 12px; bottom: 10px; margin: 0; color: rgba(195, 201, 230, 0.8); font-size: 13px; pointer-events: none; text-shadow: 0 1px 4px #000; }
+.ns-hud { position: absolute; right: 10px; top: 10px; margin: 0; padding: 4px 8px; border-radius: calc(var(--r-6, 6px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: rgba(0, 0, 0, 0.6); color: #fff; font: 12px/1.4 ui-monospace, monospace; white-space: pre; }
+.ns-hud[hidden] { display: none; }
+
+.ns-card { position: absolute; z-index: 2; min-width: 200px; max-width: 280px; padding: 10px 12px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--ns-card-bg); color: var(--ns-card-text); border: 1px solid rgba(170, 205, 255, 0.35); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45); font-size: 14px; }
+.ns-card[hidden] { display: none; }
+.ns-card h2 { margin: 0 28px 4px 0; font-size: 17px; font-weight: 650; }
+.ns-card p { margin: 2px 0; color: var(--ns-card-text-2); }
+.ns-card .x { position: absolute; top: 4px; right: 4px; width: 32px; height: 32px; border: 0; background: none; color: inherit; cursor: pointer; font-size: 18px; }
+
+.ns-side { background: var(--ns-surface); border-left: 1px solid var(--ns-border); overflow: auto; padding: 12px; }
+.ns-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+.ns-tab { flex: 1; min-height: 38px; border: 1px solid var(--ns-border); background: var(--ns-surface-2); border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; cursor: pointer; color: var(--ns-text-3); font-weight: 560; }
+.ns-tab.is-on { color: var(--ns-text); background: var(--ns-btn-on-bg); border-color: var(--ns-btn-on-border); }
+.ns-row { margin: 0 0 12px; }
+.ns-row-label { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ns-text-3); font-weight: 600; }
+.ns-readout p { margin: 2px 0; color: var(--ns-text-2); }
+.ns-readout .ns-big { font-size: 22px; color: var(--ns-text); font-weight: 600; }
+.ns-readout-clock p:nth-child(2) { font-size: 34px; font-weight: 300; color: var(--ns-text); }
+.ns-note { margin: 4px 0; font-size: 13px; color: var(--ns-text-3); }
+.ns-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.ns-btn { min-height: 36px; padding: 6px 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--ns-border); background: var(--ns-surface-2); color: var(--ns-text-2); cursor: pointer; font-size: 14px; }
+.ns-btn:hover:not(:disabled) { border-color: var(--ns-btn-on-border); color: var(--ns-text); }
+.ns-btn.is-on { background: var(--ns-btn-on-bg); border-color: var(--ns-btn-on-border); color: var(--ns-text); font-weight: 600; }
+.ns-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.ns-credits { margin-top: 8px; font-size: 13px; color: var(--ns-text-3); }
+.ns-credits summary { cursor: pointer; }
+.ns-credits a { color: var(--ns-accent); }
+
+@media (max-width: 820px) {
+  .ns-layout { grid-template-columns: 1fr; grid-template-rows: minmax(320px, 58vh) auto; }
+  .ns-side { border-left: 0; border-top: 1px solid var(--ns-border); }
+  .ns-header .title { font-size: 15px; }
+  .ns-hbtn .lbl { display: none; }
+  .ns-hbtn.ns-vr .lbl, .ns-hbtn.ns-look .lbl, .ns-hbtn.ns-ar .lbl { display: inline; }
+  .ns-header { flex-wrap: wrap; row-gap: 4px; }
+  .ns-vrnote { order: 10; flex-basis: 100%; font-size: 13px; }
+}
