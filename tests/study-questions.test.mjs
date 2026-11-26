@@ -106,7 +106,9 @@ const packs = (id) => { const m = id.slice(id.startsWith("mq") ? 2 : 3, id.index
 
 test("assets stay packed: public/ far under Cloudflare Pages' 20,000-file cap", () => {
   const walk = (d) => readdirSync(d, { withFileTypes: true }).reduce((n, e) => n + (e.isDirectory() ? walk(join(d, e.name)) : 1), 0);
-  const n = walk(PUB); assert.ok(n < 9000, `${n} files under public/ (7,4xx after deck art was packed; the cap is 20,000)`);
+  // Cloudflare Pages caps a deploy at 20,000 files. Deck art is packed (tools/pack-art), so public/ holds about 7,500;
+  // this guard trips long before the cap.
+  const n = walk(PUB); assert.ok(n < 9000, `${n} files under public/`);
   assert.deepEqual(readdirSync(join(PUB, "physics101/sq/art")).filter((f) => !/^(index|m\d\d|ms)\.json$/.test(f)), []);
   // only images a rich page links to directly stay loose
   assert.deepEqual(readdirSync(join(PUB, "physics101/sq/img")), ["mq-01-e14.webp"]);

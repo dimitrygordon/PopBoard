@@ -1,0 +1,18 @@
+{
+ "v": 1,
+ "built": "2026-11-26",
+ "stars": 8921,
+ "starsAtLimit": 8920,
+ "magLimit": 6.5,
+ "forcedFainter": 1,
+ "faintestForced": 6.8,
+ "noBv": 40,
+ "unknownDist": 205,
+ "named": 3098,
+ "constellations": 88,
+ "segments": 674,
+ "skippedLineTokens": 6,
+ "withArt": 85,
+ "hyg": "00b349893b9a53106dd488d8371e8d2fa586043e500bb3cdb8bff3931682197d",
+ "stellarium": "2d80ce70984c14bba7da2d31a0f9b27e292861c9"
+}
