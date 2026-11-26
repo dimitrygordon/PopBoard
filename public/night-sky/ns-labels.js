@@ -97,8 +97,13 @@ export class LabelCard {
     const g = this.canvas.getContext("2d"), S = this.skin, W = 640, H = 320;
     g.clearRect(0, 0, W, H); g.fillStyle = S.bg; roundRect(g, 4, 4, W - 8, H - 8, 22); g.fill();
     g.fillStyle = S.fg; g.font = S.font; g.textBaseline = "top"; g.fillText(info.title, 28, 24);
+    let y = 82;
+    if (info.common) { g.font = S.small; g.fillStyle = S.fg; g.fillText(info.common, 28, 68); y = 104; }
     g.font = S.small; g.fillStyle = S.dim;
-    info.lines.slice(0, 7).forEach((t, i) => g.fillText(t, 28, 82 + i * 32));
+    info.lines.slice(0, 6).forEach((t, i) => g.fillText(t, 28, y + i * 32));
+    // Close control (top right). Hit-tested in hit().
+    g.fillStyle = S.dim; g.font = "600 36px Inter, system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle";
+    g.fillText("×", W - 36, 32); g.textAlign = "start"; g.textBaseline = "alphabetic";
     this.tex.needsUpdate = true;
     const { up, right } = uprightBasis(dirLocal);
     const w = radius * Math.tan(widthDeg * Math.PI / 180);
@@ -108,6 +113,17 @@ export class LabelCard {
     this.mesh.scale.set(w, w, 1); this.mesh.visible = true;
   }
   hide() { this.mesh.visible = false; }
+  /** "close" if the ray hits the ×, "body" if it hits the rest of the card, else null. */
+  hit(ray) {
+    if (!this.mesh.visible) return null;
+    const T = this.THREE;
+    const rc = new T.Raycaster(ray.origin.clone ? ray.origin.clone() : new T.Vector3().copy(ray.origin), ray.dir.clone ? ray.dir.clone().normalize() : new T.Vector3().copy(ray.dir).normalize());
+    const hits = rc.intersectObject(this.mesh, false);
+    if (!hits.length) return null;
+    const uv = hits[0].uv; if (!uv) return "body";
+    const x = uv.x * 640, y = (1 - uv.y) * 320;
+    return (x >= 640 - 70 && y <= 64) ? "close" : "body";
+  }
 }
 export function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 TextBillboards.scale = 1;

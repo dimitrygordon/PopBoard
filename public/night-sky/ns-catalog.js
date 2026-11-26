@@ -29,14 +29,15 @@ export function attachMeta(stars, meta) {
   stars.con = (i) => meta.con.slice(3 * i, 3 * i + 3).trim();
   stars.spect = (i) => meta.spect[i] || "";
   stars.proper = (i) => (names.get(i) || [])[1] || "";
-  /** "Vega", else "α Lyr", else "15 Mon", else "HIP 12345". Bayer like "Alp-1" -> "α¹". */
-  stars.label = (i) => {
-    const r = names.get(i); const con = stars.con(i);
-    if (r && r[1]) return r[1];
+  /** Bayer ("α Lyr"), Flamsteed, or HIP — never the proper name. */
+  stars.catalogName = (i) => {
+    const r = names.get(i), con = stars.con(i);
     if (r && r[2]) { const [g, k] = r[2].split("-"); return `${GREEK[g] || g}${k ? "¹²³⁴⁵⁶⁷⁸⁹"[+k - 1] || k : ""} ${con}`; }
     if (r && r[3]) return `${r[3]} ${con}`;
-    return stars.hip[i] ? `HIP ${stars.hip[i]}` : "Star";
+    return stars.hip[i] ? `HIP ${stars.hip[i]}` : "";
   };
+  /** "Vega", else "α Lyr", else "15 Mon", else "HIP 12345". Bayer like "Alp-1" -> "α¹". */
+  stars.label = (i) => (stars.proper(i) || stars.catalogName(i) || "Star");
   return stars;
 }
 

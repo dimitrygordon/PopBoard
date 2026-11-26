@@ -45,6 +45,20 @@ Object.defineProperty(navigator, 'xr', { configurable: true, value: {
 }});
 """
 NO_XR = "Object.defineProperty(navigator, 'xr', { configurable: true, value: undefined });"
+AR_MOCK = """
+window.__xrCalls = [];
+Object.defineProperty(navigator, 'xr', { configurable: true, value: {
+  isSessionSupported: async (mode) => mode === 'immersive-ar',
+  requestSession: async (mode, init) => { window.__xrCalls.push({ mode, init }); throw new Error('mock: no ar'); },
+  addEventListener() {}, removeEventListener() {},
+}});
+"""
+LOOK_PERM = """
+window.__lookPerm = [];
+if (typeof DeviceOrientationEvent !== 'undefined') {
+  DeviceOrientationEvent.requestPermission = async () => { window.__lookPerm.push('ask'); return 'granted'; };
+}
+"""
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -102,6 +116,130 @@ def bright_pixels(png_path):
     from PIL import Image
     im = Image.open(png_path).convert("L")
     return sum(im.histogram()[121:])
+
+
+
+FIND_ORI = """() => {
+  const a = window.__nightSky;
+  const rec = a.catalog.constellations.constellations.find((c) => c.id === 'Ori');
+  const ra = rec.labelRa * 15 * Math.PI / 180, dec = rec.labelDec * Math.PI / 180;
+  const v0 = [Math.cos(dec) * Math.cos(ra), Math.cos(dec) * Math.sin(ra), Math.sin(dec)];
+  const M = a.frame.M;
+  const local = (v) => [M[0]*v[0]+M[1]*v[1]+M[2]*v[2], M[3]*v[0]+M[4]*v[1]+M[5]*v[2], M[6]*v[0]+M[7]*v[1]+M[8]*v[2]];
+  const tryV = (v) => {
+    const loc = local(v), info = a.pickLocal(loc);
+    if (info && info.kind === 'constellation' && info.id === 'Ori') return { loc, info };
+    return null;
+  };
+  let hit = tryV(v0);
+  for (let k = 0; k < 16 && !hit; k++) {
+    const ang = k * Math.PI / 8, off = 3 * Math.PI / 180;
+    const axis = [Math.cos(ang), Math.sin(ang), 0];
+    const n = [v0[1]*axis[2]-v0[2]*axis[1], v0[2]*axis[0]-v0[0]*axis[2], v0[0]*axis[1]-v0[1]*axis[0]];
+    const nl = Math.hypot(...n) || 1, nn = [n[0]/nl, n[1]/nl, n[2]/nl];
+    const ca = Math.cos(off), sa = Math.sin(off);
+    const cr = [nn[1]*v0[2]-nn[2]*v0[1], nn[2]*v0[0]-nn[0]*v0[2], nn[0]*v0[1]-nn[1]*v0[0]];
+    hit = tryV([v0[0]*ca+cr[0]*sa, v0[1]*ca+cr[1]*sa, v0[2]*ca+cr[2]*sa]);
+  }
+  if (!hit) return { ok: false };
+  const loc = hit.loc, alt = Math.asin(Math.max(-1, Math.min(1, loc[1]))) * 180 / Math.PI;
+  const az = (Math.atan2(loc[0], -loc[2]) * 180 / Math.PI + 360) % 360;
+  a.setView({ yaw: -az * Math.PI / 180, pitch: alt * Math.PI / 180 });
+  return { ok: true };
+}"""
+
+
+def constellation_card(browser, base, dev, tag):
+    ctx, page, errs = open_page(browser, base, dev, "dark", f"{T1}&look=south&art=0&lines=0")
+    found = page.evaluate(FIND_ORI)
+    check(bool(found and found.get("ok")), f"{tag}: found a direction that picks Orion")
+    page.wait_for_timeout(250)
+    xy = page.evaluate("""() => { const r = document.getElementById('sky').getBoundingClientRect(); return { x: r.left + r.width/2, y: r.top + r.height/2 }; }""")
+    kind = page.evaluate("([x,y]) => { const i = window.__nightSky.pickAt(x,y); return i && { kind: i.kind, title: i.title, id: i.id }; }", [xy["x"], xy["y"]])
+    check(kind and kind.get("kind") == "constellation" and kind.get("id") == "Ori", f"{tag}: view center is a constellation pick of Orion ({kind})")
+    if dev["has_touch"]:
+        page.touchscreen.tap(xy["x"], xy["y"])
+    else:
+        page.mouse.click(xy["x"], xy["y"])
+    page.wait_for_timeout(350)
+    title = page.locator("#cardTitle").text_content() if page.locator("#card").is_visible() else ""
+    check(title == "Orion", f"{tag}: selecting Orion opens a constellation card ({title!r})")
+    common = page.locator("#cardCommon").text_content() if page.locator("#cardCommon").is_visible() else ""
+    check(common == "Hunter", f"{tag}: Orion card shows the common name ({common!r})")
+    page.wait_for_function("window.__nightSky.focusArtAlpha() > 0.25 || window.__nightSky.artStatus() === 'error'", timeout=30000)
+    page.wait_for_timeout(400)
+    check(page.evaluate("window.__nightSky.focusId()") == "Ori", f"{tag}: selected figure is focused")
+    check(page.evaluate("window.__nightSky.focusArtAlpha()") > 0.25, f"{tag}: constellation art faded in with the art layer off")
+    check(not page.evaluate("window.__nightSky.state.art"), f"{tag}: global art toggle stays off")
+    page.screenshot(path=str(OUT / f"{tag}-dark-card-orion.png"))
+    page.locator("#stage").screenshot(path=str(OUT / f"{tag}-dark-card-orion-stage.png"))
+    check(not errs, f"{tag}: no console errors in constellation pick {errs[:3]}")
+    ctx.close()
+
+
+def look_around_mode(browser, base, dev, tag):
+    ctx, page, errs = open_page(browser, base, dev, "dark", f"{T1}&look=south", init=NO_XR + "\n" + LOOK_PERM)
+    check(page.locator("#lookBtn").is_visible(), f"{tag}: Look around is shown when orientation permission API is present")
+    page.locator("#lookBtn").click()
+    page.wait_for_timeout(200)
+    perms = page.evaluate("window.__lookPerm")
+    check(isinstance(perms, list) and "ask" in perms, f"{tag}: Look around asks DeviceOrientationEvent.requestPermission from the tap ({perms})")
+    check(page.evaluate("window.__nightSky.getLookAround().active") and page.locator("#crosshair").is_visible(), f"{tag}: Look around starts and shows the crosshair")
+    page.evaluate("""() => { const a = window.__nightSky; for (let i = 0; i < 16; i++) a.ingestOrientation({ alpha: 180, beta: 90, gamma: 0, absolute: true }); }""")
+    page.wait_for_timeout(250)
+    pose = page.evaluate("""() => {
+      const a = window.__nightSky, d = new a.THREE.Vector3(0,0,-1).transformDirection(a.camera.matrixWorld);
+      const alt = Math.asin(Math.max(-1, Math.min(1, d.y))) * 180 / Math.PI;
+      const az = (Math.atan2(d.x, -d.z) * 180 / Math.PI + 360) % 360;
+      return { alt, az, mode: a.getLookAround().mode, note: a.getLookAround().note };
+    }""")
+    daz = min(abs(pose["az"] - 180), 360 - abs(pose["az"] - 180))
+    check(pose["mode"] == "compass" and not pose["note"] and daz < 8 and abs(pose["alt"]) < 8, f"{tag}: absolute orientation faces south ({pose})")
+    box = page.locator("#sky").bounding_box()
+    cx, cy = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
+    yaw0 = page.evaluate("window.__nightSky.getView().yaw")
+    if dev["has_touch"]:
+        cdp = ctx.new_cdp_session(page)
+        def touch(kind, x, y):
+            cdp.send("Input.dispatchTouchEvent", {"type": kind, "touchPoints": [] if kind == "touchEnd" else [{"x": x, "y": y}]})
+        touch("touchStart", cx, cy)
+        for k in range(1, 11):
+            touch("touchMove", cx + 12 * k, cy)
+        touch("touchEnd", 0, 0)
+    else:
+        page.mouse.move(cx, cy); page.mouse.down()
+        for k in range(1, 11):
+            page.mouse.move(cx + 12 * k, cy)
+        page.mouse.up()
+    yaw1 = page.evaluate("window.__nightSky.getView().yaw")
+    check(abs(yaw1 - yaw0) > 0.05, f"{tag}: drag still works in look-around ({yaw0:.3f} -> {yaw1:.3f})")
+    page.screenshot(path=str(OUT / f"{tag}-dark-look-around.png"))
+    page.locator("#lookBtn").click()
+    page.wait_for_timeout(150)
+    page.locator("#lookBtn").click()
+    page.wait_for_timeout(150)
+    page.evaluate("""() => { const a = window.__nightSky; for (let i = 0; i < 8; i++) a.ingestOrientation({ alpha: 20, beta: 90, gamma: 0, absolute: false }); }""")
+    page.wait_for_timeout(150)
+    rel = page.evaluate("window.__nightSky.getLookAround()")
+    check(rel["mode"] == "relative" and "not aligned to north" in (rel["note"] or ""), f"{tag}: relative orientation shows a note ({rel})")
+    check(page.locator("#lookNote").is_visible(), f"{tag}: relative-mode note is visible")
+    check(not errs, f"{tag}: no console errors in look-around {errs[:3]}")
+    ctx.close()
+
+
+def ar_and_sensorless(browser, base):
+    ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", T1, init=AR_MOCK)
+    check(page.locator("#arBtn").is_visible(), "mocked immersive-ar support -> AR button shown")
+    page.locator("#arBtn").click()
+    page.wait_for_timeout(300)
+    calls = page.evaluate("window.__xrCalls")
+    check(bool(calls and calls[0]["mode"] == "immersive-ar"), f"AR button calls requestSession('immersive-ar') {calls}")
+    check("mock: no ar" in (page.locator("#vrNote").text_content() or ""), "a failed AR session shows a note, not a crash")
+    ctx.close()
+    ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", T1, init=NO_XR)
+    check(page.locator("#lookBtn").is_hidden(), "desktop without orientation sensors: Look around hidden")
+    check(page.locator("#arBtn").is_hidden(), "no immersive-ar: AR button hidden")
+    ctx.close()
 
 
 def main():
@@ -180,7 +318,19 @@ def main():
             page.wait_for_timeout(250)
             title = page.locator("#cardTitle").text_content() if page.locator("#card").is_visible() else ""
             check(title == "Betelgeuse", f"{tag}: tap a star opens its card ({title!r})")
+            common = page.locator("#cardCommon").text_content() if page.locator("#cardCommon").is_visible() else ""
+            check("Ori" in (common or ""), f"{tag}: Betelgeuse card shows the catalog name ({common!r})")
             page.screenshot(path=str(OUT / f"{tag}-dark-card-betelgeuse.png"))
+            # The card sits next to the star, so a second pointer event can hit the card instead of the canvas.
+            page.evaluate("([x,y]) => window.__nsSelectAt(x,y)", [xy["x"], xy["y"]])
+            page.wait_for_timeout(150)
+            check(page.locator("#card").is_hidden(), f"{tag}: second tap on the same star closes the card")
+            page.evaluate("([x,y]) => window.__nsSelectAt(x,y)", [xy["x"], xy["y"]])
+            page.wait_for_timeout(150)
+            check(page.locator("#card").is_visible() and page.locator("#cardTitle").text_content() == "Betelgeuse", f"{tag}: tap again reopens the card")
+            page.locator("#cardClose").click()
+            page.wait_for_timeout(150)
+            check(page.locator("#card").is_hidden(), f"{tag}: the card close button hides it")
             if not dev["has_touch"]:
                 page.keyboard.press("l")
                 page.wait_for_timeout(150)
@@ -207,6 +357,12 @@ def main():
             if tag == "desktop":
                 page.screenshot(path=str(OUT / f"{tag}-dark-xr-mock.png"))
             ctx.close()
+
+            constellation_card(browser, base, dev, tag)
+            if tag == "phone-390":
+                look_around_mode(browser, base, dev, tag)
+
+        ar_and_sensorless(browser, base)
 
         # VR panel canvas (drawn off-headset for a look; the same draw path runs in the headset)
         ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", f"{T1}&lines=1")

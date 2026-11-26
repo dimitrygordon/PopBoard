@@ -7,6 +7,8 @@ import { loadCatalog } from "./ns-catalog.js";
 import { registerLayer, initLayers, updateLayers, getLayer } from "./ns-layers.js";
 import { SKIN } from "./ns-skin.js";
 import { SKY_R, setMatrix3, apply, applyT, raDecVec } from "./ns-util.js";
+import { pickSky, samePick, buildConstellationIndex } from "./ns-pick.js";
+import { createOrientationFilter, compassAlpha, screenAngleDeg, lookDir } from "./ns-orient.js";
 import { starsLayer } from "./layers/stars.js";
 import { constellationsLayer } from "./layers/constellations.js";
 import { groundLayer } from "./layers/ground.js";
@@ -20,7 +22,6 @@ import { XRInput } from "./ns-input.js";
 
 const D2R = Math.PI / 180;
 const DESKTOP_FOV = 70;           // vertical field of view on the page; never changes (no zoom)
-const PICK_STAR_DEG = 1.5, PICK_BODY_DEG = 2.0; // design section 4
 const COMPASS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
 
 export async function boot({ canvas, onState = () => {}, onStatus = () => {}, onXr = () => {}, onFrameStats = () => {}, query = location.search, wallNow = () => Date.now() }) {
@@ -29,6 +30,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   onStatus("Loading stars...");
   const catalog = await loadCatalog(new URL("data/", baseUrl).href);
   const conName = new Map(catalog.constellations.constellations.map((c) => [c.id, c]));
+  const conIndex = buildConstellationIndex(catalog.constellations.constellations, (i) => catalog.stars.starVec(i));
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -67,36 +69,37 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
 
   // ---- picking ----
   function pick(local) {
-    if (state.planets) {
-      let best = null, bestD = PICK_BODY_DEG;
-      for (const b of frame.solar) {
-        const d = Math.acos(Math.min(1, b.dir[0] * local[0] + b.dir[1] * local[1] + b.dir[2] * local[2])) / D2R;
-        if (d < bestD && (!state.ground || b.dir[1] > -0.01)) { best = b; bestD = d; }
-      }
-      if (best) return bodyInfo(best);
-    }
-    const trueLocal = unrefractDir(local, frame.refract); // Real Sky draws apparent positions; the catalogue is geometric
-    const s = applyT(frame.M, trueLocal), st = catalog.stars, cosLim = Math.cos(PICK_STAR_DEG * D2R);
-    let bi = -1;
-    for (let i = 0; i < st.n; i++) {
-      if (st.mag[i] > state.mag) break; // sorted by magnitude: first hit inside the cone is the brightest
-      const d = st.vec[3 * i] * s[0] + st.vec[3 * i + 1] * s[1] + st.vec[3 * i + 2] * s[2];
-      if (d > cosLim) { if (state.ground && refractDir(apply(frame.M, st.starVec(i)), frame.refract)[1] < -0.0087) continue; bi = i; break; }
-    }
-    return bi >= 0 ? starInfo(bi) : null;
+    const hit = pickSky(local, {
+      solar: frame.solar, planetsOn: state.planets, groundOn: state.ground, stars: catalog.stars, magLimit: state.mag,
+      conIndex, applyT, M: frame.M, unrefract: (v) => unrefractDir(v, frame.refract),
+      worldStar: (i) => refractDir(apply(frame.M, catalog.stars.starVec(i)), frame.refract),
+    });
+    return infoFromPick(hit);
+  }
+  function infoFromPick(hit) {
+    if (!hit) return null;
+    if (hit.kind === "body") return bodyInfo(hit.body);
+    if (hit.kind === "star") return starInfo(hit.index);
+    if (hit.kind === "constellation") return conInfo(hit.rec);
+    return null;
   }
   const azWord = (az) => COMPASS[Math.round(az / 22.5) % 16];
   const altAzLine = (d) => { const a = worldToAltAz(d); return `Altitude ${a.alt.toFixed(1)}°, azimuth ${a.az.toFixed(1)}° (${azWord(a.az)})`; };
   function starInfo(i) {
     const st = catalog.stars, con = conName.get(st.con(i)), bv = st.bv[i], dist = st.dist[i];
     const dir = refractDir(apply(frame.M, st.starVec(i)), frame.refract);
-    return { kind: "star", index: i, dir, title: st.label(i), lines: [
+    const proper = st.proper(i), catName = st.catalogName(i);
+    return { kind: "star", index: i, dir, title: proper || catName || st.label(i), common: proper && catName && catName !== proper ? catName : "", lines: [
       con ? `${con.latin} (${con.english})` : st.con(i) || "No constellation listed",
       `Magnitude ${st.mag[i].toFixed(2)}`,
       st.spect(i) ? `Spectral type ${st.spect(i)}` : "Spectral type not listed",
       `Color: ${colorClass(bv)}${Number.isFinite(bv) ? ` (B-V ${bv.toFixed(2)})` : ""}`,
       Number.isFinite(dist) ? `Distance about ${fmtLy(dist * LY_PER_PC)} light years` : "Distance unknown",
       altAzLine(dir)] };
+  }
+  function conInfo(rec) {
+    const dir = refractDir(apply(frame.M, rec.center), frame.refract);
+    return { kind: "constellation", id: rec.id, dir, title: rec.latin, common: rec.english, lines: [altAzLine(dir)] };
   }
   function bodyInfo(b) {
     const lines = [];
@@ -123,6 +126,60 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   // ---- XR ----
   const card = new LabelCard(THREE, SKIN); skyRoot.add(card.mesh);
   const panel = new VRPanel(THREE, panelAssets); scene.add(panel.mesh);
+  let selection = null, hover = null;
+  const hoverRing = makeHoverRing(); skyRoot.add(hoverRing);
+  const look = { active: false, mode: "relative", note: "", hasSample: false, offsetYaw: 0, offsetPitch: 0 };
+  const oriFilter = createOrientationFilter(0.32);
+  let lastCompassAt = 0;
+  function conLayer() { return getLayer("constellations"); }
+  function setSelection(info) {
+    selection = info || null;
+    if (!selection) { card.hide(); const L = conLayer(); if (L && L.setFocus) L.setFocus(null); return; }
+    if (renderer.xr.isPresenting) card.show(selection, selection.dir);
+    const L = conLayer();
+    if (L && L.setFocus) L.setFocus(selection.kind === "constellation" ? selection.id : null);
+  }
+  function selectPick(info) {
+    if (!info || samePick(info, selection)) { setSelection(null); return null; }
+    setSelection(info); return info;
+  }
+  function setHover(info) { hover = info || null; }
+  function placeHoverRing() {
+    const src = hover;
+    hoverRing.visible = !!src;
+    if (!src) return;
+    const rad = src.kind === "constellation" ? 6 : 2.2;
+    const s = 700 * Math.tan(rad * Math.PI / 180);
+    hoverRing.position.set(src.dir[0] * 700, src.dir[1] * 700, src.dir[2] * 700);
+    hoverRing.lookAt(skyRoot.localToWorld(new THREE.Vector3(0, 0, 0)));
+    hoverRing.scale.set(s, s, s);
+  }
+  function setLookAround(on) {
+    if (on) {
+      look.active = true; look.hasSample = false; look.mode = "relative"; look.note = ""; look.offsetYaw = 0; look.offsetPitch = 0;
+      oriFilter.reset(); lastCompassAt = 0;
+    } else {
+      if (look.active && look.hasSample) {
+        const d = lookDir({ x: camera.quaternion.x, y: camera.quaternion.y, z: camera.quaternion.z, w: camera.quaternion.w });
+        const a = worldToAltAz(d);
+        view.yaw = -a.az * D2R; view.pitch = a.alt * D2R;
+      }
+      look.active = false; look.hasSample = false; look.note = ""; oriFilter.reset(); setHover(null);
+    }
+    return look;
+  }
+  function ingestOrientation(ev, screenDeg) {
+    const c = compassAlpha(ev);
+    if (c.alpha == null || ev.beta == null || ev.gamma == null || !Number.isFinite(ev.beta) || !Number.isFinite(ev.gamma)) return look;
+    const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    if (c.mode === "compass") { look.mode = "compass"; look.note = ""; lastCompassAt = now; }
+    else if (look.mode === "compass" && now - lastCompassAt < 1500) return look;
+    else if (look.mode !== "compass") { look.mode = "relative"; look.note = "Sky is not aligned to north. Drag to adjust."; }
+    const scr = screenDeg != null ? screenDeg : screenAngleDeg();
+    oriFilter.push(c.alpha, ev.beta, ev.gamma, scr);
+    look.hasSample = true;
+    return look;
+  }
   const hud = makeHud(); camera.add(hud.mesh);
   const vignette = makeVignette(); camera.add(vignette);
   let xrSupported = false, panelDirty = true, lastPanelDraw = 0, scrubTotal = 0, scrubFade = 0;
@@ -156,9 +213,15 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
       const id = ph && ph.hit ? ph.hit.id : null;
       if (id !== panel.hover && i === activeHand) { panel.hover = id; panelDirty = true; }
       if (ph) activeHand = i;
+      // The controller ray is the main pointer (hands can still pinch, but have no ray). Hover the sky when the ray misses the panel.
+      const hand = xrInput.ctrl[i].handInput;
+      if (!ph && !hand) setHover(pick(toLocal(ray.dir)));
+      else if (!ph && hand && !xrInput.ctrl.some((c, j) => j !== i && c.source && !c.handInput)) setHover(pick(toLocal(ray.dir)));
       xrInput.setRayLength(i, ph ? ph.dist : 5);
     },
     onSelectStart(i, ray) {
+      const ch = card.hit(ray);
+      if (ch === "close") { setSelection(null); return; }
       const ph = panel.intersect(ray);
       if (ph) {
         const h = ph.hit; if (!h) return;
@@ -170,8 +233,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
         else if (h.action) press(i, h);
         return;
       }
-      const info = pick(toLocal(ray.dir));
-      if (info) card.show(info, info.dir); else card.hide();
+      selectPick(pick(toLocal(ray.dir)));
     },
     onSelectEnd(i) { if (panel.drag && panel.drag.ctrl === i) { if (panel.drag.kind === "scrub") { panel.scrub = 0.5; panel.scrubLabel = ""; } panel.drag = null; panelDirty = true; } },
     onScrubHours(dh) {
@@ -187,20 +249,42 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   if (navigator.xr && navigator.xr.isSessionSupported) {
     try { xrSupported = await navigator.xr.isSessionSupported("immersive-vr"); } catch { xrSupported = false; }
   }
-  onXr({ supported: xrSupported, presenting: false });
+  let arSupported = false;
+  if (navigator.xr && navigator.xr.isSessionSupported) {
+    try { arSupported = await navigator.xr.isSessionSupported("immersive-ar"); } catch { arSupported = false; }
+  }
+  const nightBackground = scene.background;
+  function restoreSceneBackground() {
+    scene.background = nightBackground;
+    if (renderer.setClearAlpha) renderer.setClearAlpha(1);
+  }
+  function onSessionEnd() {
+    xrSession = null; skyRoot.rotation.y = 0; panel.mesh.visible = false;
+    setSelection(null); setHover(null); restoreSceneBackground();
+    onXr({ supported: xrSupported, presenting: false, arSupported }); applyCamera();
+  }
+  onXr({ supported: xrSupported, presenting: false, arSupported });
   let xrSession = null;
-  async function enterVR() {
+  async function startSession(mode) {
     if (!navigator.xr || xrSession) return;
-    const session = await navigator.xr.requestSession("immersive-vr", { optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking"] });
+    const optional = mode === "immersive-ar"
+      ? ["local-floor", "bounded-floor", "hit-test", "dom-overlay"]
+      : ["local-floor", "bounded-floor", "hand-tracking"];
+    const init = { optionalFeatures: optional };
+    if (mode === "immersive-ar" && typeof document !== "undefined") init.optionalFeatures = optional; // keep init simple; overlay is optional
+    const session = await navigator.xr.requestSession(mode, init);
     xrSession = session;
-    session.addEventListener("end", () => { xrSession = null; skyRoot.rotation.y = 0; panel.mesh.visible = false; card.hide(); onXr({ supported: xrSupported, presenting: false }); applyCamera(); });
+    session.addEventListener("end", onSessionEnd);
+    if (mode === "immersive-ar") { scene.background = null; if (renderer.setClearAlpha) renderer.setClearAlpha(0); }
     await renderer.xr.setSession(session);
     // look= turns the sky (play-space yaw offset), never the user's head
     const [az] = lookAzAlt(); skyRoot.rotation.y = az * D2R;
     camera.rotation.set(0, 0, 0);
     panel.mesh.visible = state.ui; panelDirty = true; panelNeedsPlace = true;
-    onXr({ supported: xrSupported, presenting: true });
+    onXr({ supported: xrSupported, presenting: true, arSupported, mode });
   }
+  async function enterVR() { return startSession("immersive-vr"); }
+  async function enterAR() { return startSession("immersive-ar"); }
   let panelNeedsPlace = false;
 
   // ---- state ----
@@ -236,7 +320,13 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   }
   function applyCamera() {
     if (renderer.xr.isPresenting) return;
-    camera.rotation.set(view.pitch, view.yaw, 0);
+    if (look.active && look.hasSample && oriFilter.quaternion) {
+      const q = oriFilter.quaternion;
+      camera.quaternion.set(q.x, q.y, q.z, q.w);
+      camera.quaternion.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(look.offsetPitch, look.offsetYaw, 0, "YXZ")));
+    } else {
+      camera.rotation.set(view.pitch, view.yaw, 0);
+    }
   }
   function resize() {
     const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
@@ -267,7 +357,15 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
         panelDirty = false; lastPanelDraw = now;
       }
       hud.mesh.visible = state.debug;
-    } else frame.viewportH = renderer.domElement.height;
+      placeHoverRing();
+    } else {
+      frame.viewportH = renderer.domElement.height;
+      if (look.active) {
+        const fwd = new THREE.Vector3(0, 0, -1).transformDirection(camera.matrixWorld);
+        setHover(pick(toLocal(fwd)));
+      }
+      placeHoverRing();
+    }
     frame.flat = !xr; // flat screens: stars (and planets) get a size boost; the headset keeps true angular size
     frame.starScale = frame.flat ? Math.min(2.2, Math.max(1, 22 / (0.5 * frame.viewportH * (camera.projectionMatrix.elements[5] || 1) * Math.PI / 180))) : 1;
     TextBillboards.scale = xr ? 1 : Math.min(1, Math.max(0.6, (canvas.clientHeight || 700) / 700)); // Leo's sizes are for the headset; smaller on phones
@@ -284,6 +382,15 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   });
   let stats = { text: "" };
 
+  function makeHoverRing() {
+    const rp = [];
+    for (let i = 0; i < 64; i++) {
+      const a = (i / 64) * Math.PI * 2, b = ((i + 1) / 64) * Math.PI * 2;
+      rp.push(Math.cos(a), Math.sin(a), 0, Math.cos(b), Math.sin(b), 0);
+    }
+    const ring = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(rp, 3)), new THREE.LineBasicMaterial({ color: SKIN.highlight.color, transparent: true, opacity: 0.85, depthWrite: false }));
+    ring.renderOrder = 16; ring.frustumCulled = false; ring.visible = false; return ring;
+  }
   function makeHud() { // ?debug=1 in the headset: a small text strip low in the view
     const c = document.createElement("canvas"); c.width = 1024; c.height = 96; const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.0375), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, toneMapped: false }));
@@ -303,10 +410,21 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   onState(state);
   return {
     THREE, renderer, scene, camera, catalog,
-    get state() { return state; }, dispatch, enterVR, get xrSupported() { return xrSupported; },
+    get state() { return state; }, dispatch, enterVR, enterAR, get xrSupported() { return xrSupported; }, get arSupported() { return arSupported; },
     get frame() { return frame; }, view, artStatus: () => getLayer("constellations").status.art, applyLook: () => { applyLook(); },
-    setView(v) { if (v.yaw !== undefined) view.yaw = v.yaw; if (v.pitch !== undefined) view.pitch = v.pitch; },
-    getView: () => ({ ...view }),
+    setView(v) {
+      const tgt = look.active ? look : view;
+      if (look.active) { if (v.yaw !== undefined) look.offsetYaw = v.yaw; if (v.pitch !== undefined) look.offsetPitch = Math.max(-1.55, Math.min(1.55, v.pitch)); }
+      else { if (v.yaw !== undefined) view.yaw = v.yaw; if (v.pitch !== undefined) view.pitch = v.pitch; }
+    },
+    getView: () => (look.active ? { yaw: look.offsetYaw, pitch: look.offsetPitch, fovDeg: view.fovDeg } : { ...view }),
+    getLookAround: () => ({ ...look }),
+    setLookAround, ingestOrientation,
+    select: (info) => (info === undefined ? selection : selectPick(info)),
+    getSelection: () => selection, getHover: () => hover, setHover,
+    focusId: () => (conLayer() && conLayer().getFocus && conLayer().getFocus()) || null,
+    focusArtAlpha: () => (conLayer() && conLayer().focusArtAlpha && conLayer().focusArtAlpha()) || 0,
+    pickLocal: (dir) => pick(dir),
     /** Pick at page coordinates (desktop). Returns info or null. */
     pickAt(clientX, clientY) {
       const r = canvas.getBoundingClientRect();

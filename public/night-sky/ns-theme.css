@@ -56,7 +56,16 @@ button { font: inherit; color: inherit; }
 .ns-hbtn:hover { border-color: var(--ns-btn-on-border); }
 .ns-hbtn[hidden] { display: none; }
 .ns-vr { background: linear-gradient(135deg, var(--ns-accent), var(--ns-accent-2)); color: var(--ns-on-accent); border: 0; font-weight: 650; }
+.ns-look.is-on, .ns-ar.is-on { background: var(--ns-btn-on-bg); border-color: var(--ns-btn-on-border); }
 .ns-vrnote { font-size: 13px; color: var(--ns-text-3); margin: 0; }
+.ns-crosshair { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; pointer-events: none; z-index: 2; }
+.ns-crosshair::before, .ns-crosshair::after { content: ""; position: absolute; background: rgba(170, 205, 255, 0.9); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45); }
+.ns-crosshair::before { left: 10px; top: 3px; width: 2px; height: 16px; }
+.ns-crosshair::after { left: 3px; top: 10px; width: 16px; height: 2px; }
+.ns-crosshair.is-hot::before, .ns-crosshair.is-hot::after { background: #ffd45e; }
+.ns-crosshair[hidden] { display: none; }
+.ns-card-common { margin: 0 28px 6px 0; color: var(--ns-card-text-2); font-size: 13px; }
+.ns-card-common[hidden] { display: none; }
 
 .ns-layout { flex: 1; display: grid; grid-template-columns: 1fr var(--ns-side-w); min-height: 0; }
 .ns-stage { position: relative; background: var(--ns-stage-bg); min-height: 360px; overflow: hidden; }
@@ -98,7 +107,7 @@ button { font: inherit; color: inherit; }
   .ns-side { border-left: 0; border-top: 1px solid var(--ns-border); }
   .ns-header .title { font-size: 15px; }
   .ns-hbtn .lbl { display: none; }
-  .ns-hbtn.ns-vr .lbl { display: inline; }
+  .ns-hbtn.ns-vr .lbl, .ns-hbtn.ns-look .lbl, .ns-hbtn.ns-ar .lbl { display: inline; }
   .ns-header { flex-wrap: wrap; row-gap: 4px; }
   .ns-vrnote { order: 10; flex-basis: 100%; font-size: 13px; }
 }

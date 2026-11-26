@@ -56,7 +56,7 @@
     "test:relvel:browser": "python3 relative-velocity-browser.py",
     "test:ncf": "node --test newtons-cannonball-fire.test.mjs tryit-cards.test.mjs && python3 newtons-cannonball-fire-art.py",
     "test:ncf:browser": "python3 newtons-cannonball-fire-browser.py",
-    "test:nightsky": "node --test night-sky-astro.test.mjs night-sky-state.test.mjs night-sky-data.test.mjs night-sky-ephem.test.mjs night-sky-names.test.mjs",
+    "test:nightsky": "node --test night-sky-astro.test.mjs night-sky-state.test.mjs night-sky-data.test.mjs night-sky-ephem.test.mjs night-sky-names.test.mjs night-sky-pick.test.mjs night-sky-orient.test.mjs",
     "test:nightsky:browser": "python3 night-sky-browser.py"
   },
   "devDependencies": {

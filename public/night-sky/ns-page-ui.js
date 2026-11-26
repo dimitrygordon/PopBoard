@@ -2,6 +2,7 @@
 import { boot } from "./ns-main.js";
 import { panelModel, renderDom } from "./ns-ui.js";
 import { attachDesktop } from "./ns-input.js";
+import { offerLookAround } from "./ns-orient.js";
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 
 const $ = (id) => document.getElementById(id);
@@ -41,8 +42,14 @@ function showCard(info) {
   cardInfo = info;
   if (!info) { card.hidden = true; return; }
   $("cardTitle").textContent = info.title;
+  const common = $("cardCommon");
+  if (info.common) { common.textContent = info.common; common.hidden = false; }
+  else { common.textContent = ""; common.hidden = true; }
   $("cardBody").replaceChildren(...info.lines.map((l) => { const p = document.createElement("p"); p.textContent = l; return p; }));
   card.hidden = false; placeCard();
+}
+function applySelection(info) {
+  showCard(app.select(info));
 }
 function placeCard() {
   if (!cardInfo || card.hidden) return;
@@ -53,7 +60,7 @@ function placeCard() {
   card.style.left = Math.max(6, Math.min(stage.width - w - 6, p.x + 14)) + "px";
   card.style.top = Math.max(6, Math.min(stage.height - h - 6, p.y - h / 2)) + "px";
 }
-$("cardClose").addEventListener("click", () => showCard(null));
+$("cardClose").addEventListener("click", () => applySelection(null));
 
 let lastRender = 0;
 (async function main() {
@@ -62,10 +69,11 @@ let lastRender = 0;
       canvas: $("sky"),
       onStatus: (t) => { $("status").textContent = t; },
       onState: () => { render(); },
-      onXr: ({ supported, presenting }) => {
+      onXr: ({ supported, presenting, arSupported }) => {
         $("vrBtn").hidden = !supported;
         $("vrNote").hidden = supported;
         $("vrLabel").textContent = presenting ? "In VR" : "Enter VR";
+        $("arBtn").hidden = !arSupported;
       },
       onFrameStats: (s) => {
         if (app && app.state.debug) { $("hud").hidden = false; const d = app.debugInfo(); $("hud").textContent = `${s.text}\nLST ${d.lstDeg.toFixed(3)} deg  T ${d.T.toFixed(6)}`; }
@@ -78,9 +86,10 @@ let lastRender = 0;
     console.error(err); return;
   }
   window.__nightSky = app; // for tests and the debug HUD
+  window.__nsSelectAt = (x, y) => applySelection(app.pickAt(x, y));
   attachDesktop({
     canvas: $("sky"), getView: () => app.getView(), setView: (v) => { app.setView(v); placeCard(); },
-    onTap: (x, y) => showCard(app.pickAt(x, y)),
+    onTap: (x, y) => applySelection(app.pickAt(x, y)),
     onKey: (e) => {
       const H = 3600e3, D = 86400e3;
       if (e.key === " ") { e.preventDefault(); app.dispatch({ type: "togglePlay" }); }
@@ -88,12 +97,71 @@ let lastRender = 0;
       else if (/^[lL]$/.test(e.key)) app.dispatch({ type: "toggle", key: "lines" });
       else if (/^[aA]$/.test(e.key)) app.dispatch({ type: "toggle", key: "art" });
       else if (/^[nN]$/.test(e.key)) app.dispatch({ type: "toggle", key: "names" });
-      else if (e.key === "Escape") showCard(null);
+      else if (e.key === "Escape") applySelection(null);
     },
   });
   $("vrBtn").addEventListener("click", async () => {
     try { await app.enterVR(); } catch (err) { $("vrNote").hidden = false; $("vrNote").textContent = "Could not start VR: " + (err && err.message ? err.message : err); }
   });
-  (function tick() { placeCard(); requestAnimationFrame(tick); })();
+  $("arBtn").addEventListener("click", async () => {
+    try { await app.enterAR(); } catch (err) { $("vrNote").hidden = false; $("vrNote").textContent = "Could not start AR: " + (err && err.message ? err.message : err); }
+  });
+  $("arBtn").hidden = !app.arSupported;
+
+  const lookOk = offerLookAround({
+    hasDeviceOrientation: typeof DeviceOrientationEvent !== "undefined",
+    hasRequestPermission: typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function",
+    touchPoints: navigator.maxTouchPoints || 0,
+    pointerCoarse: !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches),
+  });
+  $("lookBtn").hidden = !lookOk;
+  let oriListening = false;
+  function onOriAbs(e) { app.ingestOrientation({ alpha: e.alpha, beta: e.beta, gamma: e.gamma, absolute: true, webkitCompassHeading: e.webkitCompassHeading, source: "absolute" }); syncLookUi(); }
+  function onOri(e) { app.ingestOrientation({ alpha: e.alpha, beta: e.beta, gamma: e.gamma, absolute: !!e.absolute, webkitCompassHeading: e.webkitCompassHeading }); syncLookUi(); }
+  function syncLookUi() {
+    const st = app.getLookAround();
+    $("lookBtn").classList.toggle("is-on", st.active);
+    $("lookBtn").setAttribute("aria-pressed", st.active ? "true" : "false");
+    $("lookLabel").textContent = st.active ? "Stop looking" : "Look around";
+    $("crosshair").hidden = !st.active;
+    const hot = st.active && app.getHover();
+    $("crosshair").classList.toggle("is-hot", !!hot);
+    const note = !st.active ? "" : st.note;
+    $("lookNote").hidden = !note;
+    $("lookNote").textContent = note;
+    $("lookHint").textContent = st.active ? "Point the phone. Drag to adjust. Tap to identify." : "Drag to look. Tap a star or a constellation.";
+  }
+  function stopOri() {
+    if (!oriListening) return;
+    window.removeEventListener("deviceorientationabsolute", onOriAbs);
+    window.removeEventListener("deviceorientation", onOri);
+    oriListening = false;
+  }
+  $("lookBtn").addEventListener("click", async () => {
+    if (app.getLookAround().active) { stopOri(); app.setLookAround(false); syncLookUi(); return; }
+    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+      try {
+        const r = await DeviceOrientationEvent.requestPermission();
+        if (r !== "granted") { $("lookNote").hidden = false; $("lookNote").textContent = "Motion permission was not granted."; return; }
+      } catch (err) { $("lookNote").hidden = false; $("lookNote").textContent = "Motion permission was not granted."; return; }
+    }
+    app.setLookAround(true);
+    if (!oriListening) {
+      window.addEventListener("deviceorientationabsolute", onOriAbs);
+      window.addEventListener("deviceorientation", onOri);
+      oriListening = true;
+    }
+    syncLookUi();
+  });
+
+  (function tick() {
+    placeCard();
+    if (app.getLookAround().active) {
+      $("crosshair").classList.toggle("is-hot", !!app.getHover());
+      const note = app.getLookAround().note || "";
+      $("lookNote").hidden = !note; $("lookNote").textContent = note;
+    }
+    requestAnimationFrame(tick);
+  })();
   render();
 })();

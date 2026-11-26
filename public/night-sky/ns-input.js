@@ -45,7 +45,7 @@ export class XRInput {
       const knob = new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 8), new THREE.MeshBasicMaterial({ color: 0xcfe0ff })); grip.add(knob);
       const joints = new THREE.InstancedMesh(new THREE.SphereGeometry(0.006, 8, 6), new THREE.MeshBasicMaterial({ color: 0xe8edf5 }), 25); joints.count = 0; joints.frustumCulled = false; scene.add(joints);
       const st = { c, grip, hand, ray, joints, source: null, squeeze: null, menuWas: false, selecting: false };
-      c.addEventListener("connected", (e) => { st.source = e.data; ray.visible = true; knob.visible = !e.data.hand; });
+      c.addEventListener("connected", (e) => { st.source = e.data; st.handInput = !!e.data.hand; ray.visible = !e.data.hand; knob.visible = !e.data.hand; });
       c.addEventListener("disconnected", () => { st.source = null; ray.visible = false; });
       c.addEventListener("selectstart", () => { st.selecting = true; cb.onSelectStart(i, this.rayOf(i)); });
       c.addEventListener("selectend", () => { st.selecting = false; cb.onSelectEnd(i); });
