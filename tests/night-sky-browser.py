@@ -267,6 +267,9 @@ def ar_and_sensorless(browser, base):
     # The Sky tab also lists the toggle.
     page.locator('[data-bid="tab-sky"]').click()
     check(page.locator('[data-bid="seeRoom"]').is_visible(), "Sky panel lists See my room when AR is supported")
+    check(page.locator('[data-bid="ground0"]').inner_text() == "Faded", "ground option is labelled Faded")
+    check(page.locator('[data-bid="ground1"]').is_disabled() and page.locator('[data-bid="ground0"]').is_disabled(), "Ground is locked while See my room is on")
+    check(page.locator('[data-bid="sky-real"]').is_disabled() and page.locator('[data-bid="sky-night"]').is_disabled(), "Night and Daylight are locked while See my room is on")
     page.locator("#vrBtn").click()
     page.wait_for_timeout(300)
     calls = page.evaluate("window.__xrCalls")
@@ -403,16 +406,53 @@ def main():
 
         ar_and_sensorless(browser, base)
 
-        # VR panel canvas (drawn off-headset for a look; the same draw path runs in the headset)
+        # VR panel canvas (drawn off-headset for a look; the same draw path runs in the headset).
+        # Sky pages always pass arSupported so See my room is visible (Leo art pass AR-1).
         ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", f"{T1}&lines=1")
-        for tab, pg in (("time", 0), ("time", 1), ("sky", 0), ("sky", 1), ("place", 0), ("help", 0), ("help", 1)):
-            url = page.evaluate("""async ([tab, pg]) => { const m = await import('./night-sky/ns-vrpanel.js'); const a = window.__nightSky;
+        import base64
+
+        def draw_panel(tab, pg, info, fname):
+            out = page.evaluate("""async ([tab, pg, info]) => { const m = await import('./night-sky/ns-vrpanel.js'); const a = window.__nightSky;
               const assets = await m.loadPanelAssets(new URL('./night-sky/', location.href)); const p = new m.VRPanel(a.THREE, assets);
-              p.tab = tab; if (p.page[tab] !== undefined) p.page[tab] = pg; p.draw(a.state, { simMs: a.frame.simMs, artStatus: 'ready' });
-              return p.canvas.toDataURL('image/png'); }""", [tab, pg])
-            import base64
-            (OUT / f"vrpanel-{tab}-{pg}.png").write_bytes(base64.b64decode(url.split(",", 1)[1]))
+              p.tab = tab; if (p.page[tab] !== undefined) p.page[tab] = pg;
+              p.draw(a.state, Object.assign({ simMs: a.frame.simMs, artStatus: 'ready' }, info));
+              return { png: p.canvas.toDataURL('image/png'), hits: p.hits.map((h) => ({ id: h.id, x: h.x, y: h.y, w: h.w, h: h.h })) };
+            }""", [tab, pg, info])
+            (OUT / fname).write_bytes(base64.b64decode(out["png"].split(",", 1)[1]))
+            return out["hits"]
+
+        for tab, pg in (("time", 0), ("time", 1), ("sky", 0), ("sky", 1), ("place", 0), ("help", 0), ("help", 1)):
+            info = {"arSupported": True, "seeRoom": False} if tab == "sky" else {}
+            draw_panel(tab, pg, info, f"vrpanel-{tab}-{pg}.png")
+
+        hits0 = draw_panel("sky", 0, {"arSupported": True, "seeRoom": True}, "vrpanel-sky-0-ar.png")
+        by_id = {h["id"]: h for h in hits0}
+        check(by_id.get("helpoff") == {"id": "helpoff", "x": 40, "y": 736, "w": 944, "h": 112}, f"Help off at 40,736 944x112 {by_id.get('helpoff')}")
+        check(by_id.get("seeRoom") == {"id": "seeRoom", "x": 40, "y": 860, "w": 800, "h": 112}, f"See my room at 40,860 800x112 {by_id.get('seeRoom')}")
+        check(by_id.get("next") == {"id": "next", "x": 856, "y": 870, "w": 128, "h": 92}, f"next arrow at 856,870 128x92 {by_id.get('next')}")
+
+        hits1 = draw_panel("sky", 1, {"arSupported": True, "seeRoom": True}, "vrpanel-sky-1-ar.png")
+        by_id = {h["id"]: h for h in hits1}
+        check(by_id.get("reset") and by_id["reset"]["x"] == 40 and by_id["reset"]["w"] == 330, f"Reset is 330 px at x 40 {by_id.get('reset')}")
+        check(by_id.get("vignette") and by_id["vignette"]["x"] == 382 and by_id["vignette"]["w"] == 330, f"Vignette is 330 px at x 382 {by_id.get('vignette')}")
+        check("seeRoom" not in by_id, "See my room is not on Sky page 2")
+        check("ground1" not in by_id and "ground0" not in by_id and "sky-real" not in by_id, f"Ground and Daylight have no hits when See my room is on {[k for k in by_id if k in ('ground1','ground0','sky-real','planets')]}")
+        check("planets" in by_id, "Planets stays enabled in passthrough")
         check(not errs, f"vr panel draws without errors {errs[:3]}")
+        ctx.close()
+
+        # Passthrough over a light/cream background (test hook; no real XR session)
+        ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", PRESETS["on-south"])
+        page.wait_for_function("window.__nightSky.artStatus() === 'ready'", timeout=30000)
+        page.evaluate("window.__nightSky.setPassthroughPreview(true, '#f3ead8')")
+        page.wait_for_timeout(600)
+        check(page.evaluate("window.__nightSky.frame.passthrough") is True, "passthrough preview flag is on")
+        check(page.evaluate("window.__nightSky.frame.starMinPx") == 3.6, "passthrough min star size is 3.6")
+        check(page.evaluate("window.__nightSky.frame.lineWidthPx") == 3.2, "passthrough line width is 3.2")
+        page.screenshot(path=str(OUT / "passthrough-over-light.png"))
+        page.locator("#stage").screenshot(path=str(OUT / "passthrough-over-light-stage.png"))
+        check(bright_pixels(OUT / "passthrough-over-light-stage.png") > 200, f"passthrough-over-light renders ({bright_pixels(OUT / 'passthrough-over-light-stage.png')} bright px)")
+        check(not errs, f"passthrough-over-light: no console errors {errs[:3]}")
         ctx.close()
 
         # link check: every same-origin href/src on the page answers 200; external links are listed, not fetched

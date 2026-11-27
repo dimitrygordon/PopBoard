@@ -78,6 +78,7 @@ export function fatLineSegments(THREE, positions, { color, opacity = 1, widthPx 
     setWidth(px) { mat.uniforms.uWidthPx.value = px; },
     setOpacity(o) { mat.uniforms.uOpacity.value = o; },
     setResolution(w, h) { mat.uniforms.uResolution.value.set(w, h); },
+    setAdditive(on) { mat.blending = on ? THREE.AdditiveBlending : THREE.NormalBlending; },
     dispose() { g.dispose(); mat.dispose(); },
   };
 }
@@ -89,10 +90,10 @@ export function lineWidthPx({ xr = false, passthrough = false } = {}) {
   return 1.8;
 }
 export function starMinPx({ xr = false, passthrough = false } = {}) {
-  if (passthrough) return 2.8;
+  if (passthrough) return 3.6;
   if (xr) return 2.4;
   return 1.6;
 }
 export function passthroughArtAlpha(artalpha) {
-  return Math.min(1, (artalpha ?? 0.40) * 1.45);
+  return Math.min(1, (artalpha ?? 0.40) * 1.8);
 }

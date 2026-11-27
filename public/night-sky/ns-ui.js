@@ -22,7 +22,8 @@ const fmtLon = (v) => `${Math.abs(v).toFixed(2)}° ${v >= 0 ? "E" : "W"}`;
 /** The panel model. info: { simMs, artStatus, vr } */
 export function panelModel(st, info) {
   const locked = (g) => st.lock.includes(g);
-  const b = (id, text, action, on, group) => ({ id, text, action, on: !!on, disabled: group ? locked(group) : false });
+  const passLock = !!info.seeRoom;
+  const b = (id, text, action, on, group) => ({ id, text, action, on: !!on, disabled: !!(group && locked(group)) || !!(passLock && (id === "ground1" || id === "ground0" || id === "sky-night" || id === "sky-real")) });
   const { date, time } = fmtLocal(info.simMs, st.tz);
   const playing = st.clock.speed !== 0;
   const tabs = {
@@ -49,7 +50,7 @@ export function panelModel(st, info) {
       { label: `Art brightness ${Math.round(st.artalpha * 100)}%`, items: [b("aa-", "Dimmer", { type: "set", key: "artalpha", value: Math.max(0, +(st.artalpha - 0.1).toFixed(2)) }, 0, "sky"), b("aa+", "Brighter", { type: "set", key: "artalpha", value: Math.min(1, +(st.artalpha + 0.1).toFixed(2)) }, 0, "sky")] },
       { label: "Labels and guides", items: [b("starnames", "Star names", { type: "toggle", key: "starnames" }, st.starnames, "sky"), b("polaris", "Find Polaris", { type: "set", key: "hl", value: st.hl === "polaris" ? "" : "polaris" }, st.hl === "polaris", "sky"), b("planets", "Planets and Moon", { type: "toggle", key: "planets" }, st.planets, "sky")] },
       { label: "Grid", items: [b("g-altaz", "Alt/Az", { type: "toggleGrid", grid: "altaz" }, st.grid.includes("altaz"), "sky"), b("g-eq", "RA/Dec", { type: "toggleGrid", grid: "eq" }, st.grid.includes("eq"), "sky"), b("g-ecl", "Ecliptic", { type: "toggleGrid", grid: "ecl" }, st.grid.includes("ecl"), "sky")] },
-      { label: "Ground", items: [b("ground1", "Solid", { type: "set", key: "ground", value: true }, st.ground, "sky"), b("ground0", "See-through", { type: "set", key: "ground", value: false }, !st.ground, "sky")] },
+      { label: "Ground", items: [b("ground1", "Solid", { type: "set", key: "ground", value: true }, st.ground, "sky"), b("ground0", "Faded", { type: "set", key: "ground", value: false }, !st.ground, "sky")] },
       ...(info.arSupported ? [{ label: "Headset", items: [b("seeRoom", "See my room", { type: "seeRoom", value: !info.seeRoom }, info.seeRoom, null)] }] : []),
       { label: "Star trails", items: [[0, "Off"], [2, "2 h"], [6, "6 h"], [12, "12 h"]].map(([h, t]) => b("tr" + h, t, { type: "set", key: "trails", value: h }, st.trails === h, "sky")) },
       { label: "Faintest stars", items: [4, 5, 5.5, 6, 6.5].map((m) => b("mag" + m, m.toFixed(1), { type: "set", key: "mag", value: m }, st.mag === m, "sky")) },

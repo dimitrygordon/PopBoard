@@ -367,6 +367,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   new ResizeObserver(resize).observe(canvas); resize();
 
   let last = performance.now(), frames = 0, statT = last, worst = 0;
+  let previewPassthrough = false;
   renderer.setAnimationLoop((now, xrFrame) => {
     const dt = Math.min(0.1, (now - last) / 1000); worst = Math.max(worst, now - last); last = now;
     computeFrame();
@@ -380,7 +381,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     frame.fallbackUp = [fwd.x, 0, fwd.z];
     const session = (xrFrame && xrFrame.session) || (renderer.xr.getSession && renderer.xr.getSession()) || xrSession;
     const blend = (session && session.environmentBlendMode) || "opaque";
-    frame.passthrough = xr && isPassthroughBlend(blend);
+    frame.passthrough = (xr && isPassthroughBlend(blend)) || previewPassthrough;
     frame.lineWidthPx = lineWidthPx({ xr, passthrough: frame.passthrough });
     frame.starMinPx = starMinPx({ xr, passthrough: frame.passthrough });
     if (xr) {
@@ -408,7 +409,8 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     frame.flat = !xr; // flat screens: stars (and planets) get a size boost; the headset keeps true angular size
     frame.starScale = frame.flat ? Math.min(2.2, Math.max(1, 22 / (0.5 * frame.viewportH * (camera.projectionMatrix.elements[5] || 1) * Math.PI / 180))) : 1;
     TextBillboards.scale = xr ? 1 : Math.min(1, Math.max(0.6, (canvas.clientHeight || 700) / 700)); // Leo's sizes are for the headset; smaller on phones
-    vignette.visible = state.vignette && Math.abs(state.clock.speed) >= 600; // comfort vignette at 600x and above
+    TextBillboards.pill = !!frame.passthrough;
+    vignette.visible = state.vignette && !frame.passthrough && Math.abs(state.clock.speed) >= 600; // comfort vignette at 600x and above; hidden in passthrough
     updateLayers(ctx, dt);
     renderer.render(scene, camera);
     frames++;
@@ -449,6 +451,10 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   onState(state);
   return {
     THREE, renderer, scene, camera, catalog,
+    setPassthroughPreview(on, color) {
+      previewPassthrough = !!on;
+      if (on) { const c = new THREE.Color(color || 0xf3ead8); scene.background = c; renderer.setClearColor(c, 1); }
+    },
     get state() { return state; }, dispatch, enterVR, enterAR, startXR, setSeeRoom,
     get xrSupported() { return xrSupported; }, get arSupported() { return arSupported; }, get seeRoom() { return seeRoom; },
     get frame() { return frame; }, view, artStatus: () => getLayer("constellations").status.art, applyLook: () => { applyLook(); },

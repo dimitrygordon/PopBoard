@@ -8,7 +8,7 @@ import { fmtLocal } from "./ns-ui.js";
 
 export const PANEL_PX = 1024, PANEL_M = 0.8;
 const ICONS = ["art", "brightness", "close", "grid", "ground", "help-off", "lines", "lock", "names", "now", "pause", "planets", "play", "reset", "reverse", "speed",
-  "star-names", "step-back", "step-forward", "tab-help", "tab-place", "tab-sky", "tab-time", "trails"];
+  "see-room", "star-names", "step-back", "step-forward", "tab-help", "tab-place", "tab-sky", "tab-time", "trails"];
 const SPEED_STEPS = [1, 60, 600, 3600];
 export const UNITS = [["Hour", 3600e3], ["Day", 86400e3], ["Month", 30.436875 * 86400e3]];
 const TAB_IDS = ["time", "place", "sky", "help"];
@@ -68,15 +68,17 @@ export class VRPanel {
       return this.flush();
     }
     if (this.tab === "sky" && this.page.sky === 0) {
-      drawSky(g, this.icons, { hoverTab, artOn: st.art, artAlpha: st.artalpha,
-        s: { lines: S("lines", st.lines, lockS), art: S("art", st.art, lockS), names: S("names", st.names, lockS), helpOff: S("helpoff", false, lockS) } });
+      drawSky(g, this.icons, { hoverTab, artOn: st.art, artAlpha: st.artalpha, arSupported: !!info.arSupported,
+        nextHover: this.hover === "next" ? "hover" : "off",
+        s: { lines: S("lines", st.lines, lockS), art: S("art", st.art, lockS), names: S("names", st.names, lockS), helpOff: S("helpoff", false, lockS), seeRoom: S("seeRoom", !!info.seeRoom, false) } });
       if (info.artStatus === "loading" && st.art) text(g, "Loading art", 984, 286, THEME.type.label, THEME.accent, "right");
       tabHits();
       if (!lockS) {
         ["lines", "art", "names"].forEach((k, i) => hit(k, 40 + i * 324, 300, 296, 268, { type: "toggle", key: k }));
-        hit("slider", 260, 612, 600, 112, null, { slider: true }); hit("helpoff", 40, 756, 944, 128, { type: "helpOff" });
+        hit("slider", 260, 612, 600, 112, null, { slider: true }); hit("helpoff", 40, 736, 944, 112, { type: "helpOff" });
       }
-      hit("next", 856, 900, 128, 92, null, { page: 1 });
+      if (info.arSupported) hit("seeRoom", 40, 860, 800, 112, { type: "seeRoom", value: !info.seeRoom });
+      hit("next", 856, 870, 128, 92, null, { page: 1 });
       return this.flush();
     }
     // ---- generic pages ----
@@ -88,11 +90,12 @@ export class VRPanel {
       if (iconName) { icon(g, this.icons[iconName], 82, y + h / 2, 64, locked ? 0.4 : 0.9); x = 124; }
       const free = 984 - x, gap = 12, w = (free - gap * (items.length - 1)) / items.length;
       items.forEach((it) => {
-        const s = S(it.id, it.on, locked);
+        const itemLocked = !!(locked || it.locked);
+        const s = S(it.id, it.on, itemLocked);
         surface(g, x, y, w, h, 40, s);
         if (it.icon) icon(g, this.icons[it.icon], x + 56, y + h / 2, 56, iconAlpha(s));
         text(g, it.text, it.icon ? x + 96 : x + w / 2, y + h / 2 + 20, THEME.type.label, labelColor(s), it.icon ? "left" : "center");
-        if (!locked) hit(it.id, x, y, w, h, it.action);
+        if (!itemLocked) hit(it.id, x, y, w, h, it.action);
         x += w + gap;
       });
       y += h + gapY;
@@ -111,23 +114,16 @@ export class VRPanel {
       y = 176; gapY = 6;
       row("star-names", [{ id: "starnames", text: "Star names", on: st.starnames, action: { type: "toggle", key: "starnames" } }, { id: "polaris", text: "Polaris", on: st.hl === "polaris", action: { type: "set", key: "hl", value: st.hl === "polaris" ? "" : "polaris" } }], lockS);
       row("grid", [["altaz", "Alt/Az"], ["eq", "RA/Dec"], ["ecl", "Ecliptic"]].map(([k, t]) => ({ id: "g-" + k, text: t, on: st.grid.includes(k), action: { type: "toggleGrid", grid: k } })), lockS);
-      row("planets", [{ id: "planets", text: "Planets, Moon", on: st.planets, action: { type: "toggle", key: "planets" } }, { id: "sky-real", text: "Daylight", on: st.sky === "real", action: { type: "set", key: "sky", value: st.sky === "real" ? "night" : "real" } }], lockS);
-      row("ground", [{ id: "ground1", text: "Solid", on: st.ground, action: { type: "set", key: "ground", value: true } }, { id: "ground0", text: "See-through", on: !st.ground, action: { type: "set", key: "ground", value: false } }], lockS);
+      const passLock = !!info.seeRoom;
+      row("planets", [{ id: "planets", text: "Planets, Moon", on: st.planets, action: { type: "toggle", key: "planets" } }, { id: "sky-real", text: "Daylight", on: st.sky === "real", action: { type: "set", key: "sky", value: st.sky === "real" ? "night" : "real" }, locked: passLock }], lockS);
+      row("ground", [{ id: "ground1", text: "Solid", on: st.ground, action: { type: "set", key: "ground", value: true }, locked: passLock }, { id: "ground0", text: "Faded", on: !st.ground, action: { type: "set", key: "ground", value: false }, locked: passLock }], lockS);
       row("trails", [[0, "Off"], [2, "2 h"], [6, "6 h"], [12, "12 h"]].map(([h, t]) => ({ id: "tr" + h, text: t, on: st.trails === h, action: { type: "set", key: "trails", value: h } })), lockS);
       row("brightness", [4, 5, 5.5, 6, 6.5].map((m) => ({ id: "mag" + m, text: m.toFixed(1), on: st.mag === m, action: { type: "set", key: "mag", value: m } })), lockS);
-      const showRoom = !!info.arSupported;
-      const rw = showRoom ? 230 : 330, gap = 12;
-      surface(g, 40, y, rw, 112, 40, S("reset", false, lockS)); icon(g, this.icons.reset, showRoom ? 80 : 96, y + 56, 56, 0.9); text(g, "Reset", showRoom ? 124 : 140, y + 76, THEME.type.label, labelColor(S("reset", false, lockS)));
-      if (!lockS) hit("reset", 40, y, rw, 112, { type: "reset" });
-      const vx = 40 + rw + gap;
-      surface(g, vx, y, rw, 112, 40, S("vignette", st.vignette, false)); text(g, "Vignette", vx + rw / 2, y + 76, THEME.type.label, labelColor(S("vignette", st.vignette, false)), "center");
-      hit("vignette", vx, y, rw, 112, { type: "toggle", key: "vignette" });
-      if (showRoom) {
-        const rx = vx + rw + gap;
-        surface(g, rx, y, rw, 112, 40, S("seeRoom", !!info.seeRoom, false)); text(g, "See my room", rx + rw / 2, y + 76, THEME.type.label, labelColor(S("seeRoom", !!info.seeRoom, false)), "center");
-        hit("seeRoom", rx, y, rw, 112, { type: "seeRoom", value: !info.seeRoom });
-      }
-      if (!showRoom) this.pageDots(g, 2, 1, 820, y + 72);
+      surface(g, 40, y, 330, 112, 40, S("reset", false, lockS)); icon(g, this.icons.reset, 96, y + 56, 56, 0.9); text(g, "Reset", 140, y + 76, THEME.type.label, labelColor(S("reset", false, lockS)));
+      if (!lockS) hit("reset", 40, y, 330, 112, { type: "reset" });
+      surface(g, 382, y, 330, 112, 40, S("vignette", st.vignette, false)); text(g, "Vignette", 547, y + 76, THEME.type.label, labelColor(S("vignette", st.vignette, false)), "center");
+      hit("vignette", 382, y, 330, 112, { type: "toggle", key: "vignette" });
+      this.pageDots(g, 2, 1, 820, y + 72);
       surface(g, 856, y + 10, 128, 92, 40, this.hover === "prev" ? "hover" : "off"); icon(g, this.icons["step-back"], 920, y + 56, 52, 0.85); hit("prev", 856, y + 10, 128, 92, null, { page: 0 });
     } else if (this.tab === "place") {
       text(g, st.loc && PLACES[st.loc] ? PLACES[st.loc].name : "Custom place", 64, 262, THEME.type.date, THEME.text.primary);

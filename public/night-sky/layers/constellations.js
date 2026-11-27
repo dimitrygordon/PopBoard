@@ -167,9 +167,9 @@ export function constellationsLayer() {
     update(ctx, dt) {
       const st = ctx.state, pass = !!ctx.frame.passthrough, vw = ctx.frame.viewportW || 1280, vh = ctx.frame.viewportH || 800;
       const linePx = ctx.frame.lineWidthPx || 2, artA = pass ? passthroughArtAlpha(st.artalpha) : (st.artalpha ?? 0.40);
-      const lineOp = ctx.skin.lines.opacity * (pass ? 1.2 : 1);
+      const lineOp = ctx.skin.lines.opacity;
       lines.mesh.visible = nodePts.visible = st.lines;
-      lines.setWidth(linePx); lines.setOpacity(lineOp); lines.setResolution(vw, vh);
+      lines.setWidth(linePx); lines.setOpacity(lineOp); lines.setResolution(vw, vh); lines.setAdditive(pass);
       nodeMat.uniforms.uViewportH.value = vh;
       if (st.art && !art && !artLoading) buildArt(ctx);
       if (art) { art.visible = st.art; art.material.uniforms.uArtAlpha.value = artA; }
@@ -184,7 +184,7 @@ export function constellationsLayer() {
       if (focusLines) {
         const show = !!(focusId && focusAlpha > 0.01);
         focusLines.mesh.visible = show;
-        focusLines.setWidth(linePx); focusLines.setResolution(vw, vh);
+        focusLines.setWidth(linePx); focusLines.setResolution(vw, vh); focusLines.setAdditive(pass);
         if (show) focusLines.setOpacity(lineOp * (st.lines ? 0.4 + 0.6 * focusAlpha : focusAlpha));
       }
       if (focusArt) {

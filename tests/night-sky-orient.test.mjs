@@ -259,11 +259,13 @@ test("preferredXrMode defaults to VR; See my room selects AR when it is supporte
 });
 
 test("lines and stars are a little thicker in XR, and thicker still in passthrough", () => {
-  assert.ok(lineWidthPx({ xr: false }) > 1);
-  assert.ok(lineWidthPx({ xr: true }) > lineWidthPx({ xr: false }));
-  assert.ok(lineWidthPx({ xr: true, passthrough: true }) > lineWidthPx({ xr: true }));
-  assert.ok(starMinPx({ xr: true }) > starMinPx({ xr: false }));
-  assert.ok(starMinPx({ xr: true, passthrough: true }) > starMinPx({ xr: true }));
-  assert.ok(passthroughArtAlpha(0.40) > 0.40 && passthroughArtAlpha(0.40) <= 1);
+  assert.equal(lineWidthPx({ xr: false }), 1.8);
+  assert.equal(lineWidthPx({ xr: true }), 2.4);
+  assert.equal(lineWidthPx({ xr: true, passthrough: true }), 3.2);
+  assert.equal(starMinPx({ xr: false }), 1.6);
+  assert.equal(starMinPx({ xr: true }), 2.4);
+  assert.equal(starMinPx({ xr: true, passthrough: true }), 3.6);
+  assert.ok(Math.abs(passthroughArtAlpha(0.40) - 0.72) < 1e-10);
   assert.equal(passthroughArtAlpha(0.9), 1);
+  assert.equal(passthroughArtAlpha(1), 1);
 });

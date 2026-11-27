@@ -62,14 +62,26 @@ export class TextBillboards {
     g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 2000);
     this.mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: true, side: THREE.DoubleSide, toneMapped: false }));
     this.mesh.frustumCulled = false; this.mesh.renderOrder = 20;
+    // Dark name pills live as a second, slightly larger untextured quad. Shown in passthrough only; not baked into the atlas.
+    const pillPos = new Float32Array(this.n * 12);
+    const pg = new THREE.BufferGeometry();
+    pg.setAttribute("position", new THREE.BufferAttribute(pillPos, 3).setUsage(THREE.DynamicDrawUsage));
+    pg.setIndex(idx.slice());
+    pg.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 2000);
+    this.pill = new THREE.Mesh(pg, new THREE.MeshBasicMaterial({ color: 0x080a18, opacity: 0.55, transparent: true, depthWrite: false, depthTest: true, side: THREE.DoubleSide, toneMapped: false }));
+    this.pill.frustumCulled = false; this.pill.renderOrder = 19; this.pill.visible = false;
+    this.mesh.add(this.pill);
     this.pxPerDeg = 0.727 * this.opts.refPx / this.opts.capDeg; // atlas pixels per degree of sky
   }
   /** dirs: array of local-frame unit vectors (or null to hide). */
   update(dirs, fallbackUp) {
     const p = this.mesh.geometry.attributes.position, a = p.array, R = this.opts.radius;
+    const pp = this.pill.geometry.attributes.position, pa = pp.array;
+    const showPill = !!TextBillboards.pill;
+    this.pill.visible = showPill;
     for (let i = 0; i < this.n; i++) {
       const d = dirs[i];
-      if (!d) { a.fill(0, i * 12, i * 12 + 12); continue; }
+      if (!d) { a.fill(0, i * 12, i * 12 + 12); pa.fill(0, i * 12, i * 12 + 12); continue; }
       const { up, right } = uprightBasis(d, fallbackUp);
       const [w, h] = this.sizes[i];
       const k = R * Math.PI / 180 / this.pxPerDeg * TextBillboards.scale; // metres per atlas pixel at radius R
@@ -79,10 +91,16 @@ export class TextBillboards {
       if (this.opts.anchor === "right-of") { const off = this.opts.offsetDeg * R * Math.PI / 180; c = [c[0] + right[0] * (hw + off), c[1] + right[1] * (hw + off), c[2] + right[2] * (hw + off)]; }
       const corners = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]];
       corners.forEach(([x, y], j) => { a[i * 12 + j * 3] = c[0] + right[0] * x + up[0] * y; a[i * 12 + j * 3 + 1] = c[1] + right[1] * x + up[1] * y; a[i * 12 + j * 3 + 2] = c[2] + right[2] * x + up[2] * y; });
+      if (showPill) {
+        const pad = 8 * k; // ~8 atlas px / 0.3 deg larger than the glyph quad
+        const phw = hw + pad, phh = hh + pad;
+        const pc = [[-phw, -phh], [phw, -phh], [phw, phh], [-phw, phh]];
+        pc.forEach(([x, y], j) => { pa[i * 12 + j * 3] = c[0] + right[0] * x + up[0] * y; pa[i * 12 + j * 3 + 1] = c[1] + right[1] * x + up[1] * y; pa[i * 12 + j * 3 + 2] = c[2] + right[2] * x + up[2] * y; });
+      } else pa.fill(0, i * 12, i * 12 + 12);
     }
-    p.needsUpdate = true;
+    p.needsUpdate = true; pp.needsUpdate = true;
   }
-  dispose() { this.mesh.geometry.dispose(); this.mesh.material.map.dispose(); this.mesh.material.dispose(); }
+  dispose() { this.mesh.geometry.dispose(); this.mesh.material.map.dispose(); this.mesh.material.dispose(); this.pill.geometry.dispose(); this.pill.material.dispose(); }
 }
 
 /** The pick label card (used in VR; the desktop page shows an HTML card instead). */

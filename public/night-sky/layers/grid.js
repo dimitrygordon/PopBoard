@@ -37,9 +37,9 @@ export function gridLayer() {
       ring.mesh.renderOrder = 15; ring.mesh.visible = false; ctx.skyRoot.add(ring.mesh);
     },
     update(ctx, dt) {
-      const st = ctx.state, vw = ctx.frame.viewportW || 1280, vh = ctx.frame.viewportH || 800, px = ctx.frame.lineWidthPx || 2;
+      const st = ctx.state, vw = ctx.frame.viewportW || 1280, vh = ctx.frame.viewportH || 800, px = ctx.frame.lineWidthPx || 2, pass = !!ctx.frame.passthrough;
       altaz.mesh.visible = st.grid.includes("altaz"); eq.mesh.visible = st.grid.includes("eq"); ecl.mesh.visible = st.grid.includes("ecl");
-      for (const g of [altaz, eq, ecl, pole]) { g.setWidth(px); g.setResolution(vw, vh); }
+      for (const g of [altaz, eq, ecl, pole]) { g.setWidth(px); g.setResolution(vw, vh); g.setAdditive(pass); }
       ringTarget = ctx.highlightDir ? ctx.highlightDir() : null;
       ring.mesh.visible = !!ringTarget;
       if (ringTarget) {
@@ -47,7 +47,7 @@ export function gridLayer() {
         const s = 700 * Math.tan(radDeg * Math.PI / 180) * (1 + 0.12 * Math.sin(t * 4));
         ring.mesh.position.set(ringTarget.dir[0] * 700, ringTarget.dir[1] * 700, ringTarget.dir[2] * 700);
         ring.mesh.lookAt(ctx.skyRoot.localToWorld(new ctx.THREE.Vector3(0, 0, 0)));
-        ring.mesh.scale.set(s, s, s); ring.setOpacity(0.6 + 0.4 * Math.sin(t * 4)); ring.setWidth(px); ring.setResolution(vw, vh);
+        ring.mesh.scale.set(s, s, s); ring.setOpacity(0.6 + 0.4 * Math.sin(t * 4)); ring.setWidth(px); ring.setResolution(vw, vh); ring.setAdditive(pass);
       }
     },
     setVisible() {},
