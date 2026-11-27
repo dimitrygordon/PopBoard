@@ -2,6 +2,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { cullNameBoxes, NEVER_CULL_IDS } from "../public/night-sky/layers/constellations.js";
+import { PILL_PAD_X, PILL_PAD_Y, PILL_COLOR, PILL_OPACITY, pillHalfExtents } from "../public/night-sky/ns-labels.js";
 import { altAzToWorld } from "../public/night-sky/ns-astro.js";
 
 const PX = 10; // atlas px per degree, so a 20x20 box is 2 deg on a side (half-width 1 before pad)
@@ -42,4 +43,14 @@ test("pinned never-culled names stay even when a bigger neighbour overlaps; the 
   assert.deepEqual(low.kept, []);
   const high = run([{ id: "Ori", alt: 12, az: 180, prio: 20 }], { floorDeg: 4 });
   assert.deepEqual(high.kept, ["Ori"]);
+});
+
+test("passthrough name pills use 14 x 6 px padding and the dark plate color", () => {
+  assert.equal(PILL_PAD_X, 14);
+  assert.equal(PILL_PAD_Y, 6);
+  assert.equal(PILL_COLOR, 0x080a18);
+  assert.equal(PILL_OPACITY, 0.55);
+  const { phw, phh } = pillHalfExtents(10, 4, 2);
+  assert.equal(phw, 10 + 14 * 2);
+  assert.equal(phh, 4 + 6 * 2);
 });

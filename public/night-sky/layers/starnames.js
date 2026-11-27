@@ -19,7 +19,7 @@ export function starNamesLayer() {
       const st = ctx.state; labels.mesh.visible = st.starnames;
       if (!st.starnames) return;
       const s = ctx.catalog.stars, M = ctx.frame.M;
-      labels.update(idx.map((i) => { const d = refractDir(apply(M, s.starVec(i)), ctx.frame.refract); return (st.ground && d[1] < -0.01) || s.mag[i] > st.mag ? null : d; }), ctx.frame.fallbackUp);
+      labels.update(idx.map((i) => { const d = refractDir(apply(M, s.starVec(i)), ctx.frame.refract); return ((st.ground && !ctx.frame.passthrough) && d[1] < -0.01) || s.mag[i] > st.mag ? null : d; }), ctx.frame.fallbackUp);
     },
     setVisible(on) { labels.mesh.visible = on; },
     dispose() { labels.dispose(); },

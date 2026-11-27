@@ -44,6 +44,39 @@ function buildAtlas(entries, pad = 6) {
 
 /** One draw call for many upright labels. TextBillboards.scale shrinks every label on small flat screens (1 in the headset). opts: { radius, capDeg (cap height of the reference font), refPx (reference font size),
  *  anchor: "center" | "right-of" | "below", offsetDeg }. Cap height of Inter is 0.727 em. */
+export const PILL_PAD_X = 14, PILL_PAD_Y = 6, PILL_COLOR = 0x080a18, PILL_OPACITY = 0.55;
+export function pillHalfExtents(hw, hh, k) { return { phw: hw + PILL_PAD_X * k, phh: hh + PILL_PAD_Y * k }; }
+
+const PILL_VERT = /* glsl */`
+attribute float aAspect;
+varying vec2 vUv;
+varying float vAspect;
+void main() {
+  vUv = uv;
+  vAspect = aAspect;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+const PILL_FRAG = /* glsl */`
+uniform vec3 uColor;
+uniform float uOpacity;
+varying vec2 vUv;
+varying float vAspect;
+void main() {
+  vec2 p = vUv * 2.0 - 1.0;
+  float aspect = max(vAspect, 1.0e-4);
+  float rr = min(aspect, 1.0);
+  vec2 q = abs(vec2(p.x * aspect, p.y));
+  vec2 b = vec2(max(aspect - rr, 0.0), max(1.0 - rr, 0.0));
+  float d = length(max(q - b, 0.0)) - rr;
+  float aa = fwidth(d);
+  float a = uOpacity * (1.0 - smoothstep(-aa, aa, d));
+  if (a <= 0.004) discard;
+  gl_FragColor = vec4(uColor, a);
+  #include <colorspace_fragment>
+}
+`;
+
 export class TextBillboards {
   constructor(THREE, entries, opts) {
     this.THREE = THREE; this.n = entries.length; this.opts = { radius: 880, capDeg: 2.5, refPx: 30, anchor: "center", offsetDeg: 0, ...opts };
@@ -62,14 +95,37 @@ export class TextBillboards {
     g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 2000);
     this.mesh = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: true, side: THREE.DoubleSide, toneMapped: false }));
     this.mesh.frustumCulled = false; this.mesh.renderOrder = 20;
+    // Dark name pills: a second slightly larger quad, rounded in the shader to a true pill (radius = height/2).
+    // Shown in passthrough only; not baked into the atlas. Padding is 14 px horizontal, 6 px vertical.
+    const pillPos = new Float32Array(this.n * 12);
+    const pillUv = new Float32Array(this.n * 8), pillAspect = new Float32Array(this.n * 4);
+    for (let i = 0; i < this.n; i++) pillUv.set([0, 0, 1, 0, 1, 1, 0, 1], i * 8);
+    const pg = new THREE.BufferGeometry();
+    pg.setAttribute("position", new THREE.BufferAttribute(pillPos, 3).setUsage(THREE.DynamicDrawUsage));
+    pg.setAttribute("uv", new THREE.BufferAttribute(pillUv, 2));
+    pg.setAttribute("aAspect", new THREE.BufferAttribute(pillAspect, 1).setUsage(THREE.DynamicDrawUsage));
+    pg.setIndex(idx.slice());
+    pg.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 2000);
+    const pillMat = new THREE.ShaderMaterial({
+      uniforms: { uColor: { value: new THREE.Color(PILL_COLOR) }, uOpacity: { value: PILL_OPACITY } },
+      vertexShader: PILL_VERT, fragmentShader: PILL_FRAG,
+      transparent: true, depthWrite: false, depthTest: true, side: THREE.DoubleSide, toneMapped: false,
+    });
+    this.pill = new THREE.Mesh(pg, pillMat);
+    this.pill.frustumCulled = false; this.pill.renderOrder = 19; this.pill.visible = false;
+    this.mesh.add(this.pill);
     this.pxPerDeg = 0.727 * this.opts.refPx / this.opts.capDeg; // atlas pixels per degree of sky
   }
   /** dirs: array of local-frame unit vectors (or null to hide). */
   update(dirs, fallbackUp) {
     const p = this.mesh.geometry.attributes.position, a = p.array, R = this.opts.radius;
+    const pp = this.pill.geometry.attributes.position, pa = pp.array;
+    const paA = this.pill.geometry.attributes.aAspect, aspects = paA.array;
+    const showPill = !!TextBillboards.pill;
+    this.pill.visible = showPill;
     for (let i = 0; i < this.n; i++) {
       const d = dirs[i];
-      if (!d) { a.fill(0, i * 12, i * 12 + 12); continue; }
+      if (!d) { a.fill(0, i * 12, i * 12 + 12); pa.fill(0, i * 12, i * 12 + 12); aspects.fill(1, i * 4, i * 4 + 4); continue; }
       const { up, right } = uprightBasis(d, fallbackUp);
       const [w, h] = this.sizes[i];
       const k = R * Math.PI / 180 / this.pxPerDeg * TextBillboards.scale; // metres per atlas pixel at radius R
@@ -79,10 +135,17 @@ export class TextBillboards {
       if (this.opts.anchor === "right-of") { const off = this.opts.offsetDeg * R * Math.PI / 180; c = [c[0] + right[0] * (hw + off), c[1] + right[1] * (hw + off), c[2] + right[2] * (hw + off)]; }
       const corners = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]];
       corners.forEach(([x, y], j) => { a[i * 12 + j * 3] = c[0] + right[0] * x + up[0] * y; a[i * 12 + j * 3 + 1] = c[1] + right[1] * x + up[1] * y; a[i * 12 + j * 3 + 2] = c[2] + right[2] * x + up[2] * y; });
+      if (showPill) {
+        const { phw, phh } = pillHalfExtents(hw, hh, k);
+        const pc = [[-phw, -phh], [phw, -phh], [phw, phh], [-phw, phh]];
+        pc.forEach(([x, y], j) => { pa[i * 12 + j * 3] = c[0] + right[0] * x + up[0] * y; pa[i * 12 + j * 3 + 1] = c[1] + right[1] * x + up[1] * y; pa[i * 12 + j * 3 + 2] = c[2] + right[2] * x + up[2] * y; });
+        const aspect = phh > 0 ? phw / phh : 1;
+        aspects.fill(aspect, i * 4, i * 4 + 4);
+      } else { pa.fill(0, i * 12, i * 12 + 12); aspects.fill(1, i * 4, i * 4 + 4); }
     }
-    p.needsUpdate = true;
+    p.needsUpdate = true; pp.needsUpdate = true; paA.needsUpdate = true;
   }
-  dispose() { this.mesh.geometry.dispose(); this.mesh.material.map.dispose(); this.mesh.material.dispose(); }
+  dispose() { this.mesh.geometry.dispose(); this.mesh.material.map.dispose(); this.mesh.material.dispose(); this.pill.geometry.dispose(); this.pill.material.dispose(); }
 }
 
 /** The pick label card (used in VR; the desktop page shows an HTML card instead). */

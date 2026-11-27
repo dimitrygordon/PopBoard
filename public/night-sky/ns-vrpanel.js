@@ -8,7 +8,7 @@ import { fmtLocal } from "./ns-ui.js";
 
 export const PANEL_PX = 1024, PANEL_M = 0.8;
 const ICONS = ["art", "brightness", "close", "grid", "ground", "help-off", "lines", "lock", "names", "now", "pause", "planets", "play", "reset", "reverse", "speed",
-  "star-names", "step-back", "step-forward", "tab-help", "tab-place", "tab-sky", "tab-time", "trails"];
+  "see-room", "star-names", "step-back", "step-forward", "tab-help", "tab-place", "tab-sky", "tab-time", "trails"];
 const SPEED_STEPS = [1, 60, 600, 3600];
 export const UNITS = [["Hour", 3600e3], ["Day", 86400e3], ["Month", 30.436875 * 86400e3]];
 const TAB_IDS = ["time", "place", "sky", "help"];
@@ -37,6 +37,7 @@ export class VRPanel {
     this.mesh.renderOrder = 60; this.mesh.visible = false;
     this.tab = "time"; this.page = { time: 0, sky: 0, help: 0 }; this.hover = null; this.pressed = null; this.hits = [];
     this.unit = 0; this.scrub = 0.5; this.scrubLabel = ""; this.reverse = false; this.drag = null;
+    this.lockHint = ""; this.lockHintUntil = 0;
   }
   // ---- drawing ----
   draw(st, info) {
@@ -68,15 +69,17 @@ export class VRPanel {
       return this.flush();
     }
     if (this.tab === "sky" && this.page.sky === 0) {
-      drawSky(g, this.icons, { hoverTab, artOn: st.art, artAlpha: st.artalpha,
-        s: { lines: S("lines", st.lines, lockS), art: S("art", st.art, lockS), names: S("names", st.names, lockS), helpOff: S("helpoff", false, lockS) } });
+      drawSky(g, this.icons, { hoverTab, artOn: st.art, artAlpha: st.artalpha, arSupported: !!info.arSupported,
+        nextHover: this.hover === "next" ? "hover" : "off",
+        s: { lines: S("lines", st.lines, lockS), art: S("art", st.art, lockS), names: S("names", st.names, lockS), helpOff: S("helpoff", false, lockS), seeRoom: S("seeRoom", !!info.seeRoom, false) } });
       if (info.artStatus === "loading" && st.art) text(g, "Loading art", 984, 286, THEME.type.label, THEME.accent, "right");
       tabHits();
       if (!lockS) {
         ["lines", "art", "names"].forEach((k, i) => hit(k, 40 + i * 324, 300, 296, 268, { type: "toggle", key: k }));
-        hit("slider", 260, 612, 600, 112, null, { slider: true }); hit("helpoff", 40, 756, 944, 128, { type: "helpOff" });
+        hit("slider", 260, 612, 600, 112, null, { slider: true }); hit("helpoff", 40, 736, 944, 112, { type: "helpOff" });
       }
-      hit("next", 856, 900, 128, 92, null, { page: 1 });
+      if (info.arSupported) hit("seeRoom", 40, 860, 744, 112, { type: "seeRoom", value: !info.seeRoom });
+      hit("next", 856, 870, 128, 92, null, { page: 1 });
       return this.flush();
     }
     // ---- generic pages ----
@@ -88,11 +91,18 @@ export class VRPanel {
       if (iconName) { icon(g, this.icons[iconName], 82, y + h / 2, 64, locked ? 0.4 : 0.9); x = 124; }
       const free = 984 - x, gap = 12, w = (free - gap * (items.length - 1)) / items.length;
       items.forEach((it) => {
-        const s = S(it.id, it.on, locked);
-        surface(g, x, y, w, h, 40, s);
-        if (it.icon) icon(g, this.icons[it.icon], x + 56, y + h / 2, 56, iconAlpha(s));
-        text(g, it.text, it.icon ? x + 96 : x + w / 2, y + h / 2 + 20, THEME.type.label, labelColor(s), it.icon ? "left" : "center");
-        if (!locked) hit(it.id, x, y, w, h, it.action);
+        const itemLocked = !!(locked || it.locked);
+        const s = itemLocked ? "locked" : S(it.id, it.on, false);
+        g.save();
+        if (itemLocked) g.globalAlpha *= THEME.ctl.locked.alpha;
+        // locked already applies 0.38 inside surface(); draw the fill at 'off' so we don't double the fade
+        surface(g, x, y, w, h, 40, itemLocked ? "off" : s);
+        if (it.icon) icon(g, this.icons[it.icon], x + 56, y + h / 2, 56, iconAlpha(itemLocked ? "locked" : s));
+        text(g, it.text, it.icon ? x + 96 : x + w / 2, y + h / 2 + 20, THEME.type.label, labelColor(itemLocked ? "locked" : s), it.icon ? "left" : "center");
+        if (itemLocked) icon(g, this.icons.lock, x + w - 20, y + h / 2, 28, 1);
+        g.restore();
+        if (it.locked && !locked) hit(it.id, x, y, w, h, { type: "passLockHint" });
+        else if (!itemLocked) hit(it.id, x, y, w, h, it.action);
         x += w + gap;
       });
       y += h + gapY;
@@ -111,14 +121,21 @@ export class VRPanel {
       y = 176; gapY = 6;
       row("star-names", [{ id: "starnames", text: "Star names", on: st.starnames, action: { type: "toggle", key: "starnames" } }, { id: "polaris", text: "Polaris", on: st.hl === "polaris", action: { type: "set", key: "hl", value: st.hl === "polaris" ? "" : "polaris" } }], lockS);
       row("grid", [["altaz", "Alt/Az"], ["eq", "RA/Dec"], ["ecl", "Ecliptic"]].map(([k, t]) => ({ id: "g-" + k, text: t, on: st.grid.includes(k), action: { type: "toggleGrid", grid: k } })), lockS);
-      row("planets", [{ id: "planets", text: "Planets, Moon", on: st.planets, action: { type: "toggle", key: "planets" } }, { id: "sky-real", text: "Daylight", on: st.sky === "real", action: { type: "set", key: "sky", value: st.sky === "real" ? "night" : "real" } }], lockS);
-      row("ground", [{ id: "ground1", text: "Solid", on: st.ground, action: { type: "set", key: "ground", value: true } }, { id: "ground0", text: "See-through", on: !st.ground, action: { type: "set", key: "ground", value: false } }], lockS);
+      const passLock = !!info.seeRoom;
+      row("planets", [{ id: "planets", text: "Planets, Moon", on: st.planets, action: { type: "toggle", key: "planets" } }, { id: "sky-real", text: "Daylight", on: st.sky === "real", action: { type: "set", key: "sky", value: st.sky === "real" ? "night" : "real" }, locked: passLock }], lockS);
+      row("ground", [{ id: "ground1", text: "Solid", on: st.ground, action: { type: "set", key: "ground", value: true }, locked: passLock }, { id: "ground0", text: "Faded", on: !st.ground, action: { type: "set", key: "ground", value: false }, locked: passLock }], lockS);
       row("trails", [[0, "Off"], [2, "2 h"], [6, "6 h"], [12, "12 h"]].map(([h, t]) => ({ id: "tr" + h, text: t, on: st.trails === h, action: { type: "set", key: "trails", value: h } })), lockS);
       row("brightness", [4, 5, 5.5, 6, 6.5].map((m) => ({ id: "mag" + m, text: m.toFixed(1), on: st.mag === m, action: { type: "set", key: "mag", value: m } })), lockS);
       surface(g, 40, y, 330, 112, 40, S("reset", false, lockS)); icon(g, this.icons.reset, 96, y + 56, 56, 0.9); text(g, "Reset", 140, y + 76, THEME.type.label, labelColor(S("reset", false, lockS)));
       if (!lockS) hit("reset", 40, y, 330, 112, { type: "reset" });
-      surface(g, 390, y, 330, 112, 40, S("vignette", st.vignette, false)); text(g, "Vignette", 555, y + 76, THEME.type.label, labelColor(S("vignette", st.vignette, false)), "center");
-      hit("vignette", 390, y, 330, 112, { type: "toggle", key: "vignette" });
+      g.save();
+      if (passLock) g.globalAlpha *= THEME.ctl.locked.alpha;
+      surface(g, 382, y, 330, 112, 40, passLock ? "off" : S("vignette", st.vignette, false));
+      text(g, "Vignette", 547, y + 76, THEME.type.label, labelColor(passLock ? "locked" : S("vignette", st.vignette, false)), "center");
+      if (passLock) icon(g, this.icons.lock, 382 + 330 - 20, y + 56, 28, 1);
+      g.restore();
+      if (passLock) hit("vignette", 382, y, 330, 112, { type: "passLockHint" });
+      else hit("vignette", 382, y, 330, 112, { type: "toggle", key: "vignette" });
       this.pageDots(g, 2, 1, 820, y + 72);
       surface(g, 856, y + 10, 128, 92, 40, this.hover === "prev" ? "hover" : "off"); icon(g, this.icons["step-back"], 920, y + 56, 52, 0.85); hit("prev", 856, y + 10, 128, 92, null, { page: 0 });
     } else if (this.tab === "place") {
@@ -134,7 +151,7 @@ export class VRPanel {
     } else { // help
       if (this.page.help === 0) {
         text(g, "CONTROLS", 64, 262, THEME.type.header, THEME.text.tertiary, "left", 6); y = 290;
-        lines(["Trigger or pinch: pick a star, press a button.", "Grip and sweep: scrub time.", "Thumbstick: scrub time.", "B or Y: show or hide this panel.", "Top edge: drag the panel."]);
+        lines(["Trigger or pinch: pick a star, press a button.", "Grip and sweep: scrub time.", "Thumbstick: scrub time.", "B or Y: show or hide this panel.", "Top edge: drag the panel.", "See my room: overlay the sky on the real room."]);
       } else {
         text(g, "CREDITS", 64, 262, THEME.type.header, THEME.text.tertiary, "left", 6); y = 290;
         lines(["Stars: HYG v4.4, astronexus, CC BY-SA 4.0", "Lines and names: Stellarium, CC BY-SA", "Art: Johan Meuris, restyled by Leo, FAL 1.3", "Font: Inter, SIL OFL 1.1", "Planets: JPL. Moon and Sun: Meeus", "Planets are enlarged so you can find them. Through your eyes they look like bright stars."], THEME.type.body, THEME.text.secondary, 56);
@@ -154,7 +171,17 @@ export class VRPanel {
     for (let i = 0; i < n; i++) { const x = centred ? xRight - (n - 1) * 16 + i * 32 - 160 : xRight - (n - 1 - i) * 32; g.beginPath(); g.arc(x, y - 16, 9, 0, Math.PI * 2); g.fillStyle = i === active ? "#FFFFFF" : "rgba(255,255,255,0.3)"; g.fill(); }
   }
   backArrow(g, hit) { surface(g, 856, 900, 128, 92, 40, this.hover === "prev" ? "hover" : "off"); icon(g, this.icons["step-back"], 920, 946, 52, 0.85); hit("prev", 856, 900, 128, 92, null, { page: 0 }); }
-  flush() { this.hits.unshift({ id: "drag", x: 0, y: 0, w: PANEL_PX, h: 36, drag: true }); this.tex.needsUpdate = true; return this.hits; }
+  flush() {
+    if (this.lockHint) {
+      const g = this.canvas.getContext("2d");
+      g.save();
+      squircle(g, 80, 200, 864, 100, 40);
+      g.fillStyle = "rgba(8,10,24,0.82)"; g.fill();
+      text(g, this.lockHint, 512, 268, THEME.type.label, THEME.accent, "center");
+      g.restore();
+    }
+    this.hits.unshift({ id: "drag", x: 0, y: 0, w: PANEL_PX, h: 36, drag: true }); this.tex.needsUpdate = true; return this.hits;
+  }
 
   // ---- placement and hit-testing ----
   placeInFront(camera) {

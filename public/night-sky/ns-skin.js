@@ -1,4 +1,4 @@
-// Night Sky skin: the ONE place for in-scene look (Leo's hook). Neutral placeholders, no design calls yet.
+// Night Sky skin: the ONE place for in-scene look (Leo's hook).
 // Page (HTML) chrome uses CSS custom properties in ns-theme.css instead. Science constants do NOT live here
 // (see ns-astro.js, ns-ephem.js and the CONFIG blocks in layers/*.js).
 export const SKIN = {

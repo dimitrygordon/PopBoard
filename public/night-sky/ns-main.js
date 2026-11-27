@@ -8,7 +8,8 @@ import { registerLayer, initLayers, updateLayers, getLayer } from "./ns-layers.j
 import { SKIN } from "./ns-skin.js";
 import { SKY_R, setMatrix3, apply, applyT, raDecVec } from "./ns-util.js";
 import { pickSky, samePick, buildConstellationIndex } from "./ns-pick.js";
-import { createOrientationFilter, compassAlpha, screenAngleDeg, lookDir } from "./ns-orient.js";
+import { createOrientationFilter, mergeOrientationSample, screenAngleDeg, lookDir, preferredXrMode, isPassthroughBlend } from "./ns-orient.js";
+import { lineWidthPx, starMinPx } from "./ns-lines.js";
 import { starsLayer } from "./layers/stars.js";
 import { constellationsLayer } from "./layers/constellations.js";
 import { groundLayer } from "./layers/ground.js";
@@ -41,7 +42,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   skyGroup.matrixAutoUpdate = false; dateGroup.matrixAutoUpdate = false;
   skyRoot.add(skyGroup, dateGroup); scene.add(skyRoot, groundGroup);
 
-  const frame = { simMs: 0, M: null, Md: null, viewportH: 800, daylight: 0, fallbackUp: [0, 0, -1], solar: [], sunDir: [0, -1, 0], sunLocal: [0, -1, 0], uRefract: { value: 0 }, refract: false, flat: true, starScale: 1 };
+  const frame = { simMs: 0, M: null, Md: null, viewportH: 800, viewportW: 1280, daylight: 0, fallbackUp: [0, 0, -1], solar: [], sunDir: [0, -1, 0], sunLocal: [0, -1, 0], uRefract: { value: 0 }, refract: false, flat: true, starScale: 1, passthrough: false, lineWidthPx: 1.8, starMinPx: 1.6 };
   const ctx = { THREE, scene, skyRoot, skyGroup, dateGroup, groundGroup, catalog, renderer, camera, skin: SKIN, frame, baseUrl,
     get state() { return state; }, observer: () => ({ type: "surface", latDeg: state.lat, lonDeg: state.lon, tz: state.tz }),
     clock: { get simTimeMs() { return simTimeMs(state, wallNow()); } }, highlightDir: () => highlight(), onLayerStatus: () => refresh() };
@@ -128,8 +129,8 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   const panel = new VRPanel(THREE, panelAssets); scene.add(panel.mesh);
   let selection = null, hover = null;
   const hoverRing = makeHoverRing(); skyRoot.add(hoverRing);
-  const look = { active: false, mode: "relative", note: "", hasSample: false, offsetYaw: 0, offsetPitch: 0 };
-  const oriFilter = createOrientationFilter(0.32);
+  const look = { active: false, mode: "relative", note: "", hasSample: false, offsetYaw: 0, offsetPitch: 0, sample: null };
+  const oriFilter = createOrientationFilter();
   let lastCompassAt = 0;
   function conLayer() { return getLayer("constellations"); }
   function setSelection(info) {
@@ -156,7 +157,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   }
   function setLookAround(on) {
     if (on) {
-      look.active = true; look.hasSample = false; look.mode = "relative"; look.note = ""; look.offsetYaw = 0; look.offsetPitch = 0;
+      look.active = true; look.hasSample = false; look.mode = "relative"; look.note = ""; look.offsetYaw = 0; look.offsetPitch = 0; look.sample = null;
       oriFilter.reset(); lastCompassAt = 0;
     } else {
       if (look.active && look.hasSample) {
@@ -164,20 +165,18 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
         const a = worldToAltAz(d);
         view.yaw = -a.az * D2R; view.pitch = a.alt * D2R;
       }
-      look.active = false; look.hasSample = false; look.note = ""; oriFilter.reset(); setHover(null);
+      look.active = false; look.hasSample = false; look.note = ""; look.sample = null; oriFilter.reset(); setHover(null);
     }
     return look;
   }
   function ingestOrientation(ev, screenDeg) {
-    const c = compassAlpha(ev);
-    if (c.alpha == null || ev.beta == null || ev.gamma == null || !Number.isFinite(ev.beta) || !Number.isFinite(ev.gamma)) return look;
-    const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
-    if (c.mode === "compass") { look.mode = "compass"; look.note = ""; lastCompassAt = now; }
-    else if (look.mode === "compass" && now - lastCompassAt < 1500) return look;
-    else if (look.mode !== "compass") { look.mode = "relative"; look.note = "Sky is not aligned to north. Drag to adjust."; }
     const scr = screenDeg != null ? screenDeg : screenAngleDeg();
-    oriFilter.push(c.alpha, ev.beta, ev.gamma, scr);
-    look.hasSample = true;
+    const s = mergeOrientationSample(look.sample, ev, scr);
+    look.sample = s;
+    look.mode = s.mode;
+    look.note = s.note;
+    if (s.mode === "compass") lastCompassAt = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    // The filter is ticked once per animation frame in applyCamera, not per sensor event.
     return look;
   }
   const hud = makeHud(); camera.add(hud.mesh);
@@ -253,43 +252,76 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   if (navigator.xr && navigator.xr.isSessionSupported) {
     try { arSupported = await navigator.xr.isSessionSupported("immersive-ar"); } catch { arSupported = false; }
   }
+  let seeRoom = false; // "See my room" toggle; VR stays the default when both modes exist
+  let xrSession = null, panelNeedsPlace = false;
   const nightBackground = scene.background;
   function restoreSceneBackground() {
     scene.background = nightBackground;
     if (renderer.setClearAlpha) renderer.setClearAlpha(1);
   }
+  function emitXr(presenting, mode) {
+    onXr({ supported: xrSupported, presenting: !!presenting, arSupported, mode: mode || null, seeRoom });
+  }
   function onSessionEnd() {
     xrSession = null; skyRoot.rotation.y = 0; panel.mesh.visible = false;
     setSelection(null); setHover(null); restoreSceneBackground();
-    onXr({ supported: xrSupported, presenting: false, arSupported }); applyCamera();
+    emitXr(false); applyCamera(1 / 60);
   }
-  onXr({ supported: xrSupported, presenting: false, arSupported });
-  let xrSession = null;
+  emitXr(false);
   async function startSession(mode) {
-    if (!navigator.xr || xrSession) return;
+    if (!navigator.xr || !mode) return;
+    if (xrSession) {
+      const old = xrSession;
+      xrSession = null;
+      old.removeEventListener("end", onSessionEnd);
+      try { await old.end(); } catch {}
+      try { await renderer.xr.setSession(null); } catch {}
+      skyRoot.rotation.y = 0; panel.mesh.visible = false; restoreSceneBackground();
+    }
     const optional = mode === "immersive-ar"
       ? ["local-floor", "bounded-floor", "hit-test", "dom-overlay"]
       : ["local-floor", "bounded-floor", "hand-tracking"];
     const init = { optionalFeatures: optional };
-    if (mode === "immersive-ar" && typeof document !== "undefined") init.optionalFeatures = optional; // keep init simple; overlay is optional
-    const session = await navigator.xr.requestSession(mode, init);
-    xrSession = session;
-    session.addEventListener("end", onSessionEnd);
-    if (mode === "immersive-ar") { scene.background = null; if (renderer.setClearAlpha) renderer.setClearAlpha(0); }
-    await renderer.xr.setSession(session);
+    try {
+      const session = await navigator.xr.requestSession(mode, init);
+      xrSession = session;
+      session.addEventListener("end", onSessionEnd);
+      if (mode === "immersive-ar") { scene.background = null; if (renderer.setClearAlpha) renderer.setClearAlpha(0); }
+      await renderer.xr.setSession(session);
+    } catch (err) {
+      xrSession = null; emitXr(false); throw err;
+    }
     // look= turns the sky (play-space yaw offset), never the user's head
     const [az] = lookAzAlt(); skyRoot.rotation.y = az * D2R;
     camera.rotation.set(0, 0, 0);
     panel.mesh.visible = state.ui; panelDirty = true; panelNeedsPlace = true;
-    onXr({ supported: xrSupported, presenting: true, arSupported, mode });
+    emitXr(true, mode);
   }
   async function enterVR() { return startSession("immersive-vr"); }
   async function enterAR() { return startSession("immersive-ar"); }
-  let panelNeedsPlace = false;
+  async function startXR() { return startSession(preferredXrMode(seeRoom, xrSupported, arSupported)); }
+  async function setSeeRoom(on) {
+    seeRoom = !!on && arSupported;
+    if (xrSession) {
+      const want = preferredXrMode(seeRoom, xrSupported, arSupported);
+      const cur = xrSession.mode;
+      emitXr(true, cur);
+      if (want && want !== cur) return startSession(want);
+      return;
+    }
+    emitXr(false);
+  }
 
   // ---- state ----
   let urlTimer = 0;
   function dispatch(action, opt = {}) {
+    if (action && action.type === "seeRoom") { setSeeRoom(!!action.value); return state; }
+    if (action && action.type === "passLockHint") {
+      panel.lockHint = "Off while See my room is on";
+      panel.lockHintUntil = ((typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now()) + 1800;
+      panelDirty = true;
+      return state;
+    }
     const before = state;
     state = reduce(state, { ...action, wallMs: wallNow() });
     if (state === before) return state;
@@ -318,15 +350,21 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     // real sky: daylight washes stars out (civil 6, nautical 12, astronomical 18 degrees of Sun depression)
     frame.daylight = state.sky === "real" ? Math.pow(Math.min(1, Math.max(0, (frame.sunAlt + 18) / 18)), 2) : 0;
   }
-  function applyCamera() {
+  function applyCamera(dt) {
     if (renderer.xr.isPresenting) return;
-    if (look.active && look.hasSample && oriFilter.quaternion) {
-      const q = oriFilter.quaternion;
-      camera.quaternion.set(q.x, q.y, q.z, q.w);
-      camera.quaternion.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(look.offsetPitch, look.offsetYaw, 0, "YXZ")));
-    } else {
-      camera.rotation.set(view.pitch, view.yaw, 0);
+    if (look.active) {
+      const s = look.sample;
+      if (s && s.alpha != null) oriFilter.push(s.alpha, s.beta, s.gamma, s.screen, s.compassAlpha);
+      oriFilter.tick(dt || 1 / 60);
+      if (oriFilter.quaternion) {
+        look.hasSample = true;
+        const q = oriFilter.quaternion;
+        camera.quaternion.set(q.x, q.y, q.z, q.w);
+        camera.quaternion.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(look.offsetPitch, look.offsetYaw, 0, "YXZ")));
+        return;
+      }
     }
+    camera.rotation.set(view.pitch, view.yaw, 0);
   }
   function resize() {
     const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
@@ -335,31 +373,40 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   new ResizeObserver(resize).observe(canvas); resize();
 
   let last = performance.now(), frames = 0, statT = last, worst = 0;
+  let previewPassthrough = false;
   renderer.setAnimationLoop((now, xrFrame) => {
     const dt = Math.min(0.1, (now - last) / 1000); worst = Math.max(worst, now - last); last = now;
     computeFrame();
     const xr = renderer.xr.isPresenting;
-    applyCamera();
+    applyCamera(dt);
     camera.updateMatrixWorld(true);
     const cam = xr ? renderer.xr.getCamera() : camera;
     const cp = new THREE.Vector3().setFromMatrixPosition(cam.matrixWorld);
-    skyRoot.position.copy(cp); // no parallax: the sky is centred on the eye
+    skyRoot.position.copy(cp); // no parallax: the sky is centred on the eye. Headset pose is WebXR; this is a translation only.
     const fwd = new THREE.Vector3(0, 0, -1).transformDirection(cam.matrixWorld).applyAxisAngle(new THREE.Vector3(0, 1, 0), -skyRoot.rotation.y);
     frame.fallbackUp = [fwd.x, 0, fwd.z];
+    const session = (xrFrame && xrFrame.session) || (renderer.xr.getSession && renderer.xr.getSession()) || xrSession;
+    const blend = (session && session.environmentBlendMode) || "opaque";
+    frame.passthrough = (xr && isPassthroughBlend(blend)) || previewPassthrough;
+    frame.lineWidthPx = lineWidthPx({ xr, passthrough: frame.passthrough });
+    frame.starMinPx = starMinPx({ xr, passthrough: frame.passthrough });
     if (xr) {
       const layer = renderer.xr.getBaseLayer && renderer.xr.getBaseLayer();
       frame.viewportH = (layer && (layer.framebufferHeight || layer.textureHeight)) || 1800;
+      frame.viewportW = (layer && (layer.framebufferWidth || layer.textureWidth)) || frame.viewportH;
       if (panelNeedsPlace) { panel.placeInFront(cam); panelNeedsPlace = false; }
       xrInput.update(dt);
       if (scrubFade && now > scrubFade && !panel.drag) { scrubFade = 0; scrubTotal = 0; panel.scrubLabel = ""; panelDirty = true; }
+      if (panel.lockHintUntil && now > panel.lockHintUntil) { panel.lockHint = ""; panel.lockHintUntil = 0; panelDirty = true; }
       if (panel.mesh.visible && (panelDirty || now - lastPanelDraw > 1000)) { // redraw only on change, or once a second for the clock
-        panel.draw(state, { simMs: frame.simMs, artStatus: getLayer("constellations").status.art });
+        panel.draw(state, { simMs: frame.simMs, artStatus: getLayer("constellations").status.art, arSupported, seeRoom });
         panelDirty = false; lastPanelDraw = now;
       }
       hud.mesh.visible = state.debug;
       placeHoverRing();
     } else {
       frame.viewportH = renderer.domElement.height;
+      frame.viewportW = renderer.domElement.width;
       if (look.active) {
         const fwd = new THREE.Vector3(0, 0, -1).transformDirection(camera.matrixWorld);
         setHover(pick(toLocal(fwd)));
@@ -369,7 +416,8 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     frame.flat = !xr; // flat screens: stars (and planets) get a size boost; the headset keeps true angular size
     frame.starScale = frame.flat ? Math.min(2.2, Math.max(1, 22 / (0.5 * frame.viewportH * (camera.projectionMatrix.elements[5] || 1) * Math.PI / 180))) : 1;
     TextBillboards.scale = xr ? 1 : Math.min(1, Math.max(0.6, (canvas.clientHeight || 700) / 700)); // Leo's sizes are for the headset; smaller on phones
-    vignette.visible = state.vignette && Math.abs(state.clock.speed) >= 600; // comfort vignette at 600x and above
+    TextBillboards.pill = !!frame.passthrough;
+    vignette.visible = state.vignette && !frame.passthrough && Math.abs(state.clock.speed) >= 600; // comfort vignette at 600x and above; hidden in passthrough
     updateLayers(ctx, dt);
     renderer.render(scene, camera);
     frames++;
@@ -410,7 +458,13 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   onState(state);
   return {
     THREE, renderer, scene, camera, catalog,
-    get state() { return state; }, dispatch, enterVR, enterAR, get xrSupported() { return xrSupported; }, get arSupported() { return arSupported; },
+    setPassthroughPreview(on, color) {
+      previewPassthrough = !!on;
+      if (on) { const c = new THREE.Color(color || 0xf3ead8); scene.background = c; renderer.setClearColor(c, 1); }
+    },
+    get state() { return state; }, dispatch, enterVR, enterAR, startXR, setSeeRoom,
+    get xrSupported() { return xrSupported; }, get arSupported() { return arSupported; }, get seeRoom() { return seeRoom; },
+    lockHint: () => panel.lockHint,
     get frame() { return frame; }, view, artStatus: () => getLayer("constellations").status.art, applyLook: () => { applyLook(); },
     setView(v) {
       const tgt = look.active ? look : view;

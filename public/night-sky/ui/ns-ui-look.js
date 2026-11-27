@@ -190,14 +190,26 @@ export function drawSky(ctx, icons, st) {
   ctx.fillStyle = '#FFFFFF'; ctx.shadowColor = THEME.glow; ctx.shadowBlur = st.artOn ? 22 : 0;
   ctx.beginPath(); ctx.arc(xv, y, 26, 0, Math.PI * 2); ctx.fill(); ctx.restore();
   text(ctx, Math.round(st.artAlpha * 100) + '%', 960, by + 76, THEME.type.label, st.artOn ? '#FFFFFF' : THEME.text.tertiary, 'right');
-  // help off
-  const hy = 756;
-  surface(ctx, 40, hy, 944, 128, 52, st.s.helpOff);
-  icon(ctx, icons['help-off'], 420, hy + 64, 64, iconAlpha(st.s.helpOff));
-  text(ctx, 'Help off', 470, hy + 84, THEME.type.label, labelColor(st.s.helpOff));
-  // page dots (Sky has 2 pages: Constellations, Display)
-  [0, 1].forEach(i => { ctx.beginPath(); ctx.arc(496 + i * 32, 946, 9, 0, Math.PI * 2); ctx.fillStyle = i === 0 ? '#FFFFFF' : 'rgba(255,255,255,0.3)'; ctx.fill(); });
-  surface(ctx, 856, 900, 128, 92, 40, 'off'); icon(ctx, icons['step-forward'], 920, 946, 52, 0.85);
+  // help off (art pass AR-1: y 736, 112 tall, was 756 x 128)
+  const hy = 736;
+  surface(ctx, 40, hy, 944, 112, 52, st.s.helpOff);
+  icon(ctx, icons['help-off'], 420, hy + 56, 64, iconAlpha(st.s.helpOff));
+  text(ctx, 'Help off', 470, hy + 76, THEME.type.label, labelColor(st.s.helpOff));
+  // See my room: 744 wide (x 40 to 784) so the page dots can sit in the gap, centred at x 820; arrow stays at 856
+  const ry = 860;
+  if (st.arSupported) {
+    const s = st.s.seeRoom || 'off';
+    surface(ctx, 40, ry, 744, 112, 52, s);
+    icon(ctx, icons['see-room'], 236, ry + 56, 64, iconAlpha(s));
+    text(ctx, 'See my room', 286, ry + 76, THEME.type.label, labelColor(s));
+    // on-dot at the button's top right, 20 px in
+    ctx.beginPath(); ctx.arc(40 + 744 - 20, ry + 20, 11, 0, Math.PI * 2);
+    ctx.fillStyle = (s === 'on' || s === 'on-hover' || s === 'pressed') ? THEME.accent : 'rgba(255,255,255,0.18)';
+    if (s === 'on' || s === 'on-hover') { ctx.save(); ctx.shadowColor = THEME.glow; ctx.shadowBlur = 16; ctx.fill(); ctx.restore(); } else ctx.fill();
+  }
+  // page dots centred at x 820 in the gap; next arrow 856, 870, 128 x 92
+  ;[0, 1].forEach(i => { const x = 820 + (i - 0.5) * 32; ctx.beginPath(); ctx.arc(x, ry + 56, 9, 0, Math.PI * 2); ctx.fillStyle = i === 0 ? '#FFFFFF' : 'rgba(255,255,255,0.3)'; ctx.fill(); });
+  surface(ctx, 856, 870, 128, 92, 40, st.nextHover || 'off'); icon(ctx, icons['step-forward'], 920, 916, 52, 0.85);
 }
 
 export function drawStates(ctx, icons) {

@@ -78,9 +78,10 @@ export function starsLayer() {
     },
     update(ctx) {
       const u = mat.uniforms, st = ctx.state;
-      u.uViewportH.value = ctx.frame.viewportH; u.uMagLimit.value = st.mag; u.uGround.value = st.ground ? 1 : 0;
+      u.uViewportH.value = ctx.frame.viewportH; u.uMagLimit.value = st.mag; u.uGround.value = (st.ground && !ctx.frame.passthrough) ? 1 : 0;
       u.uDaylight.value = ctx.frame.daylight;
       u.uScale.value = ctx.frame.starScale || 1; // 1 in the headset (true angular size); up to 2.2x on flat screens
+      u.uMinPx.value = ctx.frame.starMinPx || STAR_CONFIG.MIN_PX;
     },
     setVisible(on) { points.visible = on; },
     dispose() { points.geometry.dispose(); mat.dispose(); },

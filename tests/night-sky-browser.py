@@ -53,6 +53,14 @@ Object.defineProperty(navigator, 'xr', { configurable: true, value: {
   addEventListener() {}, removeEventListener() {},
 }});
 """
+BOTH_XR_MOCK = """
+window.__xrCalls = [];
+Object.defineProperty(navigator, 'xr', { configurable: true, value: {
+  isSessionSupported: async (mode) => mode === 'immersive-vr' || mode === 'immersive-ar',
+  requestSession: async (mode, init) => { window.__xrCalls.push({ mode, init }); throw new Error(mode === 'immersive-ar' ? 'mock: no ar' : 'mock: no headset'); },
+  addEventListener() {}, removeEventListener() {},
+}});
+"""
 LOOK_PERM = """
 window.__lookPerm = [];
 if (typeof DeviceOrientationEvent !== 'undefined') {
@@ -228,17 +236,51 @@ def look_around_mode(browser, base, dev, tag):
 
 
 def ar_and_sensorless(browser, base):
+    # AR only: the See my room toggle is shown, Enter starts immersive-ar even with the toggle off (no VR to default to).
     ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", T1, init=AR_MOCK)
-    check(page.locator("#arBtn").is_visible(), "mocked immersive-ar support -> AR button shown")
+    check(page.locator("#arBtn").is_visible(), "mocked immersive-ar support -> See my room toggle shown")
+    check(page.locator("#vrBtn").is_visible(), "AR-only: Enter button is shown so a session can start")
     page.locator("#arBtn").click()
+    page.wait_for_timeout(200)
+    check(page.evaluate("window.__nightSky.seeRoom") is True, "See my room toggle turns the flag on")
+    check((page.locator("#arBtn").get_attribute("aria-pressed") == "true"), "See my room is pressed")
+    check(page.evaluate("window.__xrCalls") == [], "the toggle itself does not start a session")
+    page.locator("#vrBtn").click()
     page.wait_for_timeout(300)
     calls = page.evaluate("window.__xrCalls")
-    check(bool(calls and calls[0]["mode"] == "immersive-ar"), f"AR button calls requestSession('immersive-ar') {calls}")
+    check(bool(calls and calls[0]["mode"] == "immersive-ar"), f"Enter with See my room (or AR-only) requests immersive-ar {calls}")
     check("mock: no ar" in (page.locator("#vrNote").text_content() or ""), "a failed AR session shows a note, not a crash")
     ctx.close()
+
+    # Both modes: VR stays the default; the toggle selects AR, then Enter requests immersive-ar.
+    ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", T1, init=BOTH_XR_MOCK)
+    check(page.locator("#vrLabel").text_content() == "Enter VR", "both modes, toggle off: Enter VR is the default")
+    check(page.locator("#arBtn").is_visible() and page.locator("#arBtn").get_attribute("aria-pressed") == "false", "See my room starts off")
+    page.locator("#vrBtn").click()
+    page.wait_for_timeout(250)
+    calls = page.evaluate("window.__xrCalls")
+    check(bool(calls and calls[0]["mode"] == "immersive-vr"), f"default Enter requests immersive-vr {calls}")
+    page.evaluate("window.__xrCalls = []")
+    page.locator("#arBtn").click()
+    page.wait_for_timeout(200)
+    check(page.evaluate("window.__nightSky.seeRoom") is True and page.locator("#vrLabel").text_content() == "Enter AR", "toggle on relabels the enter button to Enter AR")
+    # The Sky tab also lists the toggle.
+    page.locator('[data-bid="tab-sky"]').click()
+    check(page.locator('[data-bid="seeRoom"]').is_visible(), "Sky panel lists See my room when AR is supported")
+    check(page.locator('[data-bid="ground0"]').inner_text() == "Faded", "ground option is labelled Faded")
+    check(page.locator('[data-bid="ground1"]').is_disabled() and page.locator('[data-bid="ground0"]').is_disabled(), "Ground is locked while See my room is on")
+    check(page.locator('[data-bid="sky-real"]').is_disabled() and page.locator('[data-bid="sky-night"]').is_disabled(), "Night and Daylight are locked while See my room is on")
+    check(page.locator('[data-bid="vignette"]').is_disabled(), "Comfort vignette is locked while See my room is on")
+    page.locator("#vrBtn").click()
+    page.wait_for_timeout(300)
+    calls = page.evaluate("window.__xrCalls")
+    check(bool(calls and calls[-1]["mode"] == "immersive-ar"), f"Enter after See my room requests immersive-ar {calls}")
+    page.screenshot(path=str(OUT / "desktop-dark-see-my-room.png"))
+    ctx.close()
+
     ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", T1, init=NO_XR)
     check(page.locator("#lookBtn").is_hidden(), "desktop without orientation sensors: Look around hidden")
-    check(page.locator("#arBtn").is_hidden(), "no immersive-ar: AR button hidden")
+    check(page.locator("#arBtn").is_hidden(), "no immersive-ar: See my room hidden")
     ctx.close()
 
 
@@ -348,6 +390,7 @@ def main():
             # mocked WebXR
             ctx, page, errs = open_page(browser, base, dev, "dark", T1, init=XR_MOCK)
             check(page.locator("#vrBtn").is_visible() and page.locator("#vrNote").is_hidden(), f"{tag}: mocked immersive-vr support -> Enter VR shown")
+            check(page.locator("#arBtn").is_hidden(), f"{tag}: See my room hidden when immersive-ar is unsupported")
             page.locator("#vrBtn").click()
             page.wait_for_timeout(300)
             calls = page.evaluate("window.__xrCalls")
@@ -364,16 +407,59 @@ def main():
 
         ar_and_sensorless(browser, base)
 
-        # VR panel canvas (drawn off-headset for a look; the same draw path runs in the headset)
+        # VR panel canvas (drawn off-headset for a look; the same draw path runs in the headset).
+        # Sky pages always pass arSupported so See my room is visible (Leo art pass AR-1).
         ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", f"{T1}&lines=1")
-        for tab, pg in (("time", 0), ("time", 1), ("sky", 0), ("sky", 1), ("place", 0), ("help", 0), ("help", 1)):
-            url = page.evaluate("""async ([tab, pg]) => { const m = await import('./night-sky/ns-vrpanel.js'); const a = window.__nightSky;
+        import base64
+
+        def draw_panel(tab, pg, info, fname):
+            out = page.evaluate("""async ([tab, pg, info]) => { const m = await import('./night-sky/ns-vrpanel.js'); const a = window.__nightSky;
               const assets = await m.loadPanelAssets(new URL('./night-sky/', location.href)); const p = new m.VRPanel(a.THREE, assets);
-              p.tab = tab; if (p.page[tab] !== undefined) p.page[tab] = pg; p.draw(a.state, { simMs: a.frame.simMs, artStatus: 'ready' });
-              return p.canvas.toDataURL('image/png'); }""", [tab, pg])
-            import base64
-            (OUT / f"vrpanel-{tab}-{pg}.png").write_bytes(base64.b64decode(url.split(",", 1)[1]))
+              p.tab = tab; if (p.page[tab] !== undefined) p.page[tab] = pg;
+              p.draw(a.state, Object.assign({ simMs: a.frame.simMs, artStatus: 'ready' }, info));
+              return { png: p.canvas.toDataURL('image/png'), hits: p.hits.map((h) => ({ id: h.id, x: h.x, y: h.y, w: h.w, h: h.h, action: h.action || null })) };
+            }""", [tab, pg, info])
+            (OUT / fname).write_bytes(base64.b64decode(out["png"].split(",", 1)[1]))
+            return out["hits"]
+
+        for tab, pg in (("time", 0), ("time", 1), ("sky", 0), ("sky", 1), ("place", 0), ("help", 0), ("help", 1)):
+            info = {"arSupported": True, "seeRoom": False} if tab == "sky" else {}
+            draw_panel(tab, pg, info, f"vrpanel-{tab}-{pg}.png")
+
+        hits0 = draw_panel("sky", 0, {"arSupported": True, "seeRoom": True}, "vrpanel-sky-0-ar.png")
+        by_id = {h["id"]: h for h in hits0}
+        check(by_id.get("helpoff") and by_id["helpoff"]["x"] == 40 and by_id["helpoff"]["y"] == 736 and by_id["helpoff"]["w"] == 944 and by_id["helpoff"]["h"] == 112, f"Help off at 40,736 944x112 {by_id.get('helpoff')}")
+        check(by_id.get("seeRoom") and by_id["seeRoom"]["x"] == 40 and by_id["seeRoom"]["y"] == 860 and by_id["seeRoom"]["w"] == 744 and by_id["seeRoom"]["h"] == 112, f"See my room at 40,860 744x112 {by_id.get('seeRoom')}")
+        check(by_id.get("next") and by_id["next"]["x"] == 856 and by_id["next"]["y"] == 870 and by_id["next"]["w"] == 128 and by_id["next"]["h"] == 92, f"next arrow at 856,870 128x92 {by_id.get('next')}")
+
+        hits1 = draw_panel("sky", 1, {"arSupported": True, "seeRoom": True}, "vrpanel-sky-1-ar.png")
+        by_id = {h["id"]: h for h in hits1}
+        check(by_id.get("reset") and by_id["reset"]["x"] == 40 and by_id["reset"]["w"] == 330, f"Reset is 330 px at x 40 {by_id.get('reset')}")
+        check(by_id.get("vignette") and by_id["vignette"]["x"] == 382 and by_id["vignette"]["w"] == 330, f"Vignette is 330 px at x 382 {by_id.get('vignette')}")
+        check("seeRoom" not in by_id, "See my room is not on Sky page 2")
+        check("planets" in by_id and (not by_id["planets"].get("action") or by_id["planets"]["action"].get("type") != "passLockHint"), "Planets stays enabled in passthrough")
+        for kid in ("ground1", "ground0", "sky-real", "vignette"):
+            check(kid in by_id and (by_id[kid].get("action") or {}).get("type") == "passLockHint", f"{kid} is a locked hint hit when See my room is on {by_id.get(kid)}")
+        before = page.evaluate("(() => { const s = window.__nightSky.state; return { ground: s.ground, sky: s.sky, planets: s.planets, vignette: s.vignette }; })()")
+        page.evaluate("window.__nightSky.dispatch({ type: 'passLockHint' })")
+        after = page.evaluate("(() => { const s = window.__nightSky.state; return { ground: s.ground, sky: s.sky, planets: s.planets, vignette: s.vignette, hint: window.__nightSky.lockHint() }; })()")
+        check(after["ground"] == before["ground"] and after["sky"] == before["sky"] and after["planets"] == before["planets"] and after["vignette"] == before["vignette"], f"passLockHint changes nothing {before} -> {after}")
+        check(after["hint"] == "Off while See my room is on", f"pressing a locked control shows the hint ({after.get('hint')!r})")
         check(not errs, f"vr panel draws without errors {errs[:3]}")
+        ctx.close()
+
+        # Passthrough over a light/cream background (test hook; no real XR session)
+        ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", PRESETS["on-south"])
+        page.wait_for_function("window.__nightSky.artStatus() === 'ready'", timeout=30000)
+        page.evaluate("window.__nightSky.setPassthroughPreview(true, '#f3ead8')")
+        page.wait_for_timeout(600)
+        check(page.evaluate("window.__nightSky.frame.passthrough") is True, "passthrough preview flag is on")
+        check(page.evaluate("window.__nightSky.frame.starMinPx") == 3.6, "passthrough min star size is 3.6")
+        check(page.evaluate("window.__nightSky.frame.lineWidthPx") == 3.2, "passthrough line width is 3.2")
+        page.screenshot(path=str(OUT / "passthrough-over-light.png"))
+        page.locator("#stage").screenshot(path=str(OUT / "passthrough-over-light-stage.png"))
+        check(bright_pixels(OUT / "passthrough-over-light-stage.png") > 200, f"passthrough-over-light renders ({bright_pixels(OUT / 'passthrough-over-light-stage.png')} bright px)")
+        check(not errs, f"passthrough-over-light: no console errors {errs[:3]}")
         ctx.close()
 
         # link check: every same-origin href/src on the page answers 200; external links are listed, not fetched
