@@ -160,16 +160,16 @@ export class NMPanel extends VRPanel {
   }
   helpPages() {
     const g = this.canvas.getContext("2d"), m = this.m || { help: 0, lock: [], helpLines: [] }, pages = [[]]; let y = 232;
-    const room = (n) => y + n * LH <= LIMIT;
+    const room = (n) => y + (n - 1) * LH <= LIMIT; // n lines still fit with the last baseline at or above LIMIT
+    let eid = 0; const put = (t, font, color) => pages[pages.length - 1].push({ t, font, color, y, e: eid }), next = () => { pages.push([]); y = 232; };
     for (const b of this.helpBlocks(m)) {
-      const body = b.lines.flatMap((t) => this.wrap(g, glue(t), F(MIN, 500), BODY_W));
-      if (b.lines.length <= 1 && !room(1 + body.length) && y > 232) { pages.push([]); y = 232; } // short blocks stay whole; lists may flow
-      if (y > LIMIT - LH * 2) { pages.push([]); y = 232; }
-      pages[pages.length - 1].push({ t: b.h, font: F(MIN, 650), color: "#FFFFFF", y }); y += LH;
-      for (const ln of body) { if (y > LIMIT) { pages.push([]); y = 232; } pages[pages.length - 1].push({ t: ln, font: F(MIN, 500), color: THEME.text.secondary, y }); y += LH; }
+      const items = b.lines.map((t) => this.wrap(g, glue(t), F(MIN, 500), BODY_W)); // each list entry stays whole on one page
+      if (!room(1 + (b.lines.length <= 1 ? items.flat().length : items.length ? items[0].length : 0)) && y > 232) next(); // heading never sits alone; short blocks stay whole
+      eid++; put(b.h, F(MIN, 650), "#FFFFFF"); y += LH;
+      for (const lines of items) { eid++; if (!room(lines.length)) next(); for (const ln of lines) { put(ln, F(MIN, 500), THEME.text.secondary); y += LH; } }
       y += 12;
     }
-    return pages;
+    return pages.filter((p) => p.length);
   }
   drawHelp(g, m, pg) { for (const o of (this.helpPages()[pg] || [])) text(g, o.t, PAD, o.y, o.font, o.color); }
   /** Greedy wrap; if that leaves one word alone on the last line, rewrap at the narrowest width that keeps the same line count (balanced). */

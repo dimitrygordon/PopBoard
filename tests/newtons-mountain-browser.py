@@ -231,6 +231,8 @@ def main():
           out.help = [0, 1, 2].map((lvl) => { a.dispatch({ type: 'setHelp', level: lvl }); P.draw(a.model()); const pg = P.helpPages(), res = []; for (const page of pg) { res.push(page.map((o, i) => i && o.font.startsWith('500') && page[i - 1].font.startsWith('500') ? o.y - page[i - 1].y : 0).filter(Boolean)); } return res; });
           const wrapped = [a.model().between.line2.replace(' vs. ', ' vs.\u00a0'), 'Earth surface curves away this far from a straight line: 6.202 m', 'The ball falls this far below a straight line: 4.667 m in 1 s', 'It stays up there because it keeps missing the ground all the way around'].map((t) => P.wrap(g, t, '500 56px Inter', 944));
           out.wrapped = wrapped; return out; }""")
+        splits = page.evaluate("""() => { const a = window.__nm, P = a.panel, out = []; for (const lvl of [0, 1, 2]) { a.dispatch({ type: 'setHelp', level: lvl }); P.draw(a.model()); const pgs = P.helpPages(); pgs.forEach((pg, i) => { if (i && pg[0].e === pgs[i - 1][pgs[i - 1].length - 1].e) out.push([lvl, i, pg[0].t]); }); } return out; }""")
+        check(not splits, f"Help: no wrapped entry is split across pages ({splits})")
         steps = {d for lvl in res["help"] for pg in lvl for d in pg}
         check(steps <= {72}, f"VR Help body line height is 72 px on every page ({sorted(steps)})")
         check(res["wrapped"][0] == ["highest that landed", "vs. lowest that didn't"] or len(res["wrapped"][0]) == 2 and " " in res["wrapped"][0][-1], f"line 2 breaks before vs. ({res['wrapped'][0]})")
