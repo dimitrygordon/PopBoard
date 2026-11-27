@@ -72,6 +72,9 @@ test("strings: wording from the spec, Tesla fixes, and no numbers hidden at leve
   const help = S.helpLines(0, c, 150e3).map((l) => l.t).join(" ");
   assert.match(help, /Straight-line distance to the horizon: 1,392 km/); assert.doesNotMatch(help, /little or none/);
   assert.match(S.AIR_NOTE, /very thin air, but not zero/);
+  assert.equal(S.ARRIVE, "Newton's Mountain. The mountain is imaginary and not to scale. The air up here is very thin, so the cannon ignores it unless you turn Air on.");
+  assert.equal(S.SIM_NOTES[0], "The model ignores air unless you turn Air on.");
+  assert.doesNotMatch([S.ARRIVE, ...S.SIM_NOTES].join(" "), /no air/i);
   assert.doesNotMatch(Object.values(S).flat().filter((x) => typeof x === "string").join(" "), /[\u2014\u2013]\s/ ); // no spaced dashes in prose
 });
 

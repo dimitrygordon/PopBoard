@@ -5,10 +5,10 @@ import { outcomeOf, classify } from "./nm-sim.js";
 import { horizonDipDeg, horizonStraightM } from "./nm-frames.js";
 
 export const TITLE = "Newton's Mountain VR";
-export const ARRIVE = "Newton's Mountain. The mountain is imaginary and not to scale. There is no air up here.";
+export const ARRIVE = "Newton's Mountain. The mountain is imaginary and not to scale. The air up here is very thin, so the cannon ignores it unless you turn Air on.";
 export const NOT_TO_SCALE = "The mountain is imaginary and not to scale. The ball is drawn larger than real so you can see it.";
 export const SIM_NOTES = [
-  "There is no air unless you turn Air on.",
+  "The model ignores air unless you turn Air on.",
   "Earth does not spin and the Sun does not move.",
   "The ball is a point mass, and it leaves exactly level.",
   "The Moon, the Sun, Earth's shape and terrain are not modeled.",
