@@ -55,7 +55,7 @@ export function solarLayer() {
       group.visible = st.planets;
       // Sun is drawn in both modes (it is a body, not help); in night mode the sky stays dark.
       labels.mesh.visible = st.planets && st.starnames;
-      if (labels.mesh.visible) labels.update(out.map((o) => (st.ground && o.dir[1] < -0.02 ? null : o.dir)), f.fallbackUp);
+      if (labels.mesh.visible) labels.update(out.map((o) => ((st.ground && !f.passthrough) && o.dir[1] < -0.02 ? null : o.dir)), f.fallbackUp);
     },
     setVisible(on) { group.visible = on; },
     dispose() { labels.dispose(); },

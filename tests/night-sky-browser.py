@@ -53,6 +53,14 @@ Object.defineProperty(navigator, 'xr', { configurable: true, value: {
   addEventListener() {}, removeEventListener() {},
 }});
 """
+BOTH_XR_MOCK = """
+window.__xrCalls = [];
+Object.defineProperty(navigator, 'xr', { configurable: true, value: {
+  isSessionSupported: async (mode) => mode === 'immersive-vr' || mode === 'immersive-ar',
+  requestSession: async (mode, init) => { window.__xrCalls.push({ mode, init }); throw new Error(mode === 'immersive-ar' ? 'mock: no ar' : 'mock: no headset'); },
+  addEventListener() {}, removeEventListener() {},
+}});
+"""
 LOOK_PERM = """
 window.__lookPerm = [];
 if (typeof DeviceOrientationEvent !== 'undefined') {
@@ -228,17 +236,47 @@ def look_around_mode(browser, base, dev, tag):
 
 
 def ar_and_sensorless(browser, base):
+    # AR only: the See my room toggle is shown, Enter starts immersive-ar even with the toggle off (no VR to default to).
     ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", T1, init=AR_MOCK)
-    check(page.locator("#arBtn").is_visible(), "mocked immersive-ar support -> AR button shown")
+    check(page.locator("#arBtn").is_visible(), "mocked immersive-ar support -> See my room toggle shown")
+    check(page.locator("#vrBtn").is_visible(), "AR-only: Enter button is shown so a session can start")
     page.locator("#arBtn").click()
+    page.wait_for_timeout(200)
+    check(page.evaluate("window.__nightSky.seeRoom") is True, "See my room toggle turns the flag on")
+    check((page.locator("#arBtn").get_attribute("aria-pressed") == "true"), "See my room is pressed")
+    check(page.evaluate("window.__xrCalls") == [], "the toggle itself does not start a session")
+    page.locator("#vrBtn").click()
     page.wait_for_timeout(300)
     calls = page.evaluate("window.__xrCalls")
-    check(bool(calls and calls[0]["mode"] == "immersive-ar"), f"AR button calls requestSession('immersive-ar') {calls}")
+    check(bool(calls and calls[0]["mode"] == "immersive-ar"), f"Enter with See my room (or AR-only) requests immersive-ar {calls}")
     check("mock: no ar" in (page.locator("#vrNote").text_content() or ""), "a failed AR session shows a note, not a crash")
     ctx.close()
+
+    # Both modes: VR stays the default; the toggle selects AR, then Enter requests immersive-ar.
+    ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", T1, init=BOTH_XR_MOCK)
+    check(page.locator("#vrLabel").text_content() == "Enter VR", "both modes, toggle off: Enter VR is the default")
+    check(page.locator("#arBtn").is_visible() and page.locator("#arBtn").get_attribute("aria-pressed") == "false", "See my room starts off")
+    page.locator("#vrBtn").click()
+    page.wait_for_timeout(250)
+    calls = page.evaluate("window.__xrCalls")
+    check(bool(calls and calls[0]["mode"] == "immersive-vr"), f"default Enter requests immersive-vr {calls}")
+    page.evaluate("window.__xrCalls = []")
+    page.locator("#arBtn").click()
+    page.wait_for_timeout(200)
+    check(page.evaluate("window.__nightSky.seeRoom") is True and page.locator("#vrLabel").text_content() == "Enter AR", "toggle on relabels the enter button to Enter AR")
+    # The Sky tab also lists the toggle.
+    page.locator('[data-bid="tab-sky"]').click()
+    check(page.locator('[data-bid="seeRoom"]').is_visible(), "Sky panel lists See my room when AR is supported")
+    page.locator("#vrBtn").click()
+    page.wait_for_timeout(300)
+    calls = page.evaluate("window.__xrCalls")
+    check(bool(calls and calls[-1]["mode"] == "immersive-ar"), f"Enter after See my room requests immersive-ar {calls}")
+    page.screenshot(path=str(OUT / "desktop-dark-see-my-room.png"))
+    ctx.close()
+
     ctx, page, errs = open_page(browser, base, DEVICES[0][1], "dark", T1, init=NO_XR)
     check(page.locator("#lookBtn").is_hidden(), "desktop without orientation sensors: Look around hidden")
-    check(page.locator("#arBtn").is_hidden(), "no immersive-ar: AR button hidden")
+    check(page.locator("#arBtn").is_hidden(), "no immersive-ar: See my room hidden")
     ctx.close()
 
 
@@ -348,6 +386,7 @@ def main():
             # mocked WebXR
             ctx, page, errs = open_page(browser, base, dev, "dark", T1, init=XR_MOCK)
             check(page.locator("#vrBtn").is_visible() and page.locator("#vrNote").is_hidden(), f"{tag}: mocked immersive-vr support -> Enter VR shown")
+            check(page.locator("#arBtn").is_hidden(), f"{tag}: See my room hidden when immersive-ar is unsupported")
             page.locator("#vrBtn").click()
             page.wait_for_timeout(300)
             calls = page.evaluate("window.__xrCalls")

@@ -115,11 +115,19 @@ export class VRPanel {
       row("ground", [{ id: "ground1", text: "Solid", on: st.ground, action: { type: "set", key: "ground", value: true } }, { id: "ground0", text: "See-through", on: !st.ground, action: { type: "set", key: "ground", value: false } }], lockS);
       row("trails", [[0, "Off"], [2, "2 h"], [6, "6 h"], [12, "12 h"]].map(([h, t]) => ({ id: "tr" + h, text: t, on: st.trails === h, action: { type: "set", key: "trails", value: h } })), lockS);
       row("brightness", [4, 5, 5.5, 6, 6.5].map((m) => ({ id: "mag" + m, text: m.toFixed(1), on: st.mag === m, action: { type: "set", key: "mag", value: m } })), lockS);
-      surface(g, 40, y, 330, 112, 40, S("reset", false, lockS)); icon(g, this.icons.reset, 96, y + 56, 56, 0.9); text(g, "Reset", 140, y + 76, THEME.type.label, labelColor(S("reset", false, lockS)));
-      if (!lockS) hit("reset", 40, y, 330, 112, { type: "reset" });
-      surface(g, 390, y, 330, 112, 40, S("vignette", st.vignette, false)); text(g, "Vignette", 555, y + 76, THEME.type.label, labelColor(S("vignette", st.vignette, false)), "center");
-      hit("vignette", 390, y, 330, 112, { type: "toggle", key: "vignette" });
-      this.pageDots(g, 2, 1, 820, y + 72);
+      const showRoom = !!info.arSupported;
+      const rw = showRoom ? 230 : 330, gap = 12;
+      surface(g, 40, y, rw, 112, 40, S("reset", false, lockS)); icon(g, this.icons.reset, showRoom ? 80 : 96, y + 56, 56, 0.9); text(g, "Reset", showRoom ? 124 : 140, y + 76, THEME.type.label, labelColor(S("reset", false, lockS)));
+      if (!lockS) hit("reset", 40, y, rw, 112, { type: "reset" });
+      const vx = 40 + rw + gap;
+      surface(g, vx, y, rw, 112, 40, S("vignette", st.vignette, false)); text(g, "Vignette", vx + rw / 2, y + 76, THEME.type.label, labelColor(S("vignette", st.vignette, false)), "center");
+      hit("vignette", vx, y, rw, 112, { type: "toggle", key: "vignette" });
+      if (showRoom) {
+        const rx = vx + rw + gap;
+        surface(g, rx, y, rw, 112, 40, S("seeRoom", !!info.seeRoom, false)); text(g, "See my room", rx + rw / 2, y + 76, THEME.type.label, labelColor(S("seeRoom", !!info.seeRoom, false)), "center");
+        hit("seeRoom", rx, y, rw, 112, { type: "seeRoom", value: !info.seeRoom });
+      }
+      if (!showRoom) this.pageDots(g, 2, 1, 820, y + 72);
       surface(g, 856, y + 10, 128, 92, 40, this.hover === "prev" ? "hover" : "off"); icon(g, this.icons["step-back"], 920, y + 56, 52, 0.85); hit("prev", 856, y + 10, 128, 92, null, { page: 0 });
     } else if (this.tab === "place") {
       text(g, st.loc && PLACES[st.loc] ? PLACES[st.loc].name : "Custom place", 64, 262, THEME.type.date, THEME.text.primary);
@@ -134,7 +142,7 @@ export class VRPanel {
     } else { // help
       if (this.page.help === 0) {
         text(g, "CONTROLS", 64, 262, THEME.type.header, THEME.text.tertiary, "left", 6); y = 290;
-        lines(["Trigger or pinch: pick a star, press a button.", "Grip and sweep: scrub time.", "Thumbstick: scrub time.", "B or Y: show or hide this panel.", "Top edge: drag the panel."]);
+        lines(["Trigger or pinch: pick a star, press a button.", "Grip and sweep: scrub time.", "Thumbstick: scrub time.", "B or Y: show or hide this panel.", "Top edge: drag the panel.", "See my room: overlay the sky on the real room."]);
       } else {
         text(g, "CREDITS", 64, 262, THEME.type.header, THEME.text.tertiary, "left", 6); y = 290;
         lines(["Stars: HYG v4.4, astronexus, CC BY-SA 4.0", "Lines and names: Stellarium, CC BY-SA", "Art: Johan Meuris, restyled by Leo, FAL 1.3", "Font: Inter, SIL OFL 1.1", "Planets: JPL. Moon and Sun: Meeus", "Planets are enlarged so you can find them. Through your eyes they look like bright stars."], THEME.type.body, THEME.text.secondary, 56);

@@ -1,9 +1,10 @@
 // Constellations: three independent sub-layers (design 2.2). Lines and art live in skyGroup (J2000);
 // names are upright billboards in the local frame. All three share the same star anchors.
-import { SKY_R, apply, raDecVec, attachRefraction } from "../ns-util.js";
+import { SKY_R, apply, raDecVec } from "../ns-util.js";
 import { REFRACT_GLSL, refractDir } from "../ns-astro.js";
 import { artMesh } from "../ns-artmap.js";
 import { TextBillboards } from "../ns-labels.js";
+import { fatLineSegments, passthroughArtAlpha } from "../ns-lines.js";
 
 
 // Name collision culling: of any two names whose boxes overlap, the bigger figure wins (plus hysteresis).
@@ -57,15 +58,14 @@ export function constellationsLayer() {
     }
     return seg;
   }
-  function dropFocusLines() { if (focusLines) { focusCtx && focusCtx.skyGroup.remove(focusLines); focusLines.geometry.dispose(); focusLines.material.dispose(); focusLines = null; } }
+  function dropFocusLines() { if (focusLines) { focusCtx && focusCtx.skyGroup.remove(focusLines.mesh); focusLines.dispose(); focusLines = null; } }
   function dropFocusArt() { if (focusArt) { focusCtx && focusCtx.skyGroup.remove(focusArt); focusArt.geometry.dispose(); focusArt.material.dispose(); focusArt = null; } }
   function makeFocusLines(ctx, id) {
     dropFocusLines();
     const seg = lineSegs(ctx, id); if (!seg.length) return;
     const { THREE, skin } = ctx;
-    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(seg, 3));
-    focusLines = new THREE.LineSegments(g, attachRefraction(new THREE.LineBasicMaterial({ color: skin.lines.color, transparent: true, opacity: 0, depthWrite: false }), ctx.frame.uRefract));
-    focusLines.renderOrder = 4; focusLines.frustumCulled = false; ctx.skyGroup.add(focusLines);
+    focusLines = fatLineSegments(THREE, seg, { color: skin.lines.color, opacity: 0, widthPx: ctx.frame.lineWidthPx || 2, uRefract: ctx.frame.uRefract });
+    focusLines.mesh.renderOrder = 4; ctx.skyGroup.add(focusLines.mesh);
   }
   function makeFocusArt(ctx, id) {
     dropFocusArt();
@@ -140,9 +140,8 @@ export function constellationsLayer() {
         const sl = (t) => { const a = Math.sin((1 - t) * ang) / Math.sin(ang), b = Math.sin(t * ang) / Math.sin(ang); return [(a * A[0] + b * B[0]) * R, (a * A[1] + b * B[1]) * R, (a * A[2] + b * B[2]) * R]; };
         seg.push(...sl(gap / ang), ...sl(1 - gap / ang)); // Leo: 0.35 deg gap at each star
       }
-      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(seg, 3));
-      lines = new THREE.LineSegments(g, attachRefraction(new THREE.LineBasicMaterial({ color: skin.lines.color, transparent: true, opacity: skin.lines.opacity, depthWrite: false }), ctx.frame.uRefract));
-      lines.renderOrder = 3; lines.frustumCulled = false; ctx.skyGroup.add(lines);
+      lines = fatLineSegments(THREE, seg, { color: skin.lines.color, opacity: skin.lines.opacity, widthPx: ctx.frame.lineWidthPx || 2, uRefract: ctx.frame.uRefract });
+      lines.mesh.renderOrder = 3; ctx.skyGroup.add(lines.mesh);
       // node rings at line stars (Leo: radius 0.2 deg)
       const np = []; for (const i of nodes) np.push(s.vec[3 * i] * R, s.vec[3 * i + 1] * R, s.vec[3 * i + 2] * R);
       const ND = skin.lines.node;
@@ -166,32 +165,37 @@ export function constellationsLayer() {
       if (ctx.state.art) (window.requestIdleCallback || setTimeout)(() => { if (!art && !artLoading) buildArt(ctx); });
     },
     update(ctx, dt) {
-      const st = ctx.state;
-      lines.visible = nodePts.visible = st.lines; nodeMat.uniforms.uViewportH.value = ctx.frame.viewportH;
+      const st = ctx.state, pass = !!ctx.frame.passthrough, vw = ctx.frame.viewportW || 1280, vh = ctx.frame.viewportH || 800;
+      const linePx = ctx.frame.lineWidthPx || 2, artA = pass ? passthroughArtAlpha(st.artalpha) : (st.artalpha ?? 0.40);
+      const lineOp = ctx.skin.lines.opacity * (pass ? 1.2 : 1);
+      lines.mesh.visible = nodePts.visible = st.lines;
+      lines.setWidth(linePx); lines.setOpacity(lineOp); lines.setResolution(vw, vh);
+      nodeMat.uniforms.uViewportH.value = vh;
       if (st.art && !art && !artLoading) buildArt(ctx);
-      if (art) { art.visible = st.art; art.material.uniforms.uArtAlpha.value = st.artalpha; }
+      if (art) { art.visible = st.art; art.material.uniforms.uArtAlpha.value = artA; }
       names.mesh.visible = st.names;
       if (st.names) {
-        const M = ctx.frame.M, hideBelow = st.ground ? -2 : -91;
+        const M = ctx.frame.M, hideBelow = (st.ground && !pass) ? -2 : -91;
         const dirs = labelVecs.map((v) => { const d = refractDir(apply(M, v), ctx.frame.refract); return Math.asin(d[1]) * 180 / Math.PI < hideBelow ? null : d; });
-        names.update(cullNameBoxes(dirs, { sizes: names.sizes, pxPerDeg: names.pxPerDeg, offsetDeg: names.opts.offsetDeg, prio, shown, floorDeg: st.ground ? 4 : -91, ids: nameIds, scale: TextBillboards.scale }), ctx.frame.fallbackUp);
+        names.update(cullNameBoxes(dirs, { sizes: names.sizes, pxPerDeg: names.pxPerDeg, offsetDeg: names.opts.offsetDeg, prio, shown, floorDeg: (st.ground && !pass) ? 4 : -91, ids: nameIds, scale: TextBillboards.scale }), ctx.frame.fallbackUp);
       }
       const k = Math.min(1, (dt || 0.016) * 6);
       focusAlpha += (focusTarget - focusAlpha) * k;
       if (focusLines) {
         const show = !!(focusId && focusAlpha > 0.01);
-        focusLines.visible = show;
-        if (show) focusLines.material.opacity = ctx.skin.lines.opacity * (st.lines ? 0.4 + 0.6 * focusAlpha : focusAlpha);
+        focusLines.mesh.visible = show;
+        focusLines.setWidth(linePx); focusLines.setResolution(vw, vh);
+        if (show) focusLines.setOpacity(lineOp * (st.lines ? 0.4 + 0.6 * focusAlpha : focusAlpha));
       }
       if (focusArt) {
         // When the art layer is already on, do not add a second additive copy of the same picture.
         const show = !!(focusId && !st.art && focusAlpha > 0.01);
         focusArt.visible = show;
-        focusArt.material.uniforms.uArtAlpha.value = (st.artalpha ?? 0.40) * focusAlpha;
+        focusArt.material.uniforms.uArtAlpha.value = artA * focusAlpha;
       }
     },
     setFocus, getFocus: () => focusId, focusArtAlpha: () => focusAlpha,
     setVisible() {},
-    dispose() { dropFocusLines(); dropFocusArt(); lines.geometry.dispose(); names.dispose(); if (art) art.geometry.dispose(); },
+    dispose() { dropFocusLines(); dropFocusArt(); lines.dispose(); names.dispose(); if (art) art.geometry.dispose(); },
   };
 }

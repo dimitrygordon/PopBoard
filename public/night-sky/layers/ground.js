@@ -47,7 +47,10 @@ export function groundLayer() {
       cardDirs = labels.map(([, az]) => altAzToWorld(2.6, az)); ctx.skyRoot.add(cards.mesh);
     },
     update(ctx) {
-      const st = ctx.state, f = ctx.frame, u = dome.material.uniforms;
+      const st = ctx.state, f = ctx.frame, u = dome.material.uniforms, pass = !!f.passthrough;
+      // Passthrough AR: hide the sky dome, ground disc, horizon ring and cardinals so the room shows through.
+      dome.visible = disc.visible = ring.visible = cards.mesh.visible = !pass;
+      if (pass) return;
       disc.material.opacity = st.ground ? 1 : ctx.skin.ground.seeThroughOpacity;
       disc.material.depthWrite = st.ground;
       cards.update(cardDirs, ctx.frame.fallbackUp);

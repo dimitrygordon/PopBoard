@@ -33,7 +33,7 @@ $("copyBtn").addEventListener("click", async () => {
 
 function render() {
   if (!app) return;
-  renderDom($("panel"), panelModel(app.state, { simMs: app.frame.simMs, artStatus: app.artStatus ? app.artStatus() : "", vr: false }), tab, (a) => app.dispatch(a), (t) => { tab = t; render(); });
+  renderDom($("panel"), panelModel(app.state, { simMs: app.frame.simMs, artStatus: app.artStatus ? app.artStatus() : "", vr: false, arSupported: app.arSupported, seeRoom: app.seeRoom }), tab, (a) => app.dispatch(a), (t) => { tab = t; render(); });
 }
 
 const card = $("card");
@@ -69,11 +69,15 @@ let lastRender = 0;
       canvas: $("sky"),
       onStatus: (t) => { $("status").textContent = t; },
       onState: () => { render(); },
-      onXr: ({ supported, presenting, arSupported }) => {
-        $("vrBtn").hidden = !supported;
-        $("vrNote").hidden = supported;
-        $("vrLabel").textContent = presenting ? "In VR" : "Enter VR";
+      onXr: ({ supported, presenting, arSupported, mode, seeRoom }) => {
+        const canEnter = !!(supported || arSupported);
+        $("vrBtn").hidden = !canEnter;
+        $("vrNote").hidden = canEnter;
+        const ar = (presenting && mode === "immersive-ar") || (!presenting && seeRoom && arSupported);
+        $("vrLabel").textContent = presenting ? (mode === "immersive-ar" ? "In AR" : "In VR") : (ar ? "Enter AR" : "Enter VR");
         $("arBtn").hidden = !arSupported;
+        $("arBtn").classList.toggle("is-on", !!seeRoom);
+        $("arBtn").setAttribute("aria-pressed", seeRoom ? "true" : "false");
       },
       onFrameStats: (s) => {
         if (app && app.state.debug) { $("hud").hidden = false; const d = app.debugInfo(); $("hud").textContent = `${s.text}\nLST ${d.lstDeg.toFixed(3)} deg  T ${d.T.toFixed(6)}`; }
@@ -101,10 +105,17 @@ let lastRender = 0;
     },
   });
   $("vrBtn").addEventListener("click", async () => {
-    try { await app.enterVR(); } catch (err) { $("vrNote").hidden = false; $("vrNote").textContent = "Could not start VR: " + (err && err.message ? err.message : err); }
+    try { await app.startXR(); } catch (err) {
+      $("vrNote").hidden = false;
+      const ar = app.seeRoom && app.arSupported;
+      $("vrNote").textContent = (ar ? "Could not start AR: " : "Could not start VR: ") + (err && err.message ? err.message : err);
+    }
   });
   $("arBtn").addEventListener("click", async () => {
-    try { await app.enterAR(); } catch (err) { $("vrNote").hidden = false; $("vrNote").textContent = "Could not start AR: " + (err && err.message ? err.message : err); }
+    try { await app.setSeeRoom(!app.seeRoom); } catch (err) {
+      $("vrNote").hidden = false;
+      $("vrNote").textContent = "Could not switch mode: " + (err && err.message ? err.message : err);
+    }
   });
   $("arBtn").hidden = !app.arSupported;
 

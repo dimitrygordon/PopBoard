@@ -50,6 +50,7 @@ export function panelModel(st, info) {
       { label: "Labels and guides", items: [b("starnames", "Star names", { type: "toggle", key: "starnames" }, st.starnames, "sky"), b("polaris", "Find Polaris", { type: "set", key: "hl", value: st.hl === "polaris" ? "" : "polaris" }, st.hl === "polaris", "sky"), b("planets", "Planets and Moon", { type: "toggle", key: "planets" }, st.planets, "sky")] },
       { label: "Grid", items: [b("g-altaz", "Alt/Az", { type: "toggleGrid", grid: "altaz" }, st.grid.includes("altaz"), "sky"), b("g-eq", "RA/Dec", { type: "toggleGrid", grid: "eq" }, st.grid.includes("eq"), "sky"), b("g-ecl", "Ecliptic", { type: "toggleGrid", grid: "ecl" }, st.grid.includes("ecl"), "sky")] },
       { label: "Ground", items: [b("ground1", "Solid", { type: "set", key: "ground", value: true }, st.ground, "sky"), b("ground0", "See-through", { type: "set", key: "ground", value: false }, !st.ground, "sky")] },
+      ...(info.arSupported ? [{ label: "Headset", items: [b("seeRoom", "See my room", { type: "seeRoom", value: !info.seeRoom }, info.seeRoom, null)] }] : []),
       { label: "Star trails", items: [[0, "Off"], [2, "2 h"], [6, "6 h"], [12, "12 h"]].map(([h, t]) => b("tr" + h, t, { type: "set", key: "trails", value: h }, st.trails === h, "sky")) },
       { label: "Faintest stars", items: [4, 5, 5.5, 6, 6.5].map((m) => b("mag" + m, m.toFixed(1), { type: "set", key: "mag", value: m }, st.mag === m, "sky")) },
       { label: "Sky", items: [b("sky-night", "Night", { type: "set", key: "sky", value: "night" }, st.sky === "night", "sky"), b("sky-real", "Real daylight", { type: "set", key: "sky", value: "real" }, st.sky === "real", "sky"), b("vignette", "Comfort vignette", { type: "toggle", key: "vignette" }, st.vignette, null), b("reset", "Reset", { type: "reset" }, 0, "sky")] },
@@ -57,7 +58,7 @@ export function panelModel(st, info) {
     ],
     help: [
       { readout: info.vr
-        ? ["Point and pull the trigger to pick a star or press a button.", "Hold grip and sweep to scrub time. Thumbstick left/right scrubs too.", "B or Y shows and hides this panel. Drag the top bar to move it."]
+        ? ["Point and pull the trigger to pick a star or press a button.", "Hold grip and sweep to scrub time. Thumbstick left/right scrubs too.", "B or Y shows and hides this panel. Drag the top bar to move it.", "See my room overlays the sky on the real room (Quest 3 passthrough)."]
         : ["Drag to look around. Click or tap a star for its card.", "Keys: Space play/pause, arrows step 1 hour (Shift: 1 day),", "L lines, A art, N names."], id: "controls" },
       { label: "Credits", readout: ["Stars: HYG database v4.4, astronexus (David Nash), CC BY-SA 4.0.", "Lines and names: Stellarium sky culture (western), CC BY-SA.", "Art: Johan Meuris (Stellarium), restyled by Leo, Free Art License 1.3.", "Font: Inter, SIL Open Font License 1.1.", "Planets: JPL approximate elements. Sun and Moon: Meeus.", "Planets are enlarged so you can find them. Through your eyes they look like bright stars."], id: "credits" },
     ],
