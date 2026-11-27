@@ -113,6 +113,7 @@ def main():
             check(page.evaluate("window.__nm.state.h") == 150 and page.evaluate("window.__nm.state.view") == "mountain", f"{name}: default 150 km, Mountain view")
             check(page.evaluate("document.documentElement.scrollWidth") <= dev["viewport"]["width"], f"{name}: no horizontal scroll")
             check(page.locator("#panel .ns-tab").count() == 4, f"{name}: four tabs")
+            page.wait_for_function("window.__nm.debug().assets.earth !== 'none'", timeout=30000)
             check(page.evaluate("window.__nm.debug().assets.earth") == "earth_2k.glb", f"{name}: Earth map loaded from the Gravity and Orbits model")
             page.screenshot(path=str(OUT / f"{name}-default.png"))
             # FIRE, then a landing
