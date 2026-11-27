@@ -74,3 +74,12 @@ Placeholder stills in `public/spaceships/stills/` and the 1 m box `public/spaces
 - Formulas from Jean Meeus, *Astronomical Algorithms* (2nd ed., 1998); B-V to temperature from Ballesteros (2012); CIE colour-matching fit from Wyman, Sloan and Shirley (2013). Cited in `public/night-sky/ns-astro.js` and `ns-ephem.js`.
 - **Inter** font (`public/night-sky/ui/fonts/inter-latin-var.woff2`, Latin subset) by The Inter Project Authors, https://github.com/rsms/inter . SIL Open Font License 1.1; full text in `public/night-sky/ui/fonts/OFL-Inter.txt`.
 - Night Sky panel icons (sources in `tools/night-sky/icons-src/*.svg`, packed unchanged into `public/night-sky/ui/icons.json`) are PopBoard originals by Leo.
+
+## Newton's Mountain VR (public/newtons-mountain)
+
+- **Earth and Moon maps and the ISS marker**: reused from `public/gravity-orbits/models/` (`earth_2k.glb`, `moon_2k.glb`, `iss.glb`); no new model files were added. Earth and Moon textures are by Solar System Scope, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), https://www.solarsystemscope.com/textures/ . The ISS model is NASA media (credit NASA; no NASA insignia or endorsement). These are the licenses recorded for those files in the notices above; the per-file provenance has not been re-verified here (flag for Angelo).
+- **Everything else is drawn by code** (cannon, platform, mountain, trails, balls, flags, arrows, reference rings, panel). No other assets.
+- **Air density table** `public/newtons-mountain/data/ussa76-density-5km.json`: values from the U.S. Standard Atmosphere, 1976 (NASA TM X-74335), a U.S. Government work, sampled every 5 km from 0 to 1,000 km.
+- **Stars**: the Night Sky star layer and HYG data above (CC BY-SA 4.0), shared, not copied.
+- **Constants**: the lesson pair (GM 3.98e14, R 6.38e6) is imported from `public/newtons-cannonball-fire/ncf-config.js`. The real pair (3.986004418e14, 6.371e6) is the standard published value.
+- three.js r170 (MIT) and Inter (OFL 1.1) as listed above.

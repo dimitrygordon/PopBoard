@@ -34,23 +34,26 @@ export function attachDesktop({ canvas, getView, setView, onTap, onKey }) {
   });
 }
 
-/** Headset input. cb: { onSelectStart(i, ray), onSelectEnd(i), onScrubHours(dh), onTogglePanel(), onHover(i, ray) } */
+/** Headset input. cb: { onSelectStart(i, ray), onSelectEnd(i), onScrubHours(dh), onTogglePanel(), onHover(i, ray) }.
+ * Other modules (Newton's Mountain) reuse it: optional cb.onButton(i, index, down), cb.onAxes(i, axes, dt),
+ * cb.onSqueeze(i, down), and opts.scrub = false, which turns off the grip-drag and thumbstick time scrub.
+ * With no opts and no optional callbacks the behaviour is exactly Night Sky's. */
 export class XRInput {
-  constructor(THREE, renderer, scene, cb) {
-    this.THREE = THREE; this.renderer = renderer; this.cb = cb; this.ctrl = [];
+  constructor(THREE, renderer, scene, cb, opts = {}) {
+    this.THREE = THREE; this.renderer = renderer; this.cb = cb; this.ctrl = []; this.scrub = opts.scrub !== false;
     const rayGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -1)]);
     for (let i = 0; i < 2; i++) {
       const c = renderer.xr.getController(i); const grip = renderer.xr.getControllerGrip(i); const hand = renderer.xr.getHand(i);
       const ray = new THREE.Line(rayGeo, new THREE.LineBasicMaterial({ color: 0xcfe0ff, transparent: true, opacity: 0.6 })); ray.scale.z = 5; ray.renderOrder = 50; c.add(ray);
       const knob = new THREE.Mesh(new THREE.SphereGeometry(0.015, 12, 8), new THREE.MeshBasicMaterial({ color: 0xcfe0ff })); grip.add(knob);
       const joints = new THREE.InstancedMesh(new THREE.SphereGeometry(0.006, 8, 6), new THREE.MeshBasicMaterial({ color: 0xe8edf5 }), 25); joints.count = 0; joints.frustumCulled = false; scene.add(joints);
-      const st = { c, grip, hand, ray, joints, source: null, squeeze: null, menuWas: false, selecting: false };
+      const st = { c, grip, hand, ray, joints, source: null, squeeze: null, menuWas: false, selecting: false, btnWas: [] };
       c.addEventListener("connected", (e) => { st.source = e.data; st.handInput = !!e.data.hand; ray.visible = !e.data.hand; knob.visible = !e.data.hand; });
       c.addEventListener("disconnected", () => { st.source = null; ray.visible = false; });
       c.addEventListener("selectstart", () => { st.selecting = true; cb.onSelectStart(i, this.rayOf(i)); });
       c.addEventListener("selectend", () => { st.selecting = false; cb.onSelectEnd(i); });
-      c.addEventListener("squeezestart", () => { st.squeeze = { yaw: this.yawOf(i) }; });
-      c.addEventListener("squeezeend", () => { st.squeeze = null; });
+      c.addEventListener("squeezestart", () => { if (this.scrub) st.squeeze = { yaw: this.yawOf(i) }; if (cb.onSqueeze) cb.onSqueeze(i, true); });
+      c.addEventListener("squeezeend", () => { st.squeeze = null; if (cb.onSqueeze) cb.onSqueeze(i, false); });
       scene.add(c, grip, hand); this.ctrl.push(st);
     }
   }
@@ -68,17 +71,19 @@ export class XRInput {
       const ray = this.rayOf(i);
       this.cb.onHover(i, ray);
       // grip drag: sweep the hand right (yaw decreases) and time runs forward; sky turns with the hand
-      if (st.squeeze) {
+      if (this.scrub && st.squeeze) {
         const y = this.yawOf(i); let dy = y - st.squeeze.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
         if (Math.abs(dy) > 1e-4) { this.cb.onScrubHours(-dy * 180 / Math.PI / 15.041); st.squeeze.yaw = y; }
       }
       const gp = st.source.gamepad;
       if (gp) {
         const x = gp.axes.length >= 4 ? gp.axes[2] : 0;
-        if (Math.abs(x) > 0.15) this.cb.onScrubHours(x * dt); // full deflection = 1 hour per second
+        if (this.scrub && Math.abs(x) > 0.15) this.cb.onScrubHours(x * dt); // full deflection = 1 hour per second
         const menu = !!(gp.buttons[5] && gp.buttons[5].pressed); // B (right) or Y (left)
         if (menu && !st.menuWas) this.cb.onTogglePanel();
         st.menuWas = menu;
+        if (this.cb.onButton) for (let b = 0; b < gp.buttons.length; b++) { const dn = !!(gp.buttons[b] && gp.buttons[b].pressed); if (dn !== !!st.btnWas[b]) { st.btnWas[b] = dn; this.cb.onButton(i, b, dn); } }
+        if (this.cb.onAxes) this.cb.onAxes(i, gp.axes, dt);
       }
       // hands: small spheres at the joints, no hand models
       const joints = st.hand && st.hand.joints ? Object.values(st.hand.joints) : [];
