@@ -48,7 +48,8 @@ test("bracket lines from the sequence 7,000 / 7,761 / 7,762 / 7,900", () => {
   let s = parseQuery("");
   for (const [v, landed] of [[7000, true], [7761, true], [7762, false], [7900, false]]) { s = reduce(s, { type: "setSpeed", v }); s = reduce(s, { type: "fire" }); s = reduce(s, { type: "result", n: s.nextN - 1, landed }); }
   const b = bracket(s); assert.deepEqual([b.highestLanded, b.lowestNotLanded, b.gap], [7761, 7762, 1]);
-  const l = S.bracketLines(b); assert.equal(l.landed, "Highest speed that landed: 7,761 m/s"); assert.equal(l.notLanded, "Lowest speed that did not land: 7,762 m/s"); assert.equal(l.gap, "Gap 1 m/s");
+  const l = S.bracketLines(b); assert.equal(l.landed, "Highest speed that landed: 7,761 m/s"); assert.equal(l.notLanded, "Lowest speed that did not land: 7,762 m/s"); assert.equal(l.gap, undefined, "no Gap line any more");
+  const bt = S.betweenShots(b, 0, 7807); assert.equal(bt.line1, "Between your shots: 1 m/s"); assert.equal(bt.line2, "highest that landed vs. lowest that didn't"); assert.equal(bt.extra, null);
   const e = S.bracketLines(bracket(parseQuery(""))); assert.match(e.landed, /\u2013$/); assert.match(e.notLanded, /\u2013$/);
 });
 test("warp ladder steps turn Smart pace off; Auto turns it back on", () => {
@@ -91,4 +92,19 @@ test("trail buffer: stays within 4,096 points, keeps the whole path, and thins b
   assert.ok(maxGap < 0.05 * r0, "no big gaps: " + maxGap);
   const low = new TrailBuffer(); low.push(r0, 0, true); const lob = makeShot({ ...c, h: 150e3, v: 2000 }); while (lob.status === "flying") { stepShot(lob); low.push(lob.x, lob.y); }
   assert.ok(low.n > 20, "a 367 km lob still has " + low.n + " points");
+});
+
+test("Between your shots: hidden until one shot landed and one did not; banned words at help 0 and 1; circular speed at help 2", () => {
+  const mk = (list) => { let s = parseQuery(""); for (const [v, landed] of list) { s = reduce(s, { type: "setSpeed", v }); s = reduce(s, { type: "fire" }); s = reduce(s, { type: "result", n: s.nextN - 1, landed }); } return bracket(s); };
+  assert.equal(S.betweenShots(bracket(parseQuery("")), 0, 7807), null, "no shots");
+  assert.equal(S.betweenShots(mk([[7000, true]]), 0, 7807), null, "only a landed shot");
+  assert.equal(S.betweenShots(mk([[9000, false]]), 0, 7807), null, "only a shot that did not land");
+  assert.equal(S.betweenShots(mk([[7000, true], [7500, null]]), 2, 7807), null, "an undecided shot does not count");
+  const b = mk([[7000, true], [7807, false]]);
+  for (const level of [0, 1]) {
+    const t = S.betweenShots(b, level, 7807); assert.equal(t.line1, "Between your shots: 807 m/s"); assert.equal(t.extra, null);
+    assert.doesNotMatch([t.line1, t.line2, t.extra || ""].join(" "), /gap|orbit speed|target|circular|escape/i, "level " + level);
+  }
+  const t2 = S.betweenShots(b, 2, 7807); assert.equal(t2.line1, "Between your shots: 807 m/s"); assert.equal(t2.extra, "Circular speed here: 7,807 m/s");
+  assert.doesNotMatch(Object.values(S.bracketLines(b)).join(" "), /gap/i);
 });

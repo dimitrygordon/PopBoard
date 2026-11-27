@@ -41,7 +41,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   // ---- run state (not in the URL) ----
   const sims = new Map(); // n -> { rec, sim, it, params }
   let accum = 0, autoWarp = 1, rampT = 99, xrSession = null, arActive = false, prevView = null, freeze = 0, xrSupported = false, arSupported = false, seeRoom = false;
-  let modelCentre = [0, 1.25, -1.0], orbit = { yaw: 0.35, pitch: 1.0, dist: 3.6 }, view = { yaw: -0.38, pitch: -0.02, fovDeg: DESKTOP_FOV };
+  let modelCentre = [0, 1.25, -1.0], orbit = { yaw: 0.35, pitch: 1.0, dist: 3.6 }, view = { yaw: -0.5, pitch: -0.06, fovDeg: DESKTOP_FOV };
   const look = { active: false, mode: "relative", note: "", hasSample: false, offsetYaw: 0, offsetPitch: 0, sample: null }, oriFilter = createOrientationFilter();
   let panelDirty = true, lastPanelDraw = 0, hitTest = { source: null, ok: false, pose: null }, reticle = null, placePending = false, selectedShape = null;
   const c = () => C.CONSTS[state.consts];
@@ -116,6 +116,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   // ---- state ----
   let urlTimer = 0;
   function dispatch(a, opt = {}) {
+    if (a.type === "_page") { const n = panel.pageCount(panel.tab); panel.page[panel.tab] = (panel.page[panel.tab] + a.d + n) % n; panelDirty = true; return state; }
     if (a.type === "_rows") { panel.shotRow = Math.max(0, panel.shotRow + a.d); panelDirty = true; return state; }
     if (a.type === "_place") { placeModel(); return state; }
     if (a.type === "_ring") { const s = new Set(state.rings); s.has(a.ring) ? s.delete(a.ring) : s.add(a.ring); a = { type: "setRings", rings: [...s] }; }
@@ -136,6 +137,12 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
 
   // ---- panel model (the headset canvas and the HTML page both read this) ----
   const fmtKmAlt = (m) => `${(m / 1e3).toFixed(1)} km`;
+  /** Explain level only: the fall check, from the spec's own wording. Empty at help 0 and 1 and once the shot has ended. */
+  function levelTwoLines(sim) {
+    if (state.help < 2 || sim.status !== "flying") return [];
+    const r = Math.hypot(sim.x, sim.y), fc = fallCheck({ GM: sim.GM * sim.gdial / 100, R: sim.R }, r, sim.speedNow);
+    return [`The ball falls this far below a straight line: ${fc.fall.toFixed(3)} m in 1 s`, `Earth's surface curves away this far: ${fc.curve.toFixed(3)} m` + (fc.match ? "   They match." : "")];
+  }
   function liveDetail(sim, rec, full) {
     const lines = [S.resultLine(rec, sim, state.help, c())];
     const laps = lapsNow(sim);
@@ -143,10 +150,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     lines.push(`Speed ${(sim.speedNow / 1000).toFixed(2)} km/s   Laps ${laps.toFixed(1)}`);
     lines.push(`Lowest ${fmtKmAlt(sim.status === "landed" ? 0 : sim.minR - sim.R)}   Highest ${fmtKmAlt(sim.maxR - sim.R)}`);
     if (full) lines.push(`Distance along the ground ${S.fmtKm(groundDistanceNow(sim))}   Angle swept ${(sim.swept * 180 / Math.PI).toFixed(0)} degrees`);
-    if (state.help >= 2 && sim.status === "flying") {
-      const r = Math.hypot(sim.x, sim.y), fc = fallCheck({ GM: sim.GM * sim.gdial / 100, R: sim.R }, r, sim.speedNow);
-      lines.push(`The ball falls this far below a straight line: ${fc.fall.toFixed(3)} m in 1 s`, `Earth's surface curves away this far: ${fc.curve.toFixed(3)} m` + (fc.match ? "   They match." : ""));
-    }
+    lines.push(...levelTwoLines(sim));
     return lines;
   }
   function model() {
@@ -155,7 +159,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     const b = S.bracketLines(bracketOf(state));
     const ws = state.warp === "auto" ? autoWarp : state.warp;
     return { speed: state.vel, paused: state.paused, warpAuto: state.warp === "auto", warpLabel: state.warp === "auto" ? `Auto ${state.warpNow}x` : `${state.warp}x`, view: state.view, h: state.h, lock: state.lock, rows, selected: sel ? sel.rec.n : null,
-      detail: sel ? liveDetail(sel.sim, sel.rec, false).slice(0, 5) : [], detailFull: sel ? liveDetail(sel.sim, sel.rec, true) : [], bracket: [b.landed, b.notLanded, b.gap],
+      detail: sel ? liveDetail(sel.sim, sel.rec, false).slice(0, 5) : [], detailFull: sel ? liveDetail(sel.sim, sel.rec, true) : [], levelTwo: sel ? levelTwoLines(sel.sim) : [], bracket: [b.landed, b.notLanded], between: S.betweenShots(bracketOf(state), state.help, derived(c(), hM()).vCirc),
       trail: state.trail, velvec: state.velvec, gravec: state.gravec, air: state.air, mass: state.mass, gdial: state.gdial, rings: state.rings, sizes: arActive ? C.sizeAr : C.sizeVr, size: sizeCm(),
       help: state.help, helpLines: S.helpLines(state.help, c(), hM()), inAR: arActive, canPlace: arActive, ui: state.ui, warpValue: ws, launchCard: S.launchCard(state.vel) };
   }
@@ -180,7 +184,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
       camera.lookAt(modelCentre[0], modelCentre[1], modelCentre[2]);
     }
   }
-  function resize() { const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  function resize() { const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w / h < 1 ? 84 : DESKTOP_FOV; camera.updateProjectionMatrix(); }
   new ResizeObserver(resize).observe(canvas); resize();
 
   // ---- XR ----
@@ -223,7 +227,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     },
   }, { scrub: false });
   const rig = () => world.rig;
-  function tabPress(tab) { if (panel.tab === tab && PAGES[tab] > 1) panel.page[tab] = (panel.page[tab] + 1) % PAGES[tab]; else panel.tab = tab; panelDirty = true; }
+  function tabPress(tab) { if (panel.tab === tab && panel.pageCount(tab) > 1) panel.page[tab] = (panel.page[tab] + 1) % panel.pageCount(tab); else panel.tab = tab; panelDirty = true; }
   function press(i, h) { panel.pressed = h.id; panelDirty = true; setTimeout(() => { if (panel.pressed === h.id) { panel.pressed = null; panelDirty = true; } }, 150); haptic(i, 0.4, 15); dispatch(h.action); }
   function pickShotRay(o, d) {
     const pts = [];
@@ -318,6 +322,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
       if (res.length && ref) { const pose = res[0].getPose(ref); hitTest.pose = pose; if (pose && reticle) { reticle.matrix.fromArray(pose.transform.matrix); reticle.visible = arActive; } } else { hitTest.pose = null; if (reticle) reticle.visible = false; }
     }
     viz.updateLabels((p) => hiddenByEarth(far, p));
+    { const mk = world.marker.position, hid = state.view !== "model" || hiddenByEarth(far, [mk.x, mk.y, mk.z]); world.marker.visible = !hid; world.markerGlow.visible = !hid; }
     for (const sp of world.ringLabels) sp.visible = state.view === "model" && !hiddenByEarth(far, [sp.position.x, sp.position.y, sp.position.z]);
     updateArrows(head);
     if (xr && panel.mesh.visible && (panelDirty || now - lastPanelDraw > 500)) { panel.draw(model()); panelDirty = false; lastPanelDraw = now; }
@@ -365,7 +370,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
       return pickShotRay([camera.position.x, camera.position.y, camera.position.z], [d.x, d.y, d.z]);
     },
     project(world3) { const v = new THREE.Vector3(...world3).project(camera), r = canvas.getBoundingClientRect(); return { x: (v.x + 1) / 2 * r.width, y: (1 - v.y) / 2 * r.height, visible: v.z < 1 && Math.abs(v.x) <= 1.05 && Math.abs(v.y) <= 1.05 }; },
-    selectedWorld() { const e = sims.get(state.selected); if (!e) return null; return e.it.landed ? e.it.flagWorld || null : viz.worldOf(e.sim.x, e.sim.y); },
+    selectedWorld() { const e = sims.get(state.selected); if (!e) return null; return e.it.landed ? e.it.flagWorld || viz.worldOf(e.sim.x, e.sim.y) : viz.worldOf(e.sim.x, e.sim.y); },
     serialize: () => serialize(state), applyFrame, placeModel, stats: () => stats, derivedNow: () => derived(c(), hM()),
     debug: () => ({ ...world.cur, sims: sims.size, assets: world.assets, far: { oc: far.uOC.value.toArray(), c: far.uOC2mR2.value } }),
   };

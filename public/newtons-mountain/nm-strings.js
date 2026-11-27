@@ -35,8 +35,14 @@ export const flagText = (n, v, rangeM, t) => `${n}: ${fmtSpeed(v)}, ${fmtKm(rang
 export const bracketLines = (b) => ({
   landed: `Highest speed that landed: ${b.highestLanded === null ? "\u2013" : fmtSpeed(b.highestLanded)}`,
   notLanded: `Lowest speed that did not land: ${b.lowestNotLanded === null ? "\u2013" : fmtSpeed(b.lowestNotLanded)}`,
-  gap: b.gap === null ? "Gap \u2013" : `Gap ${grp(b.gap)} m/s`,
 });
+/** The distance between the student's own two nearest shots. Shown only when one shot landed and one did not.
+ * Levels 0 and 1 never say "gap", "orbit speed" or "target" here. Level 2 (Explain) adds the circular speed. */
+export const BETWEEN_SUB = "highest that landed vs. lowest that didn't";
+export function betweenShots(b, level, vCircMps) {
+  if (b.highestLanded === null || b.lowestNotLanded === null) return null;
+  return { line1: `Between your shots: ${grp(b.gap)} m/s`, line2: BETWEEN_SUB, extra: level >= 2 ? `Circular speed here: ${fmtSpeed(vCircMps)}` : null };
+}
 
 /** Plain facts about a shot. Level 2 adds the outcome words from the analytic classifier. */
 export function resultLine(sh, shot, level, c) {
@@ -76,4 +82,13 @@ export const CREDITS = [
   "Earth constants: the lesson pair (GM 3.98e14, R 6.38e6).",
   "Font: Inter, SIL Open Font License 1.1.",
   "Earth, cannon and mountain are drawn by code in this version, with no outside art. Full list: THIRD-PARTY-NOTICES.md.",
+];
+
+// Headset credits at 56 px: short, full text stays on the page (Credits and licenses) and in THIRD-PARTY-NOTICES.md.
+export const CREDITS_VR = [
+  "three.js, MIT.",
+  "Stars: HYG v4.4, CC BY-SA 4.0.",
+  "Air: US Standard Atmosphere 1976.",
+  "Font: Inter, SIL OFL 1.1.",
+  "Earth, cannon and mountain are drawn by code. Full list: Credits and licenses on the page.",
 ];

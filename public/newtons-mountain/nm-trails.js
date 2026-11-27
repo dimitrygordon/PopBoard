@@ -29,7 +29,11 @@ const RIBBON_FRAG = /* glsl */`
 uniform vec3 uColor; uniform float uOpacity, uDash, uTailFade; varying vec3 vW; varying float vT;
 void main() {
   if (nmHidden(vW) > 0.5) discard;
-  float a = uOpacity * nmNearFade(vW); float fd = mix(1.0, 0.35 + 0.65 * vT, uTailFade);
+  float a = uOpacity * nmNearFade(vW);
+  // tail floor 0.55, and 1.25x brighter on the dark side of Earth (Earth centre = head - OC)
+  float fd = mix(1.0, 0.55 + 0.45 * vT, uTailFade);
+  float night = smoothstep(0.15, -0.25, dot(normalize(vW - (uHead - uOC)), uSunDir));
+  fd *= 1.0 + 0.25 * night;
   if (uDash > 0.0 && mod(floor(vT * uDash), 2.0) > 0.5) discard;
   if (a < 0.01) discard;
   gl_FragColor = vec4(uColor * fd, a);

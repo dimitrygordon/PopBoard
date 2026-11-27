@@ -130,7 +130,8 @@ def main():
             rs = rows(page)
             check([x["state"] for x in rs[1:]] == ["landed", "lapped"], f"{name}: 7,000 lands, 7,807 does not ({[x['state'] for x in rs[1:]]})")
             br = page.evaluate("window.__nm.model().bracket")
-            check(any("7,000" in l for l in br) and any("7,807" in l for l in br) and any("807" in l for l in br), f"{name}: bracket lines {br}")
+            check(any("7,000" in l for l in br) and any("7,807" in l for l in br) and not any("gap" in l.lower() for l in br), f"{name}: bracket lines {br}")
+            check(page.evaluate("window.__nm.model().between.line1") == "Between your shots: 807 m/s", f"{name}: Between your shots 807 m/s")
             # clear and the ninth shot
             page.evaluate("window.__nm.dispatch({type:'clear'})")
             check(len(rows(page)) == 0, f"{name}: Clear removes every shot")
@@ -178,6 +179,55 @@ def main():
         page.evaluate("window.__nm.dispatch({type:'select', n:1})")
         d2 = " ".join(page.evaluate("window.__nm.model().detailFull")).lower()
         check("escape" in d2 or "left" in d2 or "in orbit" in d2, "help=2 adds the orbit or escape label")
+        ctx.close()
+        # Between your shots: the card and the model, hide and show rule, banned words at help 0 and 1, circular speed at help 2
+        for level in (0, 1, 2):
+            ctx, page, errs = open_page(browser, base, dev, f"shots=7000&help={level}")
+            check(page.evaluate("window.__nm.model().between") is None, f"help={level}: Between your shots hidden with only a landed shot")
+            page.evaluate("window.__nm.dispatch({type:'select', n:1})")
+            page.wait_for_timeout(400)
+            check("Between your shots" not in page.inner_text("#card"), f"help={level}: card hides it with only a landed shot")
+            page.evaluate("window.__nm.dispatch({type:'setSpeed', v:7807}); window.__nm.dispatch({type:'fire'})")
+            run_seconds(page, 60)  # past one lap, still flying
+            page.evaluate("window.__nm.dispatch({type:'select', n:2})")
+            page.wait_for_timeout(500)
+            bt = page.evaluate("window.__nm.model().between")
+            check(bt is not None and bt["line1"] == "Between your shots: 807 m/s" and bt["line2"] == "highest that landed vs. lowest that didn't", f"help={level}: Between your shots shows once one landed and one did not ({bt})")
+            card = page.text_content("#card") or ""
+            check("Between your shots: 807 m/s" in card and "highest that landed vs. lowest that didn't" in card, f"help={level}: the shot card shows both lines")
+            page.click("#panel .ns-tab[data-tab=shots]")
+            panel_text = page.inner_text("#panel")
+            check("Between your shots: 807 m/s" in panel_text, f"help={level}: the Shots tab shows it")
+            scope = card + " " + page.inner_text("#betweenRow")
+            if level < 2:
+                check(not any(w in scope.lower() for w in ("gap", "orbit speed", "target", "circular")), f"help={level}: no banned words in the element")
+            else:
+                check("Circular speed here: 7,807 m/s" in scope, "help=2: circular speed shown next to it")
+            lt = page.evaluate("window.__nm.model().levelTwo"); page.evaluate("window.__nm.panelImage('shots', 0)"); pc = page.evaluate("window.__nm.panel.pageCount('shots')")
+            check((len(lt) == 2 and pc == 3) if level == 2 else (lt == [] and pc == 2), f"help={level}: Shots VR pages {pc}, Explain-level fall check lines {len(lt)}")
+            for pg in range(pc):
+                data = page.evaluate(f"window.__nm.panelImage('shots', {pg})")
+                f = OUT / f"vr-panel-shots{pg}-help{level}.png"; f.write_bytes(base64.b64decode(data.split(",", 1)[1]))
+            ctx.close()
+        # Model view: the marker is hidden behind the globe and the surface under it is the cannon longitude
+        ctx, page, errs = open_page(browser, base, dev, "view=model&h=150")
+        res = page.evaluate("""async () => { const a = window.__nm, out = {};
+          for (const yaw of [Math.PI / 2, -Math.PI / 2]) { a.setView({ yaw, pitch: 0.3 }); await new Promise((r) => setTimeout(r, 500)); out[yaw] = { vis: a.world.marker.visible, glow: a.world.markerGlow.visible, cam: a.camera.position.x - a.debug().centre[0] }; }
+          return out; }""")
+        vis = [v for v in res.values() if v["vis"]]
+        check(len(vis) == 1 and vis[0]["cam"] > 0 and all(v["glow"] == v["vis"] for v in res.values()), f"marker is visible only when the camera is on its side ({res})")
+        a_tex = page.evaluate("""async () => { const a = window.__nm, u = a.world.earth.material.uniforms; await a.world.assetsReady; const img = u.uDay.value.image; const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+          const px = (lon, lat) => { const d = g.getImageData(Math.floor((lon / 360 + 0.5) * (c.width - 1)), Math.floor((0.5 - lat / 180) * (c.height - 1)), 1, 1).data; return [d[0], d[1], d[2]]; };
+          return { atlantic: px(-40, 30), africa: px(20, 5), pacific: px(-150, 0), sahara: px(15, 23) }; }""")
+        ocean = lambda p: p[2] > p[0] + 25
+        check(ocean(a_tex["atlantic"]) and ocean(a_tex["pacific"]) and not ocean(a_tex["africa"]) and not ocean(a_tex["sahara"]), f"texture u = 0.5 + lon/360: Atlantic at the cannon longitude is ocean, Africa is land ({a_tex})")
+        # Model scale: the Earth shader's edge anti-aliasing must not leak a ghost Earth across the sky (it did when the AA floor was in metres squared)
+        page.evaluate("window.__nm.setView({ yaw: -Math.PI / 2, pitch: 0.3 })"); page.wait_for_timeout(600)
+        from PIL import Image
+        import io
+        im = Image.open(io.BytesIO(page.screenshot(clip={"x": 0, "y": 60, "width": 200, "height": 180}))).convert("L")
+        mean = sum(i * c for i, c in enumerate(im.histogram())) / (im.width * im.height)
+        check(mean < 12, f"Model view: the sky beside the globe is black (mean {mean:.1f})")
         ctx.close()
         # VR panel canvas (what the headset shows), every tab
         ctx, page, errs = open_page(browser, base, dev, "shots=7000,7807,9000&help=2&rings=iss")

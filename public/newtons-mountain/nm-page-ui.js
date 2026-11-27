@@ -57,6 +57,7 @@ function render() {
     kids.push(r);
     if (m.detailFull.length) { const d = row("Selected shot"); const o = el("div", "ns-readout"); for (const l of m.detailFull) o.append(el("p", "", l)); d.append(o); kids.push(d); }
     const b = row("Bracket"); const bb = el("div", "nm-bracket"); for (const l of m.bracket) bb.append(el("p", "", l)); b.append(bb); kids.push(b);
+    if (m.between) { const bw = row(); bw.id = "betweenRow"; bw.append(...betweenEls(m.between)); kids.push(bw); }
   } else if (tab === "view") {
     const r = row("View"); const bs = el("div", "ns-btns"); bs.append(button("Mountain", { on: m.view === "mountain", disabled: has("view"), action: { type: "setView", view: "mountain" } }), button("Model (Earth as a globe)", { on: m.view === "model", disabled: has("view"), action: { type: "setView", view: "model" } })); r.append(bs); kids.push(r);
     const t = row("Show"); const ts = el("div", "ns-btns"); ts.append(button("Trail", { on: m.trail, action: { type: "toggle", key: "trail" } }), button("Velocity arrow", { on: m.velvec, disabled: has("vectors"), action: { type: "toggle", key: "velvec" } }), button("Gravity arrow", { on: m.gravec, disabled: has("vectors"), action: { type: "toggle", key: "gravec" } })); t.append(ts); kids.push(t);
@@ -75,13 +76,16 @@ function render() {
   $("fireFab").hidden = !m.ui;
 }
 
+// "Between your shots" element: line 1, a smaller line 2, and at the Explain level the circular speed
+function betweenEls(bt) { const a = [el("p", "nm-between", bt.line1), el("p", "nm-between-sub", bt.line2)]; if (bt.extra) a.push(el("p", "nm-between", bt.extra)); return a; }
+
 // ---- shot card ----
 function showCard() {
   const card = $("card"); if (!app) return;
   const m = app.model(), w = app.selectedWorld();
   if (!cardOpen || !m.selected || !w) { card.hidden = true; return; }
   $("cardTitle").textContent = `Shot ${m.selected}`;
-  const key = m.detailFull.join("|"); if (key !== card.dataset.key) { card.dataset.key = key; $("cardBody").replaceChildren(...m.detailFull.map((l) => el("p", "line", l))); }
+  const key = m.detailFull.join("|") + "#" + (m.between ? [m.between.line1, m.between.extra].join("|") : ""); if (key !== card.dataset.key) { card.dataset.key = key; $("cardBody").replaceChildren(...m.detailFull.flatMap((l) => l.split(/ {3,}/)).map((l, i) => el("p", i === 0 ? "line lead" : l.length > 24 ? "line wide" : "line", i === 0 ? l.charAt(0).toUpperCase() + l.slice(1) : l)), ...(m.between ? betweenEls(m.between).map((e) => { e.classList.add("wide"); return e; }) : [])); }
   const p = app.project(w), stage = $("stage").getBoundingClientRect();
   card.hidden = false;
   if (!p.visible) { card.style.visibility = "hidden"; return; }

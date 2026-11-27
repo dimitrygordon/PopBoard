@@ -20,3 +20,17 @@
 .nm-ar output { min-width: 110px; text-align: center; font-size: 20px; }
 .ns-card p.line { margin: 2px 0; }
 @media (max-width: 820px) { .nm-fab { bottom: 10px; right: 10px; } }
+
+/* Art pass NM-1: the shot card reads as a two-column fact sheet, and on a phone it sits at the top of the view so it never covers FIRE or the flags */
+#cardBody { display: grid; grid-template-columns: 1fr 1fr; gap: 1px 14px; }
+#cardBody .line { margin: 2px 0; font-size: 14px; }
+#cardBody .wide { grid-column: 1 / -1; }
+#cardBody .lead { grid-column: 1 / -1; font-weight: 650; color: var(--ns-card-text); white-space: normal; }
+.ns-card { max-width: 340px; }
+.ns-hint { max-width: calc(100% - 140px); font-size: 14px; }
+@media (max-width: 820px) { .ns-card { left: 8px !important; right: 8px; top: 8px !important; max-width: none; } }
+
+/* "Between your shots": line 1, then a smaller line 2 */
+.nm-between { margin: 6px 0 0; font-weight: 600; color: var(--ns-text); }
+.nm-between-sub { margin: 0 0 2px; font-size: 12px; color: var(--ns-text-3); }
+#cardBody .nm-between { font-size: 14px; } #cardBody .nm-between-sub { font-size: 12px; }

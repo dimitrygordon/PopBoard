@@ -17,11 +17,11 @@ import { sunWorld, texRotation, EQ_TO_TEX, mat3mul, transpose3, planeAxes, latLo
 export function makeFarUniforms(THREE) {
   return { uHead: { value: new THREE.Vector3() }, uOC: { value: new THREE.Vector3() }, uOC2mR2: { value: 1 }, uTol: { value: 30 },
     uHandA: { value: new THREE.Vector3(0, -99, 0) }, uHandB: { value: new THREE.Vector3(0, -99, 0) }, uFadeHead: { value: C.rig.fadeHeadM }, uFadeHand: { value: C.rig.fadeHandM },
-    uViewportH: { value: 800 }, uEarthOn: { value: 1 } };
+    uViewportH: { value: 800 }, uEarthOn: { value: 1 }, uSunDir: { value: new THREE.Vector3(0, 1, 0) } };
 }
 /** GLSL shared by every far-field material: is the point at world position pw hidden behind the Earth (seen from the head)? */
 export const NM_OCCLUDE = /* glsl */`
-uniform vec3 uHead, uOC, uHandA, uHandB;
+uniform vec3 uHead, uOC, uHandA, uHandB, uSunDir;
 uniform float uOC2mR2, uTol, uFadeHead, uFadeHand, uViewportH, uEarthOn;
 // Ray from the head to pw against the Earth sphere. uOC is head minus Earth centre, uOC2mR2 is |OC|^2 - R^2 (double on the CPU).
 float nmHidden(vec3 pw) {
@@ -40,35 +40,44 @@ float nmNearFade(vec3 pw) {
 const EARTH_FRAG = /* glsl */`
 uniform vec3 uOC, uSun; uniform float uC, uCa, uR, uRa, uHasTex, uOn, uHaze;
 uniform mat3 uTex; uniform sampler2D uDay, uCloud;
-varying vec3 vW;
+varying vec3 vW; vec3 rdG;
 vec3 fallbackAlbedo(vec3 n) { float l = sin(n.x * 5.0) * sin(n.y * 4.0 + 1.0) * sin(n.z * 6.0); return mix(vec3(0.03, 0.15, 0.38), vec3(0.18, 0.34, 0.14), smoothstep(0.1, 0.35, l)); }
-void main() {
-  if (uOn < 0.5) discard;
-  vec3 rd = normalize(vW - cameraPosition);
-  float b = dot(uOC, rd), disc = b * b - uC, tSurf = 1e30;
-  if (disc > 0.0) { float t = -b - sqrt(disc); if (t > 0.0) tSurf = t; }
+// Atmosphere along a ray: chord through the shell (uCa) up to tSurf, returns thickness 0..1 and the in-scatter colour.
+float nmAtmo(float b, float tSurf, out vec3 haze) {
   float discA = b * b - uCa, chord = 0.0; vec3 mid = vec3(0.0, 1.0, 0.0);
-  if (discA > 0.0) { float s = sqrt(discA); float t0 = max(-b - s, 0.0), t1 = min(-b + s, tSurf); chord = max(t1 - t0, 0.0); mid = uOC + rd * (0.5 * (t0 + t1)); }
+  if (discA > 0.0) { float s = sqrt(discA); float t0 = max(-b - s, 0.0), t1 = min(-b + s, tSurf); chord = max(t1 - t0, 0.0); mid = uOC + vec3(0.0) + rdG * (0.5 * (t0 + t1)); }
   float air = 1.0 - exp(-chord / (6.0 * (uRa - uR)));
   float lit = smoothstep(-0.25, 0.35, dot(normalize(mid), uSun));
-  vec3 haze = mix(vec3(0.25, 0.5, 1.0), vec3(0.75, 0.88, 1.0), smoothstep(0.5, 1.0, air)) * lit;
-  vec3 p = uOC + rd * min(tSurf, 1e9), n = normalize(p), nt = uTex * n;
-  float u0 = atan(nt.x, nt.z) / 6.2831853 + 0.5, u1 = fract(u0 + 0.5) - 0.5, v = 0.5 - asin(clamp(nt.y, -1.0, 1.0)) / 3.14159265;
-  bool pickA = fwidth(u0) < fwidth(u1) + 1e-6;
-  vec2 uv = pickA ? vec2(u0, v) : vec2(u1 + 0.5, v);
-  vec2 g = pickA ? vec2(dFdx(u0), dFdx(v)) : vec2(dFdx(u1), dFdx(v)), g2 = pickA ? vec2(dFdy(u0), dFdy(v)) : vec2(dFdy(u1), dFdy(v));
-  vec3 alb = textureGrad(uDay, uv, g, g2).rgb; float cl = textureGrad(uCloud, uv, g, g2).r;
-  if (uHasTex < 0.5) { alb = fallbackAlbedo(nt); cl = 0.0; }
-  if (tSurf < 1e29) {
+  haze = mix(vec3(0.16, 0.38, 0.95), vec3(0.78, 0.9, 1.0), smoothstep(0.80, 1.0, air)) * lit;
+  return air;
+}
+void main() {
+  if (uOn < 0.5) discard;
+  vec3 rd = normalize(vW - cameraPosition); rdG = rd;
+  float b = dot(uOC, rd), disc = b * b - uC;
+  // coverage of the planet disc, anti-aliased from the discriminant (it changes by about 2e10 per pixel at the limb)
+  float cov = b < 0.0 ? clamp(0.5 + disc / max(fwidth(disc), 1e-6 * uR * uR), 0.0, 1.0) : 0.0;
+  vec3 hazeS; float airS = nmAtmo(b, 1e30, hazeS);
+  float skyA = pow(airS, 1.25) * uHaze;
+  vec3 col = hazeS; float a = skyA;
+  if (cov > 0.0) {
+    float tSurf = disc > 0.0 ? -b - sqrt(disc) : -b;
+    vec3 haze; float air = nmAtmo(b, tSurf, haze);
+    vec3 p = uOC + rd * tSurf, n = normalize(p), nt = uTex * n;
+    float u0 = atan(nt.x, nt.z) / 6.2831853 + 0.5, u1 = fract(u0 + 0.5) - 0.5, v = 0.5 - asin(clamp(nt.y, -1.0, 1.0)) / 3.14159265;
+    bool pickA = fwidth(u0) < fwidth(u1) + 1e-6;
+    vec2 uv = pickA ? vec2(u0, v) : vec2(u1 + 0.5, v);
+    vec2 g = pickA ? vec2(dFdx(u0), dFdx(v)) : vec2(dFdx(u1), dFdx(v)), g2 = pickA ? vec2(dFdy(u0), dFdy(v)) : vec2(dFdy(u1), dFdy(v));
+    vec3 alb = textureGrad(uDay, uv, g, g2).rgb; float cl = textureGrad(uCloud, uv, g, g2).r;
+    if (uHasTex < 0.5) { alb = fallbackAlbedo(nt); cl = 0.0; }
     float dn = dot(n, uSun), day = smoothstep(-0.06, 0.18, dn);
-    vec3 col = mix(alb, vec3(1.0), cl * 0.75) * (0.025 + 0.975 * day * (0.35 + 0.65 * clamp(dn, 0.0, 1.0)) / 1.0);
-    col += vec3(0.01, 0.015, 0.03) * (1.0 - day);
-    col += haze * air * 0.9;
-    gl_FragColor = vec4(col, 1.0);
-  } else {
-    if (air < 0.002) discard;
-    gl_FragColor = vec4(haze, air * uHaze);
-  }
+    vec3 sc = mix(alb, vec3(1.0), cl * 0.75) * (0.025 + 0.975 * day * (0.35 + 0.65 * clamp(dn, 0.0, 1.0)));
+    sc += vec3(0.01, 0.015, 0.03) * (1.0 - day);
+    sc += haze * air * 0.9;
+    a = cov + (1.0 - cov) * skyA;
+    col = (sc * cov + hazeS * skyA * (1.0 - cov)) / max(a, 1e-4);
+  } else if (airS < 0.002) discard;
+  gl_FragColor = vec4(col, a);
   #include <colorspace_fragment>
 }`;
 const EARTH_VERT = "varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }";
@@ -102,14 +111,29 @@ export function createWorld(THREE, { catalog, renderer, assetBase }) {
   const rig = new THREE.Group(); scene.add(rig);
   const R_ = C.rig, light = new THREE.DirectionalLight(0xfff2dd, 2.2); scene.add(light, light.target);
   const hemi = new THREE.HemisphereLight(0x8aa4d8, 0x1a1c26, 0.9); scene.add(hemi);
-  const stone = new THREE.MeshStandardMaterial({ color: 0x52555f, roughness: 0.95, metalness: 0.0 });
-  const iron = new THREE.MeshStandardMaterial({ color: 0x23262d, roughness: 0.55, metalness: 0.75 });
+  const stoneTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 512; const g = c.getContext("2d");
+    g.fillStyle = "#6a6d78"; g.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 2600; i++) { const x = hash(i) * 512, y = hash(i + 9e3) * 512, r = 1 + hash(i + 5e3) * 5; g.fillStyle = `rgba(${hash(i + 1) < 0.5 ? "20,22,30" : "200,204,214"},${0.05 + hash(i + 2) * 0.1})`; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+    g.strokeStyle = "rgba(15,17,24,0.65)"; g.lineWidth = 3;
+    for (let i = 0; i <= 4; i++) { g.beginPath(); for (let j = 0; j <= 8; j++) { const x = i * 128 + (hash((i % 4) * 9 + j) - 0.5) * 22, y = j * 64; j ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); g.beginPath(); for (let j = 0; j <= 8; j++) { const y = i * 128 + (hash((i % 4) * 7 + j + 50) - 0.5) * 22, x = j * 64; j ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; })();
+  const stone = new THREE.MeshStandardMaterial({ color: 0xffffff, map: stoneTex, roughness: 0.95, metalness: 0.0 });
+  const iron = new THREE.MeshStandardMaterial({ color: 0x4b515d, roughness: 0.42, metalness: 0.35 });
   const wood = new THREE.MeshStandardMaterial({ color: 0x5b4333, roughness: 0.85 });
   const platform = new THREE.Mesh(new THREE.CylinderGeometry(R_.platformRadius, R_.platformRadius, 0.3, 48), stone); platform.position.set(R_.platformCentre[0], -0.15, R_.platformCentre[1]); rig.add(platform);
   const cannon = new THREE.Group(); cannon.position.set(R_.cannonX, 0, R_.baseZ); rig.add(cannon);
-  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.21, 2.0, 24), iron); barrel.rotation.x = Math.PI / 2; barrel.position.set(0, R_.muzzleY, 0); cannon.add(barrel); // along z, muzzle at z = -1.0 from the base
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.13, 2.0, 32), iron); barrel.rotation.x = Math.PI / 2; barrel.position.set(0, R_.muzzleY, 0); cannon.add(barrel); // along z, muzzle at z = -1.0 from the base
   const ring = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.03, 8, 24), iron); ring.position.set(0, R_.muzzleY, -1.0); cannon.add(ring);
-  for (const sx of [-0.45, 0.45]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.12, 24), wood); w.rotation.z = Math.PI / 2; w.position.set(sx, 0.5, 0); cannon.add(w); const cheek = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.55, 1.0), wood); cheek.position.set(sx * 0.72, 0.8, 0); cannon.add(cheek); }
+  for (const sx of [-0.45, 0.45]) {
+    const wheel = new THREE.Group(); wheel.position.set(sx, 0.5, 0); cannon.add(wheel);
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.045, 10, 40), iron); rim.rotation.y = Math.PI / 2; wheel.add(rim);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.16, 16), iron); hub.rotation.z = Math.PI / 2; wheel.add(hub);
+    for (let k = 0; k < 4; k++) { const sp = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 1.0), wood); sp.rotation.x = k * Math.PI / 4; wheel.add(sp); }
+    const cheek = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 1.2), wood); cheek.position.set(sx * 0.62, 0.78, 0); cannon.add(cheek);
+  }
+  const hoop = (z) => { const h = new THREE.Mesh(new THREE.TorusGeometry(0.19 - (z + 1) * 0.04 + 0.01, 0.022, 8, 32), iron); h.position.set(0, R_.muzzleY, z); cannon.add(h); };
+  hoop(0.55); hoop(0.0); hoop(-0.55);
+  const knob = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 12), iron); knob.position.set(0, R_.muzzleY, 1.08); cannon.add(knob); // the cascabel at the breech
   const fireBtn = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.05, 20), new THREE.MeshStandardMaterial({ color: 0xc23b2e, emissive: 0x4a0c08, roughness: 0.5 })); fireBtn.rotation.z = Math.PI / 2; fireBtn.position.set(0.58, 0.82, 0.25); cannon.add(fireBtn);
   const fireBtnWorld = new THREE.Vector3(R_.cannonX + 0.58, 0.82, R_.baseZ + 0.25);
   // launch-speed card anchor ("breech_card"), a sprite above the breech
@@ -122,18 +146,23 @@ export function createWorld(THREE, { catalog, renderer, assetBase }) {
     g.fillStyle = "#fff"; g.font = "600 76px Inter, system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(text, 512, 132, 960); cardTex.needsUpdate = true;
   }
   // mountain: a rocky pinnacle that fades into haze within about 3 km
-  const mProf = []; for (let d = 0; d <= 1500; d += d < 60 ? 5 : d < 300 ? 20 : 60) mProf.push(new THREE.Vector2(1.7 + 0.45 * d + 0.0004 * d * d, -d));
+  const mProf = []; for (let d = 0; d <= 1500; d += d < 60 ? 5 : d < 300 ? 20 : 60) mProf.push(new THREE.Vector2(2.0 + 0.9 * d + 0.0004 * d * d, -d));
   const mg = new THREE.LatheGeometry(mProf, 96); mg.translate(0, 1500, 0);
   const mtn = new THREE.Mesh(mg, new THREE.ShaderMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide,
     uniforms: { uSun: { value: new THREE.Vector3(0, 1, 0) } },
     vertexShader: "varying vec3 vN; varying float vD; varying float vS; void main(){ vS = sin(position.y * 0.35 + 2.5 * sin(atan(position.z, position.x) * 5.0)); vN = normalize(mat3(modelMatrix) * normal); vD = 1500.0 - position.y; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
-    fragmentShader: "uniform vec3 uSun; varying vec3 vN; varying float vD; varying float vS; void main(){ float l = 0.25 + 0.75 * max(dot(normalize(vN), uSun), 0.0); vec3 c = mix(vec3(0.36,0.33,0.31) * (0.9 + 0.1 * vS), vec3(0.62,0.7,0.82), smoothstep(0.0, 1000.0, vD)) * l; gl_FragColor = vec4(c, 1.0 - smoothstep(300.0, 1450.0, vD));\n#include <colorspace_fragment>\n }" }));
+    fragmentShader: "uniform vec3 uSun; varying vec3 vN; varying float vD; varying float vS; void main(){ float l = 0.25 + 0.75 * max(dot(normalize(vN), uSun), 0.0); vec3 c = mix(vec3(0.46,0.37,0.30) * (0.72 + 0.4 * vS), vec3(0.55,0.66,0.84), smoothstep(150.0, 1400.0, vD)) * l; gl_FragColor = vec4(c, 1.0 - smoothstep(300.0, 1450.0, vD));\n#include <colorspace_fragment>\n }" }));
   mtn.position.set(R_.platformCentre[0], -0.3 - 1500, R_.platformCentre[1]); mtn.renderOrder = 5; mtn.frustumCulled = false; scene.add(mtn);
 
   // ---- Model view props: cannon marker, rings, Moon, ISS marker ----
   const model = new THREE.Group(); model.visible = false; scene.add(model);
-  const marker = new THREE.Group(); { const m = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.6, 14), new THREE.MeshStandardMaterial({ color: 0xd9a441, emissive: 0x4a3510 })); m.rotation.z = -Math.PI / 2; m.position.x = 0.8; marker.add(m); }
-  model.add(marker); // marker is scaled in setFrame so it reads as a marker, not as a to-scale cannon
+  // The cannon marker is unlit (MeshBasicMaterial) so it shows on the night side, plus an additive ring sprite of fixed angular size (about 13 px at 800 px tall).
+  const marker = new THREE.Group(); { const m = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.6, 14), new THREE.MeshBasicMaterial({ color: 0xffb347 })); m.rotation.z = -Math.PI / 2; m.position.x = 0.8; marker.add(m); }
+  const markerGlow = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d");
+    const gr = g.createRadialGradient(32, 32, 6, 32, 32, 31); gr.addColorStop(0, "rgba(255,179,71,0.55)"); gr.addColorStop(0.55, "rgba(255,179,71,0.35)"); gr.addColorStop(0.72, "rgba(255,225,160,1)"); gr.addColorStop(0.86, "rgba(255,179,71,0.35)"); gr.addColorStop(1, "rgba(255,179,71,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, sizeAttenuation: false })); sp.scale.set(0.016, 0.016, 1); sp.renderOrder = 12; return sp; })();
+  model.add(marker, markerGlow); // marker is scaled in setFrame so it reads as a marker, not as a to-scale cannon
   const ringsGroup = new THREE.Group(); model.add(ringsGroup); const ringLabels = [];
   const moonMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), new THREE.MeshStandardMaterial({ color: 0x9a9a9a, roughness: 1 })); moonMesh.visible = false; model.add(moonMesh);
   const issHolder = new THREE.Group(); issHolder.visible = false; model.add(issHolder);
@@ -171,12 +200,12 @@ export function createWorld(THREE, { catalog, renderer, assetBase }) {
     earthMat.uniforms.uRa.value = Rw * 1.016; cur.Rw = Rw; cur.centre = fr.earthCentre;
     const tr = texRotation(fr, C.cannonLatLon[0], C.cannonLatLon[1]); tmpM.set(tr[0][0], tr[0][1], tr[0][2], tr[1][0], tr[1][1], tr[1][2], tr[2][0], tr[2][1], tr[2][2]); earthMat.uniforms.uTex.value.copy(tmpM);
     const sd = sunWorld(fr, C.sunPlane); earthMat.uniforms.uSun.value.set(...sd); light.position.set(sd[0] * 20, sd[1] * 20 + 1.5, sd[2] * 20); light.target.position.set(0, 1, 0); mtn.material.uniforms.uSun.value.set(...sd);
-    cur.sun = sd;
+    cur.sun = sd; far.uSunDir.value.set(sd[0], sd[1], sd[2]);
     // stars: equatorial J2000 -> texture frame -> world, a fixed inertial sky
     const M = mat3mul(transpose3(tr), EQ_TO_TEX); cur.starM = M;
     const isM = fr.kind === "mountain"; rig.visible = isM; mtn.visible = isM; model.visible = !isM;
     if (!isM) {
-      const { u } = planeAxes(fr); marker.position.set(...[0, 1, 2].map((i) => fr.earthCentre[i] + u[i] * (R + h) * k)); marker.scale.setScalar(Math.max(0.012, 0.03 * (fr.scale * 2 * R)));
+      const { u } = planeAxes(fr); marker.position.set(...[0, 1, 2].map((i) => fr.earthCentre[i] + u[i] * (R + h) * k)); marker.scale.setScalar(Math.max(0.012, 0.03 * (fr.scale * 2 * R))); markerGlow.position.copy(marker.position);
       marker.rotation.set(0, 0, 0); marker.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(...u), new THREE.Vector3(...planeAxes(fr).o), new THREE.Vector3(...planeAxes(fr).f).negate()));
       buildRings(opts.rings || [], fr, R);
     }
@@ -217,5 +246,5 @@ export function createWorld(THREE, { catalog, renderer, assetBase }) {
     frame.starScale = flat ? Math.min(2.2, Math.max(1, 22 / (0.5 * viewportH * p11 * Math.PI / 180))) : 1; frame.starMinPx = passthrough ? 2.8 : flat ? 1.6 : 2.4;
     far.uViewportH.value = viewportH; stars.update({ frame, state });
   }
-  return { scene, far, rig, mtn, fireBtnWorld, setLaunchCard, setFrame, update, earth, model, marker, ringsGroup, ringLabels, moonMesh, assets, assetsReady, starsPoints, get cur() { return cur; }, light, hemi };
+  return { scene, far, rig, mtn, fireBtnWorld, setLaunchCard, setFrame, update, earth, model, marker, markerGlow, ringsGroup, ringLabels, moonMesh, assets, assetsReady, starsPoints, get cur() { return cur; }, light, hemi };
 }
