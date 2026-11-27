@@ -416,7 +416,7 @@ def main():
               const assets = await m.loadPanelAssets(new URL('./night-sky/', location.href)); const p = new m.VRPanel(a.THREE, assets);
               p.tab = tab; if (p.page[tab] !== undefined) p.page[tab] = pg;
               p.draw(a.state, Object.assign({ simMs: a.frame.simMs, artStatus: 'ready' }, info));
-              return { png: p.canvas.toDataURL('image/png'), hits: p.hits.map((h) => ({ id: h.id, x: h.x, y: h.y, w: h.w, h: h.h })) };
+              return { png: p.canvas.toDataURL('image/png'), hits: p.hits.map((h) => ({ id: h.id, x: h.x, y: h.y, w: h.w, h: h.h, action: h.action || null })) };
             }""", [tab, pg, info])
             (OUT / fname).write_bytes(base64.b64decode(out["png"].split(",", 1)[1]))
             return out["hits"]
@@ -427,17 +427,23 @@ def main():
 
         hits0 = draw_panel("sky", 0, {"arSupported": True, "seeRoom": True}, "vrpanel-sky-0-ar.png")
         by_id = {h["id"]: h for h in hits0}
-        check(by_id.get("helpoff") == {"id": "helpoff", "x": 40, "y": 736, "w": 944, "h": 112}, f"Help off at 40,736 944x112 {by_id.get('helpoff')}")
-        check(by_id.get("seeRoom") == {"id": "seeRoom", "x": 40, "y": 860, "w": 800, "h": 112}, f"See my room at 40,860 800x112 {by_id.get('seeRoom')}")
-        check(by_id.get("next") == {"id": "next", "x": 856, "y": 870, "w": 128, "h": 92}, f"next arrow at 856,870 128x92 {by_id.get('next')}")
+        check(by_id.get("helpoff") and by_id["helpoff"]["x"] == 40 and by_id["helpoff"]["y"] == 736 and by_id["helpoff"]["w"] == 944 and by_id["helpoff"]["h"] == 112, f"Help off at 40,736 944x112 {by_id.get('helpoff')}")
+        check(by_id.get("seeRoom") and by_id["seeRoom"]["x"] == 40 and by_id["seeRoom"]["y"] == 860 and by_id["seeRoom"]["w"] == 744 and by_id["seeRoom"]["h"] == 112, f"See my room at 40,860 744x112 {by_id.get('seeRoom')}")
+        check(by_id.get("next") and by_id["next"]["x"] == 856 and by_id["next"]["y"] == 870 and by_id["next"]["w"] == 128 and by_id["next"]["h"] == 92, f"next arrow at 856,870 128x92 {by_id.get('next')}")
 
         hits1 = draw_panel("sky", 1, {"arSupported": True, "seeRoom": True}, "vrpanel-sky-1-ar.png")
         by_id = {h["id"]: h for h in hits1}
         check(by_id.get("reset") and by_id["reset"]["x"] == 40 and by_id["reset"]["w"] == 330, f"Reset is 330 px at x 40 {by_id.get('reset')}")
         check(by_id.get("vignette") and by_id["vignette"]["x"] == 382 and by_id["vignette"]["w"] == 330, f"Vignette is 330 px at x 382 {by_id.get('vignette')}")
         check("seeRoom" not in by_id, "See my room is not on Sky page 2")
-        check("ground1" not in by_id and "ground0" not in by_id and "sky-real" not in by_id, f"Ground and Daylight have no hits when See my room is on {[k for k in by_id if k in ('ground1','ground0','sky-real','planets')]}")
-        check("planets" in by_id, "Planets stays enabled in passthrough")
+        check("planets" in by_id and (not by_id["planets"].get("action") or by_id["planets"]["action"].get("type") != "passLockHint"), "Planets stays enabled in passthrough")
+        for kid in ("ground1", "ground0", "sky-real"):
+            check(kid in by_id and (by_id[kid].get("action") or {}).get("type") == "passLockHint", f"{kid} is a locked hint hit when See my room is on {by_id.get(kid)}")
+        before = page.evaluate("(() => { const s = window.__nightSky.state; return { ground: s.ground, sky: s.sky, planets: s.planets }; })()")
+        page.evaluate("window.__nightSky.dispatch({ type: 'passLockHint' })")
+        after = page.evaluate("(() => { const s = window.__nightSky.state; return { ground: s.ground, sky: s.sky, planets: s.planets, hint: window.__nightSky.lockHint() }; })()")
+        check(after["ground"] == before["ground"] and after["sky"] == before["sky"] and after["planets"] == before["planets"], f"passLockHint changes nothing {before} -> {after}")
+        check(after["hint"] == "Off while See my room is on", f"pressing a locked control shows the hint ({after.get('hint')!r})")
         check(not errs, f"vr panel draws without errors {errs[:3]}")
         ctx.close()
 

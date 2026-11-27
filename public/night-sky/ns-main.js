@@ -316,6 +316,12 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
   let urlTimer = 0;
   function dispatch(action, opt = {}) {
     if (action && action.type === "seeRoom") { setSeeRoom(!!action.value); return state; }
+    if (action && action.type === "passLockHint") {
+      panel.lockHint = "Off while See my room is on";
+      panel.lockHintUntil = ((typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now()) + 1800;
+      panelDirty = true;
+      return state;
+    }
     const before = state;
     state = reduce(state, { ...action, wallMs: wallNow() });
     if (state === before) return state;
@@ -391,6 +397,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
       if (panelNeedsPlace) { panel.placeInFront(cam); panelNeedsPlace = false; }
       xrInput.update(dt);
       if (scrubFade && now > scrubFade && !panel.drag) { scrubFade = 0; scrubTotal = 0; panel.scrubLabel = ""; panelDirty = true; }
+      if (panel.lockHintUntil && now > panel.lockHintUntil) { panel.lockHint = ""; panel.lockHintUntil = 0; panelDirty = true; }
       if (panel.mesh.visible && (panelDirty || now - lastPanelDraw > 1000)) { // redraw only on change, or once a second for the clock
         panel.draw(state, { simMs: frame.simMs, artStatus: getLayer("constellations").status.art, arSupported, seeRoom });
         panelDirty = false; lastPanelDraw = now;
@@ -457,6 +464,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     },
     get state() { return state; }, dispatch, enterVR, enterAR, startXR, setSeeRoom,
     get xrSupported() { return xrSupported; }, get arSupported() { return arSupported; }, get seeRoom() { return seeRoom; },
+    lockHint: () => panel.lockHint,
     get frame() { return frame; }, view, artStatus: () => getLayer("constellations").status.art, applyLook: () => { applyLook(); },
     setView(v) {
       const tgt = look.active ? look : view;
