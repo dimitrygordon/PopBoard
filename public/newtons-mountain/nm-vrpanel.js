@@ -10,6 +10,7 @@ export const TABS = [["launch", "Launch"], ["shots", "Shots"], ["view", "View"],
 export const PAGES = { launch: 1, shots: 2, view: 3, help: 1 }; // help is paginated by measuring, see helpPages()
 const F = (px, w = 600) => `${w} ${px}px Inter`;
 const MIN = 56;                       // spec minimum text, px on the 1024 canvas (1.5 deg at 1.2 m)
+const PAD = 40, BODY_W = 1024 - 2 * PAD, LH = 72; // body text: 40 px inset each side, line height 1.3 x 56 px
 const LIMIT = 880;                    // content stops here on paged tabs; the bottom 120 px hold the page chips
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const glue = (l) => l.replace(/(\d) (km\/s|km|m\/s|min|degrees|laps|h|s|m)\b/g, "$1\u00a0$2"); // keep a number and its unit on one line
@@ -19,8 +20,15 @@ export class NMPanel extends VRPanel {
   constructor(THREE, icons) { super(THREE, icons); this.tab = "launch"; this.page = { launch: 0, shots: 0, view: 0, help: 0 }; this.shotRow = 0; this.holdClear = 0; }
   pageCount(tab) {
     if (tab === "help") return this.helpPages().length;
-    if (tab === "shots" && this.m && this.m.help >= 2 && this.m.levelTwo && this.m.levelTwo.length) return PAGES.shots + 1; // page 3: the Explain-level fall check
+    if (tab === "shots") return this.shotPages().length;
     return PAGES[tab];
+  }
+  /** Shots pages: the list, the shot's facts, then (only when they apply) the Explain-level fall check and Between your shots. */
+  shotPages() {
+    const m = this.m || {}, p = ["list", "facts"];
+    if (m.help >= 2 && m.levelTwo && m.levelTwo.length) p.push("fall");
+    if (m.between) p.push("between");
+    return p;
   }
   /** m: view model built by nm-main (see buildPanelModel). */
   draw(m) {
@@ -68,8 +76,10 @@ export class NMPanel extends VRPanel {
     C.heightsKm.forEach((h, i) => { btn("h" + h, x, 876, W[i], 100, String(h), { on: m.h === h, locked: lk("height"), action: { type: "setHeight", km: h } }); x += W[i] + 11; });
   }
   drawShots(g, m, btn, hit, st, pg) {
-    if (pg === 1) return this.drawShotDetail(g, m);
-    if (pg === 2) return this.drawShotLevelTwo(g, m);
+    const kind = this.shotPages()[pg];
+    if (kind === "facts") return this.drawShotDetail(g, m);
+    if (kind === "fall") return this.drawShotLevelTwo(g, m);
+    if (kind === "between") return this.drawBetween(g, m);
     const rows = m.rows, per = 3, y0 = 176, page = this.shotRow = Math.min(this.shotRow, Math.max(0, Math.ceil(rows.length / per) - 1));
     if (!rows.length) text(g, "No shots yet. Press FIRE.", 512, 340, F(MIN, 500), THEME.text.secondary, "center");
     rows.slice(page * per, page * per + per).forEach((r, i) => {
@@ -91,27 +101,31 @@ export class NMPanel extends VRPanel {
       else { text(g, line, 48, y, F(MIN, 650), "#FFFFFF"); y += 62; }
     }
   }
+  shotHead(g, sel, label) {
+    g.beginPath(); g.arc(PAD + 40, 212, 28, 0, 7); g.fillStyle = sel.color; g.fill(); text(g, String(sel.n), PAD + 40, 212 + 16, F(48, 700), "#10131e", "center");
+    text(g, label, PAD + 90, 212 + 20, F(MIN, 650), "#FFFFFF");
+  }
   drawShotDetail(g, m) {
     const sel = m.rows.find((r) => r.n === m.selected) || m.rows[m.rows.length - 1];
     if (!sel) { text(g, "No shots yet. Press FIRE.", 512, 340, F(MIN, 500), THEME.text.secondary, "center"); return; }
-    g.beginPath(); g.arc(80, 236, 28, 0, 7); g.fillStyle = sel.color; g.fill(); text(g, String(sel.n), 80, 236 + 16, F(48, 700), "#10131e", "center");
-    text(g, `Shot ${sel.n}   ${sel.speed}`, 130, 236 + 20, F(MIN, 650), "#FFFFFF");
-    let y = m.between ? 314 : 304; const lines = facts(m.detailFull.slice(0, 5)).map(cap), stop = m.between ? 650 : LIMIT;
-    for (const l of lines) for (const ln of this.wrap(g, l, F(MIN, 500), 930)) { if (y > stop) break; text(g, ln, 48, y, F(MIN, 500), THEME.text.secondary); y += m.between ? 55 : 58; }
-    // "Between your shots": line 1, then line 2 (VR keeps the 56 px floor, so line 2 is lighter instead of smaller), then the circular speed at help 2
-    if (m.between) {
-      let by = 700; text(g, m.between.line1, 48, by, F(MIN, 650), "#FFFFFF"); by += 58;
-      for (const ln of this.wrap(g, m.between.line2, F(MIN, 400), 930)) { text(g, ln, 48, by, F(MIN, 400), THEME.text.tertiary); by += 58; }
-      if (m.between.extra) text(g, m.between.extra, 48, by, F(MIN, 650), "#FFFFFF");
-    }
+    this.shotHead(g, sel, `Shot ${sel.n}   ${sel.speed}`);
+    // Distance and Angle come before Lowest and Highest so a full page never cuts them
+    const all = facts(m.detailFull.slice(0, 5)).map(cap), lowHigh = (l) => /^(Lowest|Highest) /.test(l);
+    let y = 300; for (const l of [...all.filter((l) => !lowHigh(l)), ...all.filter(lowHigh)]) for (const ln of this.wrap(g, l, F(MIN, 500), BODY_W)) { if (y > LIMIT) break; text(g, ln, PAD, y, F(MIN, 500), THEME.text.secondary); y += LH; }
   }
-  /** Shots page 3, only at help level 2 while a shot is flying: the fall check, from the lesson's own wording. */
+  /** Shots page: Between your shots. Line 1, then line 2 (VR keeps the 56 px floor, so it is lighter instead of smaller), then the circular speed at help 2. */
+  drawBetween(g, m) {
+    if (!m.between) return;
+    let y = 232; text(g, m.between.line1, PAD, y, F(MIN, 650), "#FFFFFF"); y += LH;
+    for (const ln of this.wrap(g, m.between.line2.replace(" vs. ", " vs.\u00a0"), F(MIN, 400), BODY_W)) { text(g, ln, PAD, y, F(MIN, 400), THEME.text.tertiary); y += LH; }
+    if (m.between.extra) { y += 12; text(g, m.between.extra, PAD, y, F(MIN, 650), "#FFFFFF"); }
+  }
+  /** Shots page, only at help level 2 while a shot is flying: the fall check, from the lesson's own wording. */
   drawShotLevelTwo(g, m) {
     const sel = m.rows.find((r) => r.n === m.selected) || m.rows[m.rows.length - 1];
     if (!sel) return;
-    g.beginPath(); g.arc(80, 236, 28, 0, 7); g.fillStyle = sel.color; g.fill(); text(g, String(sel.n), 80, 236 + 16, F(48, 700), "#10131e", "center");
-    text(g, `Shot ${sel.n}   Fall check`, 130, 236 + 20, F(MIN, 650), "#FFFFFF");
-    let y = 330; for (const l of facts(m.levelTwo)) for (const ln of this.wrap(g, cap(l), F(MIN, 500), 930)) { if (y > LIMIT) break; text(g, ln, 48, y, F(MIN, 500), THEME.text.secondary); y += 58; }
+    this.shotHead(g, sel, `Shot ${sel.n}   Fall check`);
+    let y = 300; for (const l of facts(m.levelTwo)) for (const ln of this.wrap(g, cap(l), F(MIN, 500), BODY_W)) { if (y > LIMIT) break; text(g, ln, PAD, y, F(MIN, 500), THEME.text.secondary); y += LH; }
   }
   drawView(g, m, btn, pg) {
     const lk = (k) => m.lock.includes(k);
@@ -146,22 +160,25 @@ export class NMPanel extends VRPanel {
   }
   helpPages() {
     const g = this.canvas.getContext("2d"), m = this.m || { help: 0, lock: [], helpLines: [] }, pages = [[]]; let y = 232;
-    const room = (n) => y + n * 58 <= LIMIT;
+    const room = (n) => y + n * LH <= LIMIT;
     for (const b of this.helpBlocks(m)) {
-      const body = b.lines.flatMap((t) => this.wrap(g, glue(t), F(MIN, 500), 930));
+      const body = b.lines.flatMap((t) => this.wrap(g, glue(t), F(MIN, 500), BODY_W));
       if (b.lines.length <= 1 && !room(1 + body.length) && y > 232) { pages.push([]); y = 232; } // short blocks stay whole; lists may flow
-      if (y > LIMIT - 58 * 2) { pages.push([]); y = 232; }
-      pages[pages.length - 1].push({ t: b.h, font: F(MIN, 650), color: "#FFFFFF", y }); y += 62;
-      for (const ln of body) { if (y > LIMIT) { pages.push([]); y = 232; } pages[pages.length - 1].push({ t: ln, font: F(MIN, 500), color: THEME.text.secondary, y }); y += 58; }
+      if (y > LIMIT - LH * 2) { pages.push([]); y = 232; }
+      pages[pages.length - 1].push({ t: b.h, font: F(MIN, 650), color: "#FFFFFF", y }); y += LH;
+      for (const ln of body) { if (y > LIMIT) { pages.push([]); y = 232; } pages[pages.length - 1].push({ t: ln, font: F(MIN, 500), color: THEME.text.secondary, y }); y += LH; }
       y += 12;
     }
     return pages;
   }
-  drawHelp(g, m, pg) { for (const o of (this.helpPages()[pg] || [])) text(g, o.t, 48, o.y, o.font, o.color); }
+  drawHelp(g, m, pg) { for (const o of (this.helpPages()[pg] || [])) text(g, o.t, PAD, o.y, o.font, o.color); }
+  /** Greedy wrap; if that leaves one word alone on the last line, rewrap at the narrowest width that keeps the same line count (balanced). */
   wrap(g, s, font, maxW) {
-    g.font = font; const out = []; let line = "";
-    for (const w of s.split(/ +/)) { const t = line ? line + " " + w : w; if (g.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t; }
-    if (line) out.push(line); return out;
+    g.font = font;
+    const run = (w) => { const out = []; let line = ""; for (const word of s.split(/ +/)) { const t = line ? line + " " + word : word; if (g.measureText(t).width > w && line) { out.push(line); line = word; } else line = t; } if (line) out.push(line); return out; };
+    const out = run(maxW); if (out.length < 2 || out[out.length - 1].includes(" ")) return out;
+    let lo = maxW / 3, hi = maxW; for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2; if (run(mid).length === out.length) hi = mid; else lo = mid; }
+    const bal = run(hi); return bal.length === out.length && bal[bal.length - 1].includes(" ") ? bal : out;
   }
 }
 export { PANEL_PX };

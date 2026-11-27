@@ -77,6 +77,7 @@ function render() {
 }
 
 // "Between your shots" element: line 1, a smaller line 2, and at the Explain level the circular speed
+const WIDE_ROW = /^(Distance along the ground|Angle swept)/;
 function betweenEls(bt) { const a = [el("p", "nm-between", bt.line1), el("p", "nm-between-sub", bt.line2)]; if (bt.extra) a.push(el("p", "nm-between", bt.extra)); return a; }
 
 // ---- shot card ----
@@ -85,12 +86,13 @@ function showCard() {
   const m = app.model(), w = app.selectedWorld();
   if (!cardOpen || !m.selected || !w) { card.hidden = true; return; }
   $("cardTitle").textContent = `Shot ${m.selected}`;
-  const key = m.detailFull.join("|") + "#" + (m.between ? [m.between.line1, m.between.extra].join("|") : ""); if (key !== card.dataset.key) { card.dataset.key = key; $("cardBody").replaceChildren(...m.detailFull.flatMap((l) => l.split(/ {3,}/)).map((l, i) => el("p", i === 0 ? "line lead" : l.length > 24 ? "line wide" : "line", i === 0 ? l.charAt(0).toUpperCase() + l.slice(1) : l)), ...(m.between ? betweenEls(m.between).map((e) => { e.classList.add("wide"); return e; }) : [])); }
+  const key = m.detailFull.join("|") + "#" + (m.between ? [m.between.line1, m.between.extra].join("|") : ""); if (key !== card.dataset.key) { card.dataset.key = key; $("cardBody").replaceChildren(...m.detailFull.flatMap((l) => l.split(/ {3,}/)).map((l, i) => el("p", i === 0 ? "line lead" : (l.length > 24 || WIDE_ROW.test(l)) ? "line wide" : "line", i === 0 ? l.charAt(0).toUpperCase() + l.slice(1) : l)), ...(m.between ? betweenEls(m.between).map((e) => { e.classList.add("wide"); return e; }) : [])); }
   const p = app.project(w), stage = $("stage").getBoundingClientRect();
   card.hidden = false;
+  const cw = card.offsetWidth, ch = card.offsetHeight;
+  if (m.view === "model" && stage.width > 820) { card.style.visibility = "visible"; card.style.left = (stage.width - cw - 16) + "px"; card.style.top = "16px"; return; } // desktop Model view: pinned top right, 16 px in
   if (!p.visible) { card.style.visibility = "hidden"; return; }
   card.style.visibility = "visible";
-  const cw = card.offsetWidth, ch = card.offsetHeight;
   card.style.left = Math.max(6, Math.min(stage.width - cw - 6, p.x + 14)) + "px"; card.style.top = Math.max(6, Math.min(stage.height - ch - 6, p.y - ch / 2)) + "px";
 }
 $("cardClose").addEventListener("click", () => { cardOpen = false; $("card").hidden = true; });

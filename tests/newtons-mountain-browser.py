@@ -7,7 +7,7 @@ Cannot test here: a real WebXR session, controllers, hands, haptics, passthrough
 Those need a Quest 3 (VR, AR) or an Android phone (phone AR)."""
 from __future__ import annotations
 
-import base64
+import base64, re
 import http.server
 import os
 import socketserver
@@ -204,11 +204,47 @@ def main():
             else:
                 check("Circular speed here: 7,807 m/s" in scope, "help=2: circular speed shown next to it")
             lt = page.evaluate("window.__nm.model().levelTwo"); page.evaluate("window.__nm.panelImage('shots', 0)"); pc = page.evaluate("window.__nm.panel.pageCount('shots')")
-            check((len(lt) == 2 and pc == 3) if level == 2 else (lt == [] and pc == 2), f"help={level}: Shots VR pages {pc}, Explain-level fall check lines {len(lt)}")
+            check((len(lt) == 2 and pc == 4) if level == 2 else (lt == [] and pc == 3), f"help={level}: Shots VR pages {pc} (list, facts, between{', fall check' if level == 2 else ''}), Explain-level fall check lines {len(lt)}")
             for pg in range(pc):
                 data = page.evaluate(f"window.__nm.panelImage('shots', {pg})")
                 f = OUT / f"vr-panel-shots{pg}-help{level}.png"; f.write_bytes(base64.b64decode(data.split(",", 1)[1]))
             ctx.close()
+        # Art pass nits: Angle swept uses the degree sign and spans both columns, VR body inset and line height, no orphan words
+        ctx, page, errs = open_page(browser, base, dev, "shots=7000&help=1")
+        page.evaluate("window.__nm.dispatch({type:'select', n:1})"); page.wait_for_timeout(500)
+        full = page.evaluate("window.__nm.model().detailFull.join(' | ')")
+        check(re.search(r"Angle swept \d+°", full) is not None and "degrees" not in full, f"Angle swept uses the degree sign ({full})")
+        wide = page.evaluate("[...document.querySelectorAll('#cardBody .wide')].map((e) => e.textContent)")
+        check(any(t.startswith("Distance along the ground") for t in wide) and any(t.startswith("Angle swept") for t in wide), f"Distance and Angle swept span both columns ({wide})")
+        card = page.evaluate("(() => { const r = document.getElementById('cardBody').children; return [...r].filter((e) => e.textContent.startsWith('Angle swept')).map((e) => getComputedStyle(e).gridColumnStart + '/' + getComputedStyle(e).gridColumnEnd)[0]; })()")
+        check(card == "1/-1", f"Angle swept grid span {card}")
+        ctx.close()
+        ctx, page, errs = open_page(browser, base, dev, "shots=7000,7807,9000&help=2&view=model&h=150")
+        page.evaluate("window.__nm.dispatch({type:'select', n:2})"); page.wait_for_timeout(700)
+        box = page.evaluate("(() => { const c = document.getElementById('card').getBoundingClientRect(), s = document.getElementById('stage').getBoundingClientRect(); return { top: c.top - s.top, right: s.right - c.right, vis: getComputedStyle(document.getElementById('card')).visibility }; })()")
+        check(abs(box["top"] - 16) <= 1 and abs(box["right"] - 16) <= 1 and box["vis"] == "visible", f"desktop Model view: card pinned top right, 16 px in ({box})")
+        page.evaluate("window.__nm.setView({ yaw: 1.2, pitch: 0.2 })"); page.wait_for_timeout(500)
+        box2 = page.evaluate("(() => { const c = document.getElementById('card').getBoundingClientRect(), s = document.getElementById('stage').getBoundingClientRect(); return { top: c.top - s.top, right: s.right - c.right }; })()")
+        check(abs(box2["top"] - 16) <= 1 and abs(box2["right"] - 16) <= 1, f"the card stays pinned when the view turns ({box2})")
+        res = page.evaluate("""() => { const a = window.__nm, P = a.panel, g = P.canvas.getContext('2d'), out = {};
+          P.draw(a.model());
+          out.help = [0, 1, 2].map((lvl) => { a.dispatch({ type: 'setHelp', level: lvl }); P.draw(a.model()); const pg = P.helpPages(), res = []; for (const page of pg) { res.push(page.map((o, i) => i && o.font.startsWith('500') && page[i - 1].font.startsWith('500') ? o.y - page[i - 1].y : 0).filter(Boolean)); } return res; });
+          const wrapped = [a.model().between.line2.replace(' vs. ', ' vs.\u00a0'), 'Earth surface curves away this far from a straight line: 6.202 m', 'The ball falls this far below a straight line: 4.667 m in 1 s', 'It stays up there because it keeps missing the ground all the way around'].map((t) => P.wrap(g, t, '500 56px Inter', 944));
+          out.wrapped = wrapped; return out; }""")
+        steps = {d for lvl in res["help"] for pg in lvl for d in pg}
+        check(steps <= {72}, f"VR Help body line height is 72 px on every page ({sorted(steps)})")
+        check(res["wrapped"][0] == ["highest that landed", "vs. lowest that didn't"] or len(res["wrapped"][0]) == 2 and " " in res["wrapped"][0][-1], f"line 2 breaks before vs. ({res['wrapped'][0]})")
+        orph = [w for w in res["wrapped"] if len(w) > 1 and " " not in w[-1].strip().replace("\u00a0", "x")]
+        check(not orph, f"no single word alone on a wrapped line ({orph})")
+        from PIL import Image
+        import io
+        for tab, pgs in (("shots", (1, 2)), ("help", (0,))):
+            for pgi in pgs:
+                data = page.evaluate(f"window.__nm.panelImage('{tab}', {pgi})")
+                im = Image.open(io.BytesIO(base64.b64decode(data.split(",", 1)[1]))).convert("L").crop((0, 190, 1024, 890))
+                px = im.load(); cols = [x for x in range(8, 1016) if any(px[x, y] > 110 for y in range(0, 700, 1))]
+                check(min(cols) >= 40 and max(cols) <= 984, f"VR {tab} page {pgi + 1}: body ink stays inside the 40 px inset ({min(cols)} to {max(cols)})")
+        ctx.close()
         # Model view: the marker is hidden behind the globe and the surface under it is the cannon longitude
         ctx, page, errs = open_page(browser, base, dev, "view=model&h=150")
         res = page.evaluate("""async () => { const a = window.__nm, out = {};

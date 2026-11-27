@@ -149,7 +149,7 @@ export async function boot({ canvas, onState = () => {}, onStatus = () => {}, on
     lines.push(`Flight time ${S.fmtDuration(sim.t)}   Altitude ${fmtKmAlt(altitudeNow(sim))}`);
     lines.push(`Speed ${(sim.speedNow / 1000).toFixed(2)} km/s   Laps ${laps.toFixed(1)}`);
     lines.push(`Lowest ${fmtKmAlt(sim.status === "landed" ? 0 : sim.minR - sim.R)}   Highest ${fmtKmAlt(sim.maxR - sim.R)}`);
-    if (full) lines.push(`Distance along the ground ${S.fmtKm(groundDistanceNow(sim))}   Angle swept ${(sim.swept * 180 / Math.PI).toFixed(0)} degrees`);
+    if (full) lines.push(`Distance along the ground ${S.fmtKm(groundDistanceNow(sim))}   Angle swept ${(sim.swept * 180 / Math.PI).toFixed(0)}°`);
     lines.push(...levelTwoLines(sim));
     return lines;
   }
