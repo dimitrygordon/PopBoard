@@ -128,8 +128,14 @@ export class VRPanel {
       row("brightness", [4, 5, 5.5, 6, 6.5].map((m) => ({ id: "mag" + m, text: m.toFixed(1), on: st.mag === m, action: { type: "set", key: "mag", value: m } })), lockS);
       surface(g, 40, y, 330, 112, 40, S("reset", false, lockS)); icon(g, this.icons.reset, 96, y + 56, 56, 0.9); text(g, "Reset", 140, y + 76, THEME.type.label, labelColor(S("reset", false, lockS)));
       if (!lockS) hit("reset", 40, y, 330, 112, { type: "reset" });
-      surface(g, 382, y, 330, 112, 40, S("vignette", st.vignette, false)); text(g, "Vignette", 547, y + 76, THEME.type.label, labelColor(S("vignette", st.vignette, false)), "center");
-      hit("vignette", 382, y, 330, 112, { type: "toggle", key: "vignette" });
+      g.save();
+      if (passLock) g.globalAlpha *= THEME.ctl.locked.alpha;
+      surface(g, 382, y, 330, 112, 40, passLock ? "off" : S("vignette", st.vignette, false));
+      text(g, "Vignette", 547, y + 76, THEME.type.label, labelColor(passLock ? "locked" : S("vignette", st.vignette, false)), "center");
+      if (passLock) icon(g, this.icons.lock, 382 + 330 - 20, y + 56, 28, 1);
+      g.restore();
+      if (passLock) hit("vignette", 382, y, 330, 112, { type: "passLockHint" });
+      else hit("vignette", 382, y, 330, 112, { type: "toggle", key: "vignette" });
       this.pageDots(g, 2, 1, 820, y + 72);
       surface(g, 856, y + 10, 128, 92, 40, this.hover === "prev" ? "hover" : "off"); icon(g, this.icons["step-back"], 920, y + 56, 52, 0.85); hit("prev", 856, y + 10, 128, 92, null, { page: 0 });
     } else if (this.tab === "place") {

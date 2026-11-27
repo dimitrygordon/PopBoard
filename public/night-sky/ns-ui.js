@@ -23,7 +23,7 @@ const fmtLon = (v) => `${Math.abs(v).toFixed(2)}° ${v >= 0 ? "E" : "W"}`;
 export function panelModel(st, info) {
   const locked = (g) => st.lock.includes(g);
   const passLock = !!info.seeRoom;
-  const b = (id, text, action, on, group) => ({ id, text, action, on: !!on, disabled: !!(group && locked(group)) || !!(passLock && (id === "ground1" || id === "ground0" || id === "sky-night" || id === "sky-real")) });
+  const b = (id, text, action, on, group) => ({ id, text, action, on: !!on, disabled: !!(group && locked(group)) || !!(passLock && (id === "ground1" || id === "ground0" || id === "sky-night" || id === "sky-real" || id === "vignette")) });
   const { date, time } = fmtLocal(info.simMs, st.tz);
   const playing = st.clock.speed !== 0;
   const tabs = {
