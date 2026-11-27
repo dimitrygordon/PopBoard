@@ -7,6 +7,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DECKS } from "../public/physics101/p101-catalog.js";
 import { COURSES } from "../public/astro-course/ac-courses.js";
+import { artExists } from "./art-pack.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public"), D = join(PUB, "physics101/decks/m01-l01");
@@ -27,8 +28,8 @@ test("every page has its layers on disk; bg, mid and fg are full-page planes", (
   for (const [pn, ls] of Object.entries(art)) {
     assert.ok(ls.some((l) => l.id === "bg") && ls.some((l) => l.id === "mid"), pn);
     for (const l of ls) {
-      assert.ok(existsSync(join(D, "v2/art", l.src)), l.src);
-      if (l.hint) assert.ok(existsSync(join(D, "v2/art", l.hint)), l.hint);
+      assert.ok(artExists(D, join("v2/art", l.src)), l.src);
+      if (l.hint) assert.ok(artExists(D, join("v2/art", l.hint)), l.hint);
       const [x0, y0, x1, y1] = l.box; assert.ok(x0 >= 0 && y0 >= 0 && x1 <= 1600 && y1 <= 900 && x1 > x0 && y1 > y0, l.src);
     }
   }

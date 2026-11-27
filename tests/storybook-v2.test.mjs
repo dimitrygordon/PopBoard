@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { darkInk } from "../public/astro-course/ac-ink.js";
 import { hasArt } from "../public/astro-course/ac-artscene.js";
+import { artExists } from "./art-pack.mjs";
 
 const PUB = new URL("../public/", import.meta.url).pathname;
 const AC = PUB + "astro-course/";
@@ -23,7 +24,7 @@ test("every D01 page has a v2 entry with expanded page text", () => {
 
 test("every cutout layer file exists and sits on the page", () => {
   for (const [n, s] of Object.entries(story.slides)) for (const l of s.layers) {
-    assert.ok(existsSync(AC + "decks/d01/" + l.src), `${n}: ${l.src}`);
+    assert.ok(artExists(AC + "decks/d01", l.src), `${n}: ${l.src}`);
     const [x, y, w, h] = l.box;
     assert.ok(x >= -1 && y >= -1 && x + w <= 101 && y + h <= 101 && w > 0 && h > 0, `${n}: ${l.src} box`);
   }

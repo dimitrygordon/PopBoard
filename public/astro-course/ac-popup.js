@@ -4,6 +4,7 @@
 // Pencil cutouts stand up as layered planes; parallax follows pointer, drag and device tilt.
 // Reduce-motion (or no WebGL): cutouts stay flat in the DOM and the touch interactions still work.
 import { reduceMotion } from "./ac-common.js";
+import { artUrl } from "../shared/pack/pack.js";
 
 export const TIMING = { sketch: 0.6, color: 0.4, pop: 0, stagger: 0.2 };
 const W = 16, H = 9, FOV = 30, DIST = (H / 2) / Math.tan((FOV / 2) * Math.PI / 180);
@@ -107,7 +108,7 @@ export function createPopup({ stage, base, onFrame }) {
     for (const l of layers) {
       if (popped.includes(l) || (imm && (opts.drop || []).includes(l.src))) continue;
       const im = document.createElement("img");
-      im.src = base + l.src; im.alt = ""; im.draggable = false; im.decoding = "async";
+      im.src = artUrl(base + l.src); im.alt = ""; im.draggable = false; im.decoding = "async";
       im.className = "pop-layer" + (l.interact ? " touch" : "") + (l.motion && l.motion !== "none" && !reduceMotion() ? " m-" + l.motion : "");
       const [x, y, w, h] = l.box; im.style.cssText = `left:${x}%;top:${y}%;width:${w}%;height:${h}%;--d:${order.get(l) * TIMING.stagger}s`;
       if (l.interact) bindFlatTouch(im, l);
@@ -144,7 +145,7 @@ export function createPopup({ stage, base, onFrame }) {
       const z = imm ? (l.box[2] * l.box[3] >= 4000 ? -6 - (i % 2) * 1.5 : l.flat ? 2.6 : -2.6 + 3.6 * (mids.indexOf(l) + 1) / (mids.length + 1))
         : gentle ? 0.12 : 0.25 + 0.9 * (rank / popped.length);
       const p = place(l.box, z);
-      const tex = loadTex(base + l.src); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 2;
+      const tex = loadTex(artUrl(base + l.src)); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 2;
       const mat = new T.ShaderMaterial({ uniforms: { map: { value: tex }, uSketch: { value: 0 }, uColor: { value: 0 }, uTime: { value: 0 }, uShadow: { value: 0 }, uHalo: { value: 0 }, uFade: { value: 1 } }, vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false });
       if (imm && z < -4) mat.uniforms.uFade.value = 0.8;
       const hinge = new T.Group(); hinge.position.set(p.cx, p.cy - p.h / 2, z);

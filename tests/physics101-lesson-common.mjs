@@ -5,6 +5,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DECKS } from "../public/physics101/p101-catalog.js";
+import { artExists } from "./art-pack.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUB = join(ROOT, "public");
@@ -31,8 +32,8 @@ export function lessonTests({ slug, pages, testIt, buttonOnly = [], audio = fals
       assert.ok(ls.some((l) => l.id === "bg") && ls.some((l) => l.id === "mid"), pn);
       const mid = ls.find((l) => l.id === "mid").f;
       for (const l of ls) {
-        assert.ok(existsSync(join(D, "v2/art", l.src)), l.src);
-        if (l.hint) assert.ok(existsSync(join(D, "v2/art", l.hint)), l.hint);
+        assert.ok(artExists(D, join("v2/art", l.src)), l.src);
+        if (l.hint) assert.ok(artExists(D, join("v2/art", l.hint)), l.hint);
         const [x0, y0, x1, y1] = l.box; assert.ok(x0 >= 0 && y0 >= 0 && x1 <= 1600 && y1 <= 900 && x1 > x0 && y1 > y0, l.src);
         if (l.id === "fg" || l.cut) assert.equal(l.f, mid, `${pn} ${l.id}`);
         if (l.cut) assert.ok(l.hint, `${pn} ${l.id} has a touch outline`);

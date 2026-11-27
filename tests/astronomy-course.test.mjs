@@ -11,6 +11,7 @@ import { crater, transitionDiameter, G_MOON } from "../public/astro-course/ac-im
 import { missionDose, RATE } from "../public/astro-course/ac-dose.js";
 import { conjunctions, SYSTEMS } from "../public/astro-course/ac-sb-resonance.js";
 import { EXTRAS, MODULES, tryItKeys, tryItItems, tryItBlurb } from "../public/astro-course/ac-extras.js";
+import { artExists, artSize } from "./art-pack.mjs";
 
 const PUB = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
 const AC = join(PUB, "astro-course");
@@ -36,10 +37,9 @@ for (const d of built) {
     assert.equal(deck.slides.length, d.slides);
     deck.slides.forEach((s, i) => {
       assert.equal(s.n, i + 1);
-      if (s.bg) assert.ok(existsSync(join(AC, "decks", d.slug, s.bg)), s.bg);
+      if (s.bg) assert.ok(artExists(join(AC, "decks", d.slug), s.bg), s.bg);
       for (const it of s.items) if (it.t === "img") {
-        const f = join(AC, "decks", d.slug, it.src);
-        assert.ok(existsSync(f) && statSync(f).size > 500, it.src);
+        assert.ok(artSize(join(AC, "decks", d.slug), it.src) > 500, it.src);
       }
     });
   });

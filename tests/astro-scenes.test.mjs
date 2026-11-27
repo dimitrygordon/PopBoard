@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { artExists } from "./art-pack.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "../public/js/astro-scenes");
 const T = await import(pathToFileURL(path.resolve(import.meta.dirname, "../public/vendor/three/three.module.min.js")));
@@ -89,7 +90,7 @@ test("layered hand-drawn pages: every art plane exists and the reveal runs lines
   const { ART, REVEAL } = await import("../public/astro-course/ac-artscene.js");
   for (const [deck, pages] of Object.entries(ART)) for (const [pn, layers] of Object.entries(pages)) {
     assert.deepEqual(layers.map((l) => l.f).filter((f) => !(f >= 0.15 && f <= 0.8)), [], `${deck} ${pn} parallax factors`);
-    for (const l of layers) if (l.src) assert.ok(fs.existsSync(path.resolve(import.meta.dirname, `../public/astro-course/decks/${deck}/v2/art/${l.src}`)), `${deck} ${pn} ${l.src}`);
+    for (const l of layers) if (l.src) assert.ok(artExists(path.resolve(import.meta.dirname, `../public/astro-course/decks/${deck}`), `v2/art/${l.src}`), `${deck} ${pn} ${l.src}`);
   }
   assert.ok(REVEAL.lines[0] < REVEAL.hatch[0] && REVEAL.hatch[0] < REVEAL.labels);
 });

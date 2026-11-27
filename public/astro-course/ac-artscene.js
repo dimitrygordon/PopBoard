@@ -1,3 +1,4 @@
+import { artUrl } from "../shared/pack/pack.js";
 // Layered hand-drawn pages: the original colored-pencil art split into depth planes (Leo's mockups,
 // decks/<deck>/v2/art). The art is never redrawn or filtered at rest; it only shifts in parallax
 // (capped at 14 px of a 1600 px page) and a few gentle nudges. Labels stay live text from deck.json.
@@ -45,7 +46,7 @@ export function mountArt(stage, base, deck, pn, { still = false } = {}) {
   const alt = (spec.find((L) => L.alt) || {}).alt;
   if (alt) { wrap.setAttribute("role", "img"); wrap.setAttribute("aria-label", alt); } else wrap.setAttribute("aria-hidden", "true");
   const els = spec.map((L) => {
-    const el = L.travel ? dot() : Object.assign(document.createElement("img"), { src: base + "v2/art/" + L.src, alt: "", draggable: false });
+    const el = L.travel ? dot() : Object.assign(document.createElement("img"), { src: artUrl(base + "v2/art/" + L.src), alt: "", draggable: false });
     if (!L.travel) Object.assign(el.style, { left: pct(L.box[0], PAGE_W), top: pct(L.box[1], PAGE_H), width: pct(L.box[2] - L.box[0], PAGE_W), height: pct(L.box[3] - L.box[1], PAGE_H) });
     const o = (L.pulse || L.drift || {}).origin; if (o) el.style.transformOrigin = `${(o[0] - L.box[0]) / (L.box[2] - L.box[0]) * 100}% ${(o[1] - L.box[1]) / (L.box[3] - L.box[1]) * 100}%`;
     el.classList.add("art-l", "art-" + L.id); if (L.light) el.classList.add("art-light");
@@ -54,7 +55,7 @@ export function mountArt(stage, base, deck, pn, { still = false } = {}) {
     let hint = null;
     if (L.cut && L.hint) {
       const hb = L.hbox || L.box;
-      hint = Object.assign(document.createElement("img"), { src: base + "v2/art/" + L.hint, alt: "", draggable: false });
+      hint = Object.assign(document.createElement("img"), { src: artUrl(base + "v2/art/" + L.hint), alt: "", draggable: false });
       Object.assign(hint.style, { left: pct(hb[0], PAGE_W), top: pct(hb[1], PAGE_H), width: pct(hb[2] - hb[0], PAGE_W), height: pct(hb[3] - hb[1], PAGE_H) });
       hint.className = "art-l art-hint"; hint.hidden = true; wrap.appendChild(hint);
     }
