@@ -94,13 +94,13 @@ export class Scenes {
     const key = "disk" + mass; if (this.cache[key]) return this.cache[key]; const T = this.T; const g = new T.Group();
     const planets = mass === "1" ? "solar" : mass === "0.2" ? "reddwarf" : null; const massive = mass === "15" || mass === "40";
     const D = buildDisk({ teff: 4410, seed: 7, planets, wrap: massive });
-    const md = this.mesh(D.disk, {}, 1), ma = this.mesh(D.add, { additive: true }, 2), mw = massive ? this.mesh(D.wrap, {}, 5) : null;
+    const md = this.mesh(D.disk, {}, 1), ma = this.mesh(D.add, {}, 2), mw = massive ? this.mesh(D.wrap, {}, 5) : null;   // jets and knots blend with alpha (v4)
     const core = this.glow(D.core.map((l) => [l[0], l[1]]), { useTeff: true, order: 3 });
     const sp = D.sprites.length ? this.sprites(D.sprites, 4) : null;
     g.add(md, ma, core); if (sp) g.add(sp); if (mw) g.add(mw);
-    const frost = planets === "solar" ? this.dashedRing(3.0, { color: 0xAACDFF, opacity: 0.85 }) : null; if (frost) g.add(frost);
+    const frost = D.frost ? new T.Group() : null; if (frost) g.add(frost);   // the frost line is painted into the disk (v4); this group only carries the label
     const lab = this.label("", { size: 1.6 }); const flab = planets === "solar" ? this.label("Frost line, about 3 AU", { size: 1.1, color: "#AACDFF" }) : null;
-    g.add(lab); if (flab) { flab.position.set(3.4, 0.9, 0); g.add(flab); }
+    g.add(lab); if (flab) { flab.position.set(3.5, 1.1, 0); g.add(flab); }
     const coreHot = this.glow([[1.6, 0.9, [255, 255, 255]], [0.7, 1.0, [255, 255, 255]]], { useTeff: false, order: 7 }); coreHot.visible = false; g.add(coreHot);
     // painter's sort of the disk strokes, back to front (from the tech test)
     const dg = md.geometry, meta = dg.userData, nS = meta.count, per = meta.per;

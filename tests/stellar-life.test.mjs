@@ -6,7 +6,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { prepareTracks, atEEP, eepAtAge, wdAt, typeLabel, isRSG, shellsStart, splitCaption, stagesFor, msRatio, about, MASSES } from "../public/stellar-life/sl-data.js";
 import { createFlow } from "../public/stellar-life/sl-flow.js";
 import { scaleBar, zoomText } from "../public/stellar-life/sl-scenes.js";
-import { lutData, tRGB255 } from "../public/stellar-life/sl-strokes.js";
+import { lutData, tRGB255, buildDisk, KIND } from "../public/stellar-life/sl-strokes.js";
 import { temperatureToSRGB } from "../public/night-sky/ns-astro.js";
 
 const pub = new URL("../public/", import.meta.url);
@@ -123,4 +123,16 @@ test("the gallery lists the module and the H-R Diagram and Build a Star link to 
   assert.match(read("study-stars.html"), /id="lifeLink"[^>]*href="study-stellar-life\.html"/);
   const page = read("study-stellar-life.html"); assert.match(page, /isSessionSupported|sl-main\.js/); assert.match(read("stellar-life/sl-main.js"), /isSessionSupported\("immersive-vr"\)/);
   assert.match(page, /Bédard/); assert.match(page, /MIST v1\.2/); assert.match(page, /Woosley, Heger and Weaver 2002/);
+});
+
+test("disk follows the v4 layout: 61 washes and 145 marks in the plane, painted frost line only with planets", () => {
+  const solar = buildDisk({ teff: 4410, seed: 7, planets: "solar" });
+  const flatInBand = (D, lo, hi) => { let n = 0; for (let i = 0; i < D.disk.n; i++) { if (D.disk.kinds[i] !== KIND.FLAT) continue; const r = Math.hypot(D.disk.cent[3 * i], D.disk.cent[3 * i + 2]); if (r >= lo && r < hi) n++; } return n; };
+  const flat = solar.disk.kinds.filter((k) => k === KIND.FLAT).length;
+  assert.equal(flat, 61 + 145 + 14 + 7, "washes + marks + rim + frost arcs");
+  assert.ok(flatInBand(solar, 0, 17.5 * 1.2) === flat, "every flat stroke sits inside the disk");
+  assert.equal(solar.frost, 3.1);
+  const bare = buildDisk({ teff: 4410, seed: 7, planets: null });
+  assert.equal(bare.frost, null);
+  assert.equal(bare.disk.kinds.filter((k) => k === KIND.FLAT).length, 61 + 145 + 14);
 });

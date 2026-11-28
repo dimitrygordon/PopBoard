@@ -20,32 +20,32 @@ const tap = (t) => Math.pow(Math.min(1, t / 0.25, (1 - t) / 0.45), 0.7);
 const TAU = Math.PI * 2;
 
 export const SEG = 8;
-export const KIND = { PLAIN: 0, DISK: 1, LANE: 2, STREAK: 3, WIND: 4, PULL: 5 };
+export const KIND = { PLAIN: 0, DISK: 1, LANE: 2, STREAK: 3, WIND: 4, PULL: 5, FLAT: 6 };   // FLAT: a disk stroke lying in the disk plane
 
 export class Builder {
-  constructor() { this.pos = []; this.tan = []; this.uvk = []; this.a = []; this.col = []; this.par = []; this.starts = []; this.cent = []; this.omega = []; this.kinds = []; this.nv = 0; this.n = 0; }
+  constructor(seg = SEG) { this.seg = seg; this.pos = []; this.tan = []; this.uvk = []; this.a = []; this.col = []; this.par = []; this.starts = []; this.cent = []; this.omega = []; this.kinds = []; this.nv = 0; this.n = 0; }
   add(pts, { width, rgb, alpha, kind = 0, bristles = 5, boil = 0, omega = 0, layer = 0, seed, dab = false, raw = null }) {
-    const P = []; for (let i = 0; i <= SEG; i++) { const f = i / SEG * (pts.length - 1), j = Math.min(pts.length - 2, Math.floor(f)), t = f - j; P.push([0, 1, 2].map((k) => pts[j][k] + (pts[j + 1][k] - pts[j][k]) * t)); }
+    const P = []; const SG = this.seg; for (let i = 0; i <= SG; i++) { const f = i / SG * (pts.length - 1), j = Math.min(pts.length - 2, Math.floor(f)), t = f - j; P.push([0, 1, 2].map((k) => pts[j][k] + (pts[j + 1][k] - pts[j][k]) * t)); }
     let cx = 0, cy = 0, cz = 0; for (const p of P) { cx += p[0]; cy += p[1]; cz += p[2]; }
     this.cent.push(cx / P.length, cy / P.length, cz / P.length); this.omega.push(omega); this.kinds.push(kind);
     this.starts.push(this.nv);
     const c4 = raw || [rgb[0] / 255, rgb[1] / 255, rgb[2] / 255];
-    for (let i = 0; i <= SEG; i++) {
-      const a = P[Math.max(0, i - 1)], b = P[Math.min(SEG, i + 1)]; let tx = b[0] - a[0], ty = b[1] - a[1], tz = b[2] - a[2]; const L = Math.hypot(tx, ty, tz) || 1; tx /= L; ty /= L; tz /= L;
-      const t = i / SEG; const w = dab ? width * (0.55 + 0.45 * Math.sin(Math.PI * t)) : width * tap(t);
+    for (let i = 0; i <= SG; i++) {
+      const a = P[Math.max(0, i - 1)], b = P[Math.min(SG, i + 1)]; let tx = b[0] - a[0], ty = b[1] - a[1], tz = b[2] - a[2]; const L = Math.hypot(tx, ty, tz) || 1; tx /= L; ty /= L; tz /= L;
+      const t = i / SG; const w = dab ? width * (0.55 + 0.45 * Math.sin(Math.PI * t)) : width * tap(t);
       for (let s = 0; s < 2; s++) {
         this.pos.push(P[i][0], P[i][1], P[i][2]); this.tan.push(tx, ty, tz);
         this.uvk.push(s, t, kind); this.a.push(s ? 1 : -1, w, width, seed);
         this.col.push(c4[0], c4[1], c4[2], alpha); this.par.push(omega, boil, bristles, layer);
       }
     }
-    this.nv += 2 * (SEG + 1); this.n++;
+    this.nv += 2 * (SG + 1); this.n++;
   }
   geometry(THREE) {
     const g = new THREE.BufferGeometry(); const F = (arr, n, name) => g.setAttribute(name, new THREE.BufferAttribute(new Float32Array(arr), n));
     F(this.pos, 3, "position"); F(this.tan, 3, "aTan"); F(this.uvk, 3, "aUvK"); F(this.a, 4, "aA"); F(this.col, 4, "aColor"); F(this.par, 4, "aParam");
-    const per = 6 * SEG, idx = new Uint32Array(this.n * per);
-    for (let s = 0; s < this.n; s++) { const v0 = this.starts[s]; let o = s * per; for (let i = 0; i < SEG; i++) { const a = v0 + 2 * i, b = a + 1, c = a + 2, d = a + 3; idx.set([a, b, c, b, d, c], o); o += 6; } }
+    const SG = this.seg, per = 6 * SG, idx = new Uint32Array(this.n * per);
+    for (let s = 0; s < this.n; s++) { const v0 = this.starts[s]; let o = s * per; for (let i = 0; i < SG; i++) { const a = v0 + 2 * i, b = a + 1, c = a + 2, d = a + 3; idx.set([a, b, c, b, d, c], o); o += 6; } }
     g.setIndex(new THREE.BufferAttribute(idx, 1)); g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5);
     g.userData = { count: this.n, per, cent: new Float32Array(this.cent), omega: new Float32Array(this.omega), kinds: new Uint8Array(this.kinds), baseIndex: idx.slice() };
     return g;
@@ -109,107 +109,65 @@ export function buildCloud(seed = 11) {
   return { vis, ir, fil };
 }
 
-// ---------- F3 to F5: protostar disk, jets, rays, planets (world units: AU) ----------
+// ---------- F3 to F5: protostar disk, jets and young planets (world units: AU) ----------
+// Layout matched to Angelo's hand-placed GP disk v4.1 (approved by Leo; strokes_v4_1.json, not shipped): the same stroke
+// count per radial band, arc span, width, height above the plane, opacity and colour (tools/stellar-life/disk-v4-stats.py
+// prints this table from his file). The strokes here are generated, not copied. Washes and marks lie flat in the disk
+// plane (his ribbons face the disk normal), the jets and the soft nested knots blend with alpha.
+// band: [r0, r1, count, arc span (rad), width (AU), opacity, |height| (AU), colour]
+// COVER: our ribbons taper at both ends and feather their edges, so a stroke painted at v4 width covers less
+// area than a Grease Pencil stroke of the same width. 1.5 brings painted coverage back to the v4.1 still.
+const COVER = 1.5;
+const V4_WASH = [[1, 2, 17, 2.83, 1.08, 0.46, 0.02, "#F59B3B"], [2, 3, 10, 2.68, 1.19, 0.49, 0.03, "#C9671C"], [3, 4, 5, 3.25, 1.45, 0.45, 0.05, "#C48448"], [4, 6, 12, 2.76, 1.37, 0.47, 0.07, "#97693A"],
+  [6, 8, 4, 1.55, 1.43, 0.52, 0.09, "#986432"], [8, 10, 6, 0.94, 0.59, 0.47, 0.17, "#634021"], [10, 12, 6, 1.11, 1.01, 0.46, 0.21, "#674226"], [12, 14, 1, 1.23, 1.16, 0.41, 0.35, "#543722"]];
+const V4_MARK = [[0.3, 1, 4, 1.52, 0.30, 0.89, 0.01, "#F7D27B"], [1, 2, 19, 1.33, 0.41, 0.89, 0.03, "#E09340"], [2, 3, 22, 1.34, 0.47, 0.88, 0.04, "#D27E34"], [3, 4, 12, 1.23, 0.60, 0.88, 0.06, "#BD7B40"],
+  [4, 6, 14, 1.30, 0.54, 0.88, 0.07, "#B67D46"], [6, 8, 11, 1.27, 0.77, 0.88, 0.12, "#97693C"], [8, 10, 21, 0.44, 0.30, 0.89, 0.19, "#7B5331"], [10, 12, 17, 0.35, 0.41, 0.86, 0.22, "#6B492E"],
+  [12, 14, 17, 0.52, 0.48, 0.88, 0.21, "#5F3F27"], [14, 17.5, 8, 0.40, 0.52, 0.88, 0.25, "#543521"]];
 export function buildDisk(opts = {}) {
-  const T = opts.teff || 4410, seed = opts.seed || 7, AUPX = 32, PX = 1 / AUPX, ROUT = 18.5;
-  const R = rng(seed); const disk = new Builder(), add = new Builder(), wrap = new Builder(); const sprites = [];
+  const T = opts.teff || 4410, seed = opts.seed || 7, ROUT = 17.5, EDGE = 17.5;
+  const R = rng(seed); const disk = new Builder(16), add = new Builder(12), wrap = new Builder(); const sprites = [];
   const starRGB = tRGB255(T); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
-  const h = (r) => 0.045 * Math.pow(Math.max(r, 0.02), 1.22);
-  const gaps = [[5.2, 0.55, 0.88], [9.0, 0.75, 0.65], [12.5, 0.9, 0.45], [15.5, 1.0, 0.35]], rings = [[7.0, 0.8, 0.35], [10.8, 0.7, 0.25], [14.0, 0.8, 0.2]];
-  const innerRings = [[1.3, 0.28, 0.70], [2.2, 0.32, 0.60], [3.8, 0.38, 0.50]];
-  const sig = (r) => { let s = Math.pow(Math.max(r, 0.15), -0.55) * Math.exp(-Math.pow(r / ROUT, 6)); for (const [rg, wg, dg] of gaps) s *= 1 - dg * Math.exp(-0.5 * ((r - rg) / (wg * 0.5)) ** 2); for (const [rr, wr, ar] of rings) s *= 1 + ar * Math.exp(-0.5 * ((r - rr) / (wr * 0.5)) ** 2); for (const [rr, wr, ar] of innerRings) s *= 1 + ar * Math.exp(-0.5 * ((r - rr) / (wr * 0.5)) ** 2); return s; };
-  // Leo build note 1: outer third (r > 2/3 of the edge) packed about 20% tighter (1.25x stroke density, so spacing is 0.8x),
-  // and every stroke there fades gradually toward the edge so it does not break off into loose dashes.
-  const OUT0 = (ROUT + 2) * 2 / 3, EDGE = ROUT + 2;
-  const pack = (r) => (r > OUT0 ? 1.25 : 1);
-  const edgeFade = (r) => (r <= OUT0 ? 1 : Math.pow(clamp01(1 - (r - OUT0) / (EDGE - OUT0)), 1.4) * 0.85 + 0.15 * clamp01(1 - (r - OUT0) / (EDGE - OUT0)));
-  const pal = [starRGB, hex2rgb("#E9B98A"), hex2rgb("#C98E62"), hex2rgb("#8E5C46")];
-  const colAt = (r) => { const t = Math.min(1, Math.log(1 + r) / Math.log(1 + ROUT)); const i = Math.min(2, Math.floor(t * 3)); return mix(pal[i], pal[i + 1], t * 3 - i); };
-  const A_DISK = 2.2 * PX, A_JET = 3.0 * PX, A_RAY = 1.6 * PX, A_OTHER = 1.0 * PX;
-  const ringPts = (r, ph, dph, z, pitchDeg = 0) => { const pts = []; for (let k = 0; k <= 10; k++) { const pp = ph + dph * k / 10; const rr = r * (1 - Math.tan(pitchDeg * Math.PI / 180) * dph * k / 10); pts.push([rr * Math.cos(pp), z, -rr * Math.sin(pp)]); } return pts; };
-  const nDisk = 2200, nUnder = 330;
-  let wmax = 0; for (let r = 0.3; r < EDGE; r += 0.05) wmax = Math.max(wmax, sig(r) * r * pack(r));
-  let made = 0, tries = 0; const total = nDisk + nUnder;
-  while (made < total && tries < 4000000) {
-    tries++; const r = 0.3 + R() * (ROUT + 2); if (R() * wmax > sig(r) * r * pack(r)) continue;
-    const under = made < nUnder; const ph = R() * TAU;
-    const len = (lerp(1.15, 3.2, R())) * (0.45 + r / 9) * (under ? 1.6 : 1); const dph = Math.min(1.2, len / r);
-    const z = (R() < 0.5 ? 1 : -1) * h(r) * (1.6 + R() * 0.8);
-    const wpx = (under ? 3 : 1) * lerp(4.5, 15, R()) * (0.55 + 0.45 * Math.min(1, r / 8)) * (r > OUT0 ? 0.9 : 1);
-    const col = jitter(colAt(r), R, 0.02, 0.06, 0.06);
-    disk.add(ringPts(r, ph, dph, z, 5), { width: wpx * PX, rgb: col, alpha: (under ? 0.22 : lerp(0.45, 0.9, R())) * edgeFade(r), kind: KIND.DISK, bristles: 6, boil: A_DISK, seed: S() });
-    made++;
-  }
-  for (const [rr] of rings) for (let i = 0; i < 30; i++) {
-    const ph = R() * TAU, d = (0.5 + R() * 0.9) * 0.9, rj = rr + (R() - 0.5) * 0.4;
-    disk.add(ringPts(rj, ph, d, (R() < 0.5 ? 1 : -1) * h(rj) * 2), { width: lerp(4.5, 10.5, R()) * PX, rgb: jitter(mix(colAt(rr), [255, 240, 225], 0.25), R, 0.01, 0.05, 0.04), alpha: (0.55 + R() * 0.3) * edgeFade(rj), kind: KIND.DISK, bristles: 4, boil: A_DISK, seed: S() });
-  }
-  for (const [rr] of innerRings) for (let i = 0; i < 52; i++) {
-    const ph = R() * TAU, d = (0.7 + R() * 1.1) * 0.9, rj = rr + (R() - 0.5) * 0.18;
-    disk.add(ringPts(rj, ph, d, (R() < 0.5 ? 1 : -1) * h(rj) * 2.2), { width: lerp(6, 14, R()) * PX, rgb: jitter(mix(colAt(rr), [255, 236, 214], 0.45), R, 0.01, 0.05, 0.04), alpha: 0.70 + R() * 0.25, kind: KIND.DISK, bristles: 5, boil: A_DISK, seed: S() });
-  }
-  for (const [rg, wg] of gaps) for (let i = 0; i < 28; i++) {
-    const ph = R() * TAU, d = (0.5 + R() * 0.9) * 0.9, rj = rg + (R() - 0.5) * wg * 0.5;
-    disk.add(ringPts(rj, ph, d, (R() < 0.5 ? 1 : -1) * h(rj) * 1.6), { width: lerp(3, 7.5, R()) * (1 + wg) * PX, rgb: jitter(hex2rgb("#2A1E3C"), R, 0.01, 0.03, 0.04), alpha: (0.5 + R() * 0.3) * edgeFade(rj), kind: KIND.DISK, bristles: 4, boil: A_DISK, seed: S() });
-  }
-  for (let i = 0; i < 340; i++) {
-    const r = 1.2 + Math.pow(R(), 0.8) * (ROUT - 1), ph = R() * TAU, dph = (0.6 + R()) / r;
-    disk.add(ringPts(r, ph, dph, -h(r) * 0.2), { width: lerp(4.5, 12, R()) * PX, rgb: jitter(hex2rgb("#1A1230"), R, 0.02, 0.03, 0.05), alpha: (0.35 + R() * 0.35) * edgeFade(r), kind: KIND.LANE, bristles: 4, boil: A_DISK, seed: S() });
-  }
-  for (let i = 0; i < 240; i++) {
-    let r; do { r = 0.5 + R() * 15.5; } while (R() * wmax > sig(r) * r);
-    const ph = R() * TAU, dph = (24 * PX) / r, z = (R() < 0.5 ? 1 : -1) * h(r) * (1.6 + R() * 0.8);
-    disk.add(ringPts(r, ph, dph, z), { width: lerp(3.75, 7.5, R()) * PX, rgb: mix(colAt(r), hex2rgb("#FFF4E8"), 0.35), alpha: edgeFade(r), kind: KIND.STREAK, bristles: 3, boil: A_OTHER, omega: R(), seed: S() });
-  }
-  // ---- planet bodies (Leo build note 3; LOOK-SPEC 3.1). Drawn far larger than real; a chip says so. Lit from the star side only.
+  const A_DISK = 0.06, A_JET = 0.09, A_OTHER = 0.03;
+  const jit = (v, f) => v * (1 + (R() * 2 - 1) * f);
+  const arc = (r0, r1, ph, dph, y, n = 12) => { const pts = []; for (let k = 0; k <= n; k++) { const u = k / n, pp = ph + dph * (u - 0.5), rr = r0 + (r1 - r0) * u; pts.push([rr * Math.cos(pp), y, -rr * Math.sin(pp)]); } return pts; };
+  const band = (B, kindName) => { for (const [r0, r1, n, span, w, op, yh, col] of B) for (let i = 0; i < n; i++) {
+    const r = r0 + (r1 - r0) * R(), ph = R() * TAU, dph = Math.min(TAU * 0.6, jit(span, 0.35)), dr = (R() - 0.5) * 0.06 * r;
+    const y = (R() < 0.5 ? 1 : -1) * yh * (0.5 + R());
+    disk.add(arc(r - dr, r + dr, ph, dph, y), { width: jit(w * COVER, 0.3), rgb: jitter(hex2rgb(col), R, 0.015, 0.05, 0.05), alpha: jit(op, 0.06), kind: KIND.FLAT, bristles: kindName === "wash" ? 1 : 2, boil: A_DISK, seed: S() });
+  } };
+  band(V4_WASH, "wash"); band(V4_MARK, "mark");
+  // inner rim (14 bright cream arcs at 0.64 to 0.81 AU, opacity 1) and the frost line (7 arcs near 3.1 AU, opacity 0.9)
+  for (let i = 0; i < 14; i++) { const r = 0.64 + R() * 0.17; disk.add(arc(r, r, R() * TAU, jit(2.3, 0.25), (R() - 0.5) * 0.14), { width: jit(0.19, 0.25), rgb: jitter(hex2rgb("#F5C896"), R, 0.01, 0.04, 0.04), alpha: 1, kind: KIND.FLAT, bristles: 3, boil: A_OTHER, seed: S() }); }
+  const frost = opts.planets === "solar";
+  if (frost) for (let i = 0; i < 7; i++) { const r = 3.02 + R() * 0.18; disk.add(arc(r - 0.1, r + 0.1, (i / 7) * TAU + R() * 0.5, jit(1.45, 0.3), (R() - 0.5) * 0.06), { width: jit(0.2, 0.15), rgb: jitter(hex2rgb("#EBBE84"), R, 0.01, 0.04, 0.04), alpha: 0.9, kind: KIND.FLAT, bristles: 2, boil: A_OTHER, seed: S() }); }
+  // ---- young planets (Leo build note 3): v4 places 3 giant-planet cores (5.2, 9.5 and 13.4 AU, four dabs each) and
+  // 5 rocky pairs (0.9 to 2.4 AU). Drawn far larger than real; a chip says so.
   const bodies = [];
   if (opts.planets === "solar") {
-    for (const [r, px] of [[5.2, 6.5], [9.0, 5.5], [12.5, 5.0], [15.5, 4.5]]) bodies.push({ r, rad: px * 2.2 * PX, col: "#C9A27E", kind: "giant" });
-    for (const [r, px] of [[0.6, 2.4], [0.9, 2.7], [1.3, 3.0], [1.9, 2.6], [2.5, 2.4]]) bodies.push({ r, rad: px * 2.2 * PX, col: "#A88E7A", kind: "rocky" });
+    for (const r of [5.2, 9.5, 13.4]) bodies.push({ r, rad: 0.42, kind: "giant", cols: ["#EAA461", "#D48E4E", "#B35F2E", "#F5BA79"] });
+    for (const r of [0.9, 1.3, 1.75, 2.1, 2.4]) bodies.push({ r, rad: 0.11, kind: "rocky", cols: ["#C67A42", "#A2532D"] });
   } else if (opts.planets === "reddwarf") {
-    for (const [r, px] of [[0.6, 2.6], [1.1, 2.9], [1.8, 2.5]]) bodies.push({ r, rad: px * 2.2 * PX, col: "#A88E7A", kind: "rocky" });
+    for (const r of [0.6, 1.1, 1.8]) bodies.push({ r, rad: 0.11, kind: "rocky", cols: ["#C67A42", "#A2532D"] });
   }
   for (const b of bodies) {
-    const ph = R() * TAU, cx = b.r * Math.cos(ph), cz = -b.r * Math.sin(ph); const toStar = norm([-cx, 0, -cz]);
-    const base = hex2rgb(b.col);
-    for (let k = 0; k < (b.kind === "giant" ? 22 : 12); k++) {
-      const d = randDir(R); const lit = Math.max(0, d[0] * toStar[0] + d[2] * toStar[2]) * 0.85 + 0.15;
-      const c = [cx + d[0] * b.rad * 0.6, d[1] * b.rad * 0.6, cz + d[2] * b.rad * 0.6]; const e1 = norm(cross([0, 1, 0], d)); const L = b.rad * 0.9;
-      const pts = [[0, 1, 2].map((q) => c[q] - e1[q] * L * 0.5), c, [0, 1, 2].map((q) => c[q] + e1[q] * L * 0.5)];
-      disk.add(pts, { width: b.rad * 0.9, rgb: mix([20, 16, 34], jitter(base, R, 0.02, 0.05, 0.05), lit), alpha: 0.95, bristles: 3, boil: A_OTHER, seed: S(), dab: true });
-    }
-    sprites.push({ p: [cx, 0, cz], r: b.rad * 2.2, rgb: mix(base, [255, 240, 220], 0.4), a: 0.16, breath: 0 });
+    const ph = R() * TAU, cx = b.r * Math.cos(ph), cz = -b.r * Math.sin(ph);
+    b.cols.forEach((c, k) => { const L = b.kind === "giant" ? jit(0.85, 0.4) : 0.23; const a = R() * TAU, off = b.rad * 0.25 * k / b.cols.length;
+      const p0 = [cx + Math.cos(a) * (off - L / 2), 0, cz + Math.sin(a) * (off - L / 2)], p1 = [cx + Math.cos(a) * (off + L / 2), 0, cz + Math.sin(a) * (off + L / 2)];
+      disk.add([p0, [(p0[0] + p1[0]) / 2, 0, (p0[2] + p1[2]) / 2], p1], { width: b.rad * (b.kind === "giant" ? jit(1.0, 0.2) : 1), rgb: hex2rgb(c), alpha: 1, bristles: 2, boil: A_OTHER, seed: S(), dab: true }); });
+    sprites.push({ p: [cx, 0, cz], r: b.rad * (b.kind === "giant" ? 2.6 : 2.2), rgb: [255, 196, 130], a: b.kind === "giant" ? 0.22 : 0.14, breath: 0 });
   }
-  // ---- jets (Leo v2: thick, H-alpha knots #FF5A6A to #FF7A8E) and protostar rays (additive)
-  const jetA = hex2rgb("#FF5A6A"), jetB = hex2rgb("#FF7A8E"); const jetCol = () => mix(jetA, jetB, R());
+  // ---- jets: 4 up and 4 down, about 8 AU long from about 1 AU out, opacity 0.26 to 0.35 (v4), H-alpha pink
+  const jetCols = ["#D86570", "#DE7C89", "#E08391", "#DB707C"];
   for (const up of [true, false]) {
-    const dir = up ? 1 : -1, tip = (up ? 260 : 300) * PX, dim = up ? 1 : 0.55;
+    const dir = up ? 1 : -1;
     for (let k = 0; k < 4; k++) {
-      const a = R() * TAU, rr = R() * 3 * PX; const x = Math.cos(a) * rr, z = Math.sin(a) * rr;
-      add.add([[x, dir * 10 * PX, z], [x * 1.6, dir * tip * 0.45, z * 1.6], [x * 2.4, dir * tip, z * 2.4]], { width: lerp(9, 15, R()) * PX, rgb: jitter(jetCol(), R, 0.015, 0.05, 0.04), alpha: lerp(0.22, 0.40, R()) * dim, bristles: 3, boil: A_JET, seed: S() });
+      const a = R() * TAU, rr = 0.08 + R() * 0.3, y0 = dir * (1.0 + R() * 0.4), L = jit(8.2, 0.12); const x = Math.cos(a) * rr, z = Math.sin(a) * rr, sw = (R() - 0.5) * 0.5;
+      const pts = []; for (let q = 0; q <= 6; q++) { const u = q / 6; pts.push([x * (1 + u) + sw * Math.sin(u * 3) * 0.3, y0 + dir * L * u, z * (1 + u) + sw * Math.cos(u * 3) * 0.3]); }
+      add.add(pts, { width: jit(0.5, 0.15), rgb: hex2rgb(jetCols[k]), alpha: lerp(0.26, 0.35, R()), bristles: 3, boil: A_JET, seed: S() });
     }
-  }
-  for (let i = 0; i < 60; i++) {
-    const up = i % 2 === 0; const L = lerp(40, 120, R()) * PX; const y0 = (up ? 1 : -1) * (14 + R() * (up ? 250 : 210)) * PX;
-    const a = R() * TAU, rr = R() * (3 * PX + Math.abs(y0) * 0.06); const x0 = Math.cos(a) * rr, z0 = Math.sin(a) * rr, dir = up ? 1 : -1;
-    add.add([[x0, y0, z0], [x0 + (R() - 0.5) * 0.25, y0 + dir * L * 0.5, z0 + (R() - 0.5) * 0.25], [x0 + (R() - 0.5) * 0.4, y0 + dir * L, z0 + (R() - 0.5) * 0.4]], { width: lerp(6, 14, R()) * PX, rgb: jitter(jetCol(), R, 0.02, 0.08, 0.05), alpha: lerp(0.18, 0.42, R()) * (up ? 1 : 0.55), bristles: 3, boil: A_JET, seed: S() });
-  }
-  for (const up of [true, false]) {
-    const dir = up ? 1 : -1, dim = up ? 1 : 0.55;
-    for (const ypx of [95, 175, 250]) for (let k = 0; k < 8; k++) {
-      const y = dir * (ypx + (R() - 0.5) * 10) * PX; const a = R() * TAU, rad = (R() * 6) * PX; const x = Math.cos(a) * rad, z = Math.sin(a) * rad, L = (6 + R() * 10) * PX;
-      add.add([[x, y - dir * L * 0.3, z], [x + (R() - 0.5) * 0.08, y + dir * L * 0.2, z + (R() - 0.5) * 0.08], [x + (R() - 0.5) * 0.12, y + dir * L * 0.7, z + (R() - 0.5) * 0.12]], { width: lerp(8, 16, R()) * PX, rgb: jitter(jetCol(), R, 0.015, 0.06, 0.04), alpha: lerp(0.35, 0.70, R()) * dim, bristles: 3, boil: A_JET, seed: S(), dab: true });
-    }
-    const tip = up ? 260 : 300;
-    for (let k = 0; k < 6; k++) {
-      const y = dir * (tip + (R() - 0.5) * 8) * PX, spread = (8 + R() * 14) * PX, a0 = R() * TAU, dph = 0.8 + R() * 1.2; const pts = [];
-      for (let s = 0; s <= 6; s++) { const a = a0 + dph * (s / 6 - 0.5), rad = spread * (0.6 + 0.4 * Math.sin(Math.PI * s / 6)); pts.push([Math.cos(a) * rad, y + dir * (s / 6) * 6 * PX, Math.sin(a) * rad]); }
-      add.add(pts, { width: lerp(5, 11, R()) * PX, rgb: jitter(jetCol(), R, 0.02, 0.06, 0.04), alpha: lerp(0.22, 0.45, R()) * dim, bristles: 2, boil: A_JET, seed: S() });
-    }
-  }
-  for (let i = 0; i < 150; i++) {
-    const d = randDir(R); const L = (6 + Math.pow(R(), 2) * 40) * PX, r0 = R() * 4 * PX; const tw = norm([d[0] + 0.12 * d[2], d[1], d[2] - 0.12 * d[0]]);
-    add.add([d.map((v) => v * r0), d.map((v, k) => v * (r0 + L * 0.5) * 0.5 + tw[k] * (r0 + L * 0.5) * 0.5), tw.map((v) => v * (r0 + L))], { width: lerp(1.5, 4.5, R()) * PX, rgb: mix(starRGB, [255, 255, 255], R() * 0.6), alpha: 0.35 + R() * 0.4, bristles: 2, boil: A_RAY, seed: S() });
+    // knots: soft stretched blobs at 37, 67 and 90 percent of the jet, 16 nested layers each (length 1.0 to 0.1), opacity 0.034 each
+    for (const f of [0.37, 0.67, 0.9]) { const yc = dir * (1.2 + 8.2 * f); const knot = hex2rgb("#E08391");
+      for (let l = 0; l < 16; l++) { const k = 1 - l * 0.06, L = 1.44 * k; add.add([[0, yc - L / 2, 0], [0, yc, 0], [0, yc + L / 2, 0]], { width: 0.55 * k, rgb: knot, alpha: 0.034, bristles: 1, boil: A_JET * 0.5, seed: S() + l * 0.01, dab: true }); } }
   }
   // ---- massive stars: still wrapped in their cloud (F4), blown clear at F5
   if (opts.wrap) for (let i = 0; i < 420; i++) {
@@ -217,11 +175,10 @@ export function buildDisk(opts = {}) {
     const L = 3 + R() * 6; const pts = [0, 0.5, 1].map((f) => p.map((v, k) => v + e1[k] * (f - 0.5) * L + d[k] * Math.sin(f * 3) * 0.4));
     wrap.add(pts, { width: 1.5 + R() * 3.5, rgb: jitter(mix(hex2rgb("#120E22"), hex2rgb("#5A3046"), R() * 0.5), R, 0.02, 0.03, 0.04), alpha: 0.35 + R() * 0.35, bristles: 6, boil: A_DISK * 2, seed: S() });
   }
-  // Leo build note 2: halo pulled in to 0.8x its v2 size; the brightest part kept near the core (inner layers keep their strength,
-  // the two outer layers are dimmer). Every layer is the star's own temperatureToSRGB colour, summed in one shader with the equal bleed.
-  const HALO = 0.8;
+  // Leo build note 2: halo pulled in to 0.8x; the brightest part kept near the core. Every layer is the star's own temperatureToSRGB colour.
+  const HALO = 0.8, PX = 1 / 32;
   const core = [[420 * PX * HALO, 0.12], [220 * PX * HALO, 0.26], [88 * PX * HALO, 0.62], [36 * PX * HALO, 0.88], [16 * PX * HALO, 1.05]];
-  return { disk, add, wrap, sprites, core, starRGB, bodies, frost: 3.0, ROUT, OUT0 };
+  return { disk, add, wrap, sprites, core, starRGB, bodies, frost: frost ? 3.1 : null, ROUT, OUT0: EDGE * 2 / 3 };
 }
 
 // ---------- a star's painted surface on a unit sphere (STAR mode: colour from the live Teff) ----------

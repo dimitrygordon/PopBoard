@@ -40,7 +40,8 @@ void main(){
   float tl = uFlowT / 4.0;
   vec3 p = position; vec3 tn = aTan;
   float r = length(position.xz) + 1e-3; float dth = 0.0, fade = 1.0;
-  if (kind > 0.5 && kind < 2.5) dth = (7.0 / 32.0) / r * sin(TAU * tl - 1.05 * r);
+  bool flatK = kind > 5.5 && kind < 6.5;   // FLAT: lies in the disk plane (Angelo's v4 ribbons face the disk normal)
+  if ((kind > 0.5 && kind < 2.5) || flatK) dth = (7.0 / 32.0) / r * sin(TAU * tl - 1.05 * r);
   if (kind > 2.5 && kind < 3.5) { float su = fract(tl + aParam.x); dth = (44.0 / 32.0) / r * su; fade = 0.55 * pow(max(sin(3.14159265 * su), 0.0), 1.5); }
   p = rotY(p, dth); tn = rotY(tn, dth);
   if (kind > 3.5 && kind < 4.5) { float su = fract(tl * 0.5 + aParam.x); p += normalize(position) * su * uWindLen; fade = uWind * pow(max(sin(3.14159265 * su), 0.0), 1.2); }   // wind: gas streams off
@@ -64,6 +65,7 @@ void main(){
 #endif
   vec3 tv = normalize(mat3(modelViewMatrix) * tn);
   vec3 sd = cross(tv, normalize(vp.xyz)); float sl = length(sd); sd = sl > 1e-4 ? sd / sl : vec3(1.0, 0.0, 0.0);
+  if (flatK) { vec3 fs = mat3(modelViewMatrix) * cross(tn, vec3(0.0, 1.0, 0.0)); float fl = length(fs); if (fl > 1e-6) sd = fs / fl; }
   float u = mod(floor(uBoilT * 8.0), 32.0) / 32.0;
   float A = uBoil * aParam.y;
   vec4 hs = vec4(h21(vec2(seed, 1.0)), h21(vec2(seed, 2.0)), h21(vec2(seed, 3.0)), h21(vec2(seed, 4.0)));
