@@ -40,7 +40,7 @@ export class CaptionPanel {
     this.mesh.position.set(eye.x + Math.sin(yaw) * ahead, eye.y - Math.sin(DROP) * DIST, eye.z - Math.cos(yaw) * ahead);
     this.mesh.lookAt(eye.x, eye.y, eye.z);
   }
-  draw({ text, word, paper, scale, buttons }) {
+  draw({ text, word, paper, scale, buttons, hover }) {
     const g = this.canvas.getContext("2d");
     const fill = paper ? "#fffdf7" : "rgba(22,30,44,0.88)";
     const ink = paper ? "#18202c" : "#eef3fa";
@@ -78,10 +78,11 @@ export class CaptionPanel {
       this.buttons.forEach((b, i) => {
         const bx = 64 + i * (bw + gap);
         round(g, bx, by, bw, bh, 28);
-        g.fillStyle = b.gold ? goldFill : (paper ? "#f4f1e8" : "rgba(30,40,58,0.9)");
+        const hot = hover === b.id;
+        g.fillStyle = hot ? "#3ddc84" : b.gold ? goldFill : (paper ? "#f4f1e8" : "rgba(30,40,58,0.9)");
         g.fill();
-        g.strokeStyle = b.gold ? goldFill : border; g.stroke();
-        g.fillStyle = b.gold ? "#1c1c1c" : ink;
+        g.strokeStyle = hot ? "#3ddc84" : b.gold ? goldFill : border; g.lineWidth = hot ? 6 : 2; g.stroke();
+        g.fillStyle = hot || b.gold ? "#1c1c1c" : ink;
         g.font = "600 56px Inter, system-ui, sans-serif";
         g.textAlign = "center"; g.textBaseline = "middle";
         g.fillText(b.label, bx + bw / 2, by + bh / 2);
@@ -91,23 +92,37 @@ export class CaptionPanel {
     }
     this.tex.needsUpdate = true;
   }
-  // Ray in world space. Returns a button id or null.
-  hit(ray) {
+  // Ray in world space: { origin, dir } or a three.js Ray ({ origin, direction }).
+  // Returns { id, t, point } for the panel quad (id is a button id or "panel"), or null.
+  // A hidden panel (flat screen) never takes a hit.
+  hitInfo(ray) {
     const T = this.THREE;
+    if (!this.mesh.visible || !ray || !ray.origin) return null;
+    const d = ray.dir || ray.direction;
+    if (!d) return null;
     const n = new T.Vector3(0, 0, 1).transformDirection(this.mesh.matrixWorld);
     const p0 = this.mesh.getWorldPosition(new T.Vector3());
-    const denom = n.dot(ray.dir);
+    const denom = n.dot(d);
     if (Math.abs(denom) < 1e-5) return null;
     const t = n.dot(p0.clone().sub(ray.origin)) / denom;
     if (t < 0 || t > 8) return null;
-    const p = ray.origin.clone().addScaledVector(ray.dir, t);
-    this.mesh.worldToLocal(p);
+    const world = ray.origin.clone().addScaledVector(d, t);
+    const p = this.mesh.worldToLocal(world.clone());
     const u = (p.x / 1.6 + 0.5) * W;
     const v = (0.5 - p.y / 0.4) * H;
     if (u < 0 || v < 0 || u > W || v > H) return null;
-    for (const h of this.hits) if (u >= h.x && u <= h.x + h.w && v >= h.y && v <= h.y + h.h) return h.id;
-    return "panel";
+    return { id: buttonAt(this.hits, u, v) || "panel", t, point: world };
   }
+  hit(ray) {
+    const h = this.hitInfo(ray);
+    return h ? h.id : null;
+  }
+}
+
+// Canvas-pixel hit test against the rectangles draw() recorded.
+export function buttonAt(hits, u, v) {
+  for (const h of hits) if (u >= h.x && u <= h.x + h.w && v >= h.y && v <= h.y + h.h) return h.id;
+  return null;
 }
 
 function round(g, x, y, w, h, r) {
