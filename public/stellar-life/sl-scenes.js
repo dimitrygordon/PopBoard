@@ -196,7 +196,7 @@ export class Scenes {
     let lastSort = -1e9;
     const resort = (camLocal) => {
       const ft = this.uni.uFlowT.value, cc = meta.cent, om = meta.omega, kd = meta.kinds, tl = ft / 4;
-      for (let i = 0; i < nS; i++) { const r = cr[i]; let a = 0; if (kd[i] === 3) a = (44 / 32) / r * (((tl + om[i]) % 1 + 1) % 1); else if (kd[i] === 7) a = kep(r) * ft;
+      for (let i = 0; i < nS; i++) { const r = cr[i]; let a = 0; if (kd[i] === 3) a = (44 / 32) / r * (((tl + om[i]) % 1 + 1) % 1); else if (kd[i] === 7 || kd[i] === 13) a = kep(r) * ft;
         else if (kd[i] === 6) { const ag = ft / 6 + h11(meta.seeds[i] * 0.173), cyc = Math.floor(ag); a = kep(r) * (ag - cyc) * 6 + h11(meta.seeds[i] + cyc * 7.31) * 2 * Math.PI; } else a = (7 / 32) / r * Math.sin(2 * Math.PI * tl - 1.05 * r);
         const ca = Math.cos(a), sa = Math.sin(a), x = cc[3 * i] * ca + cc[3 * i + 2] * sa, z = -cc[3 * i] * sa + cc[3 * i + 2] * ca, y = cc[3 * i + 1]; const dx = x - camLocal.x, dy = y - camLocal.y, dz = z - camLocal.z; keys[i] = dx * dx + dy * dy + dz * dz; }
       order.sort((a, b) => keys[b] - keys[a]); for (let k = 0; k < nS; k++) { const s = order[k]; idxArr.set(baseIdx.subarray(s * per, s * per + per), k * per); } idxAttr.needsUpdate = true;

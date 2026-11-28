@@ -20,7 +20,7 @@ const tap = (t) => Math.pow(Math.min(1, t / 0.25, (1 - t) / 0.45), 0.7);
 const TAU = Math.PI * 2;
 
 export const SEG = 8;
-export const KIND = { PLAIN: 0, DISK: 1, LANE: 2, STREAK: 3, WIND: 4, PULL: 5, FLAT: 6, ORBIT: 7, JETK: 8, JET: 9, PROM: 10, SNK: 11, LENS: 12 };   // round 7 kinds: see strokeVert   // FLAT: a disk stroke lying in the disk plane
+export const KIND = { PLAIN: 0, DISK: 1, LANE: 2, STREAK: 3, WIND: 4, PULL: 5, FLAT: 6, ORBIT: 7, JETK: 8, JET: 9, PROM: 10, SNK: 11, LENS: 12, BODY: 13 };   // round 7 kinds: see strokeVert   // FLAT: a disk stroke lying in the disk plane
 
 export class Builder {
   constructor(seg = SEG) { this.seg = seg; this.pos = []; this.tan = []; this.uvk = []; this.a = []; this.col = []; this.par = []; this.starts = []; this.cent = []; this.omega = []; this.kinds = []; this.nv = 0; this.n = 0; }
@@ -161,7 +161,7 @@ export function buildDisk(opts = {}) {
     b.px = cx; b.pz = cz;   /* kept so the scene can point a callout at the body */
     b.cols.forEach((c, k) => { const L = b.kind === "giant" ? jit(0.85, 0.4) : 0.23; const a = R() * TAU, off = b.rad * 0.25 * k / b.cols.length;
       const p0 = [cx + Math.cos(a) * (off - L / 2), 0, cz + Math.sin(a) * (off - L / 2)], p1 = [cx + Math.cos(a) * (off + L / 2), 0, cz + Math.sin(a) * (off + L / 2)];
-      disk.add([p0, [(p0[0] + p1[0]) / 2, 0, (p0[2] + p1[2]) / 2], p1], { width: b.rad * (b.kind === "giant" ? jit(1.0, 0.2) : 1), rgb: hex2rgb(c), alpha: 1, kind: KIND.ORBIT, bristles: 2, boil: A_OTHER, seed: S(), dab: true }); });
+      disk.add([p0, [(p0[0] + p1[0]) / 2, 0, (p0[2] + p1[2]) / 2], p1], { width: b.rad * (b.kind === "giant" ? jit(1.0, 0.2) : 1), rgb: hex2rgb(c), alpha: 1, kind: KIND.BODY, bristles: 2, boil: A_OTHER, seed: S(), dab: true }); });
     sprites.push({ p: [cx, 0, cz], r: b.rad * (b.kind === "giant" ? 2.6 : 2.2), rgb: [255, 196, 130], a: b.kind === "giant" ? 0.22 : 0.14, breath: 0 });
   }
   // ---- jets: 4 up and 4 down, about 8 AU long from about 1 AU out, opacity 0.26 to 0.35 (v4), H-alpha pink

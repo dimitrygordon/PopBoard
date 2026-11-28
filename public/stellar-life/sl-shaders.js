@@ -46,7 +46,7 @@ void main(){
   vec3 p = position; vec3 tn = aTan;
   float r = length(position.xz) + 1e-3; float dth = 0.0, fade = 1.0;
   bool flatK = kind > 5.5 && kind < 6.5;   // FLAT: lies in the disk plane (Angelo's v4 ribbons face the disk normal)
-  bool orbK = kind > 6.5 && kind < 7.5;    // ORBIT: disk arcs at one radius and the young planets, on circular Kepler orbits
+  bool orbK = (kind > 6.5 && kind < 7.5) || kind > 12.5;    // ORBIT: disk arcs at one radius (in the plane) and BODY: the young planets (face the camera), on circular Kepler orbits
   if (kind > 0.5 && kind < 2.5) dth = (7.0 / 32.0) / r * sin(TAU * tl - 1.05 * r);
   // round 7, Kepler shear: every vertex turns at omega = KEPLER_W r^-1.5 (r in AU), so the inner disk laps the outer disk.
   // Band strokes (FLAT) span a little radius, so they shear; each lives LIFE s and is re-dealt at a fresh angle with a
@@ -95,7 +95,7 @@ void main(){
 #endif
   vec3 tv = normalize(mat3(modelViewMatrix) * tn);
   vec3 sd = cross(tv, normalize(vp.xyz)); float sl = length(sd); sd = sl > 1e-4 ? sd / sl : vec3(1.0, 0.0, 0.0);
-  if (flatK) { vec3 fs = mat3(modelViewMatrix) * cross(tn, vec3(0.0, 1.0, 0.0)); float fl = length(fs); if (fl > 1e-6) sd = fs / fl; }
+  if (flatK || (kind > 6.5 && kind < 7.5)) { vec3 fs = mat3(modelViewMatrix) * cross(tn, vec3(0.0, 1.0, 0.0)); float fl = length(fs); if (fl > 1e-6) sd = fs / fl; }
   float u = mod(floor(uBoilT * 8.0), 32.0) / 32.0;
   float A = uBoil * aParam.y;
   vec4 hs = vec4(h21(vec2(seed, 1.0)), h21(vec2(seed, 2.0)), h21(vec2(seed, 3.0)), h21(vec2(seed, 4.0)));

@@ -135,12 +135,14 @@ test("the gallery lists the module and the H-R Diagram and Build a Star link to 
 
 test("disk follows the v4 layout: 61 washes and 145 marks in the plane, painted frost line only with planets", () => {
   const solar = buildDisk({ teff: 4410, seed: 7, planets: "solar" });
+  /* round 7: strokes at one radius (v4.2 pieces, rim, frost arcs) are KIND.ORBIT, still in the plane; count both in-plane kinds */
+  const inPlane = (D) => { D.disk.kinds = D.disk.kinds.map((k) => (k === KIND.ORBIT ? KIND.FLAT : k)); return D; }; inPlane(solar);
   const flatInBand = (D, lo, hi) => { let n = 0; for (let i = 0; i < D.disk.n; i++) { if (D.disk.kinds[i] !== KIND.FLAT) continue; const r = Math.hypot(D.disk.cent[3 * i], D.disk.cent[3 * i + 2]); if (r >= lo && r < hi) n++; } return n; };
   const flat = solar.disk.kinds.filter((k) => k === KIND.FLAT).length;
   assert.equal(flat, 61 + 145 + 14 + 7, "washes + marks + rim + frost arcs");
   assert.ok(flatInBand(solar, 0, 17.5 * 1.2) === flat, "every flat stroke sits inside the disk");
   assert.equal(solar.frost, 3.1);
-  const bare = buildDisk({ teff: 4410, seed: 7, planets: null });
+  const bare = inPlane(buildDisk({ teff: 4410, seed: 7, planets: null }));
   assert.equal(bare.frost, null);
   assert.equal(bare.disk.kinds.filter((k) => k === KIND.FLAT).length, 61 + 145 + 14);
 });
