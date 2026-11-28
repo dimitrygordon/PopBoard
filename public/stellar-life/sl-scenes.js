@@ -413,8 +413,8 @@ void main(){
   // ---------------- white dwarf beside Earth, same scale (units: 1,000 km). Style B v2.3: crisp sphere, tight glow, painted Earth ----------------
   wd() {
     if (this.cache.wd) return this.cache.wd; const T = this.T; const g = new T.Group(); const body = new T.Group(); g.add(body);
-    const sb = buildStar(23, { broad: 200, medium: 520, hi: 0 }); const ms = this.mesh(sb, { star: true, crisp: 1 }, 2);
-    ms.material.uniforms.uMixG = { value: 0 }; ms.material.vertexShader = ms.material.vertexShader.replace("uniform float uTeff;", "uniform float uTeff; uniform float uMixG;").replace("lin * aColor.r * ld", "lin * mix(aColor.r, aColor.b, uMixG) * ld").replace("tlin(uTeff + aColor.g * 1000.0 - 500.0)", "tlin(uTeff)");
+    const sb = buildStar(23, { broad: 200, medium: 640, hi: 280 }); const ms = this.mesh(sb, { star: true, crisp: 1 }, 2);
+    ms.material.uniforms.uMixG = { value: 0 }; ms.material.vertexShader = ms.material.vertexShader.replace("uniform float uTeff;", "uniform float uTeff; uniform float uMixG;").replace("lin * aColor.r * ld", "lin * mix(aColor.r, aColor.b, uMixG) * ld").replace("tlin(uTeff + aColor.g * 1000.0 - 500.0)", "tlin(uTeff + aColor.g * 320.0 - 160.0)");   /* a touch of painted surface variation (optional item 5) */
     const halo = this.glow([[1.55, 0.10], [1.18, 0.20], [1.04, 0.22]], { disc: 1.0, useTeff: true, order: 1 }); ms.scale.setScalar(0.955); body.add(halo, ms);
     const earth = new T.Group(); const eb = buildEarth2(71); const em = this.mesh(eb, {}, 3); em.scale.setScalar(0.95);
     const ocean = new T.Mesh(new T.CircleGeometry(0.996, 64), new T.MeshBasicMaterial({ color: 0x123F78, depthTest: false, depthWrite: false })); ocean.renderOrder = 2;
