@@ -1,27 +1,36 @@
 // Spaceships VR. Seated or standing still: the headset pose is WebXR, and this file never moves the camera.
 // Session and controllers follow Night Sky (ns-input.js XRInput) and the Beyond 3D storybook.
 // Models are the same GLB files the on-screen <model-viewer> loads. USDZ is iOS Quick Look only.
+// Real size is the GLB's meters with no cap. Closer and Farther slide the object, not the student.
 import * as THREE from "../vendor/three/three.module.min.js";
 import { GLTFLoader } from "../vendor/three/GLTFLoader.js";
 import { MeshoptDecoder } from "../vendor/three/meshopt_decoder.mjs";
 import { XRInput } from "../night-sky/ns-input.js";
 import { assetUrl, assetExists, neighborCraft } from "./ss-data.js";
 import {
-  COMFORT_SPAN_M,
-  VIEW_DISTANCE_M,
+  CLOSE_MIN_M,
   VR_HINT,
+  classroomPlacement,
   clampScale,
-  realSizeFact,
+  depthRange,
+  distanceLimits,
+  easeDistance,
+  initialPlacement,
+  placementKind,
+  placementNote,
+  realSizeLine,
   shortFact,
+  stepDistance,
   stickDelta,
-  userScaleLimit,
   viewScale,
 } from "./ss-vr-model.js";
 
 const PANEL_W = 1024;
 const PANEL_H = 768;
-const PANEL_M_W = 0.62;
+const PANEL_M_W = 0.5;
 const PANEL_M_H = PANEL_M_W * (PANEL_H / PANEL_W);
+// A three-quarter turn so a station's arrays are not edge-on. Rockets stay unrotated.
+const REST_YAW = 1.15;
 
 const _eye = new THREE.Vector3();
 const _fwd = new THREE.Vector3();
@@ -33,6 +42,8 @@ const _dq = new THREE.Quaternion();
 const _a = new THREE.Vector3();
 const _b = new THREE.Vector3();
 const _raycaster = new THREE.Raycaster();
+const _size = new THREE.Vector3();
+const _center = new THREE.Vector3();
 
 function ensureCanvas() {
   let canvas = document.getElementById("ssVrCanvas");
@@ -98,6 +109,7 @@ function createViewer(canvas) {
     antialias: true,
     alpha: false,
     powerPreference: "high-performance",
+    logarithmicDepthBuffer: true,
   });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -110,7 +122,7 @@ function createViewer(canvas) {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x000000);
-  const camera = new THREE.PerspectiveCamera(70, 1, 0.08, 40);
+  const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 500);
   camera.position.set(0, 1.35, 0);
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0x202020, 0.95));
@@ -137,16 +149,22 @@ function createViewer(canvas) {
     pmrem.dispose();
   } catch { /* directional lights still light the model */ }
 
+  // stage sits on the eyes once. The object slides in this frame. The panel does not.
+  const stage = new THREE.Group();
+  scene.add(stage);
   const anchor = new THREE.Group();
-  scene.add(anchor);
+  stage.add(anchor);
   const pivot = new THREE.Group();
   anchor.add(pivot);
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(0.22, 0.25, 48),
-    new THREE.MeshBasicMaterial({ color: 0x4caf50, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false })
+
+  const floor = new THREE.Mesh(
+    new THREE.CircleGeometry(1, 72),
+    new THREE.MeshBasicMaterial({ color: 0x161616, side: THREE.DoubleSide, depthWrite: false })
   );
-  ring.rotation.x = -Math.PI / 2;
-  anchor.add(ring);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = 0;
+  floor.visible = false;
+  scene.add(floor);
 
   const panelCanvas = document.createElement("canvas");
   panelCanvas.width = PANEL_W;
@@ -157,14 +175,15 @@ function createViewer(canvas) {
     new THREE.PlaneGeometry(PANEL_M_W, PANEL_M_H),
     new THREE.MeshBasicMaterial({ map: panelTex, transparent: true, toneMapped: false, depthTest: true })
   );
-  // In front of the student, left of the craft, close enough that both eyes can read it.
-  panelMesh.position.set(-0.34, -0.28, 0.22);
-  anchor.add(panelMesh);
+  // Just below the view center, close enough that both eyes can read every button. Local -Z is forward.
+  panelMesh.position.set(-0.04, -0.46, -0.95);
+  stage.add(panelMesh);
 
   const hits = [];
   let model = null;
   let span = 1;
-  let real = false;
+  let box = { x: 1, y: 1, z: 1 };
+  let real = true;
   let userScale = 1;
   let craft = null;
   let fleet = null;
@@ -180,41 +199,83 @@ function createViewer(canvas) {
   let running = null;
   let pinch = 0;
   let last = 0;
+  let eyeY = 1.35;
+  let kind = "fit";
+  let pose = classroomPlacement(eyeY);
+  let distNow = pose.distance;
+  let distGoal = pose.distance;
   const grabQ = [null, null];
 
+  function restOrientation() {
+    const yaw = real && kind === "ground" ? 0 : REST_YAW;
+    pivot.quaternion.setFromAxisAngle(_up, yaw);
+  }
   function baseScale() {
     return viewScale(span, real).scale;
   }
-  function displayedSpan() {
-    return baseScale() * span;
+  function gapLimit() {
+    const half = (real && kind === "ground") ? Math.max(box.x, box.z) / 2 : span / 2;
+    const reach = half * baseScale();
+    if (reach < 1e-6) return 3;
+    return (distNow - CLOSE_MIN_M) / reach;
   }
   function applyScale() {
-    const s = baseScale() * clampScale(userScale, userScaleLimit(displayedSpan()));
-    pivot.scale.setScalar(s);
+    const s = baseScale() * clampScale(userScale, gapLimit());
+    pivot.scale.setScalar(Number.isFinite(s) && s > 0 ? s : 1);
   }
-  function resetTransform() {
-    userScale = 1;
-    pivot.quaternion.identity();
-    applyScale();
-    dirty = true;
+  function limits() {
+    return distanceLimits(span, box, real ? kind : "fit");
   }
-  function placeAnchor(eye, forward) {
+  function applyDepth() {
+    const range = depthRange(real ? span : 2);
+    camera.near = range.near;
+    camera.far = range.far;
+    camera.updateProjectionMatrix();
+    if (session && session.updateRenderState) {
+      try { session.updateRenderState({ depthNear: range.near, depthFar: range.far }); } catch { /* session already ended */ }
+    }
+  }
+  function applyObjectPosition() {
+    anchor.position.set(pose.side, pose.centerY - eyeY, -distNow);
+    const showFloor = real && kind === "ground";
+    floor.visible = showFloor;
+    if (showFloor) {
+      const radius = Math.max(40, distGoal * 3, span);
+      floor.scale.setScalar(radius);
+    }
+  }
+  function usePlacement(next, snap) {
+    pose = next;
+    distGoal = next.distance;
+    if (snap) distNow = next.distance;
+    applyObjectPosition();
+    applyDepth();
+  }
+  function poseForMode(snap) {
+    const next = real ? initialPlacement(span, box, kind, eyeY) : classroomPlacement(eyeY);
+    usePlacement(next, snap);
+  }
+  function placeStage(eye, forward) {
     _fwd.copy(forward);
     _fwd.y = 0;
     if (_fwd.lengthSq() < 1e-8) _fwd.set(0, 0, -1);
     _fwd.normalize();
     _eye.copy(eye);
     if (_eye.y < 0.4) _eye.y = 1.3;
-    anchor.position.copy(_eye).addScaledVector(_fwd, VIEW_DISTANCE_M);
-    anchor.position.y = _eye.y - 0.08;
+    eyeY = _eye.y;
+    stage.position.copy(_eye);
     _back.copy(_fwd).negate();
-    anchor.quaternion.setFromUnitVectors(_z, _back);
-    ring.position.y = -anchor.position.y + 0.01;
+    stage.quaternion.setFromUnitVectors(_z, _back);
+    poseForMode(true);
   }
   function placePreview() {
-    placeAnchor(new THREE.Vector3(0, 1.35, 0), new THREE.Vector3(0, 0, -1));
-    anchor.position.y = 1.25;
-    ring.position.y = -anchor.position.y + 0.01;
+    placeStage(new THREE.Vector3(0, 1.35, 0), new THREE.Vector3(0, 0, -1));
+  }
+  function lookAtPoint(out) {
+    const targetY = kind === "ground" && real ? Math.min(pose.centerY, eyeY + 9) : pose.centerY;
+    out.set(pose.side, targetY - eyeY, -distNow);
+    stage.localToWorld(out);
+    return out;
   }
 
   function drawPanel() {
@@ -228,51 +289,51 @@ function createViewer(canvas) {
     g.strokeRect(8, 8, PANEL_W - 16, PANEL_H - 16);
     const name = (craft && craft.name) || "Spaceship";
     g.fillStyle = "#ffffff";
-    g.font = "600 52px Jost, system-ui, sans-serif";
-    const nameLines = wrapText(g, name, g.font, PANEL_W - 80).slice(0, 2);
-    nameLines.forEach((line, i) => g.fillText(line, 40, 78 + i * 58));
+    g.font = "600 48px Jost, system-ui, sans-serif";
+    wrapText(g, name, g.font, PANEL_W - 72).slice(0, 2).forEach((line, i) => g.fillText(line, 36, 70 + i * 52));
     g.fillStyle = "#cccccc";
-    g.font = "400 30px Jost, system-ui, sans-serif";
-    const fact = loading ? "The model is on its way." : shortFact(craft);
-    wrapText(g, fact, g.font, PANEL_W - 80).slice(0, 4).forEach((line, i) => g.fillText(line, 40, 210 + i * 40));
+    g.font = "400 28px Jost, system-ui, sans-serif";
+    const fact = loading ? "The model is on its way." : shortFact(craft, 140);
+    wrapText(g, fact, g.font, PANEL_W - 72).slice(0, 3).forEach((line, i) => g.fillText(line, 36, 186 + i * 36));
     const scale = viewScale(span, real);
     g.fillStyle = "#4caf50";
     g.font = "600 28px Jost, system-ui, sans-serif";
-    g.fillText(loading ? "Loading" : scale.label, 40, 400);
-    g.fillStyle = "#888888";
+    g.fillText(loading ? "Loading" : scale.label, 36, 320);
+    g.fillStyle = "#cccccc";
     g.font = "400 26px Jost, system-ui, sans-serif";
-    const sizeLine = realSizeFact(craft);
-    wrapText(g, sizeLine ? "Real size: " + sizeLine : "", g.font, PANEL_W - 80).slice(0, 2)
-      .forEach((line, i) => g.fillText(line, 40, 448 + i * 34));
-    wrapText(g, VR_HINT, g.font, PANEL_W - 80).slice(0, 2)
-      .forEach((line, i) => g.fillText(line, 40, 530 + i * 32));
+    const sizeLine = realSizeLine(craft);
+    wrapText(g, sizeLine, g.font, PANEL_W - 72).slice(0, 2).forEach((line, i) => g.fillText(line, 36, 362 + i * 32));
+    const note = real ? placementNote(kind) : "";
+    g.fillStyle = "#888888";
+    wrapText(g, note, g.font, PANEL_W - 72).slice(0, 2).forEach((line, i) => g.fillText(line, 36, 436 + i * 30));
+    wrapText(g, VR_HINT, g.font, PANEL_W - 72).slice(0, 2).forEach((line, i) => g.fillText(line, 36, 508 + i * 28));
 
-    const labels = [
+    const paintRow = (labels, y, h) => {
+      const gap = 12;
+      const x0 = 28;
+      const bw = (PANEL_W - x0 * 2 - gap * (labels.length - 1)) / labels.length;
+      labels.forEach(([id, label], i) => {
+        const x = x0 + i * (bw + gap);
+        const hot = hover === id;
+        g.fillStyle = hot ? "#1a1a1a" : "#111111";
+        g.fillRect(x, y, bw, h);
+        g.strokeStyle = hot ? "#4caf50" : "#333333";
+        g.strokeRect(x + 1, y + 1, bw - 2, h - 2);
+        g.fillStyle = "#cccccc";
+        g.font = "600 24px Jost, system-ui, sans-serif";
+        const tw = g.measureText(label).width;
+        g.fillText(label, x + (bw - tw) / 2, y + h * 0.62);
+        hits.push({ id, x, y, w: bw, h });
+      });
+    };
+    paintRow([["closer", "Closer"], ["farther", "Farther"]], 572, 80);
+    paintRow([
       ["prev", "Previous"],
       ["next", "Next"],
       ["real", real ? "Classroom" : "Real size"],
       ["reset", "Reset"],
       ["exit", "Exit VR"],
-    ];
-    const gap = 12;
-    const x0 = 28;
-    const bw = (PANEL_W - x0 * 2 - gap * (labels.length - 1)) / labels.length;
-    const by = 620;
-    const bh = 112;
-    labels.forEach(([id, label], i) => {
-      const x = x0 + i * (bw + gap);
-      const on = id === "real" && real;
-      const hot = hover === id;
-      g.fillStyle = on ? "#4caf50" : hot ? "#1a1a1a" : "#111111";
-      g.fillRect(x, by, bw, bh);
-      g.strokeStyle = on || hot ? "#4caf50" : "#333333";
-      g.strokeRect(x + 1, by + 1, bw - 2, bh - 2);
-      g.fillStyle = on ? "#000000" : "#cccccc";
-      g.font = "600 26px Jost, system-ui, sans-serif";
-      const tw = g.measureText(label).width;
-      g.fillText(label, x + (bw - tw) / 2, by + 66);
-      hits.push({ id, x, y: by, w: bw, h: bh });
-    });
+    ], 664, 80);
     panelTex.needsUpdate = true;
     dirty = false;
   }
@@ -287,6 +348,24 @@ function createViewer(canvas) {
     const py = (1 - hit.uv.y) * PANEL_H;
     const button = hits.find((r) => px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h);
     return { button: button ? button.id : null, panel: true };
+  }
+
+  function measure(root, groundUp) {
+    root.rotation.set(0, 0, 0);
+    root.position.set(0, 0, 0);
+    root.updateMatrixWorld(true);
+    let bounds = new THREE.Box3().setFromObject(root);
+    bounds.getSize(_size);
+    if (groundUp && _size.z >= _size.y && _size.z >= _size.x) root.rotation.x = -Math.PI / 2;
+    else if (groundUp && _size.x > _size.y && _size.x >= _size.z) root.rotation.z = Math.PI / 2;
+    root.updateMatrixWorld(true);
+    bounds = new THREE.Box3().setFromObject(root);
+    bounds.getCenter(_center);
+    root.position.sub(_center);
+    root.updateMatrixWorld(true);
+    bounds = new THREE.Box3().setFromObject(root);
+    bounds.getSize(_size);
+    return { x: _size.x, y: _size.y, z: _size.z };
   }
 
   async function mount(next, url) {
@@ -306,26 +385,40 @@ function createViewer(canvas) {
     pivot.scale.setScalar(1);
     pivot.quaternion.identity();
     pivot.add(model);
-    const savedPos = anchor.position.clone();
-    const savedQuat = anchor.quaternion.clone();
+    const savedPos = stage.position.clone();
+    const savedQuat = stage.quaternion.clone();
+    const savedAnchor = anchor.position.clone();
+    stage.position.set(0, 0, 0);
+    stage.quaternion.identity();
     anchor.position.set(0, 0, 0);
-    anchor.quaternion.identity();
-    anchor.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    model.position.sub(center);
-    anchor.position.copy(savedPos);
-    anchor.quaternion.copy(savedQuat);
-    span = Math.max(size.x, size.y, size.z, 1e-4);
-    // Keep a sensible classroom view when swapping craft. Real size stays a choice.
-    real = false;
+    stage.updateMatrixWorld(true);
+    kind = placementKind(next, 1);
+    // Rockets stand upright. Measure after that turn, then set the real kind from the true span.
+    const measured = measure(model, isGroundGuess(next));
+    span = Math.max(measured.x, measured.y, measured.z, 1e-4);
+    box = measured;
+    kind = placementKind(next, span);
+    if (kind === "ground" && !isGroundGuess(next)) {
+      const again = measure(model, true);
+      span = Math.max(again.x, again.y, again.z, 1e-4);
+      box = again;
+    }
+    stage.position.copy(savedPos);
+    stage.quaternion.copy(savedQuat);
+    anchor.position.copy(savedAnchor);
+    // Opening view and Reset are true size. Classroom is a toggle from there.
+    real = true;
     userScale = 1;
-    pivot.quaternion.identity();
-    applyScale();
+    restOrientation();
     craft = next;
     glbUrl = url;
+    poseForMode(true);
+    applyScale();
     dirty = true;
+  }
+
+  function isGroundGuess(next) {
+    return placementKind(next, 1) === "ground";
   }
 
   async function go(delta) {
@@ -347,10 +440,30 @@ function createViewer(canvas) {
     }
   }
 
+  function resetTransform() {
+    real = true;
+    userScale = 1;
+    restOrientation();
+    applyScale();
+    poseForMode(false);
+    dirty = true;
+  }
+
   function press(id) {
     if (id === "exit" && session) { session.end(); return; }
     if (id === "reset") { resetTransform(); drawPanel(); return; }
-    if (id === "real") { real = !real; userScale = 1; applyScale(); dirty = true; drawPanel(); return; }
+    if (id === "real") {
+      real = !real;
+      userScale = 1;
+      restOrientation();
+      applyScale();
+      poseForMode(false);
+      dirty = true;
+      drawPanel();
+      return;
+    }
+    if (id === "closer") { distGoal = stepDistance(distGoal, -1, limits()); return; }
+    if (id === "farther") { distGoal = stepDistance(distGoal, 1, limits()); return; }
     if (id === "next") go(1);
     if (id === "prev") go(-1);
   }
@@ -376,7 +489,7 @@ function createViewer(canvas) {
       hands[1].grip.getWorldPosition(_b);
       const dist = _a.distanceTo(_b);
       if (pinch > 0.05 && dist > 0.05) {
-        userScale = clampScale(userScale * (dist / pinch), userScaleLimit(displayedSpan()));
+        userScale = clampScale(userScale * (dist / pinch), gapLimit());
         applyScale();
       }
       pinch = dist;
@@ -407,7 +520,7 @@ function createViewer(canvas) {
       cam.getWorldPosition(_eye);
       if (_eye.y > 0.3 || placeFrames > 15) {
         cam.getWorldDirection(_fwd);
-        placeAnchor(_eye, _fwd);
+        placeStage(_eye, _fwd);
         placed = true;
         dirty = true;
       }
@@ -420,10 +533,13 @@ function createViewer(canvas) {
       pivot.quaternion.premultiply(_q);
     }
     if (d.scale !== 1) {
-      userScale = clampScale(userScale * d.scale, userScaleLimit(displayedSpan()));
+      userScale = clampScale(userScale * d.scale, gapLimit());
       applyScale();
     }
     applyGrab();
+    const before = distNow;
+    distNow = easeDistance(distNow, distGoal, dt);
+    if (distNow !== before) applyObjectPosition();
     if (dirty) drawPanel();
     renderer.render(scene, camera);
   }
@@ -433,15 +549,18 @@ function createViewer(canvas) {
     const h = canvas.height || canvas.clientHeight || 720;
     renderer.setPixelRatio(1);
     renderer.setSize(w, h, false);
+    applyDepth();
     renderer.setScissorTest(true);
     const eyeW = Math.floor(w / 2);
     const saved = camera.position.clone();
+    const look = new THREE.Vector3();
+    lookAtPoint(look);
     for (let i = 0; i < 2; i++) {
       const sign = i === 0 ? -1 : 1;
-      camera.position.set(sign * 0.032, 1.35, 0);
+      camera.position.set(sign * 0.032, eyeY, 0);
       camera.aspect = eyeW / h;
       camera.fov = 70;
-      camera.lookAt(0, 1.22, -VIEW_DISTANCE_M);
+      camera.lookAt(look);
       camera.updateProjectionMatrix();
       renderer.setViewport(i * eyeW, 0, eyeW, h);
       renderer.setScissor(i * eyeW, 0, eyeW, h);
@@ -474,9 +593,11 @@ function createViewer(canvas) {
   }
 
   function setReal(on) {
-    real = !!on;
+    real = on !== false;
     userScale = 1;
+    restOrientation();
     applyScale();
+    poseForMode(true);
     dirty = true;
   }
 
@@ -508,10 +629,11 @@ function createViewer(canvas) {
     placeFrames = 0;
     last = 0;
     loading = true;
+    real = true;
     dirty = true;
     drawPanel();
     renderer.setAnimationLoop(sessionFrame);
-    document.fonts.load("600 52px Jost").then(() => { dirty = true; }).catch(() => {});
+    document.fonts.load("600 48px Jost").then(() => { dirty = true; }).catch(() => {});
     try {
       const url = await resolveGlb(fleet, craft, glbUrl);
       await mount(craft, url);
@@ -531,11 +653,17 @@ function createViewer(canvas) {
     onCraft = opts.onCraft || null;
     craft = opts.craft;
     glbUrl = opts.glbUrl || "";
+    real = true;
     running = run().finally(() => { running = null; });
     return running;
   }
 
-  return { start, mount, setReal, placePreview, drawPanel, renderStereo, camera, renderer };
+  return {
+    start, mount, setReal, placePreview, drawPanel, renderStereo, lookAtPoint,
+    camera, renderer,
+    get pose() { return pose; },
+    get real() { return real; },
+  };
 }
 
 let live = null;
@@ -547,12 +675,13 @@ export async function startSpaceshipVR(opts) {
 }
 
 // One stereo frame of the same placement the headset uses. For checks without a Quest.
+// Opens at real size unless classroom is requested.
 export async function renderSpaceshipPreview(canvas, opts) {
   const viewer = createViewer(canvas);
-  try { await document.fonts.load("600 52px Jost"); } catch { /* system font */ }
+  try { await document.fonts.load("600 48px Jost"); } catch { /* system font */ }
   const url = await resolveGlb(opts.fleet, opts.craft, opts.glbUrl);
   await viewer.mount(opts.craft, url);
-  if (opts.real) viewer.setReal(true);
+  if (opts.classroom) viewer.setReal(false);
   viewer.placePreview();
   viewer.drawPanel();
   viewer.renderStereo();

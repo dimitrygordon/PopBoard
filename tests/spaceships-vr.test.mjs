@@ -40,28 +40,74 @@ test("the VR button is hidden without immersive-vr and shown when the headset ca
   assert.equal(on.note, "");
 });
 
-test("classroom scale fits the room, real size is true meters, and huge craft are capped", () => {
+test("real size is scale 1 with no cap, and VR opens there", () => {
+  assert.equal(V.DEFAULT_REAL, true);
+  assert.equal(V.REAL_CAP_M, undefined);
   const wrench = V.viewScale(0.3, false);
   assert.equal(wrench.mode, "classroom");
   assert.ok(Math.abs(wrench.scale * 0.3 - V.COMFORT_SPAN_M) < 1e-9);
-  const wrenchReal = V.viewScale(0.3, true);
-  assert.equal(wrenchReal.mode, "real");
-  assert.equal(wrenchReal.scale, 1);
-  assert.equal(wrenchReal.capped, false);
-  const rocket = V.viewScale(110.6, true);
-  assert.equal(rocket.mode, "capped");
-  assert.equal(rocket.capped, true);
-  assert.ok(Math.abs(rocket.scale * 110.6 - V.REAL_CAP_M) < 1e-9);
-  const planet = V.viewScale(1.43e8, true);
-  assert.ok(planet.scale * 1.43e8 <= V.REAL_CAP_M + 1e-6);
+  for (const span of [0.3, 13, 110.6, 1.43e8]) {
+    const real = V.viewScale(span, true);
+    assert.equal(real.mode, "real", String(span));
+    assert.equal(real.scale, 1, String(span));
+  }
   assert.ok(V.COMFORT_SPAN_M < 1.2);
-  assert.ok(V.REAL_CAP_M <= 3);
   assert.ok(V.VIEW_DISTANCE_M >= 1 && V.VIEW_DISTANCE_M <= 2);
-  // user scale cannot push the shown craft past the cap
-  assert.ok(V.userScaleLimit(V.COMFORT_SPAN_M) * V.COMFORT_SPAN_M <= V.REAL_CAP_M + 1e-9);
-  assert.equal(V.userScaleLimit(V.REAL_CAP_M), 1);
-  assert.equal(V.clampScale(9, 1), 1);
-  assert.equal(V.clampScale(0.01, 3), V.SCALE_MIN);
+  assert.equal(V.clampScale(9), V.SCALE_MAX);
+  assert.equal(V.clampScale(0.01), V.SCALE_MIN);
+  assert.equal(V.clampScale(2, 1.2), 1.2);
+});
+
+test("rockets stand on the floor, craft fit in view, and planets show a horizon", () => {
+  const wrench = { id: "wrench", name: "Wrench", tags: ["tools"] };
+  const rocket = { id: "saturn-v", name: "Saturn V", tags: ["crewed"], subtitle: "The rocket that launched astronauts to the Moon" };
+  const station = { id: "iss", name: "International Space Station", tags: ["crewed"] };
+  const planet = { id: "jupiter", name: "Jupiter", tags: ["planets-moons"] };
+  assert.equal(V.placementKind(wrench, 0.3), "fit");
+  assert.equal(V.placementKind(station, 109), "fit");
+  assert.equal(V.placementKind(rocket, 110.6), "ground");
+  assert.equal(V.isRocket({ id: "spacex-falcon-9", tags: ["rockets"] }), true);
+  assert.equal(V.placementKind(planet, 1.43e8), "horizon");
+  assert.equal(V.placementKind({ id: "bennu", tags: ["small-bodies"] }, 500), "fit");
+  assert.equal(V.placementKind({ id: "vesta", tags: ["small-bodies"] }, 500000), "horizon");
+
+  const small = V.initialPlacement(0.3, { x: 0.05, y: 0.3, z: 0.08 }, "fit", 1.35);
+  assert.ok(small.nearest >= V.MIN_CLEAR_M - 1e-9, small.nearest);
+  assert.equal(small.floor, false);
+  assert.ok(small.distance > 0.3 / 2);
+
+  const rocketPose = V.initialPlacement(110.6, { x: 10, y: 110.6, z: 10 }, "ground", 1.35);
+  assert.equal(rocketPose.floor, true);
+  assert.ok(Math.abs(rocketPose.centerY - (110.6 / 2 + 0.02)) < 1e-9);
+  assert.ok(rocketPose.side > 5);
+  assert.ok(rocketPose.distance > 5);
+
+  const moon = V.initialPlacement(3474000, { x: 3474000, y: 3474000, z: 3474000 }, "horizon", 1.35);
+  const radius = 3474000 / 2;
+  const limb = Math.asin(radius / moon.distance) * 180 / Math.PI;
+  assert.ok(Math.abs(limb - V.HORIZON_LIMB_DEG) < 0.05, limb);
+  assert.ok(moon.nearest > 1000, "the surface is not in the student's face");
+  assert.equal(V.viewScale(3474000, true).scale, 1);
+
+  const limits = V.distanceLimits(110.6, { x: 10, y: 110.6, z: 10 }, "ground");
+  assert.ok(limits.max > rocketPose.distance, "Farther can back up enough to see the rocket");
+  assert.ok(limits.min < rocketPose.distance);
+  assert.ok(V.stepDistance(rocketPose.distance, -1, limits) < rocketPose.distance);
+  assert.ok(V.stepDistance(rocketPose.distance, 1, limits) > rocketPose.distance);
+  assert.equal(V.stepDistance(limits.min, -1, limits), limits.min);
+  assert.equal(V.stepDistance(limits.max, 1, limits), limits.max);
+  const eased = V.easeDistance(10, 20, 0.05);
+  assert.ok(eased > 10 && eased < 20);
+  assert.equal(V.easeDistance(10, 20, 0), 10);
+
+  const depth = V.depthRange(1.43e8);
+  assert.ok(depth.near < 0.2);
+  assert.ok(depth.far > 1.43e8);
+  assert.equal(V.placementNote("horizon").includes("horizon"), true);
+  assert.equal(V.realSizeLine({ facts: [{ label: "Real size", value: "3,474 km across" }] }), "Real size: 3,474 km across");
+  const room = V.classroomPlacement(1.6);
+  assert.equal(room.distance, V.VIEW_DISTANCE_M);
+  assert.equal(room.floor, false);
 });
 
 test("thumbstick deadzone holds still, up grows, and the fleet wraps", () => {
@@ -135,6 +181,11 @@ test("pages wire VR beside AR and 3D, and the session does not drive the camera"
   assert.match(vr, /hand-tracking/);
   assert.match(vr, /setReferenceSpaceType\("local-floor"\)/);
   assert.match(vr, /setFramebufferScaleFactor\(1\)/);
+  assert.match(vr, /logarithmicDepthBuffer: true/);
+  assert.match(vr, /real = true/);
+  assert.match(vr, /Closer/);
+  assert.match(vr, /Farther/);
+  assert.doesNotMatch(vr, /REAL_CAP|capped at/);
   assert.match(vr, /new XRInput/);
   assert.doesNotMatch(vr, /USDZLoader/);
   assert.doesNotMatch(vr, /\.usdz/);
@@ -151,7 +202,10 @@ test("pages wire VR beside AR and 3D, and the session does not drive the camera"
   assert.match(vr, /Exit VR/);
   assert.match(vr, /VR_HINT/);
   assert.match(V.VR_HINT, /Grip turns the model/);
-  assert.match(V.VR_HINT, /Trigger resets/);
+  assert.match(V.VR_HINT, /Thumbstick turns and scales/);
+  assert.match(V.VR_HINT, /Closer and Farther/);
+  assert.match(V.VR_HINT, /Trigger resets to real size/);
+  assert.equal(V.DEFAULT_REAL, true);
 
   for (const file of [
     "public/spaceships/ss-vr.js",
