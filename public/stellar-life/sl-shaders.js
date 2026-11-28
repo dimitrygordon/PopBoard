@@ -345,9 +345,9 @@ ${HASH}
 void main(){
   vec2 q = vC * uMaxR; float rho = length(q);
   float an0 = atan(vC.y, vC.x);
-  float rg = 0.65 + 0.45 * vn(vec2(an0 * 4.5, 3.1)) + 0.15 * vn(vec2(an0 * 11.0, 7.4));
-  float dEdge = 1.0 + 0.045 * (rg - 0.7);   /* a slightly more ragged, fuzzy limb */
-  if (rho > dEdge + 0.02) discard;
+  float rg = 0.5 + 0.85 * vn(vec2(an0 * 2.2, 1.8)) + 0.32 * vn(vec2(an0 * 5.2, 4.2));
+  float dEdge = 1.0 + 0.12 * (rg - 0.55);   /* soft ragged lobes, a fuzzier limb */
+  if (rho > 1.14) discard;
   float mu = sqrt(max(0.0, 1.0 - min(rho * rho, 1.0)));
   vec3 z = normalize(uCamO); vec3 ex = normalize(uCamX - z * dot(uCamX, z)); vec3 ey = cross(z, ex);
   vec3 c0 = normalize(q.x * ex + q.y * ey + mu * z);
@@ -367,23 +367,30 @@ void main(){
     gl_FragColor = vec4(enc(colL) * aL, aL); return;
   }
   float best = 99.0, second = 99.0, chh = 0.35, a1 = 0.0, a2 = 1.0;
+  vec3 cwin = c;
   for (int i = 0; i < 26; i++) {
     float rad = uCell[i].w; if (rad < 0.02) continue;
     float a = sqrt(2.0 * max(1.0 - dot(uCell[i].xyz, c), 0.0));
     float wd = a / (rad * (0.72 + 0.28 * uCellH[i].x));
-    if (wd < best) { second = best; a2 = a1; best = wd; a1 = a; chh = uCellH[i].x; }
+    if (wd < best) { second = best; a2 = a1; best = wd; a1 = a; chh = uCellH[i].x; cwin = uCell[i].xyz; }
     else if (wd < second) { second = wd; a2 = a; }
   }
-  float dome = exp(-0.95 * best * best);                          /* smooth low-frequency brightness dome */
-  float wall = 0.5 * max(a2 - a1, 0.0);                          /* distance to the Voronoi edge, in star radii */
-  float valley = 1.0 - smoothstep(0.04, 0.14, wall);             /* 6 to 10 percent wide, very blurry, never a line */
-  float mot = vn(c0.xy * 1.05 + c0.z * 0.9);                     /* at most one very faint large-scale mottle */
-  float heat = clamp((0.62 + 0.38 * chh) * (0.42 + 0.58 * dome) * (1.0 - 0.22 * valley), 0.50, 1.0);  /* floor: no rust holes */
-  float ld = 0.74 + 0.26 * pow(mu, 0.75);                        /* a little limb darkening so it reads round */
-  float dT = 160.0 * (heat - 0.30) - 18.0 * valley;              /* cream and peach tops, muted amber valleys */
-  float br = (0.90 + 0.32 * heat) * ld * (0.984 + 0.032 * mot);
+  float dome = mix(0.82, 1.0, exp(-2.2 * best * best));          /* a brightness dome: bright top, darker sides, never a dead floor */
+  float cellR = max(0.5 * (a1 + a2), 0.02);
+  float u = clamp(a1 / cellR, 0.0, 1.0);                         /* 0 at the cell centre, 1 at the Voronoi edge */
+  float valley = smoothstep(0.55, 0.90, u);                      /* wide, blurry valleys that fade into the cells, never a crease */
+  float mot = vn(c0.xy * 1.05 + c0.z * 0.9);
+  vec3 light = normalize(z + 0.45 * ey + 0.30 * ex);
+  vec3 spotP = normalize(cwin + 0.16 * light);
+  float spot = exp(-48.0 * max(1.0 - dot(c, spotP), 0.0)) * (1.0 - valley);  /* a small soft bright spot near the cell top */
+  float ld = 0.50 + 0.50 * pow(mu, 0.7);                         /* about 50% at the limb */
+  float heat = clamp(0.28 + 0.72 * chh, 0.0, 1.0);               /* a mild floor so a dying cell stays ochre, not empty brown */
+  float dT = 180.0 * (heat - 0.22) - 240.0 * valley;             /* honey tops, darker ochre valleys around #8A5A2E */
+  float shape = mix(dome, 0.28, valley);                         /* valley floor about 50 to 60% of a cell-top, near #8A5A2E */
+  float br = 0.98 * shape * ld * (0.97 + 0.06 * mot);
+  br *= 1.0 + 0.28 * spot;
   vec3 col = bleed(tlin(uTeff + dT) * br * uExposure);
-  float edge = 1.0 - smoothstep(dEdge * 0.91, dEdge, rho);
+  float edge = 1.0 - smoothstep(dEdge * 0.80, dEdge, rho);       /* a wide, fuzzy falloff into the halo */
   float a = edge * uAlpha; if (a < 0.004) discard;
   gl_FragColor = vec4(enc(col) * a, a);
 }`;

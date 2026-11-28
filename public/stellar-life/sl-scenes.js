@@ -322,7 +322,7 @@ void main(){
           ms.material.uniforms.uAlpha.value = 1 - on; halo.material.uniforms.uAlpha.value = 1 - on; giantGlow.material.uniforms.uAlpha.value *= 1 - on;
           mw.material.uniforms.uAlpha.value = 1 - 0.7 * on;
           for (const m of [ms, mw, halo, tight, giantGlow]) m.material.uniforms.uTeff.value = TeffShow;
-          if (rsgHalo.visible) { const u = rsg.material.uniforms; rsgLane.material.uniforms.uAlpha.value = on; rsgLane.material.uniforms.uTeff.value = TeffShow; rsgLane.material.uniforms.uExposure.value = wide ? 1.08 : 1.0; rsgLane.material.uniforms.uSurf.value = wide ? 1 : 0;
+          if (rsgHalo.visible) { const u = rsg.material.uniforms; rsgLane.material.uniforms.uAlpha.value = on; rsgLane.material.uniforms.uTeff.value = TeffShow; rsgLane.material.uniforms.uExposure.value = wide ? 1.14 : 1.0; rsgLane.material.uniforms.uSurf.value = wide ? 1 : 0;
             rsgHalo.material.uniforms.uTeff.value = TeffShow; rsgHalo.material.uniforms.uExposure.value = 0.7; rsgHalo.material.uniforms.uAlpha.value = on; rsgHalo.material.uniforms.uDisc.value = wide ? 0 : 1;
             rsgRing.material.uniforms.uAlpha.value = on;
             if (rsg.visible) { u.uAlpha.value = on; u.uTeff.value = TeffShow; u.uExposure.value = 1.0; u.uRedeal.value = 0; }
