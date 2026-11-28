@@ -1,0 +1,82 @@
+/* Gravity Force Lab VR page. Same look as Life of a Star style B: navy to violet, white text, soft glass cards. */
+@font-face { font-family: "Inter"; src: url("../night-sky/ui/fonts/inter-latin-var.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+:root { --gf-bg: #050A1E; --gf-card: rgba(14, 18, 44, 0.84); --gf-card-2: rgba(255, 255, 255, 0.07); --gf-border: rgba(255, 255, 255, 0.14); --gf-text: #F2F4FF; --gf-text-2: #C3C9E6; --gf-text-3: #8E95B8; --gf-accent: #7FB2FF; --gf-ink: #2A2420; --gf-cream: #F3E9D2; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--gf-bg); color: var(--gf-text); font-family: Inter, -apple-system, "SF Pro Text", system-ui, sans-serif; overflow: hidden; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+body { background: linear-gradient(166deg, #04081A 0%, #0C143A 60%, #2E1E5C 100%) fixed; }
+#gfCanvas { position: fixed; inset: 0; width: 100vw; height: var(--pb-vh, 100vh); display: block; }
+.gf-top { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: calc(8px + var(--pb-safe-top, 0px)) 12px 8px; background: linear-gradient(rgba(5, 10, 30, 0.85), rgba(5, 10, 30, 0)); z-index: 5; }
+.gf-top .title { margin: 0 auto 0 4px; font-weight: 650; font-size: 17px; }
+.gf-hbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--gf-border); background: rgba(20, 26, 58, 0.7); color: var(--gf-text); font: inherit; font-size: 14px; cursor: pointer; }
+.gf-hbtn:hover { border-color: rgba(170, 205, 255, 0.7); }
+.gf-hbtn[hidden], .gf-vrnote[hidden], .gf-status[hidden] { display: none; }
+.gf-vr { background: rgba(127, 178, 255, 0.30); }
+.gf-vrnote { margin: 0; font-size: 13px; color: var(--gf-text-3); }
+.gf-side { position: fixed; right: 14px; top: 64px; bottom: calc(14px + var(--pb-safe-bottom, 0px)); width: min(420px, 38vw); overflow-y: auto; padding: 14px 16px 16px; border-radius: calc(var(--r-18, 18px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--gf-card); border: 1px solid var(--gf-border); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 4; }
+.gf-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.gf-tab, .gf-chip, .gf-btn { min-height: 44px; padding: 8px 12px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--gf-border); background: var(--gf-card-2); color: var(--gf-text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.gf-tab { min-height: 38px; padding: 6px 10px; font-size: 13px; }
+.gf-tab:hover, .gf-chip:hover, .gf-btn:hover { border-color: rgba(170, 205, 255, 0.7); }
+.gf-tab.on, .gf-chip.on, .gf-btn.on { background: rgba(127, 178, 255, 0.28); border-color: rgba(170, 205, 255, 0.9); }
+.gf-btn.primary { background: rgba(127, 178, 255, 0.35); border-color: rgba(170, 205, 255, 0.9); }
+button:disabled { opacity: 0.45; cursor: default; }
+.gf-kicker { margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gf-text-3); font-weight: 650; }
+.gf-title { margin: 4px 0 8px; font-size: 22px; font-weight: 700; }
+.gf-cardline { margin: 0 0 8px; font-size: 15px; line-height: 1.45; color: var(--gf-text); }
+.gf-q { margin: 8px 0 10px; padding: 12px; border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: rgba(164, 140, 255, 0.12); border: 1px solid rgba(164, 140, 255, 0.4); }
+.gf-qtext { margin: 0 0 10px; font-size: 15px; font-weight: 600; color: #E3DBFF; }
+.gf-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.gf-reveal { margin: 8px 0; padding: 10px 12px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--gf-card-2); font-size: 14px; line-height: 1.4; }
+.gf-reveal p { margin: 2px 0; }
+.gf-reveal span { display: inline-block; min-width: 86px; font-size: 12px; color: var(--gf-text-3); }
+.gf-result { font-weight: 650; margin-top: 6px !important; }
+.gf-follow { color: var(--gf-text-2); }
+/* Readout dial (Leo): Inter semibold tabular figures, warm ink on a cream dial, no glow, 2% inner shadow */
+.gf-dials { display: flex; gap: 8px; margin: 10px 0; }
+.gf-dial { flex: 1 1 auto; padding: 10px 14px 12px; border-radius: calc(var(--r-14, 14px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--gf-cream); color: var(--gf-ink); box-shadow: inset 0 2px 6px rgba(42, 36, 32, 0.02); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+.gf-dial + .gf-dial { flex: 0 0 34%; }
+.gf-dial-main { white-space: nowrap; }
+.gf-dial-main.long { font-size: 26px; white-space: normal; }
+.gf-dial + .gf-dial .gf-dial-main { font-size: 32px; }
+.gf-dial p { margin: 0; }
+.gf-dial-label { font-size: 12px; font-weight: 600; opacity: 0.7; }
+.gf-dial-main { font-size: 40px; line-height: 1.1; font-weight: 600; }
+.gf-dial-sub { font-size: 24px; font-weight: 400; opacity: 0.7; }
+.gf-dial-unit { font-size: 13px; font-weight: 400; opacity: 0.7; }
+.gf-lines p { margin: 0 0 6px; font-size: 14px; line-height: 1.45; color: var(--gf-text-2); }
+.gf-controls { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; align-items: center; }
+.gf-glabel { font-size: 12px; font-weight: 700; color: var(--gf-text-3); min-width: 16px; }
+.gf-card, .gf-sort, .gf-eqwrap, .gf-notes { margin: 10px 0; padding: 10px 12px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--gf-card-2); font-size: 14px; line-height: 1.4; }
+.gf-card ol { margin: 4px 0 0 18px; padding: 0; }
+.gf-cardtitle { margin: 0 0 6px; font-weight: 700; font-size: 14px; }
+.gf-foot { font-size: 12px; color: var(--gf-text-3); }
+.gf-sortrow { padding: 6px 0; border-top: 1px solid var(--gf-border); }
+.gf-sortrow p { margin: 0 0 6px; }
+.gf-bins { display: flex; gap: 6px; }
+.gf-why { font-size: 13px; color: var(--gf-text-2); margin-top: 6px !important; }
+.gf-eqwrap.hidden { display: none; }
+.gf-link { color: #AACDFF; }
+.gf-notes summary { cursor: pointer; font-weight: 650; }
+/* equation panel from gf-panel.js */
+.gf-panel .gf-formula { margin: 0 0 8px; font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.gf-tiles { display: flex; flex-wrap: wrap; gap: 6px; }
+.gf-tile { display: flex; flex-direction: column; padding: 6px 10px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; corner-shape: squircle; --sq: 1; background: rgba(255, 255, 255, 0.08); font-variant-numeric: tabular-nums; }
+.gf-tile-label { font-size: 12px; color: var(--gf-text-3); }
+.gf-tile-value { font-size: 15px; font-weight: 650; }
+.gf-tile-unit { font-size: 11px; color: var(--gf-text-3); }
+.gf-bubble { display: inline-block; margin: 6px 6px 0 0; padding: 3px 8px; border-radius: 999px; corner-shape: round; --sq: 0; background: rgba(255, 210, 122, 0.22); font-size: 12px; font-weight: 650; }
+.gf-rules { margin: 8px 0; padding-left: 18px; color: var(--gf-text-2); font-size: 13px; }
+.gf-problems { display: grid; gap: 6px; }
+.gf-problem { padding: 8px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: rgba(255, 255, 255, 0.05); font-size: 13px; }
+.gf-problem p { margin: 2px 0; }
+.gf-answer { color: #FFE3A6; }
+.gf-help { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.gf-help button { min-height: 40px; padding: 6px 12px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; corner-shape: squircle; --sq: 1; border: 1px solid var(--gf-border); background: var(--gf-card-2); color: var(--gf-text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.gf-help button[aria-pressed="true"] { background: rgba(127, 178, 255, 0.28); border-color: rgba(170, 205, 255, 0.9); }
+.gf-status { position: fixed; left: 50%; top: 45%; transform: translate(-50%, -50%); margin: 0; color: var(--gf-text-2); z-index: 6; }
+body.gf-noui .gf-side { display: none; }
+/* portrait phones: stage on top, panel below */
+body.gf-phone #gfCanvas { height: 46vh; }
+body.gf-phone .gf-side { left: 8px; right: 8px; top: calc(46vh + 6px); bottom: calc(8px + var(--pb-safe-bottom, 0px)); width: auto; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

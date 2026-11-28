@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#050A1E">
+<title>Gravity Force Lab VR // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="preload" as="font" type="font/woff2" href="night-sky/ui/fonts/inter-latin-var.woff2" crossorigin>
+<link rel="stylesheet" href="gravity-force/gf.css?v=20261128a">
+<link rel="stylesheet" href="/shared/corners/corners.css?v=20261124a">
+<script defer src="/shared/corners/corners.js?v=20261124a"></script>
+<script type="module" src="gravity-force/gf-page-ui.js"></script>
+<script type="module" src="gravity-force/gf-main.js?v=20261128a"></script>
+<script type="module" src="astro-course/story-return.js"></script>
+</head>
+<body>
+<h1 class="sr-only">Gravity Force Lab VR</h1>
+<p class="sr-only">Five scenes about the pull of gravity: drag the Moon and watch the pull fall off with distance, change masses and see that both objects feel the same pull, weigh a 50 kg traveler on Earth, the Moon, Mars, Jupiter and a neutron star, ride an elevator to the space station, and flick marbles across a gravity-well sheet. Predict before each result. On a Meta Quest 3, press Enter VR to use it in the headset.</p>
+
+<canvas id="gfCanvas" aria-label="3D view of the current scene. Drag the Moon in the Pull Meter, tap the sheet to flick a marble, or drag elsewhere to look around."></canvas>
+
+<header class="gf-top" id="gfTop">
+  <button id="studyBackBtn" class="gf-hbtn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="lbl back-label">Back</span>
+  </button>
+  <p class="title">Gravity Force Lab VR</p>
+  <button id="gfVR" class="gf-hbtn gf-vr" type="button" hidden>
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h18v8h-6l-1.5-2.5h-3L9 16H3z"/></svg>
+    <span class="lbl">Enter VR</span>
+  </button>
+  <p id="gfVRNote" class="gf-vrnote" hidden>VR needs a headset browser (Meta Quest 3).</p>
+</header>
+
+<section class="gf-side" id="gfPanel" aria-live="polite"><h2 class="gf-title">Loading the lab</h2></section>
+
+<p id="gfStatus" class="gf-status">Loading...</p>
+</body>
+</html>

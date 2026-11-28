@@ -2,7 +2,7 @@
 
 Off-headset half of the Gravity Force VR lab (teaching spec v1.2). These modules own the numbers, the URL, and the equation panel. Scene code should import them and not retype a mass, a radius, or a force.
 
-This pass does not add `study-gravity-force.html`, `gf-scenes.js`, the XR input change, the `BUILTIN_MODULES` entry, or the flat fallback.
+The scene side is in `study-gravity-force.html` and the files below the table (see "Scenes and headset").
 
 ## Files
 
@@ -141,3 +141,22 @@ RATIO_RULES, WATCH_FOR, TEACHER_NOTES
 Help 0 renders no formula, no G, and no newtons. Help 1 renders "F is proportional to m1 x m2 / r^2." and the Set A ratio answers. Help 2 renders `F = G x m1 x m2 / r^2` with values, Set A, Set B, and the exit ticket. `previous` draws the change bubbles (`m1 x2`, `r x2 so r^2 x4`).
 
 Worked answers are computed from `gf-sim`, then rounded to the printed section 6.3 lines (491 N, 1.98 x 10^20 N, 2.0 x 10^-7 N, 3.54 x 10^22 N, 435 N at 88.5 percent, and so on). The panel does not contain a pound label. S3 is the only place that calls `lbFromN`.
+
+## Scenes and headset
+
+| File | Role |
+|---|---|
+| `public/study-gravity-force.html` | The page. Study library entry `gravity-force` in `public/study.html`. |
+| `public/gravity-force/gf-scenes.js` | S1 to S5 as pure models: `sceneModel(lab)`, `controlsFor(lab)`, `act(lab, id, canSetHelp)`. No DOM. The page and the headset panel both draw from it. |
+| `public/gravity-force/gf-view.js` | three.js scenes in real metres (student at the origin, floor at y = 0, local-floor). |
+| `public/gravity-force/gf-props.js` | S3 props built in code at Angelo's real sizes. |
+| `public/gravity-force/gf-xr.js` | Headset panel (one canvas texture, Leo's readout dial) and the Quest 3 button map. |
+| `public/gravity-force/gf-main.js` | Renderer, flat panel, pointer and keys, WebXR session. |
+
+Run `node --test tests/gravity-force-vr.test.mjs`. It covers T13 to T19 that can run without a headset.
+
+**Props.** Angelo's GLBs are not in the repo. `gf-props.js` builds the spring scale, step platform, balance, traveler and robot in code at real size. Set `MODEL_BASE` in that file to an https folder holding `<name>_meshopt.glb` and the scale and robot swap to Angelo's models when they load. It is empty by default.
+
+**Headset controls.** Ray plus trigger (or a hand pinch) presses panel buttons, drags the S1 Moon and flicks from the S5 start ball. Right A flicks a marble. Right thumbstick press goes to the next scene. Left thumbstick steps through the scene's chips. Right thumbstick left and right nudges the Moon. Grip held pauses motion. B or Y shows or hides the panel. The rail gives a haptic tick at each whole number.
+
+**Flat keys.** 1 to 5 pick a scene, arrow keys move the Moon, Space pins (S1) or flicks (S5), E shows or hides the equation (help 1 and 2).
