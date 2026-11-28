@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from "node:fs";
 import * as M from "../public/fourth-dimension/fd-math.js";
 import { CHAPTERS, PAGES as BOOK } from "../public/fourth-dimension/pages.js";
 import * as V from "../public/fourth-dimension/vr/vr4d-math.js";
-import { PAGES, buildSteps, handbackFor, DECK } from "../public/fourth-dimension/vr/vr4d-book.js";
+import { PAGES, buildSteps, handbackFor, DECK, HELP_LEVELS } from "../public/fourth-dimension/vr/vr4d-book.js";
 
 const root = new URL("../", import.meta.url);
 const read = (n) => readFileSync(new URL(n, root), "utf8");
@@ -153,6 +153,24 @@ test("storybook has 27 pages, help 0 skips the six answers, hand-backs match the
   const iFlick = steps.findIndex((s) => s.kind === "handback" && s.scene === "flick");
   assert.equal(steps[iFlick + 1].page.id, "s5");
   assert.equal(DECK, "vr4d");
+});
+
+test("Explain is selectable with no unlock", () => {
+  assert.deepEqual(HELP_LEVELS.map((c) => c.label), ["Observe", "Reasons", "Explain"]);
+  assert.deepEqual(HELP_LEVELS.map((c) => c.value), [0, 1, 2]);
+  assert.ok(HELP_LEVELS.every((c) => c.disabled === false));
+  const explain = buildSteps(2).filter((s) => s.kind === "page").map((s) => s.page.id);
+  for (const id of ["s4", "s8", "s12", "s17", "s21", "s25"]) assert.ok(explain.includes(id), id);
+  const ui = read("public/fourth-dimension/vr/vr4d-main.js");
+  const html = read("public/study-fourth-dimension-vr.html");
+  const readme = read("public/fourth-dimension/audio/vr4d/README.md");
+  for (const src of [ui, html, readme]) {
+    assert.equal(/QR/.test(src), false);
+    assert.equal(/unlock/i.test(src), false);
+    assert.equal(/\(locked\)/.test(src), false);
+  }
+  assert.match(ui, /params\.get\("help"\)/);
+  assert.match(ui, /\? clamp\(\+params\.get\("help"\) \|\| 0, 0, 2\) : 1/);
 });
 
 test("placeholder narration has a clip and word times for all 27 pages", () => {

@@ -43,6 +43,8 @@ body.paper-mode .cap.live #capText .nw.hl { color: #8a5d00; }
   padding: 12px; border-radius: 16px; background: rgba(22, 30, 44, 0.96); border: 1px solid #3c4b62; }
 .settings-sheet[hidden] { display: none !important; }
 #settingsBody, #rateSlot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.help-levels { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+.help-levels button { flex: 1 1 auto; }
 #rateSlot:empty { display: none; }
 #rateSlot .narr-rate { display: flex; align-items: center; gap: 8px; }
 @media (min-width: 960px) {

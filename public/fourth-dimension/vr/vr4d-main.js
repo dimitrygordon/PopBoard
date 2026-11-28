@@ -6,7 +6,7 @@ import { createNarrator } from "../../astro-course/ac-narrate.js";
 import { createWorld } from "./vr4d-world.js";
 import { createAudio } from "./vr4d-audio.js";
 import { CaptionPanel } from "./vr4d-captions.js";
-import { buildSteps, LOOK, FADE, LEAF_SEC, bookHref, defaultModel, SCENE_TITLE, DECK } from "./vr4d-book.js";
+import { buildSteps, LOOK, FADE, LEAF_SEC, bookHref, defaultModel, SCENE_TITLE, DECK, HELP_LEVELS } from "./vr4d-book.js";
 import { capDelta, notchEvents, segmentLength, sphereSliceRadius, BALL_R, BEAD_RANGE, HYPER_R, cyclePlane, EYE_Y, W_PLANES } from "./vr4d-math.js";
 
 const $ = (id) => document.getElementById(id);
@@ -327,16 +327,20 @@ function renderTools() {
     if (c === "finale") btn("Open in the book", () => openBook("net-cube"));
     if (c === "cover") btn("Open", () => go(1), null, "Open the book");
   }
-  const helpSel = document.createElement("select");
-  helpSel.setAttribute("aria-label", "Help level");
-  [["0", "Observe"], ["1", "Reasons"], ["2", help < 2 ? "Explain (locked)" : "Explain"]].forEach(([v, label]) => {
-    const o = document.createElement("option"); o.value = v; o.textContent = label; o.selected = String(help) === v;
-    if (v === "2" && help < 2) o.disabled = true;
-    helpSel.appendChild(o);
+  const helpRow = document.createElement("div");
+  helpRow.className = "help-levels";
+  helpRow.setAttribute("role", "group");
+  helpRow.setAttribute("aria-label", "Help level");
+  HELP_LEVELS.forEach(({ value, label, disabled }) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = label;
+    b.disabled = disabled;
+    b.setAttribute("aria-pressed", String(help === value));
+    b.addEventListener("click", () => setHelp(value));
+    helpRow.appendChild(b);
   });
-  helpSel.addEventListener("change", () => setHelp(+helpSel.value));
-  settings.appendChild(helpSel);
-  if (help < 2) setBtn("Mr. Dimitry's QR", () => setHelp(2));
+  settings.appendChild(helpRow);
   setBtn(model.reduced ? "Motion: low" : "Motion", () => { model.reduced = !model.reduced; renderTools(); }, model.reduced);
   setBtn(model.paper ? "Paper captions" : "Captions", () => {
     model.paper = !model.paper;
@@ -348,6 +352,9 @@ function renderTools() {
 }
 
 function setHelp(n) {
+  n = clamp(n, 0, 2);
+  if (n === help) return;
+  if (n === 2) audio.sparkle();
   help = n; model.help = n;
   const id = model.pageId || steps[step]?.page?.id;
   steps = buildSteps(help, { exitTicket });

@@ -6,6 +6,13 @@ import { CHAPTERS, PAGES as BOOK } from "../pages.js";
 
 export const DECK = "vr4d";
 
+// Students pick a help level whenever they are ready. Nothing is locked.
+export const HELP_LEVELS = [
+  { value: 0, label: "Observe", disabled: false },
+  { value: 1, label: "Reasons", disabled: false },
+  { value: 2, label: "Explain", disabled: false },
+];
+
 // Answer pages play at help 1 and 2. Help 0 (Observe) skips them.
 const ANSWER = new Set(["s4", "s8", "s12", "s17", "s21", "s25"]);
 
