@@ -37,28 +37,55 @@ export class XRPanel {
     const quat = new this.T.Quaternion().setFromEuler(new this.T.Euler(-0.12, headYaw + 0.42, 0, "YXZ"));
     return { pos, quat };
   }
-  /** 1.2 m in front of the student, to the left, tilted up. Applies the session offset if the student has moved the panel. */
+  /** 1.2 m in front of the student, to the left, tilted up. Applies the session offset if the student has moved the panel.
+   *  After a move the position is kept (so it can sit off to the side or low, out of the way) and the panel turns to face the student. */
   place(headPos, headYaw) {
     const def = this.defaultPose(headPos, headYaw);
-    this.mesh.position.copy(def.pos); this.mesh.quaternion.copy(def.quat);
-    if (this.hasOffset) { this.mesh.position.add(this.offset.pos.clone().applyQuaternion(def.quat)); this.mesh.quaternion.multiply(this.offset.quat); }
+    this.mesh.position.copy(def.pos);
+    if (this.hasOffset) {
+      this.mesh.position.add(this.offset.pos.clone().applyQuaternion(def.quat));
+      this.mesh.lookAt(headPos.x, headPos.y, headPos.z);
+    } else this.mesh.quaternion.copy(def.quat);
+    this.mesh.updateMatrixWorld();
   }
   resetOffset() { this.hasOffset = false; this.offset.pos.set(0, 0, 0); this.offset.quat.identity(); }
   captureOffset(headPos, headYaw) {
     const def = this.defaultPose(headPos, headYaw); const inv = def.quat.clone().invert();
     this.offset.pos.copy(this.mesh.position).sub(def.pos).applyQuaternion(inv);
-    this.offset.quat.copy(inv).multiply(this.mesh.quaternion); this.hasOffset = true;
+    this.offset.quat.identity(); this.hasOffset = true;
   }
   beginGrab(obj) { obj.updateMatrixWorld(); this.mesh.updateMatrixWorld(); this._grabLocal.copy(obj.matrixWorld).invert().multiply(this.mesh.matrixWorld); }
   followGrab(obj) { obj.updateMatrixWorld(); const w = obj.matrixWorld.clone().multiply(this._grabLocal); w.decompose(this.mesh.position, this.mesh.quaternion, new this.T.Vector3()); }
-  hitHandle(origin, dir) { if (!this.mesh.visible) return false; this.ray.set(origin, dir); return this.ray.intersectObject(this.handle, false).length > 0; }
-  nearHandle(worldPoint, radius = 0.1) { if (!this.mesh.visible || !worldPoint) return false; return this.handle.getWorldPosition(new this.T.Vector3()).distanceTo(worldPoint) < radius; }
+  hitHandle(origin, dir) {
+    if (!this.mesh.visible) return false; this.mesh.updateMatrixWorld();
+    this.ray.set(origin, dir); return this.ray.intersectObject(this.handle, false).length > 0;
+  }
+  nearHandle(worldPoint, radius = 0.1) {
+    if (!this.mesh.visible || !worldPoint) return false; this.mesh.updateMatrixWorld();
+    return this.handle.getWorldPosition(new this.T.Vector3()).distanceTo(worldPoint) < radius;
+  }
+  /** Map a local point on the panel (metres, origin at the centre, +y up) to a button id, or "panel", or null if off the card. */
+  idAtLocal(local) {
+    const hm = XRP.M * XRP.H / XRP.W, hw = XRP.M / 2, hh = hm / 2;
+    if (Math.abs(local.x) > hw || Math.abs(local.y) > hh) return null;
+    const x = (local.x / XRP.M + 0.5) * XRP.W, y = (0.5 - local.y / hm) * XRP.H;
+    for (const r of this.hits) if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return r.id;
+    return "panel";
+  }
   pick(origin, dir) {
-    if (!this.mesh.visible) return null; this.ray.set(origin, dir); const h = this.ray.intersectObject(this.mesh, false)[0];
+    if (!this.mesh.visible) return null; this.mesh.updateMatrixWorld();
+    this.ray.set(origin, dir); const h = this.ray.intersectObject(this.mesh, false)[0];
     if (!h || !h.uv) { this.cursor.visible = false; return null; }
     const x = h.uv.x * XRP.W, y = (1 - h.uv.y) * XRP.H; const p = this.mesh.worldToLocal(h.point.clone()); this.cursor.position.set(p.x, p.y, 0.002); this.cursor.visible = true;
     for (const r of this.hits) if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) return r.id;
     return "panel";
+  }
+  /** Hand poke: a fingertip near the front face of the panel, after the panel has been moved too. */
+  poke(worldPoint, depth = 0.03) {
+    if (!this.mesh.visible || !worldPoint) return null; this.mesh.updateMatrixWorld();
+    const local = this.mesh.worldToLocal(worldPoint.clone());
+    if (local.z < -0.02 || local.z > depth) return null;
+    return this.idAtLocal(local);
   }
   draw(M, controls, tabs, helps, force = false) {
     const key = JSON.stringify([M.title, M.lines, M.cards, M.predict, M.reveal, M.result, M.readout, controls, tabs, helps, this.hover, M.sort, M.wrongOpen, M.whyOpen]);
@@ -170,9 +197,23 @@ export class XRPanel {
   }
 }
 
+/** Trigger or pinch: grab only when the ray hits the handle, so grabbing never clicks a chip. Grip squeeze: grab if the
+ *  ray hits the handle or the grip is near it. After a move, pick() still hits the same chips because it uses the panel's world transform. */
+export function panelInputAt(panel, origin, dir, gripPoint, mode = "select") {
+  const aim = !!(origin && dir && panel.hitHandle(origin, dir));
+  if (mode === "select") {
+    if (aim) return { grab: true };
+    const id = origin && dir ? panel.pick(origin, dir) : null;
+    if (id && id !== "panel" && id !== "handle") return { click: id };
+    return { id: id || null };
+  }
+  if (aim || (gripPoint && panel.nearHandle(gripPoint))) return { grab: true };
+  return { id: null };
+}
+
 /** Gamepad mapping (xr-standard): right A fires a marble, right thumbstick press next scene, left thumbstick picks a chip,
- *  left X held pauses motion, grip or a hand pinch on the panel handle moves the panel (offset kept for the session),
- *  B or Y shows or hides the panel (handled in ns-input). Returns edge events for this frame. */
+ *  left X held pauses motion, grip or a hand pinch on the panel handle moves the panel (offset kept for the session; the
+ *  panel then turns to face the student), B or Y shows or hides the panel (handled in ns-input). Returns edge events for this frame. */
 export function readPads(sources, prev) {
   const ev = { fire: false, nextScene: false, chip: 0, pause: false, stickX: 0 };
   for (const src of sources || []) {

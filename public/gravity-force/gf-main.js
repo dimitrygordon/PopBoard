@@ -7,7 +7,7 @@ import { parseState, serializeState, canSetHelp } from "./gf-state.js";
 import { renderPanel, helpButtons } from "./gf-panel.js";
 import { createLab, sceneModel, controlsFor, act, SCENE_ORDER, S1, clampDist, SORT_CARDS, tabsFor, TAB_ORDER, VIEWS_OF, pretty } from "./gf-scenes.js";
 import { LabView, VIEWS, S3_X } from "./gf-view.js";
-import { XRPanel, readPads } from "./gf-xr.js";
+import { XRPanel, readPads, panelInputAt } from "./gf-xr.js";
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -169,7 +169,7 @@ if (vrBtn) vrBtn.addEventListener("click", async () => {
   if (xrSession) { await xrSession.end(); return; }
   try {
     const session = await navigator.xr.requestSession("immersive-vr", { optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking"] });
-    xrSession = session; placed = false; panel.resetOffset(); panelGrab = null;
+    xrSession = session; placed = false; panel.resetOffset(); panelGrab = null; pokePrev[0] = pokePrev[1] = null;
     session.addEventListener("end", () => { xrSession = null; panel.mesh.visible = false; vrBtn.querySelector(".lbl").textContent = "Enter VR"; resize(); });
     camera.clearViewOffset(); await renderer.xr.setSession(session); vrBtn.querySelector(".lbl").textContent = "In VR";
   } catch (err) { xrSession = null; console.warn(err); fail("Could not start VR: " + (err && err.message ? err.message : err)); }
@@ -178,8 +178,9 @@ const xdrag = [null, null]; let paused = false;
 function tick(src) { const srcs = src ? [src] : (xrSession ? [...xrSession.inputSources] : []); for (const s of srcs) { const h = s && s.gamepad && s.gamepad.hapticActuators && s.gamepad.hapticActuators[0]; if (h && h.pulse) h.pulse(0.4, 25); } }
 const xin = renderer ? new XRInput(THREE, renderer, scene, {
   onSelectStart: (i, r) => {
-    if (tryPanelGrab(i, r, "pinch")) return;
-    const id = panel.pick(r.origin, r.dir); if (id && id !== "panel" && id !== "handle") { doAct(id); return; } if (id === "panel" || id === "handle") return;
+    const ev = panelInputAt(panel, r.origin, r.dir, null, "select");
+    if (ev.grab) { tryPanelGrab(i, r, "pinch"); return; }
+    if (ev.click) { doAct(ev.click); return; } if (ev.id === "panel") return;
     const hit = new THREE.Raycaster(r.origin, r.dir).intersectObjects(view.pickables(lab.url.scene), false)[0];
     if (hit) xdrag[i] = lab.url.scene === "pull" ? "moon" : "start";
     else if (lab.url.scene === "well" && lab.view !== "sort") xdrag[i] = "start";
@@ -193,13 +194,26 @@ const xin = renderer ? new XRInput(THREE, renderer, scene, {
   },
 }) : null;
 const padPrev = {};
-let panelGrab = null;
+let panelGrab = null; const pokePrev = [null, null];
+function pokePanel() {
+  if (!xin) return;
+  for (let i = 0; i < 2; i++) {
+    const st = xin.ctrl[i]; let id = null;
+    const tip = st && st.handInput && st.hand && st.hand.joints && st.hand.joints["index-finger-tip"];
+    if (tip && !panelGrab && !st.selecting) {
+      const p = tip.getWorldPosition ? tip.getWorldPosition(new THREE.Vector3()) : null;
+      id = p ? panel.poke(p) : null;
+      if (id && id !== "panel" && id !== pokePrev[i]) doAct(id);
+    }
+    pokePrev[i] = id && id !== "panel" ? id : null;
+  }
+}
 function headYawOf(xc) { const d = new THREE.Vector3(0, 0, -1).applyQuaternion(xc.getWorldQuaternion(new THREE.Quaternion())); return Math.atan2(-d.x, -d.z); }
 function gripWorld(i) { const st = xin && xin.ctrl[i]; if (!st) return null; const obj = st.grip || st.c; obj.updateMatrixWorld(); return obj.getWorldPosition(new THREE.Vector3()); }
 function tryPanelGrab(i, r, why) {
   const st = xin && xin.ctrl[i]; if (!st || panelGrab) return false;
-  const near = panel.nearHandle(gripWorld(i)); const aim = r ? panel.hitHandle(r.origin, r.dir) : false;
-  if (!aim && !near) return false;
+  const ev = panelInputAt(panel, r && r.origin, r && r.dir, gripWorld(i), why === "pinch" ? "select" : "grip");
+  if (!ev.grab) return false;
   const obj = st.c; panel.beginGrab(obj); panelGrab = { i, obj }; return true;
 }
 function updatePanelGrab(hp, yaw) {
@@ -221,6 +235,7 @@ function xrFrame() {
   if (!placed) { panel.resetOffset(); panel.place(hp, yaw); panel.mesh.visible = true; placed = true; }
   updatePanelGrab(hp, yaw);
   if (!panelGrab) panel.place(hp, yaw);
+  pokePanel();
   const ev = readPads(xrSession ? [...xrSession.inputSources] : [], padPrev);
   paused = ev.pause; view.paused = paused;
   if (ev.fire && lab.url.scene === "well" && lab.view !== "sort") doAct("flick");
