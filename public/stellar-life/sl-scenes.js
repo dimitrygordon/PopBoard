@@ -61,8 +61,24 @@ export class Scenes {
   }
   /** A label with a leader line to an anchor (style B frames): place(anchor, dx, dy) puts the label dx, dy (world units,
    * along the camera's right and up) from the anchor and draws the line to the plate's near edge, with a dot on the anchor. */
-  callout(text, { sub = "", size = 1.6, color = "#FFFFFF", side = 1 } = {}) {
+  /** Leader lines and dots for a group of callouts drawn in two calls in all (one LineSegments, one Points) instead of two per callout. */
+  calloutSet(max) {
+    const T = this.T; const grp = new T.Group(); const lp = new Float32Array(max * 6), dp = new Float32Array(max * 3);
+    const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.BufferAttribute(lp, 3)); const dg = new T.BufferGeometry(); dg.setAttribute("position", new T.BufferAttribute(dp, 3));
+    const lines = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0xE6E9F8, transparent: true, opacity: 0.75, depthTest: false, depthWrite: false })); lines.renderOrder = 39; lines.frustumCulled = false;
+    const c = document.createElement("canvas"); c.width = c.height = 32; const g2 = c.getContext("2d"); g2.fillStyle = "#fff"; g2.beginPath(); g2.arc(16, 16, 15, 0, Math.PI * 2); g2.fill();
+    const dots = new T.Points(dg, new T.PointsMaterial({ color: 0xFFFFFF, size: 7 * (window.devicePixelRatio || 1), sizeAttenuation: false, map: new T.CanvasTexture(c), alphaTest: 0.5, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false })); dots.renderOrder = 39; dots.frustumCulled = false;
+    grp.add(lines, dots); const set = { grp, n: 0, line: lg.attributes.position,
+      begin() { set.n = 0; },
+      push(a, b) { const i = set.n++; lg.attributes.position.setXYZ(2 * i, a.x, a.y, a.z); lg.attributes.position.setXYZ(2 * i + 1, b.x, b.y, b.z); dg.attributes.position.setXYZ(i, a.x, a.y, a.z); return 2 * i + 1; },
+      flush() { lg.setDrawRange(0, 2 * set.n); dg.setDrawRange(0, set.n); lg.attributes.position.needsUpdate = dg.attributes.position.needsUpdate = true; } };
+    return set;
+  }
+  callout(text, { sub = "", size = 1.6, color = "#FFFFFF", side = 1, set = null } = {}) {
     const T = this.T; const grp = new T.Group(); const lab = this.label(text, { sub, size, color, align: side > 0 ? "left" : "right" });
+    if (set) { const co = { grp, lab, side, text, sub, set: (t, sb = "") => this.setLabel(lab, t, sb),
+      place: (anchor, dx, dy, q) => { const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q); const end = anchor.clone().addScaledVector(rt, dx).addScaledVector(up, dy); lab.position.copy(end);
+        if (lab.visible) { lab.userData.line = set.line; lab.userData.lineIdx = set.push(anchor, end); } else lab.userData.line = null; } }; grp.add(lab); this.setLabel(lab, text, sub); return co; }
     const geo = new T.BufferGeometry().setFromPoints([new T.Vector3(), new T.Vector3(1, 0, 0)]); const line = new T.Line(geo, new T.LineBasicMaterial({ color: 0xE6E9F8, transparent: true, opacity: 0.75, depthTest: false, depthWrite: false })); line.renderOrder = 39; line.frustumCulled = false;
     const dot = new T.Mesh(new T.CircleGeometry(1, 16), new T.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false })); dot.renderOrder = 39;
     grp.add(lab, line, dot); const co = { grp, lab, line, dot, side, text, sub,
@@ -86,11 +102,10 @@ export class Scenes {
     const tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; tex.minFilter = T.LinearFilter; tex.generateMipmaps = false;
     const plate = new T.Mesh(new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false, toneMapped: false })); plate.renderOrder = 37; plate.frustumCulled = false;
     const lines = new T.LineSegments(new T.BufferGeometry().setFromPoints([new T.Vector3(), new T.Vector3(1, 0, 0), new T.Vector3(), new T.Vector3(1, 0, 0)]), new T.LineDashedMaterial({ color: 0xE6E9F8, transparent: true, opacity: 0.8, dashSize: 1, gapSize: 1, depthTest: false, depthWrite: false })); lines.renderOrder = 35; lines.frustumCulled = false;
-    const dot = new T.Mesh(new T.CircleGeometry(1, 16), new T.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false })); dot.renderOrder = 39; dot.frustumCulled = false;
     const chip = this.label(title, { size: 1.0, color: "#FFFFFF", align: "left" }), nt = note ? this.label(note, { sub: noteSub, size: 0.9, plate: false, align: "left" }) : null;
     const nt2 = note2 ? this.label(note2, { size: 0.8, color: "#C3C9E6", plate: false, align: "left" }) : null; const bl = this.label(barLabel, { size: 0.8 }); bl.userData.minPx = 14; chip.userData.minPx = 20;
     if (nt) nt.userData.minPx = 19; if (nt2) nt2.userData.minPx = 16; for (const l of [chip, nt, nt2]) if (l) l.userData.clamp = false;   /* the inset's texts stay together; the caller places the whole inset clear of the cards */
-    grp.add(plate, lines, dot, chip, bl); if (nt) grp.add(nt); if (nt2) grp.add(nt2);
+    grp.add(plate, lines, chip, bl); if (nt) grp.add(nt); if (nt2) grp.add(nt2);
     const rt = new T.Vector3(), up = new T.Vector3(), P = (c, x, y) => c.clone().addScaledVector(rt, x).addScaledVector(up, y);
     return { grp, plate, chip, nt, nt2, bl,
       /** centre: plate centre; W: plate width in scene units; anchor: the spot it magnifies; show: visibility */
@@ -104,7 +119,6 @@ export class Scenes {
         const sx = side > 0 ? 0.5 : -0.5, pa = lines.geometry.attributes.position, c1 = P(centre, sx * W, H * 0.5), c2 = P(centre, sx * W, -H * 0.5);
         pa.setXYZ(0, c1.x, c1.y, c1.z); pa.setXYZ(1, anchor.x, anchor.y, anchor.z); pa.setXYZ(2, c2.x, c2.y, c2.z); pa.setXYZ(3, anchor.x, anchor.y, anchor.z); pa.needsUpdate = true; lines.computeLineDistances();
         lines.material.dashSize = W * 0.035; lines.material.gapSize = W * 0.025;
-        dot.position.copy(anchor); dot.quaternion.copy(q); dot.scale.setScalar(W * 0.016);
       } };
   }
   dashedRing(radius, { color = 0xAACDFF, opacity = 0.8, seg = 128, dash = 0.06 } = {}) {
@@ -152,14 +166,15 @@ export class Scenes {
     g.add(md, ma, core); if (sp) g.add(sp); if (mw) g.add(mw);
     const frost = D.frost ? new T.Group() : null; if (frost) g.add(frost);   // the frost line is painted into the disk (v4); this group only carries the label
     /* style B (frame 1): the names sit beside the disk on side callouts with thin leader lines, not on top of it */
-    const coT = this.callout("Protostar", { sub: "glows from squeezing, not fusion", size: 1.1, side: 1 });
-    const coJ = this.callout("Jet along the spin axis", { size: 1.1, side: -1 });
+    const cset = this.calloutSet(5); g.add(cset.grp);
+    const coT = this.callout("Protostar", { sub: "glows from squeezing, not fusion", size: 1.1, side: 1, set: cset });
+    const coJ = this.callout("Jet along the spin axis", { size: 1.1, side: -1, set: cset });
     const rocky = D.bodies.filter((b) => b.kind === "rocky"), giant = D.bodies.filter((b) => b.kind === "giant");
     const pick = (arr, r) => arr.reduce((m, b) => (m == null || Math.abs(b.r - r) < Math.abs(m.r - r) ? b : m), null);
     const bR = pick(rocky, planets === "solar" ? 1.75 : 1.1), bG = giant.length ? pick(giant, 5.2) : null;
-    const coR = bR ? this.callout("Rocky bodies", { sub: planets === "solar" ? "inside the frost line" : "close to the star", size: 1.1, side: -1 }) : null;
-    const coG = bG ? this.callout("Gas giant cores", { sub: "outside the frost line", size: 1.1, side: 1 }) : null;
-    const coF = D.frost ? this.callout("Frost line, about 3 AU", { sub: "ices freeze beyond it", size: 1.1, side: 1 }) : null;
+    const coR = bR ? this.callout("Rocky bodies", { sub: planets === "solar" ? "inside the frost line" : "close to the star", size: 1.1, side: -1, set: cset }) : null;
+    const coG = bG ? this.callout("Gas giant cores", { sub: "outside the frost line", size: 1.1, side: 1, set: cset }) : null;
+    const coF = D.frost ? this.callout("Frost line, about 3 AU", { sub: "ices freeze beyond it", size: 1.1, side: 1, set: cset }) : null;
     for (const co of [coT, coJ, coR, coG, coF]) if (co) g.add(co.grp);
     const vA = new T.Vector3(), frostA = new T.Vector3(D.frost ? D.frost * Math.cos(-0.9) : 0, 0, D.frost ? D.frost * Math.sin(-0.9) * -1 : 0);
     const coreHot = this.glow([[1.6, 0.9, [255, 255, 255]], [0.7, 1.0, [255, 255, 255]]], { useTeff: false, order: 7 }); coreHot.visible = false; g.add(coreHot);
@@ -174,7 +189,7 @@ export class Scenes {
         const ca = Math.cos(a), sa = Math.sin(a), x = cc[3 * i] * ca + cc[3 * i + 2] * sa, z = -cc[3 * i] * sa + cc[3 * i + 2] * ca, y = cc[3 * i + 1]; const dx = x - camLocal.x, dy = y - camLocal.y, dz = z - camLocal.z; keys[i] = dx * dx + dy * dy + dz * dz; }
       order.sort((a, b) => keys[b] - keys[a]); for (let k = 0; k < nS; k++) { const s = order[k]; idxArr.set(baseIdx.subarray(s * per, s * per + per), k * per); } idxAttr.needsUpdate = true;
     };
-    const sc = { root: g, kind: "disk", centered: false, kmPerUnit: () => KM.AU, camDist: 36, radius: 19, strokes: D.disk.n + D.add.n + (massive ? D.wrap.n : 0), meshes: 4 + (sp ? 1 : 0) + (mw ? 1 : 0), bodies: D.bodies,
+    const sc = { root: g, kind: "disk", centered: false, kmPerUnit: () => KM.AU, camDist: 36, radius: 19, barMax: 6, barAt: [4, -13], strokes: D.disk.n + D.add.n + (massive ? D.wrap.n : 0), meshes: 4 + (sp ? 1 : 0) + (mw ? 1 : 0), bodies: D.bodies,
       chips: planets ? ["Planets drawn far larger than real"] : [],
       update: (c) => {
         const id = c.v.stage ? c.v.stage.id : ""; const t = c.v.t; const row = c.v.row; const Teff = row ? Math.pow(10, row.logT) : 4410;
@@ -190,11 +205,12 @@ export class Scenes {
         if (frost) frost.visible = id === "F3" || id === "F4";
         coT.set(id === "F3" ? "Protostar" : id === "F4" ? (mass === "1" ? "Young star (T Tauri)" : "Young star") : "Fusion starts in the core", id === "F3" ? "glows from squeezing, not fusion" : id === "F5" ? "about 10 million K" : "");
         const q = c.camQuatLocal, dotR = 0.14, tw = id !== "F5";
-        coT.place(vA.set(0, 0.25, 0), 3.5, 10.5, q, dotR);
+        cset.begin(); coT.place(vA.set(0, 0.25, 0), 3.5, 10.5, q, dotR);
         coJ.lab.visible = !c.phone && jetA > 0.25 && (id === "F3" || id === "F4"); coJ.place(vA.set(0.1, 5.5, 0), -4, 3.5, q, dotR);
         if (coR) { coR.lab.visible = tw; coR.place(vA.set(bR.px, 0, bR.pz), -9, 1.5, q, dotR); }
         if (coG) { coG.lab.visible = tw && !c.phone; coG.place(vA.set(bG.px, 0, bG.pz), 7, 3.2, q, dotR); }
         if (coF) { coF.lab.visible = !!frost && frost.visible; coF.place(vA.copy(frostA), 7, -6, q, dotR); }
+        cset.flush();
         if (c.now - lastSort > 120) { resort(c.camLocal); lastSort = c.now; }
       } };
     this.cache[key] = sc; return sc;

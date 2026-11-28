@@ -375,7 +375,7 @@ function sizeLabels(cam, xr) {
     if (card && L + dx < card.right + 8 && bot + dy > card.top - 8) { const up = card.top - 8 - bot; const right = card.right + 8 - (L + dx); if (-up < right) dy = up; else dx += right; }
     if (!dx && !dy) return;
     const shift = new THREE.Vector3(dx / ppw, -dy / ppw, 0).applyQuaternion(lq); o.parent.getWorldQuaternion(wq2).invert(); shift.applyQuaternion(wq2).divide(ps);
-    o.position.add(shift); if (d.line) { d.line.setXYZ(1, o.position.x, o.position.y, o.position.z); d.line.needsUpdate = true; } });
+    o.position.add(shift); if (d.line) { d.line.setXYZ(d.lineIdx != null ? d.lineIdx : 1, o.position.x, o.position.y, o.position.z); d.line.needsUpdate = true; } });
   // the scale bar keeps the same margin from the bottom edge in every scene (desktop: 7 percent of the height; phone: just above the sheet)
   if (!xr && sbar.visible) {
     const o = sbarLab, d = o.userData; o.getWorldPosition(lp); o.parent.getWorldScale(ps); const dist = Math.max(1e-6, lp.distanceTo(cp)), ppw = vpH / (2 * dist * tanH);
@@ -428,7 +428,7 @@ function frame(now) {
   // lastKm is the scale of the last label (or of the scene's start), so slow drifts add up and small steps never label
   if (km && lastKm) { const t = zoomText(lastKm, km); if (t) { transient.zoom = t; transient.zoomUntil = clock + 4; uiDirty = true; lastKm = km; } }
   if (km && !lastKm) lastKm = km;
-  const bar = km ? scaleBar(km, (sc.radius || 10) * 0.8) : null; sbar.visible = !!bar && !(sc && (sc.kind === "twopaths"));
+  const bar = km ? scaleBar(km, sc.barMax || (sc.radius || 10) * 0.8) : null; sbar.visible = !!bar && !(sc && (sc.kind === "twopaths"));
   if (bar) { sbarBody.scale.set(bar.units, Math.max(0.6, (sc.radius || 10) * 0.05), 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy((sc.barAt ? new THREE.Vector3(...sc.barAt, 0) : new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4), 0)).applyQuaternion(qL)); sbarLab.position.set(0, -(sbarLab.scale.y * (sbarLab.userData.ph || 0.45) * 0.5 + Math.max(0.6, (sc.radius || 10) * 0.05) * 0.5 + sbarLab.scale.y * 0.06), 0);   /* the label clears the bar at any label size */ }
   if (transient.zoom && clock > transient.zoomUntil) { transient.zoom = null; uiDirty = true; }
   sizeLabels(cam, presenting);
