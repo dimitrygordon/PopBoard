@@ -342,7 +342,9 @@ void main(){
         const s1 = st.id === "S1"; promG.visible = flG.visible = coP.grp.visible = coL.grp.visible = s1;
         { const on = s1 && c.st.mass === "1" && !c.phone; const kpu = sc.s * KM.RSUN, MAG = 50, W = GRAN_KM * MAG / kpu;
           lg.update(q, new T.Vector3().addScaledVector(rt, -r * 1.58).addScaledVector(up, r * 0.34), W, new T.Vector3().addScaledVector(rt, -r * 0.62).addScaledVector(up, r * 0.62), on); }
-        if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.99)); promG.scale.setScalar(r * 1.5); { const rise = smooth(0.0, 0.8, c.v.t); for (const m of promM) m.material.uniforms.uRise.value = rise; }   /* the arc lifts and twists off the limb through the stage (a deformation in strokeVert) */
+        if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.99)); promG.scale.setScalar(r * 1.5);
+          { const PERIOD = 10; const ph = ((c.flowT || 0) / PERIOD) % 1; const rise = 0.5 - 0.5 * Math.cos(2 * Math.PI * ph);   /* ping-pong lift: smooth cosine, no snap back */
+            for (const m of promM) m.material.uniforms.uRise.value = 0.22 + 0.78 * rise; }
           const fd = new T.Vector3(0.52, -0.42, 0.74).normalize(); flG.quaternion.copy(basis(q, fd, new T.Vector3(0, 0, 1))); flG.position.copy(fd.clone().applyQuaternion(q).multiplyScalar(r)); flG.scale.setScalar(r);
           const gr = smooth(0.05, 0.9, c.v.t); flCore.material.uniforms.uGrow.value = gr; flGlow.material.uniforms.uGrow.value = gr;
           const ap = new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 1.2); coP.place(ap, -Math.max(2 * L, r * 0.45), capUp(ap.dot(up), Math.max(1.2 * L, r * 0.1)), q, 0.15 * L);

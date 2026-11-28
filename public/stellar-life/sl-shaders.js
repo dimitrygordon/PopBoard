@@ -121,7 +121,7 @@ void main(){
   if (kind > 2.5 && kind < 3.5) { al *= mix(1.0, 0.5, nearK); }
   vec4 vp = modelViewMatrix * vec4(p, 1.0);
   float sc = length(modelViewMatrix[0].xyz);
-  if (promK && aParam.z > 1.5) al *= 0.5 + 0.5 * smoothstep(-0.3, 0.9, sin(TAU * (aUvK.y * 3.0 - uFlowT * 0.22) + seed));   // plasma knots flow up one leg and down the other
+  if (promK && aParam.z > 1.5) al *= 0.62 + 0.38 * smoothstep(-0.2, 0.85, sin(TAU * (aUvK.y * 2.5 - uFlowT * 0.16) + seed * 1.7));   // plasma flows along the loop; a high floor so the arc never empties and snaps back
   if (snK && aParam.x > 0.5) al *= 0.72 + 0.28 * sin(TAU * uFlowT * (0.25 + 0.45 * h11(seed * 1.7)) + seed);   // knots flicker (stepped with the boil)
   if (jetS) al *= 0.6 + 0.4 * smoothstep(0.2, 1.0, sin(TAU * (aUvK.y * 2.5 - uFlowT * 0.35)));   // jet strands: brighter pulses travel outward
 #ifdef GROW
