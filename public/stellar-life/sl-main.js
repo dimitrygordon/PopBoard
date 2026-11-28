@@ -479,6 +479,7 @@ window.__stellar = {
   canvas, renderer, camera, world, get panel() { return panel; },
   /** CSS px of the current star body's centre, plus the Teff the scene is drawing (for the hue check). */
   centerOf() {
+    sceneRegion(cur); camera.updateMatrixWorld();   // a resize (screenshots fire one) resets the view offset until the next frame
     const b = cur && cur.body ? cur.body : cur ? cur.root : hub; const p = b.getWorldPosition(new THREE.Vector3()).project(camera); const r = canvas.getBoundingClientRect();
     const v = flow && flow.st.screen === "stage" ? flow.view() : null; const row = v ? (v.cooling || v.row) : null;
     return { x: r.left + (p.x + 1) / 2 * r.width, y: r.top + (1 - p.y) / 2 * r.height, teff: row ? Math.pow(10, row.logT) : null, radiusPx: cur && cur.radius ? cur.radius : null, scene: cur ? cur.kind : "hub" };
