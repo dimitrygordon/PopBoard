@@ -276,7 +276,7 @@ void main(){
     const orbits = {}; for (const [n, [a, ph]] of Object.entries(ORB)) { const o = this.dashedRing(1, { color: 0xC3C9E6, opacity: 0.75 }); const co = this.callout(n, { size: 1.3, side: Math.cos(ph * Math.PI / 180) >= 0 ? 1 : -1 }); g.add(o, co.grp); orbits[n] = { o, co, a, ph }; }
     // Sun activity on S1, placed to match Angelo's v5 layouts (glow strokes additive; the arcade grows by birth order)
     const prom = buildProminence(101, 2.6), fl = buildFlare(111);
-    const promG = new T.Group(); const promM = [this.mesh(prom.glow, { additive: true }, 5), this.mesh(prom.core, {}, 6)]; promG.add(...promM); g.add(promG);
+    const promG = new T.Group(); const promM = [this.mesh(prom.glow, { additive: true }, 5), this.mesh(prom.core, {}, 6)]; promG.add(...promM, this.sprites(prom.feet, 5)); g.add(promG);
     const flG = new T.Group(); const flCore = this.mesh(fl.core, { grow: true }, 6), flGlow = this.mesh(fl.glow, { additive: true, grow: true }, 5); flG.add(flGlow, flCore); g.add(flG);
     const coP = this.callout("Prominence", { sub: "gas held up by magnetic fields", size: 1.3, side: -1 }), coL = this.callout("Limb darkening", { sub: "cooler, dimmer edge", size: 1.3, side: 1 }); g.add(coP.grp, coL.grp);
     // Leo frame 2: a granulation close-up, 50 times closer than the Sun's disc, on the main-sequence stage of the 1 Sun path (not on phone)
