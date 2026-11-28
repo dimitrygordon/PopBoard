@@ -221,7 +221,7 @@ export function buildStar(seed = 21, counts = { broad: 420, medium: 1150, hi: 52
 // to a fresh spot on the camera-facing half every few seconds (crossfaded), aims it along the live convection flow (swirl around
 // the nearest giant cell plus 0.45 rad outward upwelling) and colours it from the live cell heat, so the surface churns and nothing stretches.
 export const RSG = { R: 380, broad: { n: 520, len: [50, 120], w: [34, 70], br: 8, a: [0.55, 0.8] }, medium: { n: 1500, len: [26, 64], w: [12, 26], br: 6, a: [0.6, 0.9] },
-  hot: { n: 700, len: [14, 36], w: [5, 11], br: 4, a: [0.5, 0.85] }, cells: { count: 12, rad: [0.34, 0.52] } };   // 12 over the whole sphere: about 5 on the visible half, as in frame 3a
+  hot: { n: 700, len: [14, 36], w: [5, 11], br: 4, a: [0.5, 0.85] }, cells: { count: 26, rad: [0.27, 0.40] } };   // 26 over the whole sphere: about 13 large roundish cells of different sizes on the visible half
 export function buildRSG(seed = 15) {
   const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
   ["broad", "medium", "hot"].forEach((name, li) => { const L = RSG[name];

@@ -4,7 +4,7 @@
 import { buildSky, buildCloud, buildDisk, buildStar, buildShells, buildOnion, ONION, buildNebula, buildRemnant, buildEarth, buildEarth2, buildCity, buildPhotonRing, buildProminence, buildFlare, buildRSG, rsgCells, buildLensSources, spriteGeometry, lutData, tRGB255, hex2rgb, rng } from "./sl-strokes.js";
 import { about } from "./sl-data.js";
 import { paintGranulation, paintCity, GRAN_KM, CITY_M, CITY_ASPECT } from "./sl-loupes.js";
-import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag, glowVert, glowFrag, rsgVert, EVO, HASH } from "./sl-shaders.js";
+import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag, glowVert, glowFrag, rsgVert, rsgLaneFrag, EVO, HASH } from "./sl-shaders.js";
 
 export const KM = { RSUN: 695700, AU: 1.495978707e8, LY: 9.4607e12, REARTH: 6371 };
 const LABEL_K = 1.9;   // labels read at about 2 to 3 percent of the view height on desktop and in the headset
@@ -261,14 +261,18 @@ void main(){
     // round 7: our own painted red supergiant (frame 3a): live-dealt strokes over a dark disc, crisp limb, thin ring and an equal-bleed halo
     const rb = buildRSG(15); const rsg = new T.Mesh(rb.geometry(T), new T.ShaderMaterial({ vertexShader: rsgVert, fragmentShader: strokeFrag, defines: { STAR: 1, CLIPR: 1 },
       uniforms: { ...this.uni, uAlpha: { value: 0 }, uTeff: { value: 3400 }, uExposure: { value: 1 }, uLut: { value: this.lut }, uCamO: { value: new T.Vector3(0, 0, 1) },
-        uCell: { value: Array.from({ length: 12 }, () => new T.Vector4(0, 1, 0, 0.4)) }, uCellH: { value: Array.from({ length: 12 }, () => new T.Vector2(0, 1)) }, uRedeal: { value: 0 } },
+        uCell: { value: Array.from({ length: 26 }, () => new T.Vector4(0, 1, 0, 0.4)) }, uCellH: { value: Array.from({ length: 26 }, () => new T.Vector2(0, 1)) }, uRedeal: { value: 0 } },
       transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide, blending: T.NormalBlending, premultipliedAlpha: true }));
     rsg.frustumCulled = false; rsg.renderOrder = 2; rsg.visible = false;
-    const rsgHalo = this.glow([[2.35, 0.24, [255, 176, 140]], [1.85, 0.30, [255, 180, 148]], [1.45, 0.22, [255, 186, 152]], [1.08, 0.32, [220, 150, 110]]], { disc: 1.0, useTeff: false, order: 1 });   /* extended warm-pink falloff like 3a, a dimmer disc so the lanes read */
+    const rsgLane = new T.Mesh(new T.PlaneGeometry(2, 2), new T.ShaderMaterial({ vertexShader: glowVert, fragmentShader: rsgLaneFrag, transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide, blending: T.NormalBlending, premultipliedAlpha: true,
+      uniforms: { ...this.uni, uMaxR: { value: 1.0 }, uAlpha: { value: 0 }, uBreath: { value: 0 }, uCamO: rsg.material.uniforms.uCamO, uCell: rsg.material.uniforms.uCell, uCellH: rsg.material.uniforms.uCellH, uCamX: { value: new T.Vector3(1, 0, 0) }, uCamY: { value: new T.Vector3(0, 1, 0) } } }));
+    rsgLane.frustumCulled = false; rsgLane.renderOrder = 3; rsgLane.visible = false;
+    const rsgHalo = this.glow([[2.3, 0.34, [255, 150, 110]], [1.7, 0.42, [255, 164, 118]], [1.35, 0.42, [255, 176, 128]], [1.1, 0.5, [236, 146, 86]]], { disc: 1.0, useTeff: false, order: 1 });   /* extended warm-pink falloff like 3a, a dimmer disc so the lanes read */
+    rsgHalo.material.uniforms.uRing.value.set(0, 0, 0, 1e-4);   /* any uRing.w above 0 gives this disc the soft, ragged supergiant limb (the ring term itself is nil) */
     const rsgRing = this.glow([[1.08, 0]], { useTeff: false, order: 7 }); rsgRing.material.uniforms.uRing.value.set(1.0, 0.74, 0.58, 0.22);   /* gold-pink, lower peak, ragged in the shader */
     Object.assign(rsgRing.material, { blending: T.CustomBlending, blendEquation: T.AddEquation, blendSrc: T.OneFactor, blendDst: T.OneFactor, blendSrcAlpha: T.OneFactor, blendDstAlpha: T.OneFactor });   /* the ring adds light */
     for (const m of [rsgHalo, rsgRing]) m.material.uniforms.uBreath = { value: 0 };   /* no breathing scale: the disc edge stays on the painted limb */
-    body.add(halo, tight, ms, mw, giantGlow, rsgHalo, rsg, rsgRing);
+    body.add(halo, tight, ms, mw, giantGlow, rsgHalo, rsg, rsgLane, rsgRing);
     const ref = this.dashedRing(1, { color: 0xFFF1EA, opacity: 0.85 }); ref.rotation.x = Math.PI / 2; g.add(ref);   // billboarded below
     const coRef = this.callout("The Sun's size", { size: 1.3, color: "#FFF1EA", side: 1 }); g.add(coRef.grp);
     const coT = this.callout("", { size: 1.8, side: -1 }); g.add(coT.grp);
@@ -314,12 +318,12 @@ void main(){
           sc.rsgOn = on; const TeffShow = wide ? (on < 0.35 ? Math.pow(10, Math.log10(22000) * (1 - on / 0.35) + Math.log10(8500) * (on / 0.35))
             : on < 0.7 ? Math.pow(10, Math.log10(8500) * (1 - (on - 0.35) / 0.35) + Math.log10(4800) * ((on - 0.35) / 0.35))
             : Math.pow(10, Math.log10(4800) * (1 - (on - 0.7) / 0.3) + Math.log10(Math.max(Teff, 3300)) * ((on - 0.7) / 0.3))) : Teff;
-          rsg.visible = rsgHalo.visible = rsgRing.visible = on > 0.001; ms.visible = on < 0.999;
+          rsg.visible = rsgHalo.visible = rsgRing.visible = rsgLane.visible = on > 0.001; ms.visible = on < 0.999;
           ms.material.uniforms.uAlpha.value = 1 - on; halo.material.uniforms.uAlpha.value = 1 - on; giantGlow.material.uniforms.uAlpha.value *= 1 - on;
           mw.material.uniforms.uAlpha.value = 1 - 0.7 * on;
           for (const m of [ms, mw, halo, tight, giantGlow]) m.material.uniforms.uTeff.value = TeffShow;
-          if (rsg.visible) { const u = rsg.material.uniforms; u.uAlpha.value = on; u.uTeff.value = TeffShow; u.uRedeal.value = (wide && on > 0.05 && on < 0.98) ? 1 : 0; rsgHalo.material.uniforms.uTeff.value = TeffShow; rsgHalo.material.uniforms.uExposure.value = 0.7; u.uExposure.value = 1.32;
-            rsgHalo.material.uniforms.uAlpha.value = on; rsgRing.material.uniforms.uAlpha.value = on;
+          if (rsg.visible) { const u = rsg.material.uniforms; u.uAlpha.value = on; u.uTeff.value = TeffShow; u.uRedeal.value = (wide && on > 0.05 && on < 0.98) ? 1 : 0; rsgHalo.material.uniforms.uTeff.value = TeffShow; rsgHalo.material.uniforms.uExposure.value = 0.7; u.uExposure.value = 1.18;
+            rsgHalo.material.uniforms.uAlpha.value = on; rsgRing.material.uniforms.uAlpha.value = on; rsgLane.material.uniforms.uAlpha.value = on; { const bq = body.quaternion.clone().invert(); rsgLane.material.uniforms.uCamX.value.set(1, 0, 0).applyQuaternion(c.camQuatLocal).applyQuaternion(bq); }
             const cells = rsgCells(c.flowT || 0); cells.forEach((ce, i) => { u.uCell.value[i].set(ce.d[0], ce.d[1], ce.d[2], ce.rad); u.uCellH.value[i].set(ce.h, ce.sgn); });
             g.updateMatrix(); body.updateMatrix(); const m = new T.Matrix4().multiplyMatrices(g.matrix, body.matrix).invert(); u.uCamO.value.copy(c.camLocal).applyMatrix4(m).normalize(); } }
         const peek = c.st.peek && c.st.answers["S1:0"]; const pk = peek ? tRGB255Peek(c.st.answers["S1:0"]) : null;

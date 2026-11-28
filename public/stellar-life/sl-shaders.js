@@ -165,7 +165,7 @@ void main(){
 export const rsgVert = /* glsl */`
 attribute vec3 aTan; attribute vec3 aUvK; attribute vec4 aA; attribute vec4 aColor; attribute vec4 aParam;
 uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform float uAlpha; uniform float uTeff; uniform float uExposure; uniform float uRedeal;
-uniform vec3 uCamO; uniform vec4 uCell[12]; uniform vec2 uCellH[12];
+uniform vec3 uCamO; uniform vec4 uCell[26]; uniform vec2 uCellH[26];
 varying vec4 vColor; varying vec4 vUV; varying float vRho;
 ${HASH}
 ${SRGB}
@@ -178,27 +178,28 @@ void main(){
   vec3 z = normalize(uCamO); vec3 e1 = normalize(cross(abs(z.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), z)); vec3 e2 = cross(z, e1);
   float rr = 1.02 * sqrt(h11(seed + cyc * 7.13)), an = TAU * h11(seed * 1.31 + cyc * 3.77); vec3 c;
   if (li > 1.5) {   /* hot strokes spawn inside a live cell's core */
-    vec4 ce = uCell[0]; float bh = -1.0; for (int i = 0; i < 12; i++) { float sc2 = uCellH[i].x * (0.5 + 0.5 * dot(uCell[i].xyz, z)) * h11(seed + cyc * 5.1 + float(i) * 1.7); if (sc2 > bh) { bh = sc2; ce = uCell[i]; } }   /* a hot, visible cell, picked at random */
+    vec4 ce = uCell[0]; float bh = -1.0; for (int i = 0; i < 26; i++) { float sc2 = uCellH[i].x * (0.5 + 0.5 * dot(uCell[i].xyz, z)) * h11(seed + cyc * 5.1 + float(i) * 1.7); if (sc2 > bh) { bh = sc2; ce = uCell[i]; } }   /* a hot, visible cell, picked at random */
     vec3 f1 = normalize(cross(abs(ce.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), ce.xyz)), f2 = cross(ce.xyz, f1);
     float ra = ce.w * 0.6 * sqrt(h11(seed + cyc * 2.3)); c = normalize(ce.xyz + ra * (cos(an) * f1 + sin(an) * f2));
   } else { float rq = min(rr, 0.999); c = rq * cos(an) * e1 + rq * sin(an) * e2 + sqrt(1.0 - rq * rq) * z; }
-  // live convection at the spot
-  float heat = 0.0, best = 99.0; vec3 cd = vec3(0.0, 1.0, 0.0); float sg = 1.0, cang = 1.0;
-  for (int i = 0; i < 12; i++) { vec3 d = uCell[i].xyz; float a = acos(clamp(dot(d, c), -1.0, 1.0)); float hh = uCellH[i].x;
-    heat = max(heat, hh * exp(-2.0 * (a / uCell[i].w) * (a / uCell[i].w)));
-    float wd = a / (uCell[i].w * (0.35 + 0.65 * hh)); if (wd < best) { best = wd; cd = d; sg = uCellH[i].y; cang = a; } }
-  vec3 o = c - cd * dot(c, cd); float ol = length(o); o = ol > 1e-4 ? o / ol : e1;
-  vec3 sw = cross(cd, c); float swl = length(sw); sw = swl > 1e-4 ? sw / swl * sg : e2;
-  vec3 td = normalize(0.9 * sw + 0.43 * o);   /* swirl plus 0.45 rad of outward upwelling */
-  float len = aColor.r, s = (t - 0.5) * len, kc = (0.8 + 1.2 * aColor.b) / max(cang + 0.25, 0.3) * 0.9;   /* curl around the cell, tighter near its centre */
-  vec3 p = normalize(c + td * s - o * 0.5 * kc * s * s); vec3 tn = td - o * kc * s;
+  // round 9, live convection at the spot: roundish bubbly cells (a weighted Voronoi over the live cell field, so they differ in size and merge and
+  // are reborn in place), dark intergranular lanes where two cells meet, a bright top at each cell's centre. No swirl, no flow: strokes sit at any angle.
+  float best = 99.0, second = 99.0, chh = 0.0;
+  for (int i = 0; i < 26; i++) { vec3 d = uCell[i].xyz; float a = sqrt(2.0 * max(1.0 - dot(d, c), 0.0)); float hh = uCellH[i].x;   /* chord length: same as the angle for near cells, no acos */
+    float wd = a / (uCell[i].w * (0.72 + 0.28 * hh)); if (wd < best) { second = best; best = wd; chh = hh; } else if (wd < second) second = wd; }
+  float gap = (second - best) / (second + best + 1e-3) * 1.6; float lane = smoothstep(0.012, 0.13, gap); float top = exp(-1.5 * best * best);
+  float heat = clamp(chh * (0.22 + 0.78 * top), 0.0, 1.0) * mix(0.12, 1.0, lane);
+  float ang2 = TAU * h11(seed * 2.9 + cyc * 1.7); vec3 g1 = normalize(cross(abs(c.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), c)); vec3 g2 = cross(c, g1);
+  vec3 td = cos(ang2) * g1 + sin(ang2) * g2;
+  float len = aColor.r * 0.55, s = (t - 0.5) * len; width *= 1.45;   /* round dabs, not streaks */
+  vec3 p = normalize(c + td * s); vec3 tn = normalize(td - p * dot(td, p));
   vec4 vp = modelViewMatrix * vec4(p, 1.0); float sc = length(modelViewMatrix[0].xyz);
   vec3 nrm = normalize(mat3(modelViewMatrix) * p); float mu = dot(nrm, -normalize(vp.xyz)); float mu1 = clamp(mu, 0.0, 1.0);
   // colour: temperatureToSRGB(Teff + dT) x brightness, equal bleed. dT: cell heat (frame: +/-500 K) and a cooler limb (-600 K)
-  float jit = aColor.g - 0.5; float dT = 650.0 * (heat - 0.18) + 180.0 + (li > 1.5 ? 30.0 : 0.0) - 800.0 * (1.0 - pow(mu1, 0.8)) + 140.0 * jit;
-  float br = (0.46 + 0.54 * pow(mu1, 0.7)) * (1.0 + 0.1 * mu1 * mu1) * (0.90 + 0.24 * jit) * (0.80 + 0.38 * heat) * (li < 0.5 ? 0.92 : 1.0);
+  float jit = aColor.g - 0.5; float dT = 900.0 * (heat - 0.3) + 180.0 + (li > 1.5 ? 40.0 : 0.0) - 400.0 * (1.0 - pow(mu1, 0.8)) + 160.0 * jit;
+  float br = (0.8 + 0.2 * pow(mu1, 0.7)) * (1.0 + 0.1 * mu1 * mu1) * (0.88 + 0.28 * jit) * (0.66 + 0.46 * max(heat, 0.55 * smoothstep(0.5, 0.1, mu1))) * (li < 0.5 ? 0.94 : 1.0);
   vec3 cg = bleed(tlin(uTeff + dT) * br * uExposure);
-  float al = min(1.0, aColor.a * 1.25) * fade * uAlpha * smoothstep(-0.03, 0.1, mu) * (li > 1.5 ? 1.0 : 0.40 + 0.60 * smoothstep(0.0, 0.4, heat));   /* thinner paint between cells: dark lanes */
+  float al = min(1.0, aColor.a * 1.25) * fade * uAlpha * smoothstep(-0.03, 0.1, mu) * (li > 1.5 ? 1.0 : mix(0.10, 1.0, max(lane, smoothstep(0.5, 0.12, mu1))));   /* thinner paint in the lanes: dark intergranular lanes */
   vec3 tv = normalize(mat3(modelViewMatrix) * tn); vec3 sd = cross(tv, normalize(vp.xyz)); float sl = length(sd); sd = sl > 1e-4 ? sd / sl : vec3(1.0, 0.0, 0.0);
   float u = mod(floor(uBoilT * 8.0), 32.0) / 32.0; float A = uBoil * aParam.y;
   vec4 hs = vec4(h21(vec2(seed, 1.0)), h21(vec2(seed, 2.0)), h21(vec2(seed, 3.0)), h21(vec2(seed, 4.0)));
@@ -226,10 +227,14 @@ void main(){
     float split = mix(1.0, smoothstep(0.0, 0.2, bu) * smoothstep(0.0, 0.2, 1.0 - bu), 0.4);
     float s0 = h21(vec2(bi + 3.0, seed)) * 0.12, e0 = 1.0 - h21(vec2(bi + 9.0, seed)) * 0.15;
     float trim = smoothstep(s0, s0 + 0.05, v) * smoothstep(e0, e0 - 0.05, v);
-    a *= streak * split * trim;
 #ifdef CLIPR
-    col *= 0.86 + 0.32 * hb;   /* mottled bristle tops, matching frame 3a (not a smooth wash) */
-    a *= mix(0.8, 1.06, hb);
+    a *= mix(1.0, streak * split * trim, 0.4);   /* round 9: softer bubbly dabs, less bristle crunch */
+#else
+    a *= streak * split * trim;
+#endif
+#ifdef CLIPR
+    col *= 0.92 + 0.16 * hb;   /* soft mottle, matching frame 3a (not a smooth wash) */
+    a *= mix(0.85, 1.04, hb);
 #else
 #ifndef STAR
     col *= 1.0 + (hb - 0.5) * 0.08;
@@ -238,7 +243,7 @@ void main(){
   }
   a *= edge;
 #ifdef CLIPR
-  a *= 1.0 - smoothstep(0.984, 0.997, vRho);   /* crisp painted limb */
+  { float lm = 0.99 + 0.05 * (fract(seed * 7.31) - 0.35); a *= 1.0 - smoothstep(lm - 0.07, lm + 0.02, vRho); }   /* round 9: a soft, ragged limb: each stroke ends at its own radius */
 #endif
   if (a < 0.002) discard;
   #ifdef ADDITIVE
@@ -300,13 +305,16 @@ void main(){
     float mu = sqrt(max(0.0, 1.0 - (d / uDisc) * (d / uDisc))); float om = 1.0 - mu;
     // grey limb darkening (G coefficients of LOOK-SPEC 3.2) so every disc pixel is temperatureToSRGB(Teff) x a scalar: the hue never moves
     float ld = 1.0 - 0.47 * om - 0.13 * om * om;
-    vec3 disc = (uUseTeff > 0.5 ? tint : dec(uLay[3].rgb)) * ld * uExposure;   /* painted RSG: a dimmer warm base so the cell lanes stay dark */
+    vec3 disc = (uUseTeff > 0.5 ? tint : dec(uLay[3].rgb)) * ld * uExposure;
+    if (uRing.w > 0.0) disc *= mix(0.5, 1.15, smoothstep(0.55, 0.98, d / uDisc)) / ld;   /* (no grey limb darkening here: the rim is bright) */   /* dark lane ground inside, a bright rim so the limb fades into the glow */   /* painted RSG: a dimmer warm base so the cell lanes stay dark */
     if (uChroma > 0.0) { vec2 q = vC * uMaxR / (1.0 + 0.03 * vBr) / uDisc; float rho = length(q); vec2 g = (rho > 1e-4 ? q / rho * asin(min(rho, 0.9999)) : q) * 15.0;
       float cb; float gap = evoCells(g, uFlowT, cb); float fw = fwidth(gap); float ln = smoothstep(0.1 - fw, 0.1 + fw, gap);   /* crisp lanes at any size */
       /* round 7: lanes dark enough to read at viewing size like frame 2 (warm tan, the loupe's lane colour) */
       vec3 sun = sunBase(tint) * ldChroma(mu) * mix(vec3(0.78, 0.64, 0.48), vec3(1.0), ln) * (0.94 + 0.07 * cb) * mix(0.96, 1.0, smoothstep(0.1, 0.6, gap));
       disc = mix(disc, sun, uChroma); }
-    float edge = smoothstep(uDisc, uDisc * 0.985, d);
+    float dEdge = uDisc, dSoft = 0.985;
+    if (uRing.w > 0.0) { float an0 = atan(vC.y, vC.x); float rg = 0.65 + 0.45 * vn(vec2(an0 * 4.5, 3.1)) + 0.15 * vn(vec2(an0 * 11.0, 7.4)); dEdge = uDisc * (1.0 + 0.03 * (rg - 0.7)); dSoft = 0.945; }   /* the supergiant's limb is soft and ragged, not a cut disc */
+    float edge = smoothstep(dEdge, dEdge * dSoft, d);
     c = mix(c, disc + c * 0.15 * (1.0 - uChroma), edge); a = edge;
   }
   if (uRing.w > 0.0) {
@@ -318,4 +326,26 @@ void main(){
   float m = max(c.r, max(c.g, c.b)); if (m < 1e-4 && a < 0.01) discard;
   a = max(a, clamp(m, 0.0, 1.0)) * uAlpha;
   gl_FragColor = vec4(enc(c) * a, a);
+}`;
+
+// round 9: the supergiant's dark intergranular lanes, drawn once over the painted disc from the live cell field (the same weighted Voronoi the strokes use),
+// so the lanes are thin, continuous and round the cells whatever the dab size. Soft, ragged and warm; they fade out toward the limb.
+export const rsgLaneFrag = /* glsl */`
+precision highp float; varying vec2 vC; varying float vBr;
+uniform vec4 uCell[26]; uniform vec2 uCellH[26]; uniform vec3 uCamO; uniform vec3 uCamX; uniform vec3 uCamY; uniform float uMaxR; uniform float uAlpha; uniform float uFlowT;
+${SRGB}
+${HASH}
+void main(){
+  vec2 q = vC * uMaxR; float rho = length(q); if (rho > 0.985) discard;
+  vec3 z = normalize(uCamO); vec3 ex = normalize(uCamX - z * dot(uCamX, z)); vec3 ey = cross(z, ex);
+  vec3 c = normalize(q.x * ex + q.y * ey + sqrt(max(1.0 - rho * rho, 0.0)) * z);
+  float best = 99.0, second = 99.0;
+  for (int i = 0; i < 26; i++) { float a = sqrt(2.0 * max(1.0 - dot(uCell[i].xyz, c), 0.0)); float wd = a / (uCell[i].w * (0.72 + 0.28 * uCellH[i].x)); if (wd < best) { second = best; best = wd; } else if (wd < second) second = wd; }
+  float gap = (second - best) / (second + best + 1e-3) * 1.6; float fw = fwidth(gap);
+  float rag = 0.55 + 0.9 * vn(c.xy * 19.0 + c.z * 13.0) * (0.6 + 0.4 * vn(c.yz * 41.0));
+  float lane = 1.0 - smoothstep(0.0 - fw, 0.30 * rag + fw, gap);
+  lane *= smoothstep(0.985, 0.82, rho);
+  float a = lane * lane * 0.62 * uAlpha; if (a < 0.004) discard;
+  vec3 col = vec3(0.10, 0.042, 0.016);
+  gl_FragColor = vec4(enc(col) * a, a);
 }`;
