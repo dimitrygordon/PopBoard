@@ -390,28 +390,29 @@ export function buildLensedStars(seed = 41, n = 520, thetaE = 0.92) {
 
 /** A supernova remnant shell: torn and lopsided, uneven brightness, one blown-out sector, knots, and jets on one side only (LOOK-SPEC v2.3).
  * Unit sphere (R0). Emission-line colours (labelled as such): H-alpha pinks, [O III] teal, white-hot knots, synchrotron violet-blue. */
-export function buildRemnant(seed = 63, n = 1500) {   // drawn facing the viewer (+z): limb-brightened, lopsided, torn, with a blown-out sector
+export function buildRemnant(seed = 63, n = 1100) {   // face-on, to Leo's frame 3c: long wobbling strands along a torn, lopsided loop
   const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
   const pink = hex2rgb("#FF7A8E"), rose = hex2rgb("#FF5A6A"), white = hex2rgb("#FFF4F6"), teal = hex2rgb("#4FD8C0"), syn = hex2rgb("#8FA8FF"), mag = hex2rgb("#D27AE0");
-  const blow = norm([0.62, -0.72, 0.15]), jet = norm([-0.72, 0.62, 0.1]);
-  const lumps = Array.from({ length: 7 }, () => ({ d: randDir(R), k: (R() - 0.4) * 0.22 }));
-  const shape = (d) => { let r = 1 + 0.1 * d[0] - 0.05 * d[1]; for (const l of lumps) r += l.k * Math.exp(-3 * (1 - (l.d[0] * d[0] + l.d[1] * d[1] + l.d[2] * d[2]))); const bo = blow[0] * d[0] + blow[1] * d[1] + blow[2] * d[2]; return r + 0.22 * Math.max(0, bo - 0.55) / 0.45; };
-  const bright = (d) => 0.45 + 0.55 * clamp01(0.5 + 0.5 * (0.8 * d[0] + 0.4 * d[1]) + 0.25 * Math.sin(d[0] * 5 + d[2] * 3));
-  const rim = (d) => Math.pow(1 - Math.abs(d[2]), 2.2);   // seen face on, the shell is brightest where we look along it
-  for (let i = 0; i < n; i++) {
-    const d = randDir(R); const bo = blow[0] * d[0] + blow[1] * d[1] + blow[2] * d[2]; if (bo > 0.7 && R() < 0.85) continue;
-    const rm = rim(d); if (R() > 0.25 + 0.75 * rm) continue;
-    const r = shape(d) * (0.9 + R() * 0.12); const tg = norm(cross(d, [0, 0, 1])); const rn = norm(cross(d, [R() - 0.5, 1, R() - 0.5])); const e1 = norm(tg.map((v, k) => v * rm + rn[k] * (1 - rm) * 0.8 + (R() - 0.5) * 0.5));
-    const L = 0.08 + R() * 0.3; const c = d.map((v) => v * r);
-    const curl = (R() - 0.5) * 0.12; const pts = [0, 0.25, 0.5, 0.75, 1].map((f) => c.map((v, k) => v + e1[k] * (f - 0.5) * L + d[k] * Math.sin(f * Math.PI) * curl));
-    const pick = R(); const col = pick < 0.4 ? mix(pink, rose, R()) : pick < 0.66 ? mix(pink, white, 0.6 + 0.4 * R()) : pick < 0.82 ? mag : pick < 0.93 ? syn : teal;
-    b.add(pts, { width: 0.014 + R() * 0.036, rgb: jitter(col, R, 0.01, 0.05, 0.05), alpha: Math.min(0.85, (0.2 + R() * 0.45) * bright(d) * (0.3 + 1.1 * rm)), bristles: 3, boil: 0.004, seed: S() });
-  }
-  for (let i = 0; i < 28; i++) { const d = randDir(R); if (Math.abs(d[2]) > 0.5) d[2] *= 0.4; const dn = norm(d); const r = shape(dn) * (0.97 + R() * 0.06); const c = dn.map((v) => v * r); const e1 = norm(cross(dn, [0, 0, 1])); b.add([-1, 0, 1].map((f) => c.map((v, k) => v + e1[k] * f * 0.018)), { width: 0.04 + R() * 0.05, rgb: mix(white, pink, R() * 0.5), alpha: 0.18 + R() * 0.25, bristles: 3, seed: S(), dab: true }); }   // bright knots
-  for (let i = 0; i < 160; i++) { const toJet = i < 50; const base = toJet ? jet : norm([R() - 0.5, R() - 0.5, (R() - 0.5) * 0.3]); const sp = norm(base.map((v) => v + (R() - 0.5) * (toJet ? 0.35 : 0.1)));
-    const r0 = shape(sp) * (0.95 + R() * 0.1), r1 = r0 + (toJet ? 0.25 + R() * 0.4 : 0.08 + R() * 0.25); const bend = norm(cross(sp, [0, 0, 1])).map((v) => v * (R() - 0.5) * 0.12);
-    b.add([0, 0.5, 1].map((f) => sp.map((v, k) => v * (r0 + (r1 - r0) * f) + bend[k] * Math.sin(f * Math.PI))), { width: 0.006 + R() * 0.012, rgb: jitter(mix(pink, white, R() * 0.7), R, 0.01, 0.05, 0.05), alpha: 0.08 + R() * 0.14, bristles: 2, seed: S() }); }   // outward wisps, more on one side
-  for (let i = 0; i < 220; i++) { const d = randDir(R); const r = 0.3 + R() * 0.6; const c = d.map((v) => v * r); const e1 = norm(cross(d, [0, 1, 0.01])); const L = 0.1 + R() * 0.2; b.add([0, 0.5, 1].map((f) => c.map((v, k) => v + e1[k] * (f - 0.5) * L)), { width: 0.02 + R() * 0.04, rgb: jitter(mix(syn, mag, R()), R, 0.01, 0.05, 0.05), alpha: 0.025 + R() * 0.04, bristles: 3, seed: S() }); }   // faint inner haze
+  const dAng = (a, c) => { let d = a - c; d -= TAU * Math.round(d / TAU); return d; }, gauss = (a, c, w) => Math.exp(-0.5 * (dAng(a, c) / w) ** 2);
+  const BRIGHT = 2.35, SPARSE = 4.55, JET = 2.0;   // screen angles (radians, anticlockwise from +x): one blown-out sector upper left, one torn and thin sector below, jets on the upper-left side only
+  // mean radius 1 (the debris radius at this age), lumpy: an elongated, lopsided loop that is pulled inward where it is torn
+  const rho = (a) => 1 + 0.06 * Math.cos(2 * (a - 0.5)) + 0.07 * Math.sin(3 * a + 2.1) + 0.045 * Math.sin(5 * a + 0.3) - 0.14 * gauss(a, SPARSE, 0.45) + 0.06 * gauss(a, BRIGHT, 0.5);
+  const dens = (a) => (0.2 + 0.95 * gauss(a, BRIGHT, 0.6) + 0.3 * gauss(a, 0.15, 0.4)) * (1 - 0.8 * gauss(a, SPARSE, 0.5));
+  const pickA = () => { for (;;) { const a = R() * TAU; if (R() * 1.45 < dens(a)) return a; } };
+  const colour = () => { const k = R(); return k < 0.4 ? mix(pink, rose, R()) : k < 0.66 ? mix(pink, white, 0.55 + 0.45 * R()) : k < 0.8 ? mag : k < 0.92 ? syn : teal; };
+  const strand = (a0, span, off, wob, w, al, col, f1) => { const ph = R() * TAU, f2 = f1 * 1.9, p2 = R() * TAU, pts = [];
+    for (let k = 0; k <= 8; k++) { const a = a0 + span * (k / 8 - 0.5), rr = rho(a) + off + wob * Math.sin(f1 * a + ph) + wob * 0.5 * Math.sin(f2 * a + p2); pts.push([rr * Math.cos(a), rr * Math.sin(a), (R() - 0.5) * 0.04]); }
+    b.add(pts, { width: w, rgb: jitter(col, R, 0.01, 0.05, 0.05), alpha: al, bristles: 3, boil: 0.004, seed: S() }); };
+  for (let i = 0; i < Math.round(n * 0.52); i++) { const a = pickA(), d = dens(a); strand(a, 0.3 + R() * 0.9, (R() + R() + R() - 1.5) * (0.12 + 0.2 * d), 0.04 + R() * 0.06, 0.008 + R() * 0.02, Math.min(0.6, (0.07 + R() * 0.2) * (0.4 + d)), colour(), 3 + R() * 6); }   // the loop itself
+  for (let i = 0; i < Math.round(n * 0.1); i++) { const a = BRIGHT + (R() - 0.5) * 1.5 + (i % 3 === 0 ? 2.2 : 0), d = dens(a); strand(a, 0.2 + R() * 0.5, (R() - 0.5) * 0.14, 0.02 + R() * 0.03, 0.016 + R() * 0.022, 0.07 + R() * 0.14 * Math.min(1, d + 0.2), mix(pink, white, R() * 0.4), 4 + R() * 5); }   // blown-out sector: broad pale strokes
+  for (let i = 0; i < Math.round(n * 0.16); i++) { const a = R() * TAU, r0 = 0.3 + R() * 0.55; strand(a, 0.2 + R() * 0.5, r0 - rho(a), 0.03 + R() * 0.04, 0.005 + R() * 0.01, 0.06 + R() * 0.12, mix(syn, mag, R()), 3 + R() * 5); }   // faint inner filaments across the face
+  for (let i = 0; i < 36; i++) { const a = pickA(); strand(a, 0.5 + R() * 0.9, (R() - 0.5) * 0.12, 0.03, 0.06 + R() * 0.07, 0.03 + R() * 0.03, mix(mag, pink, R()), 3 + R() * 3); }   // soft glow behind the loop
+  for (let i = 0; i < 40; i++) { const a = JET + (R() - 0.5) * 1.3, r0 = rho(a) * (0.97 + R() * 0.05), L = 0.3 + R() * 0.5, bend = (R() - 0.5) * 0.22, dir = [Math.cos(a), Math.sin(a)], nrm = [-dir[1], dir[0]];
+    b.add([0, 0.5, 1].map((f) => [dir[0] * (r0 + L * f) + nrm[0] * bend * Math.sin(f * 2), dir[1] * (r0 + L * f) + nrm[1] * bend * Math.sin(f * 2), 0]), { width: 0.006 + R() * 0.01, rgb: jitter(mix(pink, white, R() * 0.6), R, 0.01, 0.05, 0.05), alpha: 0.3 + R() * 0.3, bristles: 2, seed: S() }); }   // jets, upper-left side only
+  for (let i = 0; i < 16; i++) { const a = R() * TAU; if (Math.abs(dAng(a, JET)) < 0.9) continue; const r0 = rho(a), L = 0.08 + R() * 0.16, dir = [Math.cos(a), Math.sin(a)];
+    b.add([0, 0.5, 1].map((f) => [dir[0] * (r0 + L * f), dir[1] * (r0 + L * f), 0]), { width: 0.004 + R() * 0.006, rgb: mix(pink, white, R() * 0.4), alpha: 0.1 + R() * 0.12, bristles: 2, seed: S() }); }   // a few short wisps elsewhere
+  for (let i = 0; i < 26; i++) { const a = pickA(), rr = rho(a) * (0.95 + R() * 0.08), c = [rr * Math.cos(a), rr * Math.sin(a), 0], t = [-Math.sin(a), Math.cos(a), 0];
+    b.add([-1, 0, 1].map((f) => c.map((v, k) => v + t[k] * f * 0.02)), { width: 0.04 + R() * 0.05, rgb: mix(white, pink, R() * 0.5), alpha: 0.14 + R() * 0.2, bristles: 3, seed: S(), dab: true }); }   // bright knots
   return b;
 }
 

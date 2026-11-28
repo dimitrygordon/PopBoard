@@ -357,14 +357,14 @@ export class Scenes {
   // ---------------- supernova to remnant (H5): debris at about 10,000 km/s from 1 day to about 250 years (example), honest zoom steps ----------------
   supernova() {
     if (this.cache.sn) return this.cache.sn; const T = this.T; const g = new T.Group();
-    const db = buildRemnant(63, 2200); const md = this.mesh(db, { additive: true }, 2); const shell = new T.Group(); shell.add(md); g.add(shell);
+    const db = buildRemnant(63, 1550); const md = this.mesh(db, { additive: true }, 2); const shell = new T.Group(); shell.add(md); g.add(shell);
     const flash = this.glow([[3.2, 0.25, [255, 250, 245]], [1.4, 0.55, [255, 250, 245]], [0.5, 1.0, [255, 255, 255]], [0.12, 1.0, [255, 255, 255]]], { useTeff: false, order: 5 }); g.add(flash);
     const prog = this.glow([[1.2, 0.5], [0.45, 1.0]], { useTeff: true, order: 3 }); prog.material.uniforms.uTeff.value = 3300; g.add(prog);
     const coS = this.callout("Debris shell", { side: -1 }), coN = this.callout("A neutron star hides at the center", { sub: "too small to see at this scale", side: -1 }); g.add(coS.grp, coN.grp);
     const V = 10000, YR = 3.15576e7, Y0 = 1 / 365.25, Y1 = 250, S_END = 17;   // shell at Y1 drawn at S_END units (Leo: R0 290 px)
     const kEnd = 0.5 * KM.LY; /* half a light-year per unit at the end: the shell then spans about 17 units */ const levels = [0, 1, 2, 3, 4, 5, 6].map((k) => kEnd / Math.pow(10, k));
     const sc = { root: g, kind: "supernova", camDist: 75, radius: 18, strokes: db.n, meshes: 3, k: levels[6], kmPerUnit: () => sc.k,
-      fit: () => ({ r: S_END, frac: 290 / 1080 }),
+      fit: () => ({ r: S_END, frac: 262 / 1080 }),
       update: (c) => {
         const t = c.v.t; const yrs = Math.pow(10, Math.log10(Y0) + (Math.log10(Y1) - Math.log10(Y0)) * t); const rkm = V * YR * yrs;
         sc.k = levels.slice().reverse().find((L) => rkm / L <= S_END * 1.05) || levels[0]; const S = rkm / sc.k; shell.scale.setScalar(S); sc.radius = Math.max(S, 3); shell.quaternion.copy(c.camQuatLocal);
@@ -378,6 +378,7 @@ export class Scenes {
         const q = c.camQuatLocal; const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q);
         const hh = c.halfH || 20; coS.place(new T.Vector3().addScaledVector(rt, -S * 0.7).addScaledVector(up, S * 0.45), -Math.max(S * 0.45, hh * 0.3), Math.max(S * 0.2, hh * 0.15), q, S * 0.012);
         coN.grp.visible = t > 0.35; coN.place(new T.Vector3(), -Math.max(S * 1.05, hh * 0.6), -Math.max(S * 0.28, hh * 0.15), q, S * 0.012);
+        if (c.phone) { coS.place(new T.Vector3().addScaledVector(rt, -S * 0.6).addScaledVector(up, S * 0.55), -S * 0.1, Math.max(S * 0.5, hh * 0.3), q, S * 0.012); coN.place(new T.Vector3(), -S * 0.1, -Math.max(S * 1.15, hh * 0.45), q, S * 0.012); }
       } };
     this.cache.sn = sc; return sc;
   }
