@@ -260,7 +260,7 @@ export function workedProblems() {
     },
     {
       id: "B7", set: "B",
-      prompt: "A 50 kg robot stands on a neutron star (1.4 Suns, 12 km in radius, about 24 km across). Find the pull by Newton's law.",
+      prompt: "Imagine a 50 kg robot on a neutron star (1.4 Suns, 12 km in radius, about 24 km across). Find the pull by Newton's law.",
       setup: "F = G m M / R^2",
       value: b7,
       ratioText: "",

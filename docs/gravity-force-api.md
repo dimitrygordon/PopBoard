@@ -2,7 +2,7 @@
 
 Off-headset half of the Gravity Force VR lab (teaching spec v1.2). These modules own the numbers, the URL, and the equation panel. Scene code should import them and not retype a mass, a radius, or a force.
 
-This pass does not add `study-gravity-force.html`, `gf-scenes.js`, the XR input change, the `BUILTIN_MODULES` entry, or the flat fallback.
+The scene side is in `study-gravity-force.html` and the files below the table (see "Scenes and headset").
 
 ## Files
 
@@ -141,3 +141,27 @@ RATIO_RULES, WATCH_FOR, TEACHER_NOTES
 Help 0 renders no formula, no G, and no newtons. Help 1 renders "F is proportional to m1 x m2 / r^2." and the Set A ratio answers. Help 2 renders `F = G x m1 x m2 / r^2` with values, Set A, Set B, and the exit ticket. `previous` draws the change bubbles (`m1 x2`, `r x2 so r^2 x4`).
 
 Worked answers are computed from `gf-sim`, then rounded to the printed section 6.3 lines (491 N, 1.98 x 10^20 N, 2.0 x 10^-7 N, 3.54 x 10^22 N, 435 N at 88.5 percent, and so on). The panel does not contain a pound label. S3 is the only place that calls `lbFromN`.
+
+## Scenes and headset
+
+| File | Role |
+|---|---|
+| `public/study-gravity-force.html` | The page. Study library entry `gravity-force` in `public/study.html`. |
+| `public/gravity-force/gf-scenes.js` | S1 to S5 as pure models: `sceneModel(lab)`, `controlsFor(lab)`, `act(lab, id, canSetHelp)`. No DOM. The page and the headset panel both draw from it. Two views sit on top of the URL scenes: S5c "Real or model?" (`view:sort`, inside S5) and S6 "The Equation" (`view:eq`, inside S1). `?view=sort` or `?view=eq` opens them. |
+| `public/gravity-force/gf-paint.js` | Leo's painted style B: banded painted tone with warm cream highlights, ink outlines in screen pixels, line boil at 8 fps, and screen-space fat lines (marble paths, the orbit). Calm lines holds the boil still. |
+| `public/gravity-force/models/` | Angelo's four meshopt GLBs (spring scale v4.2, balance v2.2, robot v3.2, step platform). Dimitry's exception to the no-GLB rule; nothing else of Angelo's goes in the repo. |
+| `public/gravity-force/gf-view.js` | three.js scenes in real metres (student at the origin, floor at y = 0, local-floor). |
+| `public/gravity-force/gf-props.js` | S3 props built in code at Angelo's real sizes. |
+| `public/gravity-force/gf-xr.js` | Headset panel (one canvas texture, Leo's readout dial) and the Quest 3 button map. |
+| `public/gravity-force/gf-main.js` | Renderer, flat panel, pointer and keys, WebXR session. |
+
+Run `node --test tests/gravity-force-vr.test.mjs`. It covers T13 to T19 that can run without a headset.
+
+**Props.** `MODEL_BASE` in `gf-props.js` is `models/`, relative to the module, so popboard.us and every branch preview load the same four GLBs (about 1.1 MB in total) with GLTFLoader and the meshopt decoder. The code-built props draw first and stay as the fallback if a load fails. On Earth, Moon, Mars and Jupiter the figure on the scale is the code-built traveler (legs half its height): a flat matte muted hoodie, jeans and sneakers, ink outline, no face details and no paint noise. The robot appears only on the neutron star. Both stand at scale-local (0, 0.0485, -0.086). The scale needle turns about the hub (angle_Y = -45 deg - 270 deg x f) and the numbers are drawn on the blank readout node. The balance beam pivots at (0, 0.300, 0) with the pans counter-rotated. Angelo's unlit albedo is kept with no tone mapping. Ink outlines are 0.8 px, smoothed, and are off on contact_shadow, pointer_shadow and the balance plinth. The same traveler also rides the S4 elevator cab.
+
+**Labels.** One style: a cream pill with warm ink Inter semibold, upright and facing the camera, sized every frame from distance (16 CSS px, 15 on phones, and 56 panel px at 1.2 m in the headset), with a small declutter pass on flat screens, a 12 px clamp to the visible stage (clear of the side panel and the phone header), and a last-resort hide if two pills would still overlap. Camera reframes ease smoothly; they do not jump. S1 pull arrows are solid ink (MeshBasic, no transparency). On a phone the Pull Meter camera pulls back farther so the Pin it graph stays in the frame under the header.
+S5c floating cards sit in one fanned row with small gaps and no overlap; leftover cards close up into a neat row as others drop into the bins. In the headset, S3 body copy and S5c card text are 56 px, and a card may wrap to four lines rather than drop words.
+
+**Headset controls.** Ray plus trigger (or a hand pinch) presses panel buttons, drags the S1 Moon and flicks from the S5 start ball. Right A flicks a marble. Right thumbstick press goes to the next scene. Left thumbstick steps through the scene's chips. Right thumbstick left and right nudges the Moon. Left X held pauses motion. Grip or a hand pinch on the handle bar above the panel moves the panel (sideways, up, down, nearer or farther, including fully out of the way). After a move the panel turns to face the student, and the offset is kept for the rest of the session. Trigger, pinch, or a fingertip poke still clicks every chip after the move, because hit-testing uses the panel's world transform. Grabbing the handle never clicks a button. B or Y shows or hides the panel. The rail gives a haptic tick at each whole number.
+
+**Flat keys.** 1 to 5 pick a scene, 6 opens S5c and 7 opens S6, arrow keys move the Moon, Space pins (S1, S6) or flicks (S5), C toggles Calm lines, E shows or hides the equation (help 1 and 2).
