@@ -164,8 +164,11 @@ test("headset: Leo's readout spec and the Quest 3 button map", () => {
   ev = readPads([pad("left", [0, 1, 0, 0, 0])], {});
   assert.equal(ev.pause, false, "left grip is not pause");
   const xr = read("gravity-force/gf-xr.js"), main = read("gravity-force/gf-main.js");
-  assert.match(xr, /userData.handle/); assert.match(xr, /captureOffset/); assert.match(xr, /hitHandle/);
+  assert.match(xr, /userData.handle/); assert.match(xr, /spawnInView/); assert.match(xr, /pinInWorld/); assert.match(xr, /hitHandle/);
   assert.match(main, /tryPanelGrab/); assert.match(main, /camEase/); assert.match(main, /Math\.exp\(-8/);
+  assert.match(main, /bringPanel/); assert.match(main, /pinInWorld/);
+  assert.match(main, /scene.add\(panel\.mesh\)/); assert.doesNotMatch(main, /camera\.add\(panel/);
+  assert.doesNotMatch(main, /if \(!panelGrab\) panel\.(place|spawn)/);
 });
 
 test("S4 Moon stop: 384,400 km centre to centre, the same distance as S1 (Tesla's ruling)", () => {

@@ -1,9 +1,9 @@
-// Gravity Force Lab VR: headset panel grab and hit-testing, without a headset.
-// A mocked session (controller and hand poses, no IWER) moves the panel and then clicks chips on it.
+// Gravity Force Lab VR: headset panel grab, world-lock and hit-testing, without a headset.
 import test from "node:test";
 import assert from "node:assert/strict";
 import * as THREE from "../public/vendor/three/three.module.min.js";
-import { XRPanel, XRP, panelInputAt } from "../public/gravity-force/gf-xr.js";
+import { readFileSync } from "node:fs";
+import { XRPanel, XRP, PANEL_SPAWN, panelInputAt, panelPoseReady, readPads } from "../public/gravity-force/gf-xr.js";
 
 function stubCanvas() {
   if (globalThis.document) return;
@@ -31,7 +31,10 @@ function makePanel() {
   return panel;
 }
 
-/** World point on the panel face for a canvas-pixel centre of a hit rect. */
+function headQuat(yaw = 0) {
+  return new THREE.Quaternion().setFromEuler(new THREE.Euler(0, yaw, 0, "YXZ"));
+}
+
 function chipWorld(panel, hit) {
   const cx = (hit.x + hit.w / 2) / XRP.W, cy = (hit.y + hit.h / 2) / XRP.H;
   const local = new THREE.Vector3((cx - 0.5) * XRP.M, (0.5 - cy) * HM, 0.002);
@@ -44,7 +47,6 @@ function handleWorld(panel) {
   return panel.handle.getWorldPosition(new THREE.Vector3());
 }
 
-/** Ray from a point in front of a world target, aimed at it. */
 function aimAt(target, from = null) {
   const origin = from ? from.clone() : target.clone().add(new THREE.Vector3(0, 0, 0.4));
   const dir = target.clone().sub(origin).normalize();
@@ -57,10 +59,17 @@ function faceDot(panel, head) {
   return z.dot(head.clone().sub(panel.mesh.position).normalize());
 }
 
+function panelCorners(panel) {
+  const hw = XRP.M / 2, hh = HM / 2;
+  const pts = [[-hw, -hh, 0], [hw, -hh, 0], [-hw, hh, 0], [hw, hh, 0]];
+  panel.mesh.updateMatrixWorld();
+  return pts.map(([x, y, z]) => panel.mesh.localToWorld(new THREE.Vector3(x, y, z)));
+}
+
 test("hit-test follows the moved panel, and a drag of the handle does not click", () => {
   const panel = makePanel();
   const head = new THREE.Vector3(0, 1.6, 0);
-  panel.place(head, 0);
+  panel.spawnInView(head, headQuat(0));
 
   const tab = panel.hits[0];
   const before = aimAt(chipWorld(panel, tab), head);
@@ -73,7 +82,6 @@ test("hit-test follows the moved panel, and a drag of the handle does not click"
   assert.equal(grab.grab, true, "trigger or pinch on the handle starts a grab");
   assert.equal(grab.click, undefined, "grabbing the handle does not click a button");
 
-  // A controller sitting near the handle, but aiming at a tab, must still click (not grab).
   const gripNear = handleWorld(panel);
   const nearButClick = panelInputAt(panel, before.origin, before.dir, gripNear, "select");
   assert.equal(nearButClick.click, "tab:pull");
@@ -82,7 +90,6 @@ test("hit-test follows the moved panel, and a drag of the handle does not click"
   const gripGrab = panelInputAt(panel, before.origin, before.dir, gripNear, "grip");
   assert.equal(gripGrab.grab, true, "a grip squeeze near the handle grabs");
 
-  // Mocked XR session: grab the handle, move the panel low and to the right, out of the way.
   const ctrl = new THREE.Group();
   ctrl.position.copy(handleWorld(panel));
   ctrl.lookAt(head);
@@ -91,9 +98,9 @@ test("hit-test follows the moved panel, and a drag of the handle does not click"
   ctrl.position.set(0.9, 0.45, -0.7);
   ctrl.updateMatrixWorld();
   panel.followGrab(ctrl);
-  panel.captureOffset(head, 0);
-  panel.place(head, 0);
+  panel.pinInWorld(head);
 
+  assert.equal(panel.userMoved, true);
   assert.ok(panel.mesh.position.x > 0.4, "panel can sit off to the side");
   assert.ok(panel.mesh.position.y < 1.0, "panel can sit low");
   assert.ok(faceDot(panel, head) > 0.92, "after a move the panel faces the student");
@@ -115,40 +122,76 @@ test("hit-test follows the moved panel, and a drag of the handle does not click"
   assert.equal(stillGrab.grab, true);
   assert.equal(stillGrab.click, undefined, "after the move, a handle drag still does not click");
 
-  // Fingertip poke on a chip of the moved panel, and a poke on the handle does not click.
   const tip = chipWorld(panel, panel.hits[1]);
   assert.equal(panel.poke(tip), "help:1");
   assert.equal(panel.poke(handleWorld(panel)), null, "a poke on the handle is not a button click");
 });
 
-test("a mocked XR session can park the panel fully out of the way and keep chips clickable", () => {
+test("the panel's world position does not change when the camera or head pose moves", () => {
   const panel = makePanel();
-  const head = new THREE.Vector3(0, 1.6, 0);
-  panel.resetOffset();
-  panel.place(head, 0);
-  const start = panel.mesh.position.clone();
+  const head = new THREE.Vector3(0.2, 1.62, 0.1);
+  panel.spawnInView(head, headQuat(0.3));
+  const pos = panel.mesh.position.clone();
+  const quat = panel.mesh.quaternion.clone();
 
-  // Squeeze-grip path: near the handle, no precise aim required.
-  const gripPt = handleWorld(panel);
-  const ev = panelInputAt(panel, null, null, gripPt, "grip");
-  assert.equal(ev.grab, true);
+  const turned = new THREE.Vector3(0.6, 1.7, -0.4);
+  // A world-locked frame does not call spawn or place when the student looks around.
+  panel.mesh.updateMatrixWorld();
+  assert.ok(panel.mesh.position.distanceTo(pos) < 1e-9, "looking around does not move a world-locked panel");
+  assert.ok(panel.mesh.quaternion.angleTo(quat) < 1e-9, "looking around does not rotate a world-locked panel");
 
-  const ctrl = new THREE.Object3D();
-  ctrl.position.copy(gripPt);
-  ctrl.updateMatrixWorld();
-  panel.beginGrab(ctrl);
-  // Park it far left, low, and closer to the student than the default 1.2 m.
-  ctrl.position.set(-1.4, 0.35, -0.4);
-  ctrl.updateMatrixWorld();
-  panel.followGrab(ctrl);
-  panel.captureOffset(head, 0);
-  panel.place(head, 0);
+  panel.pinInWorld(turned);
+  assert.ok(panel.mesh.position.distanceTo(pos) < 1e-9, "facing the student on pin does not change world position");
+  assert.ok(faceDot(panel, turned) > 0.92);
 
-  const parked = panel.mesh.position;
-  assert.ok(parked.distanceTo(start) > 0.8, "the parked pose is well away from the default slot");
-  assert.ok(parked.x < -0.8 && parked.y < 0.9);
-  assert.ok(faceDot(panel, head) > 0.92);
+  const main = readFileSync(new URL("../public/gravity-force/gf-main.js", import.meta.url), "utf8");
+  assert.doesNotMatch(main, /if \(!panelGrab\) panel\.(place|spawn)/);
+  assert.match(main, /World-locked/);
+  assert.doesNotMatch(main, /camera\.add\(panel/);
+  assert.match(main, /scene\.add\(panel\.mesh\)/);
+});
 
-  const help = aimAt(chipWorld(panel, panel.hits[1]), head);
-  assert.equal(panelInputAt(panel, help.origin, help.dir, null, "select").click, "help:1");
+test("the panel spawns inside the view frustum, in front and fully readable", () => {
+  const panel = makePanel();
+  const head = new THREE.Vector3(0.15, 1.58, -0.2);
+  const yaw = 0.4;
+  const hq = headQuat(yaw);
+  panel.spawnInView(head, hq);
+
+  const rel = panel.mesh.position.clone().sub(head);
+  const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(hq); fwd.y = 0; fwd.normalize();
+  const dist = new THREE.Vector3(rel.x, 0, rel.z).length();
+  assert.ok(dist >= 0.9 && dist <= 1.1, `spawn distance ${dist}`);
+  assert.ok(rel.dot(fwd) > 0.8, "spawn is in front of the head yaw, not off to the side");
+  assert.ok(Math.abs(rel.dot(new THREE.Vector3(fwd.z, 0, -fwd.x))) < 0.08, "no side offset");
+  assert.ok(Math.abs((head.y - panel.mesh.position.y) - PANEL_SPAWN.below) < 1e-9, "slightly below eye level");
+  assert.ok(faceDot(panel, head) > 0.92, "faces the student");
+  assert.equal(panel.userMoved, false);
+
+  // A conservative single-eye frustum, tighter than a Quest 3, so "fully in view" has margin.
+  const cam = new THREE.PerspectiveCamera(72, 0.9, 0.05, 20);
+  cam.position.copy(head); cam.quaternion.copy(hq); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+  const frustum = new THREE.Frustum();
+  frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse));
+  for (const p of panelCorners(panel)) {
+    assert.ok(frustum.containsPoint(p), `corner ${p.x.toFixed(3)},${p.y.toFixed(3)},${p.z.toFixed(3)} is in view`);
+  }
+
+  assert.equal(panelPoseReady(new THREE.Vector3(0, 0, 0), 3), false, "too early, origin pose");
+  assert.equal(panelPoseReady(new THREE.Vector3(0, 0, 0), 10), false, "origin is not a settled viewer pose");
+  assert.equal(panelPoseReady(head, 3), false, "wait for the first frames");
+  assert.equal(panelPoseReady(head, PANEL_SPAWN.waitFrames), true);
+});
+
+test("left thumbstick press brings the panel here", () => {
+  const btn = (on) => ({ pressed: !!on });
+  const pad = (hand, buttons, axes = [0, 0, 0, 0]) => ({ handedness: hand, gamepad: { buttons: buttons.map(btn), axes } });
+  const prev = {};
+  let ev = readPads([pad("left", [0, 0, 0, 1, 0])], prev);
+  assert.equal(ev.bringPanel, true);
+  ev = readPads([pad("left", [0, 0, 0, 1, 0])], prev);
+  assert.equal(ev.bringPanel, false, "one bring-panel event per press");
+  ev = readPads([pad("right", [0, 0, 0, 1, 0])], prev);
+  assert.equal(ev.bringPanel, false);
+  assert.equal(ev.nextScene, true);
 });
