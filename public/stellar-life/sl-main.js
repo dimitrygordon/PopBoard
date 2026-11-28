@@ -347,7 +347,9 @@ function sceneRegion(sc) {
   // phone: the free strip between the top bar and the bottom sheet (the sheet's height follows its content, so read it each frame)
   if (layout.phone) { const pe = $("slPanel"), te = $("slTop"); const pr = pe && !pe.hidden ? pe.getBoundingClientRect() : null; const top = te ? te.getBoundingClientRect().bottom : 0;
     if (pr && pr.height) { const bottom = Math.max(top + layout.h * 0.2, pr.top); layout.free = { top, bottom }; off = [0, layout.h / 2 - (top + bottom) / 2]; if (sc) region = { cx: layout.w / 2, cy: (top + bottom) / 2, maxR: Math.max(50, Math.min(layout.w / 2 - 10, (bottom - top) / 2 - 10)) }; } }
-  if (want) { const x0 = layout.card.right + 16, x1 = layout.panel.left - 16; const cx = (x0 + x1) / 2, cy = layout.h * 0.47; region = { cx, cy, maxR: Math.max(80, Math.min((x1 - x0) / 2 - 8, layout.h * 0.40)) }; off = [layout.w / 2 - cx, layout.h / 2 - cy]; }
+  if (want) { const x0 = layout.card.right + 16, x1 = layout.panel.left - 16; let cx = (x0 + x1) / 2; const cy = layout.h * 0.47;
+    if (sc.reach && sc.fit) { const f = sc.fit(); const ppu = Math.min(f.frac, Math.max(80, Math.min((x1 - x0) / 2 - 8, layout.h * 0.40)) / layout.h) * layout.h / f.r; cx = Math.min(cx, x1 - sc.reach * ppu - 6); }   /* a scene with an inset to its right sits left of centre so the inset clears the panel */
+    region = { cx, cy, maxR: Math.max(80, Math.min((x1 - x0) / 2 - 8, layout.h * 0.40)) }; off = [layout.w / 2 - cx, layout.h / 2 - cy]; }
   if (!sc && !layout.phone && layout.card && layout.panel) off = [off[0], layout.h / 2 - (64 + layout.card.top) / 2];   // hub: the orbs sit above the H-R card
   const k = off.join(","); if (k !== layout.offKey) { layout.offKey = k; camera.setViewOffset(layout.w, layout.h, off[0], off[1], layout.w, layout.h); camera.updateProjectionMatrix(); }
   return region;
@@ -421,7 +423,7 @@ function frame(now) {
   if (km && lastKm) { const t = zoomText(lastKm, km); if (t) { transient.zoom = t; transient.zoomUntil = clock + 4; uiDirty = true; lastKm = km; } }
   if (km && !lastKm) lastKm = km;
   const bar = km ? scaleBar(km, (sc.radius || 10) * 0.8) : null; sbar.visible = !!bar && !(sc && (sc.kind === "twopaths"));
-  if (bar) { sbarBody.scale.set(bar.units, Math.max(0.6, (sc.radius || 10) * 0.05), 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy((sc.barAt ? new THREE.Vector3(...sc.barAt, 0) : new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4), 0)).applyQuaternion(qL)); sbarLab.position.set(0, -1.6, 0); }
+  if (bar) { sbarBody.scale.set(bar.units, Math.max(0.6, (sc.radius || 10) * 0.05), 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy((sc.barAt ? new THREE.Vector3(...sc.barAt, 0) : new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4), 0)).applyQuaternion(qL)); sbarLab.position.set(0, -(sbarLab.scale.y * (sbarLab.userData.ph || 0.45) * 0.5 + Math.max(0.6, (sc.radius || 10) * 0.05) * 0.5 + sbarLab.scale.y * 0.06), 0);   /* the label clears the bar at any label size */ }
   if (transient.zoom && clock > transient.zoomUntil) { transient.zoom = null; uiDirty = true; }
   sizeLabels(cam, presenting);
   if (transient.skip && clock > transient.skipUntil) { transient.skip = null; uiDirty = true; }

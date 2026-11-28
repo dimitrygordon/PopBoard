@@ -3,6 +3,7 @@
 // scene's kmPerUnit drives the scale bar and the "Zoomed in / out N times" labels (never a fake scale).
 import { buildSky, buildCloud, buildDisk, buildStar, buildShells, buildOnion, ONION, buildNebula, buildRemnant, buildEarth, buildEarth2, buildCity, buildPhotonRing, buildLensedStars, buildProminence, buildFlare, spriteGeometry, lutData, tRGB255, hex2rgb, rng } from "./sl-strokes.js";
 import { about } from "./sl-data.js";
+import { paintGranulation, paintCity, GRAN_KM, CITY_M, CITY_ASPECT } from "./sl-loupes.js";
 import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag, glowVert, glowFrag } from "./sl-shaders.js";
 
 export const KM = { RSUN: 695700, AU: 1.495978707e8, LY: 9.4607e12, REARTH: 6371 };
@@ -72,6 +73,39 @@ export class Scenes {
         const pa = line.geometry.attributes.position; lab.userData.line = pa; pa.setXYZ(0, anchor.x, anchor.y, anchor.z); pa.setXYZ(1, end.x, end.y, end.z); pa.needsUpdate = true;
         dot.position.copy(anchor); dot.quaternion.copy(q); dot.scale.setScalar(dotR); line.visible = dot.visible = lab.visible; } };
     this.setLabel(lab, text, sub); return co;
+  }
+  /** A close-up inset (style B loupe): a framed plate with its own scale bar and a title chip, joined to the spot it magnifies by two
+   * thin dashed lines. Plate width and bar length are exact: update() gets the plate width in scene units from the caller, which
+   * derives it from the scene's km per unit and the stated magnification, so "50 times closer" is the real ratio. */
+  loupe({ title, note = "", noteSub = "", note2 = "", aspect = 1, paint, barLabel, barFrac, side = 1 }) {
+    const T = this.T; const grp = new T.Group(); const cv = document.createElement("canvas"); cv.width = aspect < 1 ? 420 : 320; cv.height = Math.round(cv.width * aspect);
+    paint(cv); const g2 = cv.getContext("2d"), w = cv.width, h = cv.height;
+    /* the scale bar and the thin frame are painted into the plate texture (barFrac is the bar's share of the plate width), so the inset is one draw call */
+    const tk = Math.max(2, w * 0.012), bx = w * 0.08, by = h * 0.83; g2.fillStyle = "#FFFFFF"; g2.fillRect(bx, by - tk / 2, w * barFrac, tk); g2.fillRect(bx - tk / 2, by - tk * 2.5, tk, tk * 5); g2.fillRect(bx + w * barFrac - tk / 2, by - tk * 2.5, tk, tk * 5);
+    g2.strokeStyle = "rgba(185,195,234,0.9)"; g2.lineWidth = Math.max(3, w * 0.012); g2.strokeRect(0, 0, w, h);
+    const tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; tex.minFilter = T.LinearFilter; tex.generateMipmaps = false;
+    const plate = new T.Mesh(new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false, toneMapped: false })); plate.renderOrder = 37; plate.frustumCulled = false;
+    const lines = new T.LineSegments(new T.BufferGeometry().setFromPoints([new T.Vector3(), new T.Vector3(1, 0, 0), new T.Vector3(), new T.Vector3(1, 0, 0)]), new T.LineDashedMaterial({ color: 0xE6E9F8, transparent: true, opacity: 0.8, dashSize: 1, gapSize: 1, depthTest: false, depthWrite: false })); lines.renderOrder = 35; lines.frustumCulled = false;
+    const dot = new T.Mesh(new T.CircleGeometry(1, 16), new T.MeshBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.9, depthTest: false, depthWrite: false })); dot.renderOrder = 39; dot.frustumCulled = false;
+    const chip = this.label(title, { size: 1.0, color: "#FFFFFF", align: "left" }), nt = note ? this.label(note, { sub: noteSub, size: 0.9, plate: false, align: "left" }) : null;
+    const nt2 = note2 ? this.label(note2, { size: 0.8, color: "#C3C9E6", plate: false, align: "left" }) : null; const bl = this.label(barLabel, { size: 0.8 }); bl.userData.minPx = 14; chip.userData.minPx = 20;
+    if (nt) nt.userData.minPx = 19; if (nt2) nt2.userData.minPx = 16; for (const l of [chip, nt, nt2]) if (l) l.userData.clamp = false;   /* the inset's texts stay together; the caller places the whole inset clear of the cards */
+    grp.add(plate, lines, dot, chip, bl); if (nt) grp.add(nt); if (nt2) grp.add(nt2);
+    const rt = new T.Vector3(), up = new T.Vector3(), P = (c, x, y) => c.clone().addScaledVector(rt, x).addScaledVector(up, y);
+    return { grp, plate, chip, nt, nt2, bl,
+      /** centre: plate centre; W: plate width in scene units; anchor: the spot it magnifies; show: visibility */
+      update(q, centre, W, anchor, show) {
+        grp.visible = show; if (!show) return; rt.set(1, 0, 0).applyQuaternion(q); up.set(0, 1, 0).applyQuaternion(q); const H = W * aspect;
+        plate.quaternion.copy(q); plate.position.copy(centre); plate.scale.set(W, H, 1);
+        bl.position.copy(P(centre, -W * 0.5 + W * 0.08 + W * barFrac / 2, -H * 0.5 + H * 0.17 + H * 0.13));
+        const left = -W * 0.5; chip.position.copy(P(centre, left, H * 0.5 + chip.scale.y * (chip.userData.ph || 0.45) * 0.5 + W * 0.03));
+        let yb = -H * 0.5 - W * 0.03; if (nt) { nt.position.copy(P(centre, left, yb - nt.scale.y * (nt.userData.ph || 0.45) * 0.5)); yb -= nt.scale.y * (nt.userData.ph || 0.45) + W * 0.01; }
+        if (nt2) nt2.position.copy(P(centre, left, yb - nt2.scale.y * (nt2.userData.ph || 0.45) * 0.5));
+        const sx = side > 0 ? 0.5 : -0.5, pa = lines.geometry.attributes.position, c1 = P(centre, sx * W, H * 0.5), c2 = P(centre, sx * W, -H * 0.5);
+        pa.setXYZ(0, c1.x, c1.y, c1.z); pa.setXYZ(1, anchor.x, anchor.y, anchor.z); pa.setXYZ(2, c2.x, c2.y, c2.z); pa.setXYZ(3, anchor.x, anchor.y, anchor.z); pa.needsUpdate = true; lines.computeLineDistances();
+        lines.material.dashSize = W * 0.035; lines.material.gapSize = W * 0.025;
+        dot.position.copy(anchor); dot.quaternion.copy(q); dot.scale.setScalar(W * 0.016);
+      } };
   }
   dashedRing(radius, { color = 0xAACDFF, opacity = 0.8, seg = 128, dash = 0.06 } = {}) {
     const T = this.T; const pts = []; for (let i = 0; i <= seg; i++) { const a = i / seg * Math.PI * 2; pts.push(new T.Vector3(Math.cos(a) * radius, 0, -Math.sin(a) * radius)); }
@@ -186,6 +220,8 @@ export class Scenes {
     const promG = new T.Group(); promG.add(this.mesh(prom.glow, { additive: true }, 5), this.mesh(prom.core, {}, 6)); g.add(promG);
     const flG = new T.Group(); const flCore = this.mesh(fl.core, { grow: true }, 6), flGlow = this.mesh(fl.glow, { additive: true, grow: true }, 5); flG.add(flGlow, flCore); g.add(flG);
     const coP = this.callout("Prominence", { sub: "gas held up by magnetic fields", size: 1.3, side: -1 }), coL = this.callout("Limb darkening", { sub: "cooler, dimmer edge", size: 1.3, side: 1 }); g.add(coP.grp, coL.grp);
+    // Leo frame 2: a granulation close-up, 50 times closer than the Sun's disc, on the main-sequence stage of the 1 Sun path (not on phone)
+    const lg = this.loupe({ title: "Close-up, 50 times closer", note: "Granulation", noteSub: "hot gas rising in cells", note2: "contrast boosted for visibility", aspect: 1, paint: (cv) => paintGranulation(cv), barLabel: "5,000 km", barFrac: 5000 / GRAN_KM, side: 1 }); g.add(lg.grp); lg.grp.visible = false;
     const levels = [0.001, 0.01, 0.1, 1, 10, 100, 1000];
     const basis = (q, dirCam, zCam) => { const Y = dirCam.clone().applyQuaternion(q).normalize(), Z = zCam.clone().applyQuaternion(q).normalize(); const X = new T.Vector3().crossVectors(Y, Z).normalize(); Z.crossVectors(X, Y); return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(X, Y, Z)); };
     const sc = { root: g, kind: "star", s: 1, camDist: 44, radius: 10, strokes: sb.n + wb.n + prom.core.n + prom.glow.n + fl.core.n + fl.glow.n, meshes: 9, body, ms, halo,
@@ -227,6 +263,8 @@ export class Scenes {
         coT.place(aT, -Math.max(2, r * 0.22), capUp(aT.dot(up), Math.max(1.6, r * 0.2)), q, 0.16);
         // S1: prominence on the upper-right limb, a flare arcade on the disc toward the lower right, limb darkening note
         const s1 = st.id === "S1"; promG.visible = flG.visible = coP.grp.visible = coL.grp.visible = s1;
+        { const on = s1 && c.st.mass === "1" && !c.phone; const kpu = sc.s * KM.RSUN, MAG = 50, W = GRAN_KM * MAG / kpu;
+          lg.update(q, new T.Vector3().addScaledVector(rt, -r * 1.58).addScaledVector(up, r * 0.34), W, new T.Vector3().addScaledVector(rt, -r * 0.62).addScaledVector(up, r * 0.62), on); }
         if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.99)); promG.scale.setScalar(r * 1.5);
           const fd = new T.Vector3(0.52, -0.42, 0.74).normalize(); flG.quaternion.copy(basis(q, fd, new T.Vector3(0, 0, 1))); flG.position.copy(fd.clone().applyQuaternion(q).multiplyScalar(r)); flG.scale.setScalar(r);
           const gr = smooth(0.05, 0.9, c.v.t); flCore.material.uniforms.uGrow.value = gr; flGlow.material.uniforms.uGrow.value = gr;
@@ -359,7 +397,9 @@ export class Scenes {
     const rem = this.sprites(wisps, 0); g.add(rem);
     const coN = this.callout("Neutron star", { sub: "about 12 km radius", side: 1 }), coC = this.callout("A city about 20 km wide", { sub: "at the same scale", side: -1 }), coR = this.callout("Supernova remnant", { sub: "far behind, not to scale", side: -1 });
     g.add(coN.grp, coC.grp, coR.grp);
-    const sc = { root: g, kind: "ns", camDist: 62, radius: 14, barAt: [30, -40], strokes: sb.n + cb.n, meshes: 6, kmPerUnit: () => 1,
+    // Leo frame 3b: the city 80 times closer (a 840 m wide skyline, 200 m bar), joined to the city on the horizon
+    const lc = this.loupe({ title: "80 times closer", aspect: CITY_ASPECT, paint: (cv) => paintCity(cv), barLabel: "200 m", barFrac: 200 / CITY_M, side: -1 }); g.add(lc.grp);
+    const sc = { root: g, kind: "ns", camDist: 62, radius: 14, barAt: [58, -67], reach: 98, strokes: sb.n + cb.n, meshes: 6, kmPerUnit: () => 1,
       fit: () => ({ r: 12, frac: 72 / 1080 }),
       update: (c) => {
         body.scale.setScalar(12); body.position.set(0, 0, 0); land.quaternion.copy(c.camQuatLocal); land.position.copy(new T.Vector3(0, GY, 0).applyQuaternion(c.camQuatLocal));
@@ -368,6 +408,8 @@ export class Scenes {
         coN.place(new T.Vector3().addScaledVector(rt, 12 * 0.7).addScaledVector(up, 12 * 0.7), 9, 7, q, 0.4);
         coC.place(new T.Vector3().addScaledVector(up, GY + 0.3), -50, 9, q, 0.35);
         const ra = new T.Vector3(-300, 60, -700); coR.place(ra, -30, 40, q, 1.5);
+        { const MAG = 80, W = CITY_M / 1000 * MAG;   /* 1 unit = 1 km */
+          lc.update(q, new T.Vector3().addScaledVector(rt, 62).addScaledVector(up, -33), W, new T.Vector3().addScaledVector(up, GY + 0.3), !c.phone); }
       } };
     this.cache.ns = sc; return sc;
   }
