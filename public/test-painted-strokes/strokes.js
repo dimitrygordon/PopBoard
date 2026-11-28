@@ -97,67 +97,108 @@ export function buildScene(THREE, opts = {}) {
   // ---------- disk ----------
   const h = (r) => 0.045 * Math.pow(Math.max(r, 0.02), 1.22);
   const gaps = [[5.2, 0.55, 0.88], [9.0, 0.75, 0.65], [12.5, 0.9, 0.45], [15.5, 1.0, 0.35]], rings = [[7.0, 0.8, 0.35], [10.8, 0.7, 0.25], [14.0, 0.8, 0.2]];
-  const sig = (r) => { let s = Math.pow(Math.max(r, 0.15), -0.55) * Math.exp(-Math.pow(r / ROUT, 6)); for (const [rg, wg, dg] of gaps) s *= 1 - dg * Math.exp(-0.5 * ((r - rg) / (wg * 0.5)) ** 2); for (const [rr, wr, ar] of rings) s *= 1 + ar * Math.exp(-0.5 * ((r - rr) / (wr * 0.5)) ** 2); return s; };
+  const innerRings = [[1.3, 0.28, 0.70], [2.2, 0.32, 0.60], [3.8, 0.38, 0.50]];   // Leo: 2 to 3 bright bands in the inner disk (inside the 5.2 AU gap)
+  const sig = (r) => { let s = Math.pow(Math.max(r, 0.15), -0.55) * Math.exp(-Math.pow(r / ROUT, 6)); for (const [rg, wg, dg] of gaps) s *= 1 - dg * Math.exp(-0.5 * ((r - rg) / (wg * 0.5)) ** 2); for (const [rr, wr, ar] of rings) s *= 1 + ar * Math.exp(-0.5 * ((r - rr) / (wr * 0.5)) ** 2); for (const [rr, wr, ar] of innerRings) s *= 1 + ar * Math.exp(-0.5 * ((r - rr) / (wr * 0.5)) ** 2); return s; };
   const pal = [starRGB, hex2rgb("#E9B98A"), hex2rgb("#C98E62"), hex2rgb("#8E5C46")];
   const colAt = (r) => { const t = Math.min(1, Math.log(1 + r) / Math.log(1 + ROUT)); const i = Math.min(2, Math.floor(t * 3)); return mix(pal[i], pal[i + 1], t * 3 - i); };
   const nearMixAt = (r) => 0.45 + 0.3 * Math.min(1, Math.log(1 + r) / Math.log(1 + ROUT));
   const A_DISK = 2.2 * PX, A_JET = 3.0 * PX, A_RAY = 1.6 * PX, A_OTHER = 1.0 * PX;   // boil amplitudes from the spec, px converted to AU
   const ringPts = (r, ph, dph, z, pitchDeg = 0) => { const pts = []; for (let k = 0; k <= 10; k++) { const pp = ph + dph * k / 10; const rr = r * (1 - Math.tan(pitchDeg * Math.PI / 180) * dph * k / 10); pts.push([rr * Math.cos(pp), z, -rr * Math.sin(pp)]); } return pts; };
-  const nDisk = (opts.counts && opts.counts.disk) || 4200, nUnder = (opts.counts && opts.counts.under) || 600;
+  const nDisk = (opts.counts && opts.counts.disk) || 2400, nUnder = (opts.counts && opts.counts.under) || 360;
   let wmax = 0; for (let r = 0.3; r < ROUT + 2; r += 0.05) wmax = Math.max(wmax, sig(r) * r);
   let made = 0, tries = 0; const total = nDisk + nUnder;
   while (made < total && tries < 4000000) {
     tries++; const r = 0.3 + R() * (ROUT + 2); if (R() * wmax > sig(r) * r) continue;
     const under = made < nUnder; const ph = R() * Math.PI * 2;
-    const len = (lerp(0.9, 2.6, R())) * (0.45 + r / 9) * (under ? 1.6 : 1); const dph = Math.min(1.2, len / r);
+    const len = (lerp(1.15, 3.2, R())) * (0.45 + r / 9) * (under ? 1.6 : 1); const dph = Math.min(1.2, len / r);
     const z = (R() < 0.5 ? 1 : -1) * h(r) * (1.6 + R() * 0.8);
-    const wpx = (under ? 3 : 1) * lerp(3, 10, R()) * (0.55 + 0.45 * Math.min(1, r / 8));
+    const wpx = (under ? 3 : 1) * lerp(4.5, 15, R()) * (0.55 + 0.45 * Math.min(1, r / 8));   // 1.5x the v1 3-to-10 px range
     const col = jitter(colAt(r), R, 0.02, 0.06, 0.06);
-    disk.add(ringPts(r, ph, dph, z, 5), { width: wpx * PX, rgb: col, alpha: under ? 0.22 : lerp(0.45, 0.9, R()), kind: KIND.DISK, bristles: 6, boil: A_DISK, nearMix: nearMixAt(r), seed: S() });
+    disk.add(ringPts(r, ph, dph, z, 5), { width: wpx * PX, rgb: col, alpha: under ? 0.22 : lerp(0.45, 0.9, R()), kind: KIND.DISK, bristles: 6, boil: A_DISK, nearMix: 0, seed: S() });
     made++;
   }
-  // ring accents (bright arcs on rings, dark arcs in gaps)
-  for (const [rr] of rings) for (let i = 0; i < 40; i++) {
+  // ring accents (bright arcs on mid/outer rings, dark arcs in gaps)
+  for (const [rr] of rings) for (let i = 0; i < 30; i++) {
     const ph = R() * Math.PI * 2, d = (0.5 + R() * 0.9) * 0.9, rj = rr + (R() - 0.5) * 0.4;
     const col = jitter(mix(colAt(rr), [255, 240, 225], 0.25), R, 0.01, 0.05, 0.04);
-    disk.add(ringPts(rj, ph, d, (R() < 0.5 ? 1 : -1) * h(rj) * 2), { width: lerp(3, 7, R()) * PX, rgb: col, alpha: 0.55 + R() * 0.3, kind: KIND.DISK, bristles: 4, boil: A_DISK, nearMix: nearMixAt(rj), seed: S() });
+    disk.add(ringPts(rj, ph, d, (R() < 0.5 ? 1 : -1) * h(rj) * 2), { width: lerp(4.5, 10.5, R()) * PX, rgb: col, alpha: 0.55 + R() * 0.3, kind: KIND.DISK, bristles: 4, boil: A_DISK, nearMix: 0, seed: S() });
   }
-  for (const [rg, wg] of gaps) for (let i = 0; i < 46; i++) {
+  // inner-disk bright ring bands (Leo): longer, brighter, slightly wider arcs inside 5.2 AU
+  for (const [rr] of innerRings) for (let i = 0; i < 52; i++) {
+    const ph = R() * Math.PI * 2, d = (0.7 + R() * 1.1) * 0.9, rj = rr + (R() - 0.5) * 0.18;
+    const col = jitter(mix(colAt(rr), [255, 236, 214], 0.45), R, 0.01, 0.05, 0.04);
+    disk.add(ringPts(rj, ph, d, (R() < 0.5 ? 1 : -1) * h(rj) * 2.2), { width: lerp(6, 14, R()) * PX, rgb: col, alpha: 0.70 + R() * 0.25, kind: KIND.DISK, bristles: 5, boil: A_DISK, nearMix: 0, seed: S() });
+  }
+  for (const [rg, wg] of gaps) for (let i = 0; i < 28; i++) {
     const ph = R() * Math.PI * 2, d = (0.5 + R() * 0.9) * 0.9, rj = rg + (R() - 0.5) * wg * 0.5;
-    disk.add(ringPts(rj, ph, d, (R() < 0.5 ? 1 : -1) * h(rj) * 1.6), { width: lerp(2, 5, R()) * (1 + wg) * PX, rgb: jitter(hex2rgb("#2A1E3C"), R, 0.01, 0.03, 0.04), alpha: 0.5 + R() * 0.3, kind: KIND.DISK, bristles: 4, boil: A_DISK, nearMix: 0, seed: S() });
+    disk.add(ringPts(rj, ph, d, (R() < 0.5 ? 1 : -1) * h(rj) * 1.6), { width: lerp(3, 7.5, R()) * (1 + wg) * PX, rgb: jitter(hex2rgb("#2A1E3C"), R, 0.01, 0.03, 0.04), alpha: 0.5 + R() * 0.3, kind: KIND.DISK, bristles: 4, boil: A_DISK, nearMix: 0, seed: S() });
   }
   // dark dust lane: midplane, visible on the camera-facing side (shader fades the far half)
-  for (let i = 0; i < ((opts.counts && opts.counts.lane) || 520); i++) {
+  for (let i = 0; i < ((opts.counts && opts.counts.lane) || 360); i++) {
     const r = 1.2 + Math.pow(R(), 0.8) * (ROUT - 1), ph = R() * Math.PI * 2, dph = (0.6 + R()) / r;
-    disk.add(ringPts(r, ph, dph, -h(r) * 0.2), { width: lerp(3, 8, R()) * PX, rgb: jitter(hex2rgb("#1A1230"), R, 0.02, 0.03, 0.05), alpha: 0.35 + R() * 0.35, kind: KIND.LANE, bristles: 4, boil: A_DISK, seed: S() });
+    disk.add(ringPts(r, ph, dph, -h(r) * 0.2), { width: lerp(4.5, 12, R()) * PX, rgb: jitter(hex2rgb("#1A1230"), R, 0.02, 0.03, 0.05), alpha: 0.35 + R() * 0.35, kind: KIND.LANE, bristles: 4, boil: A_DISK, seed: S() });
   }
 
   // true orbital streaks (v2): born, slide 44 px along the orbit, fade; one life per 4 s loop
-  for (let i = 0; i < ((opts.counts && opts.counts.streaks) || 450); i++) {
+  for (let i = 0; i < ((opts.counts && opts.counts.streaks) || 260); i++) {
     let r; do { r = 0.5 + R() * 15.5; } while (R() * wmax > sig(r) * r);
     const ph = R() * Math.PI * 2, dph = (24 * PX) / r, z = (R() < 0.5 ? 1 : -1) * h(r) * (1.6 + R() * 0.8);
     const col = mix(colAt(r), hex2rgb("#FFF4E8"), 0.35);
-    disk.add(ringPts(r, ph, dph, z), { width: lerp(2.5, 5, R()) * PX, rgb: col, alpha: 1, kind: KIND.STREAK, bristles: 3, boil: A_OTHER, omega: R(), nearMix: 0, seed: S() });
+    disk.add(ringPts(r, ph, dph, z), { width: lerp(3.75, 7.5, R()) * PX, rgb: col, alpha: 1, kind: KIND.STREAK, bristles: 3, boil: A_OTHER, omega: R(), nearMix: 0, seed: S() });
   }
 
   // ---------- jets and protostar rays (additive) ----------
-  const jetRGB = hex2rgb("#FF7A8E");
+  const jetA = hex2rgb("#FF5A6A"), jetB = hex2rgb("#FF7A8E");
+  const jetCol = () => mix(jetA, jetB, R());
+  // a few long spine strokes so the jet reads as one column, with the knots sitting on it
+  for (const up of [true, false]) {
+    const dir = up ? 1 : -1, tip = (up ? 260 : 300) * PX, dim = up ? 1 : 0.55;
+    for (let k = 0; k < 4; k++) {
+      const a = R() * Math.PI * 2, rr = R() * 3 * PX;
+      const x = Math.cos(a) * rr, z = Math.sin(a) * rr;
+      add.add([[x, dir * 10 * PX, z], [x * 1.6, dir * tip * 0.45, z * 1.6], [x * 2.4, dir * tip, z * 2.4]],
+        { width: lerp(9, 15, R()) * PX, rgb: jitter(jetCol(), R, 0.015, 0.05, 0.04), alpha: lerp(0.22, 0.40, R()) * dim, bristles: 3, boil: A_JET, seed: S() });
+    }
+  }
   for (let i = 0; i < 64; i++) {
     const up = i % 2 === 0; const L = lerp(40, 120, R()) * PX; const y0 = (up ? 1 : -1) * (14 + R() * (up ? 250 : 210)) * PX;
     const a = R() * Math.PI * 2, rr = (R()) * (3 * PX + Math.abs(y0) * 0.06);
     const x0 = Math.cos(a) * rr, z0 = Math.sin(a) * rr, dir = up ? 1 : -1;
     add.add([[x0, y0, z0], [x0 + (R() - 0.5) * 0.25, y0 + dir * L * 0.5, z0 + (R() - 0.5) * 0.25], [x0 + (R() - 0.5) * 0.4, y0 + dir * L, z0 + (R() - 0.5) * 0.4]],
-      { width: lerp(3, 7, R()) * PX, rgb: jitter(jetRGB, R, 0.02, 0.08, 0.05), alpha: lerp(0.18, 0.42, R()) * (up ? 1 : 0.55), bristles: 3, boil: A_JET, seed: S() });
+      { width: lerp(6, 14, R()) * PX, rgb: jitter(jetCol(), R, 0.02, 0.08, 0.05), alpha: lerp(0.18, 0.42, R()) * (up ? 1 : 0.55), bristles: 3, boil: A_JET, seed: S() });
+  }
+  // H-alpha knots (LOOK-SPEC 3.1: 95, 175, 250 px) and small bow shocks at the tips (260 up, 300 down)
+  for (const up of [true, false]) {
+    const dir = up ? 1 : -1, dim = up ? 1 : 0.55;
+    for (const ypx of [95, 175, 250]) {
+      for (let k = 0; k < 8; k++) {
+        const y = dir * (ypx + (R() - 0.5) * 10) * PX;
+        const a = R() * Math.PI * 2, rad = (R() * 6) * PX;
+        const x = Math.cos(a) * rad, z = Math.sin(a) * rad, L = (6 + R() * 10) * PX;
+        add.add([[x, y - dir * L * 0.3, z], [x + (R() - 0.5) * 0.08, y + dir * L * 0.2, z + (R() - 0.5) * 0.08], [x + (R() - 0.5) * 0.12, y + dir * L * 0.7, z + (R() - 0.5) * 0.12]],
+          { width: lerp(8, 16, R()) * PX, rgb: jitter(jetCol(), R, 0.015, 0.06, 0.04), alpha: lerp(0.35, 0.70, R()) * dim, bristles: 3, boil: A_JET, seed: S(), dab: true });
+      }
+    }
+    const tip = up ? 260 : 300;
+    for (let k = 0; k < 6; k++) {
+      const y = dir * (tip + (R() - 0.5) * 8) * PX, spread = (8 + R() * 14) * PX, a0 = R() * Math.PI * 2, dph = 0.8 + R() * 1.2;
+      const pts = [];
+      for (let s = 0; s <= 6; s++) {
+        const a = a0 + dph * (s / 6 - 0.5), rad = spread * (0.6 + 0.4 * Math.sin(Math.PI * s / 6));
+        pts.push([Math.cos(a) * rad, y + dir * (s / 6) * 6 * PX, Math.sin(a) * rad]);
+      }
+      add.add(pts, { width: lerp(5, 11, R()) * PX, rgb: jitter(jetCol(), R, 0.02, 0.06, 0.04), alpha: lerp(0.22, 0.45, R()) * dim, bristles: 2, boil: A_JET, seed: S() });
+    }
   }
   for (let i = 0; i < 160; i++) {
     const d = randDir(R); const L = (6 + Math.pow(R(), 2) * 40) * PX, r0 = R() * 4 * PX; const tw = norm([d[0] + 0.12 * d[2], d[1], d[2] - 0.12 * d[0]]);
     add.add([d.map((v) => v * r0), d.map((v, k) => v * (r0 + L * 0.5) * 0.5 + tw[k] * (r0 + L * 0.5) * 0.5), tw.map((v) => v * (r0 + L))],
       { width: lerp(1.5, 4.5, R()) * PX, rgb: mix(starRGB, [255, 255, 255], R() * 0.6), alpha: 0.35 + R() * 0.4, bristles: 2, boil: A_RAY, seed: S() });
   }
-  // core glow: large soft additive sprites (fake bloom that also works in XR). breath = pulses with the flow clock
-  // Core glow layers (v2 dab sizes). Summed in ONE fragment shader with Tesla's overflow rule: scale so the brightest channel is 1,
-  // then bleed the overflow equally into all channels (white-ward). Never a per-channel clamp, so the core stays on the star's hue line.
-  const core = [[260 * PX, 0.22, starRGB], [150 * PX, 0.40, starRGB], [52 * PX, 0.80, starRGB], [30 * PX, 0.35, [255, 255, 255]], [14 * PX, 1.0, [255, 255, 255]]];
+  // core glow: large soft sprites (fake bloom that also works in XR). breath = pulses with the flow clock
+  // Widened and softened (Leo). Every layer stays on starRGB. Summed in ONE fragment shader with Tesla's overflow rule:
+  // scale so the brightest channel is 1, then bleed the overflow equally into all channels (white-ward). Never a per-channel clamp.
+  const core = [[420 * PX, 0.16, starRGB], [220 * PX, 0.30, starRGB], [88 * PX, 0.58, starRGB], [36 * PX, 0.80, starRGB], [16 * PX, 1.0, starRGB]];
 
   return { sky: sky.geometry(THREE), disk: disk.geometry(THREE), add: add.geometry(THREE), sprites, core, starRGB, counts: { sky: sky.n, disk: disk.n, add: add.n, sprites: sprites.length }, ROUT };
 }

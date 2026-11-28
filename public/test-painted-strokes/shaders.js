@@ -22,7 +22,7 @@ void main(){
   vec2 dxz = normalize(p.xz + vec2(1e-4)); vec2 cxz = normalize(uCamLocal.xz + vec2(1e-4));
   float nearK = smoothstep(-0.15, 0.5, dot(dxz, cxz)) * uCosElev;     // 1 on the side facing the viewer
   vec3 col = aColor.rgb; float al = aColor.a * fade;
-  if (kind > 0.5 && kind < 1.5) { col = mix(col, vec3(0.2275, 0.1647, 0.2902), aParam.w * 0.4 * nearK); al *= mix(1.0, 0.85, nearK); }
+  // near-side cooling removed: Leo asked the near side to stay as warm as the far side
   if (kind > 1.5 && kind < 2.5) { al *= smoothstep(0.0, 0.4, dot(dxz, cxz)) * uCosElev; }
   if (kind > 2.5) { al *= mix(1.0, 0.5, nearK); }
   vec4 vp = modelViewMatrix * vec4(p, 1.0);
@@ -103,7 +103,7 @@ precision highp float; varying vec2 vC; varying float vBr;
 uniform vec4 uLay[5]; uniform float uRad[5]; uniform float uMaxR;
 void main(){
   float d = length(vC) * uMaxR / (1.0 + 0.03 * vBr); vec3 c = vec3(0.0);
-  for (int i = 0; i < 5; i++) { float f = clamp(1.0 - d / uRad[i], 0.0, 1.0); c += uLay[i].rgb * uLay[i].a * (1.0 + 0.06 * vBr) * f; }
+  for (int i = 0; i < 5; i++) { float u = clamp(1.0 - d / uRad[i], 0.0, 1.0); float f = pow(u, 0.7); c += uLay[i].rgb * uLay[i].a * (1.0 + 0.06 * vBr) * f; }
   float m = max(c.r, max(c.g, c.b)); if (m < 1e-4) discard;
   if (m > 1.0) { float w = 0.9 * (m - 1.0); c = (c / m + vec3(w)) / (1.0 + w); }   // overflow bled equally into R, G and B, then renormalised: no per-channel clamp, hue angle unchanged, only whiter
   float a = clamp(max(c.r, max(c.g, c.b)), 0.0, 1.0);
