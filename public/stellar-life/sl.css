@@ -84,3 +84,61 @@ html, body { margin: 0; height: 100%; background: var(--sl-bg); color: var(--sl-
 .sl-cool .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: calc(var(--r-6, 6px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: linear-gradient(90deg, #AACDFF, #FFB46B); }
 .sl-cool .tick { position: absolute; top: -5px; bottom: -5px; width: 3px; margin-left: -1px; background: #FFFFFF; border-radius: 2px; corner-shape: round; --sq: 0; }
 .sl-cool .ends { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--sl-text-3); flex-wrap: wrap; }
+/* COMPARE: the shared log age clock and the read-off table */
+.sl-logclock, .sl-readoff { margin: 8px 0; padding: 10px 12px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--sl-card-2); font-size: 14px; }
+.lc-track { position: relative; height: 34px; margin: 8px 4px 4px; border-bottom: 2px solid rgba(255, 255, 255, 0.4); }
+.lc-notch { position: absolute; bottom: -6px; width: 2px; height: 12px; margin-left: -1px; background: rgba(255, 255, 255, 0.55); }
+.lc-tick { position: absolute; bottom: 0; width: 2px; height: 34px; margin-left: -1px; background: rgba(170, 205, 255, 0.55); }
+.lc-star { position: absolute; top: calc(var(--row) * 15px + 1px); width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; corner-shape: round; --sq: 0; background: var(--c); box-shadow: 0 0 8px var(--c); border: 1.5px solid #fff; }
+.lc-life { position: absolute; top: calc(var(--row) * 15px + 1px); width: 3px; height: 14px; margin-left: -1px; background: #fff; }
+.lc-ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--sl-text-3); }
+.lc-keys { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; font-size: 13px; color: var(--sl-text-2); }
+.lc-keys i { display: inline-block; vertical-align: middle; margin-right: 6px; }
+.lc-tick-key { width: 2px; height: 12px; background: rgba(170, 205, 255, 0.8); }
+.lc-star-key { width: 10px; height: 10px; border-radius: 50%; corner-shape: round; --sq: 0; background: var(--c); }
+.sl-readoff table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sl-readoff th, .sl-readoff td { text-align: left; padding: 4px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+/* the Mass Card and the exit ticket: a full page sheet, also the printed page */
+.sl-sheet { position: fixed; inset: 0; z-index: 8; overflow-y: auto; background: rgba(5, 10, 30, 0.94); padding: calc(64px + var(--pb-safe-top, 0px)) 16px calc(24px + var(--pb-safe-bottom, 0px)); }
+.sl-sheet[hidden] { display: none; }
+.sl-sheet-in { max-width: 860px; margin: 0 auto; padding: 18px 20px; border-radius: calc(var(--r-18, 18px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--sl-card); border: 1px solid var(--sl-border); }
+.sl-sheet-in header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.sl-sheet-in header h2 { margin: 0; font-size: 24px; }
+.sl-sheet-in header p { margin: 0; flex: 1 1 300px; color: var(--sl-text-2); }
+.sheet-btns { display: flex; gap: 8px; margin-left: auto; }
+.mc { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 15px; }
+.mc th, .mc td { padding: 6px 6px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.1); vertical-align: middle; }
+.mc thead th { font-size: 13px; color: var(--sl-text-3); font-weight: 600; }
+.mc .dot { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border-radius: 50%; corner-shape: round; --sq: 0; background: var(--c); box-shadow: 0 0 8px var(--c); }
+.mc .req, .mc .norun { font-size: 11px; font-weight: 600; color: var(--sl-text-3); }
+.mc .req { color: #C9BDFF; }
+.mc tr.model td { border-bottom: none; padding-top: 0; font-size: 13px; color: var(--sl-text-2); }
+.mc tr.model span { color: var(--sl-text-3); margin-right: 6px; }
+.mc select, .fill input { min-height: 40px; width: 100%; padding: 6px 8px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; border: 1px solid var(--sl-border); background: rgba(20, 26, 58, 0.9); color: var(--sl-text); font: inherit; font-size: 14px; }
+.sentence { margin: 10px 0; }
+.sentence .frame { margin: 0 0 8px; color: #E3DBFF; }
+.fill { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 16px; }
+.fill input { width: 130px; }
+.fill input.wide { flex: 1 1 220px; width: auto; }
+.printline { display: none; }
+.sl-sheet .status { margin: 10px 0 4px; font-weight: 600; color: var(--sl-text-2); }
+.sl-sheet .status.ok { color: #9FE3B0; }
+.sl-sheet .note { margin: 4px 0 0; font-size: 13px; color: var(--sl-text-3); }
+.ticket section { position: relative; margin: 12px 0; padding: 10px 12px 10px 44px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: #F7F4EC; color: #111; }
+.ticket section h3 { position: absolute; left: 12px; top: 8px; margin: 0; font-size: 18px; }
+.ticket section p { margin: 4px 0; }
+.ticket svg { width: 100%; height: auto; display: block; }
+.ticket .keys { font-size: 13px; color: #444; }
+.ticket .bank span { display: inline-block; margin: 0 6px 0 0; padding: 2px 8px; border: 1px solid #555; border-radius: 6px; corner-shape: round; --sq: 0; }
+.ticket .confusing .box { height: 90px; border: 1.5px solid #333; border-radius: 8px; corner-shape: round; --sq: 0; background: #fff; }
+.ticket .nameline { margin: 10px 0 0; }
+body.sl-has-sheet .sl-hrcard { visibility: hidden; }
+@media (max-width: 699px) { .sl-sheet { padding: calc(96px + var(--pb-safe-top, 0px)) 8px 12px; } .sl-sheet-in { padding: 12px; } .mc, .mc thead { font-size: 13px; } .mc thead { display: none; } .mc tr:not(.model) { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); } .mc tr:not(.model) th { grid-column: 1 / -1; border: none; } .mc tr:not(.model) td { border: none; padding: 0; display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px; } .mc td::before { content: attr(data-l); font-size: 12px; color: var(--sl-text-3); } }
+@media print {
+  body { overflow: visible; background: #fff; color: #000; height: auto; }
+  #slCanvas, .sl-top, .sl-panel, .sl-hrcard, .sl-status, .sheet-btns { display: none !important; }
+  .sl-sheet { position: static; background: #fff; padding: 0; overflow: visible; }
+  .sl-sheet-in { background: #fff; color: #000; border: none; max-width: none; }
+  .mc select { border: 1px solid #999; background: #fff; color: #000; -webkit-appearance: none; appearance: none; }
+  .fill { display: none; } .printline { display: block; font-size: 16px; } .mc tr.model td, .sl-sheet .note, .mc .norun { color: #333; }
+}

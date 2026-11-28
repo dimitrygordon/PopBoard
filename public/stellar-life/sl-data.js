@@ -83,9 +83,20 @@ export const isRSG = (row) => row && row.logT < 3.60 && row.phase >= 2;
 export const shellsStart = (tr) => { const r = tr.rows.find((x) => x.phase >= 4); return r ? r.eep : null; };
 
 /** Caption cards: a caption of more than two sentences is split over cards of at most two sentences (teaching spec 3, T3). */
+const ABBR = /^(Mr|Mrs|Ms|Dr|St|vs|etc|e\.g|i\.e|approx|no|Fig)$/i;
 export function splitCaption(s) {
   if (!s) return [];
-  const parts = s.match(/[^.!?]+(?:[.!?]+(?=\s|$)|$)/g).map((x) => x.trim()).filter(Boolean);
+  // A sentence ends at . ! or ? followed by a space and a capital (or a quote). Never after a digit (1.4, 0.7, 100,000. stays whole
+  // only when nothing follows) and never after a short abbreviation (Mr., e.g., vs.).
+  const parts = []; let from = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (!/[.!?]/.test(s[i])) continue; let j = i; while (j + 1 < s.length && /[.!?]/.test(s[j + 1])) j++;
+    const before = s.slice(from, i); const word = (before.match(/(\S+)$/) || ["", ""])[1];
+    const next = s.slice(j + 1).match(/^\s+(\S)/);
+    const ok = next && /[A-Z"'(]/.test(next[1]) && !/\d$/.test(before) && !ABBR.test(word);
+    if (ok) { parts.push(s.slice(from, j + 1).trim()); from = j + 1; } i = j;
+  }
+  if (s.slice(from).trim()) parts.push(s.slice(from).trim());
   const merged = []; for (const p of parts) { if (merged.length && /\($/.test(merged[merged.length - 1])) merged[merged.length - 1] += " " + p; else merged.push(p); }
   const out = []; for (let i = 0; i < merged.length; i += 2) out.push(merged.slice(i, i + 2).join(" "));
   return out;

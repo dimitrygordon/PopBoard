@@ -148,11 +148,12 @@ export class Scenes {
     const levels = [0.001, 0.01, 0.1, 1, 10, 100, 1000];
     const sc = { root: g, kind: "star", s: 1, camDist: 70, radius: 10, strokes: sb.n + wb.n, meshes: 3, body, ms, halo,
       kmPerUnit: () => sc.s * KM.RSUN,
-      zoomFor(R) { let s = sc.s; if (R / s > 24 || R / s < 2.4) { s = levels.find((L) => R / L <= 24 && R / L >= 2.4) || levels.reduce((a, b) => (Math.abs(Math.log10(R / b / 8)) < Math.abs(Math.log10(R / a / 8)) ? b : a)); } return s; },
+      zoomFor(R, hi = 24) { const lo = hi / 10; let s = sc.s; if (R / s > hi || R / s < lo) { s = levels.find((L) => R / L <= hi && R / L >= lo) || levels.reduce((a, b) => (Math.abs(Math.log10(R / b / 8)) < Math.abs(Math.log10(R / a / 8)) ? b : a)); } return s; },
       reset(R) { sc.s = levels.find((L) => R / L <= 24 && R / L >= 2.4) || 1; },
       update: (c) => {
         const row = c.v.row; if (!row) return; const R = Math.pow(10, row.logR), Teff = Math.pow(10, row.logT);
-        sc.s = sc.zoomFor(R); const r = R / sc.s; body.scale.setScalar(r); sc.radius = r;
+        const lock = c.v.stage && c.v.stage.zoomLock && c.v.refR;   // R2: hold the zoom of its main-sequence size, so it visibly shrinks
+        sc.s = lock ? (levels.find((L) => c.v.refR / L <= 24 && c.v.refR / L >= 2.4) || sc.s) : sc.zoomFor(R, c.fitMax || 24); const r = R / sc.s; body.scale.setScalar(r); sc.radius = r;
         const exp = 1.0;
         for (const m of [ms, mw]) { m.material.uniforms.uTeff.value = Teff; m.material.uniforms.uExposure.value = exp; }
         halo.material.uniforms.uTeff.value = Teff; halo.material.uniforms.uExposure.value = 1.08;
@@ -164,8 +165,8 @@ export class Scenes {
         const winds = !!(c.v.stage && c.v.stage.winds); mw.visible = winds; mw.material.uniforms.uWind.value = winds ? 1 : 0; mw.material.uniforms.uWindLen.value = 0.9;
         if (!c.calm) body.rotation.y += c.dt * 0.02;
         // the Sun-size reference ring (R1) and planet orbits (S2, S5, H2), all at the same scale as the star
-        const st = c.v.stage || {}; ref.visible = refLab.visible = st.ref === "sunRing";
-        if (ref.visible) { const rr = 1 / sc.s; ref.scale.setScalar(rr); ref.quaternion.copy(c.camQuatLocal); ref.rotateX(Math.PI / 2); refLab.position.copy(new T.Vector3(0, -rr - 1.6, 0).applyQuaternion(c.camQuatLocal)); }
+        const st = c.v.stage || {}; ref.visible = refLab.visible = st.ref === "sunRing" || (st.ref === "msRing" && !!c.v.refR);
+        if (ref.visible) { const rr = (st.ref === "msRing" ? c.v.refR : 1) / sc.s; this.setLabel(refLab, st.ref === "msRing" ? "Its size at the end of its main sequence" : "The Sun's size"); ref.scale.setScalar(rr); ref.quaternion.copy(c.camQuatLocal); ref.rotateX(Math.PI / 2); refLab.position.copy(new T.Vector3(0, -rr - 1.6, 0).applyQuaternion(c.camQuatLocal)); }
         for (const [n, ob] of Object.entries(orbits)) {
           const on = (st.orbits || []).includes(n); ob.o.visible = ob.l.visible = on; if (!on) continue;
           const rr = ob.a * 215.032 / sc.s; ob.o.scale.setScalar(rr); ob.o.rotation.set(0.22, 0, 0); ob.l.position.set(rr * 0.71, -rr * 0.71 * Math.sin(0.22) - 0.8, rr * 0.71);
@@ -360,9 +361,13 @@ export function scaleBar(kmPerUnit, target = 8) {
   const lab = name === "km" ? `${nn.toLocaleString("en-US")} km` : name === "AU" ? `${nn.toLocaleString("en-US")} AU` + (nn === 1 ? " (Earth to Sun)" : "") : `${nn.toLocaleString("en-US")} ${plural}`;
   return { units: nn * unit / kmPerUnit, label: lab };
 }
+/** Teaching spec v1.4: "Zoomed out N times. Watch the scale bar." Only for a change of 2 times or more; N has 1 or 2
+ * significant figures, and "about" is added when N is rounded. */
+export const ZOOM_MIN = 2;
 export function zoomText(oldK, newK) {
-  if (!oldK || !newK) return ""; const r = oldK / newK; if (Math.abs(Math.log10(r)) < 0.05) return "";
-  const f = r > 1 ? r : 1 / r; const p = Math.pow(10, Math.floor(Math.log10(f))); const n = Math.round(f / p) * p; const s = n >= 1e6 ? `${+(n / 1e6).toPrecision(2)} million` : n.toLocaleString("en-US");
+  if (!oldK || !newK) return ""; const r = oldK / newK; const f = r > 1 ? r : 1 / r; if (!(f >= ZOOM_MIN - 1e-9)) return "";
+  const sig = f < 10 ? 1 : 2; const e = Math.floor(Math.log10(f)); const p = Math.pow(10, e - sig + 1); const n = Math.round(f / p) * p;
+  const s = n >= 1e6 ? `${+(n / 1e6).toPrecision(2)} million` : Math.round(n).toLocaleString("en-US");
   const ab = Math.abs(f / n - 1) < 0.02 ? "" : "about ";   // exact zoom steps (10, 100, ...) read without "about"
-  return r > 1 ? `Zoomed in: now ${ab}${s} times bigger` : `Zoomed out: now ${ab}${s} times smaller`;
+  return `${r > 1 ? "Zoomed in" : "Zoomed out"} ${ab}${s} times. Watch the scale bar.`;
 }

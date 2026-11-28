@@ -1,5 +1,5 @@
 {
-  "version": "teaching spec v1.3 (Socrates), science spec v1 section 7 + tesla_answers_v1 (Tesla)",
+  "version": "teaching spec v1.4 (Socrates), science spec v1 section 7 + tesla_answers_v1 (Tesla)",
   "noDot": "Not on this H-R diagram. A neutron star is far too small and faint for this chart, and a black hole has no surface to measure.",
   "credit1Sun": "1 Sun track adjusted slightly so today's Sun matches measured values.",
   "hub": [
@@ -36,7 +36,7 @@
       { "id": "R1", "title": "Red dwarf main sequence", "scene": "star", "seg": { "type": "mist", "from": { "eep": 202 }, "to": { "end": true } }, "dur": 14, "ref": "sunRing",
         "caption": "A red dwarf shines dimly, so it uses its fuel slowly. It also stirs its whole inside, so it can use nearly all its hydrogen. It lasts about 1 trillion years or more. The universe is 13.8 billion years old, so no red dwarf has ever died.",
         "act": [{ "code": "P", "q": "Will it live shorter than, about the same as, or longer than the Sun?", "choices": ["shorter", "about the same", "longer"], "answer": "longer" }], "mis": [4, 5] },
-      { "id": "R2", "title": "Late life (predicted)", "scene": "star", "seg": { "type": "predicted" }, "dur": 12, "dashed": true, "hideTeff": true,
+      { "id": "R2", "title": "Late life (predicted)", "scene": "star", "seg": { "type": "predicted" }, "dur": 12, "ref": "msRing", "zoomLock": true, "dashed": true, "hideTeff": true,
         "caption": "Predicted: late in life, models say it gets hotter and a little brighter, then shrinks into a helium white dwarf. Nobody has seen this.", "act": [{ "code": "O" }] },
       { "id": "R3", "title": "Helium white dwarf (predicted)", "scene": "wd", "seg": { "type": "wd" }, "dur": 14, "dashed": true,
         "caption": "Predicted: it ends as a helium white dwarf, about Earth-size. It will cool forever.", "act": [{ "code": "K", "kind": "checkEnd" }], "remnant": true }
@@ -81,7 +81,7 @@
       { "id": "T4", "title": "Core helium fusion", "scene": "star", "seg": { "type": "mist", "from": { "eep": 625 }, "to": { "eep": 706 } }, "dur": 10,
         "caption": "For tens of millions of years, helium fuses in the core.", "act": [{ "code": "O" }], "card2": "triple" },
       { "id": "T5", "title": "Asymptotic giant branch", "scene": "star", "seg": { "type": "mist", "from": { "eep": 707 }, "to": { "eep": 1408 } }, "dur": 12, "winds": true,
-        "caption": "A second swelling with strong winds, for about 1 million years.",
+        "caption": "A second swelling with strong winds, lasting several million years.",
         "act": [{ "code": "P", "kind": "massMeter", "q": "Drag the mass meter to where you think the white dwarf will end up.", "min": 0.1, "max": 3.0, "answerFrom": "finalMass" }], "mis": [12] },
       { "id": "T6", "title": "Planetary nebula and white dwarf", "scene": "nebula", "then": "wd", "seg": { "type": "mist+wd", "from": { "eep": 1409 }, "to": { "end": true } }, "dur": 16,
         "caption": "Planetary nebula, then a carbon-oxygen white dwarf of about 0.7 Suns.",
@@ -106,7 +106,7 @@
         "caption": "This kind of supernova happens when a massive star's core collapses. Debris moves at about 10,000 km/s. It can rival a whole galaxy for weeks, but about 99 percent of its energy leaves as neutrinos.",
         "chips": ["Supernovae make many elements and scatter them into space, including some heavier than iron."],
         "act": [{ "code": "C", "kind": "speedBar" }], "card2": "nife", "mis": [15, 10] },
-      { "id": "H6", "title": "Neutron star", "scene": "ns", "seg": { "type": "gone" }, "dur": 12,
+      { "id": "H6", "title": "Neutron star", "scene": "ns", "seg": { "type": "gone" }, "dur": 12, "massLabel": "about 1.4 Suns",
         "caption": "At 15 Suns, a neutron star is the most likely result: about 1.4 Suns in a ball about 12 km in radius.",
         "chips": ["Neutron star mergers also make elements heavier than iron, such as gold.", "It glows mostly in X-rays."],
         "act": [{ "code": "K", "kind": "checkEnd" }, { "code": "O" }], "mis": [10], "remnant": true }
@@ -126,9 +126,9 @@
       { "id": "V4", "title": "Core collapse", "scene": "cutaway", "cut": "collapse", "seg": { "type": "fork" }, "dur": 8,
         "caption": "The core runs out of fuel that releases energy and collapses.", "act": [{ "code": "O" }], "mis": [9] },
       { "id": "V5", "title": "Two paths", "scene": "twopaths", "seg": { "type": "fork" }, "dur": 14,
-        "caption": "Scientists are not sure how stars this massive die. Some may explode first. Others may collapse with little or no visible explosion. One failed supernova candidate has been seen (N6946-BH1).",
+        "caption": "Scientists are not sure how stars this massive die. Some may explode first. Others may collapse with little or no visible explosion. A few candidates have been seen, such as N6946-BH1.",
         "act": [{ "code": "K", "kind": "pathOrder", "choices": ["Explode first", "Collapse quietly"] }] },
-      { "id": "V6", "title": "Black hole", "scene": "bh", "seg": { "type": "gone" }, "dur": 14,
+      { "id": "V6", "title": "Black hole", "scene": "bh", "seg": { "type": "gone" }, "dur": 14, "massLabel": "about 10 Suns (example)",
         "caption": "Most stars this massive are expected to leave black holes, but some may leave neutron stars. Far from it, a black hole pulls like any object of the same mass.",
         "labels": ["A black hole, probably 5 to 20 or more times the Sun's mass. Black holes from stars in our galaxy measured so far mostly fall in this range.", "about 3 km of radius for each Sun of mass"],
         "act": [{ "code": "P", "q": "A planet sits at the same distance from this black hole as it would from a star with the same mass. Is the pull stronger, the same, or weaker?", "choices": ["stronger", "the same", "weaker"], "answer": "the same", "optionalReveal": "This black hole has less mass than the star had, so from its old distance the pull is actually weaker." }, { "code": "K", "kind": "checkEnd" }], "mis": [11], "remnant": true }

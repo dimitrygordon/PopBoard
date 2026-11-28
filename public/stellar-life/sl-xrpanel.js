@@ -49,7 +49,7 @@ export class XRPanel {
       if (line) { g.fillText(line, 40, y + px); y += px * 1.28; } };
     const card = M.cards && M.cards.length ? M.cards[M.cardIdx || 0] : ""; if (card) { wrap(card, 36, W - 80, "#F2F4FF"); if (M.cards.length > 1) { g.fillStyle = "#A9B0D0"; g.font = FONT(28); g.fillText(`Card ${M.cardIdx + 1} of ${M.cards.length}`, 40, y + 28); this.btn("card+", "Next card", W - 300, y - 8, 260, 52, false); y += 52; } }
     if (M.question) { y += 6; wrap(M.question.text, 36, W - 80, "#C9BDFF"); y += 4; this.choices(M.question, y); y = this.cy; }
-    if (M.masses) { let x = 40; for (const m of M.masses) { this.btn("mass:" + m.id, m.label, x, y, 178, 70, m.on); x += 188; } y += 86; }
+    if (M.masses) { let x = 40; for (const m of M.masses) { this.btn(m.act || "mass:" + m.id, m.label, x, y, 178, 70, m.on); x += 188; } y += 86; }
     for (const r of M.reveal || []) { wrap(`You picked: ${r.picked}`, 32, W - 80, "#C9BDFF", 2); wrap(`The model: ${r.model}${r.extra ? ". " + r.extra : ""}`, 32, W - 80, "#AACDFF", 3); }
     if (M.pinPrompt) wrap(M.pinPrompt, 32, W - 80, "#C9BDFF", 2);
     if (M.readouts && M.readouts.length) { g.font = FONT(30, 600); let x = 40; for (const [k, v] of M.readouts) { const t = `${k}: ${v}`; const tw = g.measureText(t).width + 24; if (x + tw > W - 30) { x = 40; y += 46; } g.fillStyle = "rgba(255,255,255,0.08)"; g.fillRect(x, y, tw, 40); g.fillStyle = "#E6E9F8"; g.fillText(t, x + 12, y + 30); x += tw + 10; } y += 54; }
@@ -64,7 +64,7 @@ export class XRPanel {
   choices(q, y) {
     let x = 40; const W = XRP.W; this.cy = y;
     if (q.kind === "massMeter") { const steps = [q.min, (q.min * 3 + q.max) / 4, (q.min + q.max) / 2, (q.min + 3 * q.max) / 4, q.max].map((v) => +v.toFixed(2)); for (const v of steps) { this.btn("choice:" + q.i + ":" + v, `${v} Suns`, x, y, 176, 70, false); x += 186; } this.cy = y + 86; return; }
-    for (const c of q.choices) { const w = Math.max(200, Math.min(W - 80, this.g.measureText(c.label).width + 60)); if (x + w > W - 30) { x = 40; y += 82; } this.btn((q.key === "H-End" ? "end:" : "choice:" + q.i + ":") + c.label, c.label, x, y, w, 70, c.picked); x += w + 12; }
+    for (const c of q.choices) { const w = Math.max(200, Math.min(W - 80, this.g.measureText(c.label).width + 60)); if (x + w > W - 30) { x = 40; y += 82; } this.btn(c.act || (q.key === "H-End" ? "end:" : "choice:" + q.i + ":") + c.label, c.label, x, y, w, 70, c.picked); x += w + 12; }
     this.cy = y + 86;
   }
   btn(id, label, x, y, w, h, on, disabled) {

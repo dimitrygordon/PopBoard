@@ -7,6 +7,8 @@ import { prepareTracks, atEEP, eepAtAge, wdAt, typeLabel, isRSG, shellsStart, sp
 import { createFlow } from "../public/stellar-life/sl-flow.js";
 import { scaleBar, zoomText } from "../public/stellar-life/sl-scenes.js";
 import { lutData, tRGB255, buildDisk, KIND } from "../public/stellar-life/sl-strokes.js";
+import { createCompare, cardComplete, newCard, applyFrame, tierChoices, snapToZone, inZone, ZONES, compareEnd, COMPARE_TEXT, FRAME_TIER1, TICKET, lifeChoices } from "../public/stellar-life/sl-compare.js";
+import { uiModel } from "../public/stellar-life/sl-ui.js";
 import { temperatureToSRGB } from "../public/night-sky/ns-astro.js";
 
 const pub = new URL("../public/", import.meta.url);
@@ -112,8 +114,14 @@ test("colors: the star LUT is temperatureToSRGB (Night Sky), so hue follows Teff
 test("scale bar and zoom labels are honest", () => {
   assert.equal(scaleBar(695700, 8).label, "10 Sun radii");
   assert.equal(scaleBar(1, 20).label, "20 km");
-  assert.match(zoomText(695700, 69570), /^Zoomed in: now 10 times bigger$/);
-  assert.match(zoomText(695700, 6957000), /^Zoomed out: now 10 times smaller$/);
+  // teaching spec v1.4: "Zoomed out N times. Watch the scale bar." Only at 2 times or more; N to 1 or 2 significant figures
+  assert.equal(zoomText(695700, 69570), "Zoomed in 10 times. Watch the scale bar.");
+  assert.equal(zoomText(695700, 69570000), "Zoomed out 100 times. Watch the scale bar.");
+  assert.equal(zoomText(1, 1.12), "", "a 1.12 times change is not labelled");
+  assert.equal(zoomText(1, 1.9), "");
+  assert.equal(zoomText(1, 2), "Zoomed out 2 times. Watch the scale bar.");
+  assert.equal(zoomText(1, 1 / 3.7), "Zoomed in about 4 times. Watch the scale bar.");
+  assert.equal(zoomText(1, 1234), "Zoomed out about 1,200 times. Watch the scale bar.");
   assert.equal(about(26.9, 1), "30");
 });
 
@@ -135,4 +143,107 @@ test("disk follows the v4 layout: 61 washes and 145 marks in the plane, painted 
   const bare = buildDisk({ teff: 4410, seed: 7, planets: null });
   assert.equal(bare.frost, null);
   assert.equal(bare.disk.kinds.filter((k) => k === KIND.FLAT).length, 61 + 145 + 14);
+});
+
+test("caption splitter never breaks after a digit or an abbreviation (Tesla F4)", () => {
+  const h6 = stagesFor(S, "15").find((x) => x.id === "H6").caption;
+  assert.deepEqual(splitCaption(h6), [h6], "H6 stays one card with 1.4 Suns whole");
+  assert.ok(splitCaption(h6)[0].includes("about 1.4 Suns in a ball about 12 km in radius"));
+  assert.deepEqual(splitCaption("It has 0.7 Suns. It is small. Then 2.5 more. Mr. Dimitry says so."), ["It has 0.7 Suns. It is small.", "Then 2.5 more. Mr. Dimitry says so."]);
+  assert.deepEqual(splitCaption("A cloud at 10 to 20 K. It glows."), ["A cloud at 10 to 20 K. It glows."]);
+  // every caption with a decimal keeps the number whole in one card, and no card is lost
+  for (const m of MASSES) for (const st of stagesFor(S, m)) {
+    const cards = splitCaption(st.caption); assert.equal(cards.join(" "), st.caption.replace(/\s+/g, " ").trim(), `${m} ${st.id}: nothing dropped`);
+    for (const d of st.caption.match(/\d+\.\d+/g) || []) assert.ok(cards.some((c) => c.includes(d)), `${m} ${st.id}: ${d} kept whole`);
+  }
+});
+
+test("Tesla fixes: remnant masses, V5 and T5 wording, no 'Suns wide', no solar system claim", () => {
+  const st = (m, id) => stagesFor(S, m).find((x) => x.id === id);
+  assert.equal(st("40", "V6").massLabel, "about 10 Suns (example)");
+  assert.equal(st("15", "H6").massLabel, "about 1.4 Suns");
+  assert.ok(st("40", "V5").caption.endsWith("A few candidates have been seen, such as N6946-BH1."));
+  assert.equal(st("3", "T5").caption, "A second swelling with strong winds, lasting several million years.");
+  const all = [read("study-stellar-life.html"), read("stellar-life/data/stages.json"), ...readdirSync(new URL("stellar-life/", pub)).filter((f) => /\.js$/.test(f)).map((f) => read("stellar-life/" + f))].join("\n");
+  assert.ok(!/suns wide/i.test(all), "no 'Suns wide' anywhere");
+  assert.ok(!/solar system/i.test(read("stellar-life/data/stages.json")), "no caption calls the 3-core disk our solar system");
+  for (const id of ["S7", "R3"]) { const c = st(id === "S7" ? "1" : "0.2", id).caption; assert.ok(!/(stops cooling|becomes a black dwarf|turns into a black dwarf)/i.test(c), id); }
+  // the mass readout at a remnant is the remnant's, not the star's before collapse
+  for (const [m, id, want] of [["40", "V6", "about 10 Suns (example)"], ["15", "H6", "about 1.4 Suns"]]) {
+    const f = createFlow(S, T); f.pickMass(m); f.answerHub("black hole"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.8, logL: i }); f.start();
+    f.enter(f.st.stages.findIndex((x) => x.id === id)); const M = uiModel(f); const mass = M.readouts.find((r) => r[0] === "Mass"); assert.equal(mass && mass[1], want);
+  }
+});
+
+test("0.2 Suns R2: the late-life radius never exceeds its main-sequence size, and R2 holds one zoom with a same-scale ring", () => {
+  const f = createFlow(S, T); f.pickMass("0.2"); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.6, logL: -2 }); f.start();
+  f.enter(f.st.stages.findIndex((x) => x.id === "R2")); const R0 = Math.pow(10, T["0.2"].end.logR);
+  for (let t = 0; t <= 1; t += 0.05) { const v = f.view({ t }); assert.ok(Math.pow(10, v.row.logR) <= R0 * 1.0001, `t ${t}`); assert.ok(Math.abs(v.refR - R0) < 1e-9); }
+  const r2 = stagesFor(S, "0.2").find((x) => x.id === "R2"); assert.equal(r2.ref, "msRing"); assert.equal(r2.zoomLock, true);
+});
+
+test("formation skip: none on the first track, offered after it, F4 fast version for massive stars, never past the HUB prediction", () => {
+  const ready = (f, m) => { f.pickMass(m); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.8, logL: i }); };
+  const f = createFlow(S, T);
+  assert.equal(f.canSkip(), false); f.st.skipFormation = true; ready(f, "1"); f.start();
+  assert.equal(f.st.stages[0].id, "F1", "first track always plays formation, even if skip was set");
+  assert.equal(uiModel({ ...f, st: { ...f.st, screen: "hub", hubStep: "pick" } }).toggles.some((t) => t.id === "skipForm"), false);
+  f.finishRun(); assert.equal(f.canSkip(), true);
+  const hubM = uiModel(f); assert.ok(hubM.toggles.some((t) => t.id === "skipForm"), "Skip is offered after the first track");
+  // never past the HUB prediction: start refuses until H-End and all three pins are in
+  f.st.skipFormation = true; f.pickMass("3"); assert.equal(f.start(), false); assert.equal(f.st.screen, "hub");
+  f.answerHub("white dwarf"); assert.equal(f.start(), false); for (let i = 0; i < 2; i++) f.addPin({ logT: 3.8, logL: i }); assert.equal(f.start(), false);
+  f.addPin({ logT: 3.8, logL: 2 }); assert.equal(f.start(), true);
+  assert.equal(f.st.stages[0].id, "T1", "low mass skip drops F1 to F5");
+  for (const m of ["15", "40"]) { f.finishRun(); ready(f, m); f.start(); const s0 = f.st.stages[0]; assert.equal(s0.id, "F4"); assert.equal(s0.dur, 20); assert.ok(s0.fast); assert.ok(!f.pending(), "the fast F4 has no prediction to hold it"); assert.equal(f.st.stages[1].id, m === "15" ? "H1" : "V1"); }
+  f.finishRun(); f.st.skipFormation = false; ready(f, "1"); f.start(); assert.equal(f.st.stages[0].id, "F1", "Skip off plays formation again");
+});
+
+test("COMPARE: verbatim captions, two clocks, one shared log clock, lifetimes equal the MIST main sequence (T13)", () => {
+  assert.equal(COMPARE_TEXT.setup, "Two stars, one difference: mass. Run them together.");
+  assert.equal(COMPARE_TEXT.predict, "Which one will live longer? Which will be bluer? Which ends in a white dwarf?");
+  assert.equal(COMPARE_TEXT.run, "Each star has its own clock. The bar at the bottom is a log clock, so each notch is 10 times longer.");
+  const f = createFlow(S, T); assert.equal(f.openCompare(), false, "COMPARE comes after one track"); f.st.runs.push("1"); assert.equal(f.openCompare(), true);
+  const C = f.cmp; C.toggle("1"); C.toggle("3"); assert.ok(C.coreOk()); assert.equal(C.begin(), true);
+  const qs = C.questions(); assert.deepEqual(qs.map((q) => q.answer), ["1 Sun", "3 Suns", "both"]);
+  assert.equal(f.cmp.c.step, "predict"); for (const q of qs) C.pick(q.id, q.choices[0]); assert.equal(C.c.step, "run", "the run waits for all three picks");
+  C.tick(100); assert.equal(C.c.step, "done");
+  const ro = C.readOff(); assert.deepEqual(ro.map((r) => r.end), ["white dwarf", "white dwarf"]);
+  assert.match(ro[0].life, /9\.84 billion years/); assert.match(ro[1].life, /360 million years/);
+  assert.deepEqual(ro.map((r) => r.color), ["white", "blue-white"]);
+  const M = uiModel(f); const lc = M.widgets.find((w) => w.kind === "logclock"); assert.ok(lc && lc.stars.length === 2 && lc.y1 - lc.y0 === 8);
+  assert.equal(M.readouts.length, 2, "each star shows its own clock");
+  // the 0.2 Sun runs to the MIST end, 1 and 3 to the end of their giant branches
+  assert.equal(compareEnd(T["0.2"]), T["0.2"].eepMax); assert.ok(compareEnd(T["1"]) < T["1"].eepMax);
+});
+
+test("Mass Card: complete only with 1, 15, 40, a third mass and both blanks; same rule for every tier (T9)", () => {
+  const card = newCard(); const fill = (m) => Object.assign(card.rows[m], { life: lifeChoices(T)[0], color: "white", end: "white dwarf" });
+  ["1", "15", "40"].forEach(fill); card.decides = "how long it lives"; card.because = "heavy stars fuse fast";
+  assert.equal(cardComplete(card), false, "needs a third mass"); fill("3"); assert.equal(cardComplete(card), true);
+  card.because = "  "; assert.equal(cardComplete(card), false, "both blanks"); card.because = "x";
+  card.rows["15"].end = ""; assert.equal(cardComplete(card), false, "every field of a core row");
+  card.rows["15"].end = "neutron star"; card.rows["3"] = { life: "", color: "", end: "" }; fill("0.2"); assert.equal(cardComplete(card), true, "0.2 also counts as the third mass");
+  // Tier 1 frame fills the same two blanks
+  const c1 = newCard(); ["1", "15", "40", "3"].forEach((m) => Object.assign(c1.rows[m], { life: "a", color: "b", end: "c" }));
+  c1.frame = ["bigger", "", "they fuse faster"]; applyFrame(c1); assert.equal(cardComplete(c1), false);
+  c1.frame[1] = "shorter"; applyFrame(c1); assert.equal(cardComplete(c1), true);
+  assert.equal(FRAME_TIER1, "The ___ the mass, the ___ the life, because ___.");
+});
+
+test("Tier 1 supports: two choices that keep the answer, highlighted zones pins snap to", () => {
+  assert.deepEqual(tierChoices(["fusion", "gravity squeezing the gas", "a chemical fire"], "gravity squeezing the gas", 1), ["fusion", "gravity squeezing the gas"]);
+  assert.deepEqual(tierChoices(["white dwarf", "neutron star", "black hole"], "black hole", 1), ["white dwarf", "black hole"]);
+  assert.equal(tierChoices(["a", "b", "c"], "c", 2).length, 3, "tier 2 keeps three");
+  const f = createFlow(S, T, { tier: 1 }); f.pickMass("40"); const M = uiModel(f); assert.deepEqual(M.question.choices.map((c) => c.label), ["white dwarf", "black hole"]);
+  for (const p of [{ logT: 4.3, logL: 0 }, { logT: 3.3, logL: 5.5 }, { logT: 4.7, logL: -2.8 }, { logT: 3.65, logL: 2.5 }]) { const q = snapToZone(p); assert.ok(ZONES.some((z) => inZone(z, q)), JSON.stringify(q)); }
+  f.answerHub("black hole"); f.addPin({ logT: 4.3, logL: 0 }); assert.ok(f.st.pins[0].zone, "tier 1 pin snapped"); 
+  const g = createFlow(S, T); g.pickMass("1"); g.answerHub("white dwarf"); g.addPin({ logT: 4.3, logL: 0 }); assert.equal(g.st.pins[0].logT, 4.3, "tier 2 pins do not snap");
+});
+
+test("exit ticket wording is verbatim from teaching spec section 7", () => {
+  assert.equal(TICKET.title, "Same cloud, three stars."); assert.equal(TICKET.clock, "Color in how long each star lives.");
+  assert.equal(TICKET.hr, "Mark where each star spends most of its life."); assert.equal(TICKET.ends, "Draw a line from each star to its ending.");
+  assert.equal(TICKET.line, "Mass decides ____"); assert.equal(TICKET.last, "What's confusing?");
+  assert.deepEqual(TICKET.stars.map((s) => s.mass), ["0.2", "1", "15"]);
 });

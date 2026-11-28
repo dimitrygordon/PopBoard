@@ -47,6 +47,14 @@ export function drawHR(g, W, H, m, s = 1) {
     polyline(g, view, rect, gh.pts, { color: "#D6DEF0", alpha: 0.30, width: 2 * s, dashed: !!gh.dashed });
     if (gh.label && gh.pts.length) { const p = gh.pts[0]; const [x, y] = toXY(view, rect, p.logT, p.logL); g.fillStyle = "rgba(214,222,240,0.75)"; g.font = fs(11, 600); g.fillText(gh.label, x + 6 * s, y - 6 * s); }
   }
+  // Tier 1: highlighted zones the pins snap to (generic regions, the same for every mass)
+  for (const z of m.zones || []) {
+    g.save(); g.fillStyle = "rgba(164,140,255,0.16)"; g.strokeStyle = "rgba(201,189,255,0.75)"; g.lineWidth = 1.5 * s; g.setLineDash([5 * s, 4 * s]); g.beginPath();
+    let lab;
+    if (z.box) { const [x0, y0] = toXY(view, rect, z.box.t0, z.box.l1), [x1, y1] = toXY(view, rect, z.box.t1, z.box.l0); g.rect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0)); lab = [Math.min(x0, x1) + 4 * s, Math.min(y0, y1) + 14 * s]; }
+    else { const { a, b, half } = z.band; const P = [[a[0], a[1] + half], [b[0], b[1] + half], [b[0], b[1] - half], [a[0], a[1] - half]].map(([t, l]) => toXY(view, rect, t, l)); P.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); const c = toXY(view, rect, (a[0] * 0.45 + b[0] * 0.55), (a[1] * 0.45 + b[1] * 0.55) + half); lab = [c[0] + 8 * s, c[1] - 4 * s]; }
+    g.fill(); g.stroke(); g.setLineDash([]); g.fillStyle = "#E3DBFF"; g.font = fs(10.5, 650); g.fillText(z.label, lab[0], lab[1]); g.restore();
+  }
   // prediction pins (H-Path)
   for (const p of m.pins || []) {
     const [x, y] = toXY(view, rect, p.logT, p.logL);
@@ -66,6 +74,13 @@ export function drawHR(g, W, H, m, s = 1) {
   }
   // S1 today marker
   if (m.today) { const [x, y] = toXY(view, rect, m.today.logT, m.today.logL); g.save(); g.strokeStyle = "#7FB2FF"; g.lineWidth = 2.5 * s; g.beginPath(); g.arc(x, y, 13 * s, 0, Math.PI * 2); g.stroke(); g.fillStyle = "#AACDFF"; g.font = fs(11, 650); g.fillText("Today", x + 16 * s, y - 2 * s); g.font = fs(10.5, 500); g.fillText("4.6 billion years", x + 16 * s, y + 11 * s); g.restore(); }
+  // COMPARE: two dots on one panel, each labelled with its mass
+  for (const d of m.dots || []) {
+    const [x, y] = toXY(view, rect, d.logT, d.logL);
+    g.save(); g.shadowColor = tcol(d.logT, 0.9); g.shadowBlur = 18 * s; g.fillStyle = tcol(d.logT); g.beginPath(); g.arc(x, y, 6.5 * s, 0, Math.PI * 2); g.fill(); g.restore();
+    g.strokeStyle = "#fff"; g.lineWidth = 2.2 * s; g.beginPath(); g.arc(x, y, 7.5 * s, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = "#FFFFFF"; g.font = fs(11.5, 700); g.fillText(d.label, x + 11 * s, y - 9 * s);
+  }
   // dot or the remnant's empty ring
   if (m.dot) {
     const [x, y] = toXY(view, rect, m.dot.logT, m.dot.logL);

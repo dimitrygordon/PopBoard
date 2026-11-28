@@ -2,27 +2,36 @@
 // so node tests can drive it. HUB (pick a mass, predict) -> formation F1 to F5 -> the mass track -> remnant -> HUB.
 // Rule T1: a stage with a P (predict) action cannot play until the choice is committed. The reveal shows the
 // student's choice next to the model and never marks it wrong.
+import { createCompare, newCard, applyFrame, snapToZone } from "./sl-compare.js";
 import { stagesFor, stageRange, atEEP, wdAt, predictedAt, predictedPath, typeLabel, isRSG, msRatio, about, fmtYears, MASS_LABEL } from "./sl-data.js";
 
 export function createFlow(S, tracks, opts = {}) {
   const st = {
     screen: "hub", hubStep: "pick", mass: null, stages: [], ranges: [], si: 0, t: 0, phase: "predict", playing: true,
     answers: {}, cardIdx: 0, toggles: { ir: false, cut: true, scope: false, swap: false }, pins: [], help: opts.help || 0, lockHelp: !!opts.lockHelp,
+    tier: [1, 2, 3].includes(opts.tier) ? opts.tier : 2, card: newCard(), seen: [],
     runs: [], ghosts: [], skipFormation: false, pathFirst: null, massGuess: {}, timebar: null, peek: false, optionalShown: {},
   };
   const api = { st, S, tracks };
+  api.cmp = createCompare(tracks);
 
   api.pickMass = (m) => { if (!tracks[m]) return; st.mass = m; st.hubStep = "end"; st.pins = []; };
   api.answerHub = (choice) => { st.answers["H-End"] = choice; st.hubStep = "pins"; };
-  api.addPin = (p) => { if (st.pins.length >= 3) return; st.pins.push({ ...p, n: st.pins.length + 1, label: S.hub[2].act[0].pins[st.pins.length] }); if (st.pins.length === 3) st.hubStep = "ready"; };
+  api.addPin = (p0) => { if (st.pins.length >= 3) return; const p = st.tier === 1 ? snapToZone(p0) : p0;   // Tier 1: pins snap to the highlighted zones
+    st.pins.push({ ...p, n: st.pins.length + 1, label: S.hub[2].act[0].pins[st.pins.length] }); if (st.pins.length === 3) st.hubStep = "ready"; };
   api.undoPin = () => { st.pins.pop(); st.hubStep = "pins"; };
+  /** Teaching spec 3.0: "Skip" is offered only after the first track. A skipped formation drops F1 to F5, except that
+   * 15 and 40 Suns still play F4 (the massive-star difference: still wrapped in its cloud) as a 20 s fast version. */
+  api.canSkip = () => st.runs.length > 0;
+  api.hubReady = () => !!st.mass && st.answers["H-End"] != null && st.pins.length === 3;
   api.start = () => {
-    if (!st.mass) return;
-    let list = stagesFor(S, st.mass);
-    if (st.skipFormation) list = list.filter((x) => !/^F[1-3]$/.test(x.id)).map((x) => (x.id === "F4" ? { ...x, dur: (st.mass === "15" || st.mass === "40") ? 20 : 6, skipped: true } : x));
+    if (!api.hubReady()) return false;   // skipping never jumps past the HUB prediction
+    let list = stagesFor(S, st.mass); const massive = st.mass === "15" || st.mass === "40";
+    st.skipped = api.canSkip() && st.skipFormation;
+    if (st.skipped) list = list.filter((x) => !/^F/.test(x.id) || (x.id === "F4" && massive)).map((x) => (x.id === "F4" ? { ...x, dur: 20, act: [{ code: "O" }], fast: true } : x));
     st.stages = list; st.ranges = []; let prev = null;
     for (const x of list) { const r = stageRange(tracks[st.mass], x, prev); st.ranges.push(r); if (r) prev = r; }
-    st.screen = "stage"; api.enter(0);
+    st.screen = "stage"; api.enter(0); return true;
   };
   api.stage = () => st.stages[st.si];
   api.actKey = (i) => `${api.stage().id}:${i}`;
@@ -57,11 +66,18 @@ export function createFlow(S, tracks, opts = {}) {
   };
   api.prev = () => { if (st.si > 0) api.enter(st.si - 1); };
   api.finishRun = () => {
-    if (!st.runs.includes(st.mass)) st.runs.push(st.mass);
+    if (!st.runs.includes(st.mass)) st.runs.push(st.mass); if (!st.seen.includes(st.mass)) st.seen.push(st.mass);
     const g = api.trailFor(st.mass, 1e9, true); st.ghosts = st.ghosts.filter((x) => x.mass !== st.mass).concat([{ mass: st.mass, label: MASS_LABEL[st.mass], pts: g.pts, dashed: false }]);
     st.screen = "hub"; st.hubStep = "pick"; st.mass = null; st.skipFormation = true;
   };
   api.toHub = () => { st.screen = "hub"; st.hubStep = "pick"; st.mass = null; };
+  // COMPARE is offered any time after one track (section 2.2, branch point 5); the Mass Card and exit ticket too.
+  api.canCompare = () => st.runs.length > 0;
+  api.openCompare = () => { if (!api.canCompare()) return false; api.cmp.reset(); st.screen = "compare"; return true; };
+  api.compareDone = () => { for (const m of api.cmp.c.pair) if (!st.seen.includes(m)) st.seen.push(m); };
+  api.openCard = () => { if (!api.canCompare()) return false; st.screen = "card"; return true; };
+  api.openTicket = () => { st.screen = "ticket"; return true; };
+  api.setCard = (m, field, value) => { if (m === "frame") { st.card.frame[+field] = value; applyFrame(st.card); } else if (m === "sentence") st.card[field] = value; else if (st.card.rows[m]) st.card.rows[m][field] = value; };
   api.setHelp = (h, fromUrl = false) => { if (st.lockHelp && !fromUrl) return false; if (h === 2 && !fromUrl) return false; st.help = h; return true; };   // T6: level 2 only from the QR URL
   api.skipYears = () => { const a = api.view(); const s = api.stage(); const end = api.view({ t: 1 }); return a.age != null && end.age != null ? end.age - a.age : 0; };
 
@@ -113,6 +129,7 @@ export function createFlow(S, tracks, opts = {}) {
     if (m === "40" && (seg.type === "gone")) v.fork = tr.end;
     v.age = v.clock ? null : row ? row.age : null;
     v.hideTeff = !!s.hideTeff || seg.type === "gone" || seg.type === "fork";
+    if (s.ref === "msRing") v.refR = Math.pow(10, tr.end.logR);   // R2: its size at the end of its main sequence, same scale
     v.hideDotNote = hideDot ? "Its track starts on the main sequence. It is still wrapped in its cloud." : "";
     return v;
   };

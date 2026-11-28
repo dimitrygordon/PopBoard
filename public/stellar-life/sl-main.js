@@ -9,6 +9,7 @@ import { drawHR, plotRect, fromXY, VIEWS } from "./sl-hr.js";
 import { Scenes, scaleBar, zoomText, KM } from "./sl-scenes.js";
 import { ONION } from "./sl-strokes.js";
 import { uiModel, MASS_TEFF } from "./sl-ui.js";
+import { ZONES, cardComplete, FRAME_WORDS, TICKET, logPos, LOGCLOCK } from "./sl-compare.js";
 import { XRPanel } from "./sl-xrpanel.js";
 import { temperatureToSRGB } from "../night-sky/ns-astro.js";
 
@@ -39,6 +40,8 @@ const bg = scenes.background(); world.add(bg.root);
 
 // help level (teaching spec T6): 0 by default; ?help=1 or ?help=2 (level 2 only from the URL, e.g. a QR code); ?lock=1 locks it
 const helpQ = Math.max(0, Math.min(2, parseInt(q.get("help") || "0", 10) || 0));
+// tier (teaching spec 8): ?tier=1 (more support: help level 1, highlighted H-R zones, two choices, the sentence frame), 2 (default) or 3
+const tierQ = [1, 2, 3].includes(+q.get("tier")) ? +q.get("tier") : 2;
 let flow = null, tracks = null;
 
 // ---------------- hub: five mass orbs (ZAMS colours from temperatureToSRGB) ----------------
@@ -106,7 +109,11 @@ const hrCanvas = $("slHR"); const hrG = hrCanvas ? hrCanvas.getContext("2d") : n
 function sizeHR() { if (!hrCanvas) return; const r = hrCanvas.getBoundingClientRect(); const dpr = Math.min(2, window.devicePixelRatio || 1); const W = Math.max(200, Math.round(r.width * dpr)), H = Math.max(160, Math.round(r.height * dpr)); if (hrCanvas.width !== W || hrCanvas.height !== H) { hrCanvas.width = W; hrCanvas.height = H; } return dpr; }
 function hrModel(v) {
   const st = flow.st; const m = { help: st.help, ghosts: st.ghosts.slice(), pins: st.pins, view: "normal", title: "H-R diagram" };
-  if (st.screen === "hub") { m.title = st.hubStep === "pins" || st.hubStep === "ready" ? "H-R diagram: place your pins" : "H-R diagram"; return m; }
+  if (st.screen === "hub") { m.title = st.hubStep === "pins" || st.hubStep === "ready" ? "H-R diagram: place your pins" : "H-R diagram"; if (st.tier === 1 && st.hubStep === "pins") m.zones = ZONES; return m; }
+  if (st.screen === "compare") { const C = flow.cmp; m.title = "H-R diagram: two stars"; if (C.c.step === "run" || C.c.step === "done") { m.trail = []; m.dots = [];
+      for (const mm of C.sorted()) { const s = C.starAt(mm); const tr = tracks[mm]; m.trail.push({ pts: tr.rows.filter((r) => r.eep >= tr.zams.eep && r.eep <= s.row.eep).map((r) => ({ logT: r.logT, logL: r.logL })).concat([{ logT: s.row.logT, logL: s.row.logL }]) }); m.dots.push({ logT: s.row.logT, logL: s.row.logL, label: MASS_LABEL[mm] }); } }
+    return m; }
+  if (st.screen !== "stage") return m;
   m.view = v.view; m.trail = v.trail; m.dot = v.dot; m.noDot = v.noDot; m.fork = v.fork; m.today = v.today; m.predictedLabel = v.predictedLabel; m.live = st.phase === "play";
   if (v.stage && v.stage.ghostSun && !st.ghosts.some((g) => g.mass === "1")) m.ghosts.push({ mass: "1", label: "1 Sun", pts: flow.trailFor("1", 1e9, true).pts });
   return m;
@@ -123,14 +130,15 @@ let uiDirty = true, uiKey = ""; const transient = { zoom: null, zoomUntil: 0, sk
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function renderUI(M) {
   const key = JSON.stringify(M); if (key === uiKey) return; uiKey = key;
+  renderSheet(M.sheet);
   $("slKicker").textContent = M.kicker || ""; $("slTitle").textContent = M.title || "";
   const cards = M.cards || []; $("slCaption").innerHTML = cards.length ? `<p>${esc(cards[M.cardIdx || 0])}</p>` + (cards.length > 1 ? `<div class="sl-cardnav"><span>Card ${M.cardIdx + 1} of ${cards.length}</span><button type="button" data-act="card-" ${M.cardIdx ? "" : "disabled"}>Previous</button><button type="button" data-act="card+" ${M.cardIdx < cards.length - 1 ? "" : "disabled"}>Next card</button></div>` : "") : "";
   let qh = "";
-  if (M.masses) qh += `<div class="sl-masses">${M.masses.map((m) => `<button type="button" class="sl-mass${m.on ? " on" : ""}" data-act="mass:${m.id}" aria-pressed="${m.on}"><span class="dot" style="--c:${m.css}"></span>${esc(m.label)}${m.done ? ' <span class="done">run</span>' : ""}</button>`).join("")}</div>`;
+  if (M.masses) qh += `<div class="sl-masses">${M.masses.map((m) => `<button type="button" class="sl-mass${m.on ? " on" : ""}" data-act="${m.act || "mass:" + m.id}" aria-pressed="${m.on}"><span class="dot" style="--c:${m.css}"></span>${esc(m.label)}${m.done ? ' <span class="done">run</span>' : ""}</button>`).join("")}</div>`;
   if (M.question) {
     const Q = M.question; qh += `<div class="sl-q"><p class="sl-qtext">${esc(Q.text)}</p>`;
     if (Q.kind === "massMeter") qh += `<label class="sl-meter">Your guess: <output id="slMeterOut">${Q.value.toFixed(1)} Suns</output><input type="range" id="slMeter" min="${Q.min}" max="${Q.max}" step="0.1" value="${Q.value}"></label><button type="button" class="sl-btn primary" data-act="meter:${Q.i}">Lock in my guess</button>`;
-    else qh += `<div class="sl-choices">${Q.choices.map((c) => `<button type="button" class="sl-choice${c.picked ? " on" : ""}" data-act="${Q.key === "H-End" ? "end:" : "choice:" + Q.i + ":"}${esc(c.label)}">${esc(c.label)}</button>`).join("")}</div>`;
+    else qh += `<div class="sl-choices">${Q.choices.map((c) => `<button type="button" class="sl-choice${c.picked ? " on" : ""}" data-act="${c.act ? esc(c.act) : (Q.key === "H-End" ? "end:" : "choice:" + Q.i + ":") + esc(c.label)}">${esc(c.label)}</button>`).join("")}</div>`;
     qh += `</div>`;
   }
   if (M.pinPrompt) qh += `<p class="sl-pinprompt">${esc(M.pinPrompt)}</p>`;
@@ -147,6 +155,8 @@ function renderUI(M) {
   resizeSoon();
 }
 function widgetHTML(w) {
+  if (w.kind === "logclock") return `<div class="sl-logclock"><div class="sl-wtitle">Log age clock: each notch is 10 times longer</div><div class="lc-track">${Array.from({ length: w.y1 - w.y0 + 1 }, (_, i) => `<span class="lc-notch" style="left:${(100 * i / (w.y1 - w.y0)).toFixed(2)}%"></span>`).join("")}${w.ticks.map((k) => `<span class="lc-tick" style="left:${(100 * k.p).toFixed(2)}%" title="${esc(k.label)}"></span>`).join("")}${w.stars.map((s, i) => `<span class="lc-star" style="left:${(100 * s.p).toFixed(2)}%;--c:${temperatureCss(s.teff)};--row:${i}"></span>${s.life != null ? `<span class="lc-life" style="left:${(100 * s.life).toFixed(2)}%;--row:${i}"></span>` : ""}`).join("")}</div><div class="lc-ends"><span>100,000 years</span><span>10 trillion years</span></div><div class="lc-keys">${w.ticks.map((k) => `<span><i class="lc-tick-key"></i>${esc(k.label)}</span>`).join("")}${w.stars.map((s) => `<span><i class="lc-star-key" style="--c:${temperatureCss(s.teff)}"></i>${esc(s.label)}${s.life != null ? ": main sequence " + esc(s.lifeLabel) : ""}</span>`).join("")}</div></div>`;
+  if (w.kind === "readoff") return `<div class="sl-readoff"><div class="sl-wtitle">Read off the model</div><table><thead><tr><th>Mass</th><th>Main sequence</th><th>Color</th><th>End</th></tr></thead><tbody>${w.rows.map((r) => `<tr><td>${esc(r.label)}</td><td>${esc(r.life)}</td><td>${esc(r.color)}</td><td>${esc(r.end)}</td></tr>`).join("")}</tbody></table></div>`;
   if (w.kind === "timebar") return `<label class="sl-timebar">${esc(w.label)}<input type="range" id="slTimebar" min="0" max="1" step="0.005" value="${w.value}"><span class="ends"><span>Giant peak</span><span>Now</span></span></label>`;
   if (w.kind === "onion") return `<div class="sl-onion"><div class="sl-wtitle">Each fuel lasts shorter than the last</div>${w.layers.map(([n, time], i) => `<div class="row${w.progress * w.layers.length > i ? " on" : ""}"><span class="sw" style="--c:${ONION_CSS[n] || "#AACDFF"}"></span><span>${esc(n)}</span><b>${esc(time)}</b></div>`).join("")}<div class="src">Times for a 15 Sun star: ${esc(w.source || "")}</div></div>`;
   if (w.kind === "bars") return `<div class="sl-bars"><div class="sl-wtitle">${esc(cap(w.label || "each fuel lasts shorter than the last"))}</div>${["hydrogen", "helium", "carbon", "neon", "oxygen", "silicon"].map((n, i) => `<div class="barrow${w.progress * 6 > i ? " on" : ""}"><span>${n}</span><div class="bar" style="width:${Math.round(100 * Math.pow(0.55, i))}%;--c:${ONION_CSS[n]}"></div></div>`).join("")}<div class="src">Bars show order only, not real lengths.</div>${w.level2 ? `<div class="src">${esc(w.level2)}</div>` : ""}</div>`;
@@ -157,6 +167,59 @@ function widgetHTML(w) {
   return "";
 }
 const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+
+// ---------------- the Mass Card and the exit ticket: a full page sheet (also the printed page) ----------------
+const sheetEl = document.getElementById("slSheet"); let sheetKey = "";
+function renderSheet(sh) {
+  if (!sheetEl) return; document.body.classList.toggle("sl-has-sheet", !!sh);
+  if (!sh) { if (sheetKey) { sheetEl.hidden = true; sheetEl.innerHTML = ""; sheetKey = ""; } return; }
+  const k = JSON.stringify(sh); if (k === sheetKey) return; sheetKey = k;
+  const focus = document.activeElement && sheetEl.contains(document.activeElement) ? { id: document.activeElement.id, s: document.activeElement.selectionStart, e: document.activeElement.selectionEnd } : null;
+  sheetEl.hidden = false; sheetEl.innerHTML = sh.kind === "card" ? cardHTML(sh) : ticketHTML();
+  if (focus && focus.id) { const el = document.getElementById(focus.id); if (el) { el.focus(); try { if (focus.s != null) el.setSelectionRange(focus.s, focus.e); } catch (e) { /* selects have no caret */ } } }
+}
+function sel(id, opts, val, label) { return `<select id="${id}" data-card="${id}" aria-label="${esc(label)}"><option value="">Choose</option>${opts.map((o) => `<option${o === val ? " selected" : ""}>${esc(o)}</option>`).join("")}</select>`; }
+function cardHTML(sh) {
+  const card = flow.st.card;
+  const rows = sh.rows.map((r) => { const v = card.rows[r.mass]; return `<tr class="${r.core ? "core" : ""}"><th scope="row"><span class="dot" style="--c:${temperatureCss(MASS_TEFF[r.mass])}"></span>${esc(r.label)}${r.core ? ' <span class="req">core</span>' : ""}${r.run ? "" : ' <span class="norun">not run yet</span>'}</th>
+    <td data-l="Lifetime">${sel(`c-${r.mass}-life`, sh.options.life, v.life, r.label + " lifetime")}</td><td data-l="Color">${sel(`c-${r.mass}-color`, sh.options.color, v.color, r.label + " color")}</td><td data-l="End state">${sel(`c-${r.mass}-end`, sh.options.end, v.end, r.label + " end state")}</td></tr>`; }).join("");
+  const sentence = sh.tier === 1
+    ? `<p class="frame"><b>Sentence frame:</b> ${esc(sh.frame)}</p><div class="fill">The <input id="c-frame-0" data-card="frame:0" list="slW0" value="${esc(card.frame[0])}" aria-label="first blank" placeholder="___"> the mass, the <input id="c-frame-1" data-card="frame:1" list="slW1" value="${esc(card.frame[1])}" aria-label="second blank" placeholder="___"> the life, because <input id="c-frame-2" class="wide" data-card="frame:2" value="${esc(card.frame[2])}" aria-label="because" placeholder="___">.</div><datalist id="slW0">${sh.frameWords[0].map((w) => `<option value="${w}">`).join("")}</datalist><datalist id="slW1">${sh.frameWords[1].map((w) => `<option value="${w}">`).join("")}</datalist>`
+    : `<div class="fill">Mass decides <input id="c-decides" class="wide" data-card="sentence:decides" value="${esc(card.decides)}" aria-label="Mass decides" placeholder="___"> because <input id="c-because" class="wide" data-card="sentence:because" value="${esc(card.because)}" aria-label="because" placeholder="___">.</div>`;
+  return `<div class="sl-sheet-in"><header><h2>Mass Card</h2><p>${esc(flow.S && "Fill in the card, then finish the sentence: Mass decides ___ because ___.")}</p><div class="sheet-btns"><button type="button" class="sl-btn" data-act="print">Print or save as PDF</button><button type="button" class="sl-btn" data-act="hub">Close</button></div></header>
+    <table class="mc"><thead><tr><th>Starting mass</th><th>Lifetime (main sequence)</th><th>Color</th><th>End state</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="sentence">${sentence}</div><p class="printline">${esc(sh.sentence)}</p>
+    <p class="status ${sh.complete ? "ok" : ""}" aria-live="polite">${sh.complete ? "Card complete." : "Complete when 1, 15 and 40 plus a third mass are filled and the sentence has both blanks filled."}</p>
+    <p class="note">Nothing is saved or sent. Print the card or save it as a PDF.</p></div>`;
+}
+function starSVG(teff, r, x, y, sticker) { const c = temperatureCss(teff); return `<circle cx="${x}" cy="${y}" r="${r * 1.6}" fill="${c}" opacity="0.18"/><circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#222" stroke-width="1"/>${sticker ? `<rect x="${x + r * 0.5}" y="${y - r - 12}" width="34" height="16" rx="4" fill="#fff" stroke="#333"/><text x="${x + r * 0.5 + 17}" y="${y - r}" font-size="11" text-anchor="middle" fill="#222">Sun</text>` : ""}`; }
+function ticketHTML() {
+  const T = TICKET; const tm = { "0.2": [MASS_TEFF["0.2"], 9], "1": [MASS_TEFF["1"], 16], "15": [MASS_TEFF["15"], 30] };
+  const top = `<svg viewBox="0 0 640 170" role="img" aria-label="A dark cloud with arrows to three stars A, B and C"><ellipse cx="90" cy="85" rx="75" ry="52" fill="#2a2633"/><ellipse cx="70" cy="70" rx="40" ry="28" fill="#3a3445"/>${[45, 85, 125].map((y, i) => `<path d="M170 85 L${380 + i * 0} ${y}" stroke="#333" stroke-width="2" marker-end="url(#ar)"/>`).join("")}
+    <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#333"/></marker></defs>
+    ${T.stars.map((s, i) => { const [teff, r] = tm[s.mass]; const x = 430 + i * 75, y = [45, 85, 125][i]; return starSVG(teff, r, x, y, s.mass === "1") + `<text x="${x}" y="${y + r + 16}" font-size="14" font-weight="700" text-anchor="middle" fill="#111">${s.label}</text>`; }).join("")}</svg>`;
+  const notches = Array.from({ length: LOGCLOCK.y1 - LOGCLOCK.y0 + 1 }, (_, i) => i);
+  const bars = T.stars.map((s, i) => `<g transform="translate(40 ${20 + i * 34})"><text x="-24" y="15" font-size="14" font-weight="700" fill="#111">${s.label}</text><rect x="0" y="2" width="520" height="18" fill="#fff" stroke="#333"/>${notches.map((n) => `<line x1="${520 * n / (notches.length - 1)}" y1="0" x2="${520 * n / (notches.length - 1)}" y2="22" stroke="#666"/>`).join("")}</g>`).join("");
+  const clock = `<svg viewBox="0 0 600 140" role="img" aria-label="Three empty bars on a log clock">${bars}<text x="40" y="128" font-size="11" fill="#444">each notch is 10 times longer</text></svg>`;
+  const hr = `<svg viewBox="0 0 300 200" role="img" aria-label="A mini H-R diagram"><rect x="40" y="10" width="240" height="160" fill="#fff" stroke="#333"/><text x="40" y="188" font-size="11" fill="#444">Hotter</text><text x="280" y="188" font-size="11" text-anchor="end" fill="#444">Cooler</text><text x="14" y="90" font-size="11" fill="#444" transform="rotate(-90 14 90)" text-anchor="middle">Brighter</text>${["A", "B", "C"].map((l, i) => `<text x="${58 + i * 46}" y="30" font-size="12" fill="#111">${l}: X</text>`).join("")}</svg>`;
+  const ends = `<svg viewBox="0 0 640 130" role="img" aria-label="Three endings in mixed order"><g transform="translate(40 20)"><circle cx="70" cy="45" r="30" fill="#ffb46b" opacity="0.3"/><circle cx="70" cy="45" r="16" fill="#fff6e8" stroke="#333"/>${[0, 1, 2, 3, 4, 5].map((k) => `<path d="M70 45 L${70 + 44 * Math.cos(k * 1.05)} ${45 + 40 * Math.sin(k * 1.05)}" stroke="#d58a3a" stroke-width="3"/>`).join("")}<circle cx="70" cy="45" r="38" fill="none" stroke="#c05a5a" stroke-dasharray="4 3"/><circle cx="70" cy="45" r="46" fill="none" stroke="#3aa08a" stroke-dasharray="4 3"/></g>
+    <g transform="translate(250 20)"><circle cx="40" cy="45" r="12" fill="#f4f7ff" stroke="#333"/><circle cx="90" cy="45" r="12" fill="#3a78c8" stroke="#333"/><text x="90" y="80" font-size="11" text-anchor="middle" fill="#444">Earth</text></g>
+    <g transform="translate(450 20)">${[0, 1, 2, 3, 4, 5, 6].map((k) => `<rect x="${k * 18}" y="${70 - (20 + (k * 37) % 40)}" width="14" height="${20 + (k * 37) % 40}" fill="#556"/>`).join("")}<circle cx="64" cy="10" r="9" fill="#eef4ff" stroke="#333"/></g></svg>`;
+  return `<div class="sl-sheet-in ticket"><header><h2>${esc(T.title)}</h2><div class="sheet-btns"><button type="button" class="sl-btn" data-act="print">Print</button><button type="button" class="sl-btn" data-act="hub">Close</button></div></header>
+    <p class="nameline">Name ______________________</p>
+    <section><h3>1</h3>${top}<p class="keys">A small orange dot (0.2 Suns), B white star with a tiny "Sun" sticker (1 Sun), C large blue-white star (15 Suns)</p></section>
+    <section><h3>2</h3><p>${esc(T.clock)}</p>${clock}<p>${esc(T.hr)}</p>${hr}</section>
+    <section><h3>3</h3><p>${esc(T.ends)}</p>${ends}</section>
+    <section><h3>4</h3><p class="bigline">${esc(T.line)} ______________________________</p><p class="bank">Word bank: ${T.bank.map((b) => `<span>${esc(b)}</span>`).join("")}</p></section>
+    <section class="confusing"><h3>5</h3><p>${esc(T.last)}</p><div class="box"></div></section>
+    <p class="note">Pictures are a draft for Leo to finish.</p></div>`;
+}
+if (sheetEl) {
+  const onCard = (e) => { const el = e.target.closest && e.target.closest("[data-card]"); if (!el || !flow) return; const id = el.dataset.card;
+    if (id.startsWith("c-")) { const [, m, f] = id.split("-"); flow.setCard(m, f, el.value); } else { const [a, b] = id.split(":"); flow.setCard(a, b, el.value); }
+    uiDirty = true; };
+  sheetEl.addEventListener("input", onCard); sheetEl.addEventListener("change", onCard);
+}
 const ONION_CSS = Object.fromEntries(ONION);
 let resizeT = 0; function resizeSoon() { clearTimeout(resizeT); resizeT = setTimeout(resize, 30); }
 document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest("[data-act]"); if (!b || b.disabled || b.dataset.hold) return; act(b.dataset.act); });
@@ -168,15 +231,21 @@ function act(id) {
   if (k === "mass") flow.pickMass(a);
   else if (k === "end") flow.answerHub(rest);
   else if (k === "pinUndo") flow.undoPin();
-  else if (k === "start") { flow.start(); onStageChange(); }
+  else if (k === "start") { if (flow.start()) { if (st.skipped && st.stages[0].id !== "F4") { transient.skip = `Skipping about ${fmtYears(atEEP(tracks[st.mass], 202).age)} of formation.`; transient.skipUntil = clock + 4; } onStageChange(); } }
   else if (k === "choice") flow.commit(+a, id.split(":").slice(2).join(":"));
   else if (k === "meter") flow.commit(+a, st.massGuess[flow.stage().id] != null ? st.massGuess[flow.stage().id] : (flow.pending().a.min + flow.pending().a.max) / 2);
   else if (k === "play") { if (st.phase === "play") st.playing = !st.playing; }
   else if (k === "replay") { st.t = 0; st.phase = "play"; st.playing = true; }
+  else if ((k === "next" || k === "prev" || k === "play" || k === "replay") && st.screen !== "stage") { /* stage controls only */ }
   else if (k === "next") { const r = flow.next(); if (r && r.skipped > 0) { transient.skip = `Skipped about ${fmtYears(r.skipped)}`; transient.skipUntil = clock + 4; } onStageChange(); }
   else if (k === "prev") { flow.prev(); onStageChange(); }
   else if (k === "hub") { flow.toHub(); onStageChange(); }
   else if (k === "skipForm") st.skipFormation = !st.skipFormation;
+  else if (k === "compare") flow.openCompare();
+  else if (k === "card") flow.openCard();
+  else if (k === "ticket") flow.openTicket();
+  else if (k === "print") { if (typeof window.print === "function") window.print(); }
+  else if (k === "cmp") { const C = flow.cmp; if (a === "mass") C.toggle(b); else if (a === "begin") C.begin(); else if (a === "pick") { const parts = id.split(":"); C.pick(parts[2], parts.slice(3).join(":")); } else if (a === "play") C.c.playing = !C.c.playing; else if (a === "replay") { C.c.t = 0; C.c.step = "run"; C.c.playing = true; } else if (a === "reset") C.reset(); }
   else if (k === "toggle") st.toggles[a] = !st.toggles[a];
   else if (k === "card+") st.cardIdx++;
   else if (k === "card-") st.cardIdx = Math.max(0, st.cardIdx - 1);
@@ -197,8 +266,28 @@ if (helpBtn) helpBtn.addEventListener("click", () => { act("help"); syncHelp(); 
 
 // ---------------- scene switching and zoom labels ----------------
 let cur = null, curKey = "", lastKm = null;
+function cmpRunning() { return !!flow && flow.st.screen === "compare" && flow.cmp.c.step === "run" && flow.cmp.c.playing; }
+// ---------------- COMPARE: two stage areas side by side, each with its own scale and clock (teaching spec 2.0, T13) ----------------
+let scenesB = null, cmpScene = null;
+function makeBar() { const grp = new THREE.Group(); const l = new THREE.Line(sbarLine.geometry, sbarLine.material); const t = new THREE.Line(sbarTick.geometry, sbarLine.material); l.renderOrder = t.renderOrder = 41; l.frustumCulled = t.frustumCulled = false; const body = new THREE.Group(); body.add(l, t); grp.add(body); const lab = scenes.label("", { size: 2.0, plate: false, color: "#E6E9F8" }); grp.add(lab); return { grp, body, lab }; }
+function compareScene() {
+  if (cmpScene) return cmpScene; if (!scenesB) scenesB = new Scenes(THREE, uni);
+  const root = new THREE.Group(); root.position.y = 7; const sides = [-1, 1].map((sx) => { const g = new THREE.Group(); g.position.x = sx * 31; root.add(g); const bar = makeBar(); g.add(bar.grp); const name = scenes.label("", { size: 2.8 }); g.add(name); return { g, bar, name }; });
+  const divider = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -30, 0), new THREE.Vector3(0, 30, 0)]), new THREE.LineBasicMaterial({ color: 0x8E95B8, transparent: true, opacity: 0.35 })); root.add(divider);
+  cmpScene = { root, kind: "compare", camDist: 122, radius: 26, kmPerUnit: () => null, strokes: 0, sides,
+    update(c) {
+      const C = flow.cmp; const pair = C.sorted(); let strokes = 0;
+      pair.forEach((m, i) => { const sd = sides[i]; const sc = (i === 0 ? scenes : scenesB).star(); if (sc.root.parent !== sd.g) sd.g.add(sc.root);
+        const s = C.starAt(m); const v = { row: s.row, stage: {}, type: "" }; sc.update({ ...c, v, st: { peek: false, answers: {} }, fitMax: 12 }); strokes += sc.strokes;
+        const r = sc.radius; scenes.setLabel(sd.name, MASS_LABEL[m], `its own clock: ${fmtYears(s.age)}`); sd.name.quaternion.copy(c.camQuatLocal); sd.name.position.copy(new THREE.Vector3(0, r + 6, 0).applyQuaternion(c.camQuatLocal));
+        const bar = scaleBar(sc.kmPerUnit(), Math.max(4, r * 0.8)); if (bar) { sd.bar.body.scale.set(bar.units, 0.9, 1); scenes.setLabel(sd.bar.lab, bar.label); sd.bar.lab.position.set(0, -1.6, 0); sd.bar.grp.quaternion.copy(c.camQuatLocal); sd.bar.grp.position.copy(new THREE.Vector3(0, -(Math.max(r, 6) * 1.25 + 4), 0).applyQuaternion(c.camQuatLocal)); } });
+      cmpScene.strokes = strokes;
+    } };
+  return cmpScene;
+}
 function sceneFor(v) {
-  if (!flow || flow.st.screen === "hub") return null;
+  if (flow && flow.st.screen === "compare") { const s = flow.cmp.c.step; return s === "run" || s === "done" ? compareScene() : null; }
+  if (!flow || flow.st.screen !== "stage") return null;
   const kind = v.sceneKind || v.stage.scene; return scenes.get(kind, flow.st.mass);
 }
 function onStageChange() { uiDirty = true; hrDirty = true; flow && (flow.st.cardIdx = Math.max(0, flow.st.cardIdx)); }
@@ -249,6 +338,7 @@ function frame(now) {
   uni.uBoilT.value = boilT; uni.uFlowT.value = flowT; uni.uBreathT.value = flowT;
   if (!flow) { renderer.render(scene, camera); return; }
   const before = flow.st.phase; flow.tick(dt); if (flow.st.phase !== before) uiDirty = true;
+  if (flow.st.screen === "compare") { const s0 = flow.cmp.c.step; flow.cmp.tick(dt); if (flow.cmp.c.step !== s0) { uiDirty = hrDirty = true; if (flow.cmp.c.step === "done") flow.compareDone(); } }
   const v = flow.st.screen === "stage" ? flow.view() : null;
   const sc = sceneFor(v); showScene(sc);
   const presenting = renderer.xr.isPresenting;
@@ -270,23 +360,24 @@ function frame(now) {
   const extra = {};
   if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt, camLocal, camQuatLocal: qL, extra });
   else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); }
-  hubTitle.quaternion.copy(qL);
+  hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? "Pick two masses" : "Pick a starting mass");
   // scale bar and zoom labels (labelled zoom changes, never a fake scale)
   const km = sc && sc.kmPerUnit ? sc.kmPerUnit() : null;
-  if (km && lastKm && Math.abs(Math.log10(km / lastKm)) > 0.05) { const t = zoomText(lastKm, km); if (t) { transient.zoom = t; transient.zoomUntil = clock + 4; uiDirty = true; } }
-  if (km) lastKm = km;
+  // lastKm is the scale of the last label (or of the scene's start), so slow drifts add up and small steps never label
+  if (km && lastKm) { const t = zoomText(lastKm, km); if (t) { transient.zoom = t; transient.zoomUntil = clock + 4; uiDirty = true; lastKm = km; } }
+  if (km && !lastKm) lastKm = km;
   const bar = km ? scaleBar(km, (sc.radius || 10) * 0.8) : null; sbar.visible = !!bar && !(sc && (sc.kind === "twopaths"));
   if (bar) { sbarBody.scale.set(bar.units, Math.max(0.6, (sc.radius || 10) * 0.05), 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy(new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4), 0).applyQuaternion(qL)); sbarLab.position.set(0, -1.6, 0); }
   if (transient.zoom && clock > transient.zoomUntil) { transient.zoom = null; uiDirty = true; }
   if (transient.skip && clock > transient.skipUntil) { transient.skip = null; uiDirty = true; }
   // UI
-  if (flow.st.phase === "play" || uiDirty) {
+  if (flow.st.phase === "play" || uiDirty || cmpRunning()) {
     const M = uiModel(flow, { view: v || undefined, calm, zoom: transient.zoom, skip: transient.skip, sceneChips: sc && sc.chips, stageSpan: v ? stageSpan() : null });
     if (M.masses) M.masses.forEach((m) => { const c = scenes.T && temperatureCss(m.teff); m.css = c; });
     if (!presenting) renderUI(M); else panel.draw(M, hrModel(v || {}), performance.now(), uiDirty);
     uiDirty = false; window.__stellarUI = M;
   }
-  if (!presenting && hrG && (hrDirty || flow.st.phase === "play")) { const dpr = sizeHR(); const m = hrModel(v || {}); const k = JSON.stringify([m.dot, m.trail && m.trail.map((t) => t.pts.length), m.pins, m.view, m.help, hrCanvas.width, hrCanvas.height, m.ghosts.length, m.noDot, m.fork]); if (k !== hrKey || hrDirty) { drawHR(hrG, hrCanvas.width, hrCanvas.height, m, dpr * (layout.phone ? 0.82 : 1)); hrKey = k; } hrDirty = false; }
+  if (!presenting && hrG && (hrDirty || flow.st.phase === "play" || cmpRunning())) { const dpr = sizeHR(); const m = hrModel(v || {}); const k = JSON.stringify([m.dot, m.dots, m.zones && 1, m.trail && m.trail.map((t) => t.pts.length), m.pins, m.view, m.help, hrCanvas.width, hrCanvas.height, m.ghosts.length, m.noDot, m.fork]); if (k !== hrKey || hrDirty) { drawHR(hrG, hrCanvas.width, hrCanvas.height, m, dpr * (layout.phone ? 0.82 : 1)); hrKey = k; } hrDirty = false; }
   if (presenting) xin.update(dt);
   const t0 = performance.now(); renderer.render(scene, camera); const cpu = performance.now() - t0;
   const dtf = dt * 1000; stats.frames++; stats.acc += dtf; stats.cpuAcc += cpu; if (dtf > 0 && dtf < 1000) stats.samples.push(dtf);
@@ -302,8 +393,8 @@ let manualDt = 0;
 async function boot() {
   try {
     const [tj, sj] = await Promise.all([fetch("stellar-life/data/tracks.json?v=1").then((r) => r.json()), fetch("stellar-life/data/stages.json?v=1").then((r) => r.json())]);
-    tracks = prepareTracks(tj); flow = createFlow(sj, tracks, { help: 0, lockHelp: q.get("lock") === "1" });
-    if (helpQ) flow.setHelp(helpQ, true); syncHelp();
+    tracks = prepareTracks(tj); flow = createFlow(sj, tracks, { help: 0, lockHelp: q.get("lock") === "1", tier: tierQ });
+    if (helpQ) flow.setHelp(helpQ, true); else if (tierQ === 1) flow.setHelp(1, true); syncHelp();
     resize(); if (statusEl) statusEl.hidden = true;
     if (!manual) renderer.setAnimationLoop(frame); else frame(0);
   } catch (e) { console.error(e); fail("Could not load the star data. Check your connection and reload."); }
@@ -321,6 +412,12 @@ window.__stellar = {
     let p; let guard = 0; while ((p = flow.pending()) && guard++ < 6) flow.commit(p.i, p.a.kind === "massMeter" ? (p.a.min + p.a.max) / 2 : (p.a.choices || ["Explode first"])[0]);
     flow.setT(t); uiDirty = hrDirty = true; lastKm = null; transient.zoom = null; return flow.view();
   },
+  /** COMPARE straight to fraction t for a pair, answering the three picks with the first choice. */
+  compare(pair, t = 1) {
+    flow.toHub(); if (!flow.st.runs.length) flow.st.runs.push("1"); flow.openCompare(); const C = flow.cmp; for (const m of pair) C.toggle(m); C.begin();
+    let q; let guard = 0; while ((q = C.pending()) && guard++ < 5) C.pick(q.id, q.choices[0]); C.c.t = t; C.c.step = t >= 1 ? "done" : "run"; C.c.playing = false; if (t >= 1) flow.compareDone(); uiDirty = hrDirty = true; lastKm = null;
+  },
+  openCard() { if (!flow.st.runs.length) flow.st.runs.push("1"); flow.openCard(); uiDirty = true; }, openTicket() { flow.openTicket(); uiDirty = true; },
   renderAt(tSec, dt = 1 / 60) { manualDt = dt; flowT = tSec; boilT = calm ? boilT : tSec; frame(tSec * 1000); },
   info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, scene: cur ? cur.kind : "hub", strokes: (cur ? cur.strokes : 0) + bg.strokes, sceneStrokes: cur ? cur.strokes : 0, skyStrokes: bg.strokes }),
   frameStats: () => ({ ...stats, samples: stats.samples.length }),
