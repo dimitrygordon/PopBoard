@@ -77,8 +77,9 @@ export function skipOutline(mesh, root) {
 export function paintTree(THREE, root, U, o = {}) {
   const olMat = outlineMaterial(THREE, U, o.px);
   const list = []; root.traverse((m) => { if (m.isMesh && !m.userData.noPaint && m.material && m.material.isMeshLambertMaterial && !m.material.transparent) list.push(m); });
+  const quiet = (m) => { for (let o = m; o; o = o.parent) if (o.userData && o.userData.noNoise) return true; return false; };
   for (const m of list) {
-    paintMaterial(m.material, U, o);
+    if (!quiet(m)) paintMaterial(m.material, U, o);
     if (skipOutline(m, root)) continue;
     if (!m.geometry.boundingSphere) m.geometry.computeBoundingSphere();
     const s = m.getWorldScale(new THREE.Vector3()); const r = m.geometry.boundingSphere.radius * Math.max(s.x, s.y, s.z);

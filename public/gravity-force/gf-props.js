@@ -105,17 +105,29 @@ export function balance(THREE) {
   return g;
 }
 
-/** Code-built traveler, kept alongside the robot (Angelo): a plain suited figure for the S4 elevator cab. Legs are
- * half the height (Angelo's nit: they were about 60%), hips at 0.8 m on a 1.6 m figure. */
+/** Code-built traveler: a 1.6 m figure in a muted hoodie, jeans and sneakers (Leo). Flat matte solids, no texture
+ * noise and no face details, with the usual ink outline. Legs are half the height (Angelo), hips at 0.8 m. Used on
+ * Earth, Moon, Mars and Jupiter, and in the S4 elevator cab. */
 export function traveler(THREE, h = PROP_SIZE.traveler.h) {
-  const g = new THREE.Group(); g.name = "traveler"; const k = h / 1.6; const L = PROP_SIZE.traveler.legs;
-  const add = (geo, color, x, y, z, sx = 1, sy = 1, sz = 1) => { const m = new THREE.Mesh(geo, mat(THREE, color)); m.position.set(x * k, y * k, z * k); m.scale.set(sx * k, sy * k, sz * k); g.add(m); return m; };
+  const g = new THREE.Group(); g.name = "traveler"; g.userData.noNoise = true;
+  const k = h / 1.6; const L = PROP_SIZE.traveler.legs;
+  const hoodie = 0x7A6B52, jeans = 0x35506A, sneak = 0xE8DFD0, sole = 0x2A2420, hoodIn = 0x2A2420, pocket = 0x6C5E48;
+  const add = (geo, color, x, y, z, sx = 1, sy = 1, sz = 1, flags = {}) => {
+    const m = new THREE.Mesh(geo, mat(THREE, color)); m.position.set(x * k, y * k, z * k); m.scale.set(sx * k, sy * k, sz * k);
+    m.userData.noNoise = true; if (flags.noOutline) m.userData.noOutline = true; g.add(m); return m;
+  };
   const cap = (r, l) => new THREE.CapsuleGeometry(r, l, 6, 14);
-  for (const s of [-1, 1]) { add(cap(0.06, L - 0.18), C.suit, s * 0.075, 0.06 + (L - 0.06) / 2, 0); add(new THREE.BoxGeometry(0.11, 0.06, 0.2), C.suit2, s * 0.075, 0.03, 0.03); }
-  add(cap(0.17, 0.26), C.suit, 0, L + 0.28, 0, 1, 1, 0.72);
-  for (const s of [-1, 1]) add(cap(0.045, 0.5), C.suit, s * 0.235, L + 0.24, 0);
-  add(new THREE.SphereGeometry(0.115, 24, 16), C.suit, 0, 1.47, 0, 1, 1.08, 1);
-  add(new THREE.SphereGeometry(0.09, 20, 12), C.visor, 0, 1.475, 0.04, 1, 0.75, 0.6);
+  for (const s of [-1, 1]) {
+    add(new THREE.BoxGeometry(0.11, 0.07, 0.22), sneak, s * 0.08, 0.05, 0.03);
+    add(new THREE.BoxGeometry(0.12, 0.025, 0.23), sole, s * 0.08, 0.015, 0.03);
+    add(cap(0.065, L - 0.2), jeans, s * 0.08, 0.1 + (L - 0.08) / 2, 0);
+  }
+  add(new THREE.CylinderGeometry(0.13, 0.145, 0.14, 16), jeans, 0, L + 0.02, 0);
+  add(cap(0.19, 0.3), hoodie, 0, L + 0.3, 0, 1, 1, 0.86);
+  add(new THREE.BoxGeometry(0.16, 0.1, 0.06), pocket, 0, L + 0.22, 0.12);
+  for (const s of [-1, 1]) add(cap(0.05, 0.42), hoodie, s * 0.25, L + 0.28, 0);
+  add(new THREE.SphereGeometry(0.13, 20, 14), hoodie, 0, 1.45, -0.01, 1.05, 1.08, 1.1);
+  add(new THREE.CircleGeometry(0.07, 16), hoodIn, 0, 1.45, 0.12, 1, 1, 1, { noOutline: true });
   return g;
 }
 

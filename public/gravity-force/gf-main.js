@@ -116,7 +116,7 @@ function flatCamera(dt) {
   const visW = pr && pr.width ? pr.left : layout.w;
   const effAspect = visW / layout.h;
   const ride = sc === "iss" && lab.issStep !== "station";
-  const base = layout.phone ? (sc === "weigh" ? 1.85 : ride ? 1.35 : 1.7) : 1.6;
+  const base = layout.phone ? (sc === "weigh" ? 1.85 : sc === "pull" ? 2.05 : ride ? 1.35 : 1.7) : 1.6;
   const pull = Math.min(2.35, Math.max(1, base / Math.max(0.3, effAspect)));
   const fovBump = (effAspect < 1.05 && !ride) ? (layout.phone ? 1.14 : 1.08) : 1;
   const fov = Math.min(64, V.fov * fovBump);
@@ -158,7 +158,8 @@ addEventListener("keydown", (e) => {
 
 // ---------------- WebXR ----------------
 let xrSession = null; const vrBtn = $("gfVR"), vrNote = $("gfVRNote");
-const panel = new XRPanel(THREE); scene.add(panel.mesh);
+const panel = new XRPanel(THREE); scene.add(panel.mesh); window.__gf.panel = panel;
+window.__gf.drawPanel = () => { const M = sceneModel(lab); M.whyOpen = lab.whyCard; M.wrongOpen = lab.wrongCard; panel.draw(M, controlsFor(lab), tabsOf(), helpsOf(), true); };
 async function checkXr() {
   let ok = false; if (navigator.xr && navigator.xr.isSessionSupported) { try { ok = await navigator.xr.isSessionSupported("immersive-vr"); } catch { ok = false; } }
   if (vrBtn) vrBtn.hidden = !ok; if (vrNote) vrNote.hidden = ok;

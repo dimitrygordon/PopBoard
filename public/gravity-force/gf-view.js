@@ -7,9 +7,9 @@ import { springScale, balance, traveler, robot, station, stepPlatform, loadModel
 import { paintUniforms, paintTree, outlineMaterial, skipOutline, FatLine, PAINT } from "./gf-paint.js";
 
 const FONT = (px, w = 600) => `${w} ${px}px Inter, -apple-system, system-ui, sans-serif`;
-export const ARROW = { color: 0xFFD27A, ghost: 0xE6E9F8, radius: 0.011, head: 0.045 };
+export const ARROW = { color: 0x2A2420, ghost: 0x6B6158, radius: 0.011, head: 0.045 };
 export const VIEWS = {   // flat-screen cameras, framed for a 16:10 stage; gf-main pulls back on narrower stages
-  pull: { pos: [0, 1.5, 0.45], target: [0, 1.04, -1.15], fov: 44 },
+  pull: { pos: [0, 1.42, 0.72], target: [0.08, 1.05, -1.15], fov: 46 },
   mass: { pos: [0, 1.5, 0.35], target: [0, 1.12, -1.2], fov: 44 },
   weigh: { pos: [0, 1.55, 0.9], target: [0, 0.72, -1.6], fov: 44 },
   iss: { pos: [-0.4, 1.45, 1.9], target: [0.2, 1.3, -1.4], fov: 50 },
@@ -57,7 +57,7 @@ export class LabView {
   }
   arrow(color = ARROW.color, ghost = false) {
     const T = this.T; const g = new T.Group();
-    const m = ghost ? new T.MeshBasicMaterial({ color, transparent: true, opacity: 0.28, depthWrite: false }) : this.mat(color, { emissive: color, emissiveIntensity: 0.25 });
+    const m = new T.MeshBasicMaterial({ color, toneMapped: false });
     const shaft = new T.Mesh(new T.CylinderGeometry(ARROW.radius, ARROW.radius, 1, 18), m); shaft.rotation.z = -Math.PI / 2;
     const cap = new T.Mesh(new T.SphereGeometry(ARROW.radius, 14, 10), m);
     const head = new T.Mesh(new T.ConeGeometry(ARROW.radius * 2.3, ARROW.head, 20), m); head.rotation.z = -Math.PI / 2;
@@ -120,10 +120,10 @@ export class LabView {
     const aE = this.arrow(), aM = this.arrow(), gE = this.arrow(ARROW.ghost, true), gM = this.arrow(ARROW.ghost, true);
     aM.rotation.y = Math.PI; gM.rotation.y = Math.PI; g.add(aE, aM, gE, gM);
     const lE = this.label("Pull on Earth", { size: 0.028 }), lM = this.label("Pull on the Moon", { size: 0.028 }); g.add(lE, lM);
-    const lPull = this.label("Pull: the same as the start", { size: 0.036, color: "#FFE3A6" }); lPull.position.set(0.25, 1.36, z - 0.05); g.add(lPull);
+    const lPull = this.label("Pull: the same as the start", { size: 0.036, color: "#FFE3A6" }); lPull.position.set(0.1, 1.28, z - 0.05); g.add(lPull);
     // Pin it graph
     const gc = document.createElement("canvas"); gc.width = 640; gc.height = 440; const gtex = new T.CanvasTexture(gc); gtex.colorSpace = T.SRGBColorSpace;
-    const graph = new T.Mesh(new T.PlaneGeometry(0.46, 0.316), new T.MeshBasicMaterial({ map: gtex, transparent: true, toneMapped: false })); graph.position.set(0.62, 1.2, z - 0.15); graph.rotation.y = -0.25; g.add(graph);
+    const graph = new T.Mesh(new T.PlaneGeometry(0.46, 0.316), new T.MeshBasicMaterial({ map: gtex, transparent: true, toneMapped: false })); graph.position.set(0.54, 1.06, z - 0.1); graph.rotation.y = -0.22; g.add(graph);
     this.s1 = { earth, moon, aE, aM, gE, gM, lE, lM, lPull, pegM, gc, gtex, graph, x0, y, z, pinsKey: "" };
   }
   drawPins(pins) {
@@ -342,20 +342,34 @@ export class LabView {
         cg.fillStyle = INK; cg.font = FONT(38, 600); cg.textBaseline = "top";
         const words = c.text.split(" "); let line = "", yy = 22; for (const wd of words) { const t = line ? line + " " + wd : wd; if (cg.measureText(t).width > 460) { cg.fillText(line, 26, yy); yy += 48; line = wd; } else line = t; } cg.fillText(line, 26, yy);
         const tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 4;
-        const card = new T.Mesh(new T.PlaneGeometry(0.42, 0.17), new T.MeshBasicMaterial({ map: tex, toneMapped: false, side: T.DoubleSide }));
-        card.userData.noPaint = true; const home = new T.Vector3(-0.44 + (i % 3) * 0.44, 1.38 - Math.floor(i / 3) * 0.2, z - 0.05);
-        card.position.copy(home); card.userData.home = home; g.add(card); cards[c.id] = card;
+        const cardW = 0.2, cardH = 0.155, gap = 0.024, n = SORT_CARDS.length;
+        const card = new T.Mesh(new T.PlaneGeometry(cardW, cardH), new T.MeshBasicMaterial({ map: tex, toneMapped: false, side: T.DoubleSide }));
+        card.userData.noPaint = true;
+        const mid = (n - 1) / 2, t = mid === 0 ? 0 : (i - mid) / mid;
+        const span = n * cardW + (n - 1) * gap; const x0 = -span / 2 + cardW / 2;
+        const home = new T.Vector3(x0 + i * (cardW + gap), 1.34, z - 0.06 + 0.035 * t * t);
+        card.position.copy(home); card.rotation.set(-0.18, t * 0.1, 0); card.userData.home = home; card.userData.homeRot = [-0.18, t * 0.1, 0];
+        g.add(card); cards[c.id] = card;
       });
     }
     this.sortV = { bins, cards, z, y };
   }
   updateSort(m, lab, dt) {
     const S = this.sortV; const T = this.T; const count = { real: 0, model: 0 };
+    const floating = Object.entries(S.cards).filter(([id]) => !lab.sortPicks[id]);
+    const nF = floating.length, cardW = 0.2, gap = 0.024;
+    const span = nF * cardW + Math.max(0, nF - 1) * gap, x0 = -span / 2 + cardW / 2;
+    let fi = 0;
     for (const [id, card] of Object.entries(S.cards)) {
       const bin = lab.sortPicks[id]; let tgt, rot;
-      if (bin) { const n = count[bin]++; const b = S.bins[bin].position; tgt = new T.Vector3(b.x + ((n % 2) ? 0.08 : -0.08), S.y + 0.16 + n * 0.045, b.z + 0.04 - n * 0.02); rot = -0.48; }
-      else { tgt = card.userData.home; rot = -0.22; }
-      const k = this.calm ? 1 : Math.min(1, dt * 6); card.position.lerp(tgt, k); card.rotation.x += (rot - card.rotation.x) * k;
+      if (bin) { const n = count[bin]++; const b = S.bins[bin].position; tgt = new T.Vector3(b.x + ((n % 2) ? 0.08 : -0.08), S.y + 0.16 + n * 0.045, b.z + 0.04 - n * 0.02); rot = [-0.48, 0, 0]; }
+      else {
+        const mid = (nF - 1) / 2, t = mid === 0 ? 0 : (fi - mid) / mid;
+        tgt = new T.Vector3(x0 + fi * (cardW + gap), 1.34, S.z - 0.06 + 0.035 * t * t);
+        rot = [-0.18, t * 0.1, 0]; fi++;
+      }
+      const k = this.calm ? 1 : Math.min(1, dt * 6); card.position.lerp(tgt, k);
+      card.rotation.x += (rot[0] - card.rotation.x) * k; card.rotation.y += (rot[1] - card.rotation.y) * k; card.rotation.z += (rot[2] - card.rotation.z) * k;
     }
   }
   sheetY(s, e, x, y) { return this.s5.D * (wellDepth(s, Math.hypot(x, y), e) - wellDepth(s, 1, e)) / 1; }

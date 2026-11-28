@@ -7,7 +7,7 @@ import * as S from "../public/gravity-force/gf-scenes.js";
 import { parseState, canSetHelp, flags } from "../public/gravity-force/gf-state.js";
 import { GF, stepMarble, bhHorizonText } from "../public/gravity-force/gf-sim.js";
 import { MODEL_BASE, MODEL_FILES, PROP_SIZE, INK, CREAM, dialClockDeg, ROBOT } from "../public/gravity-force/gf-props.js";
-import { READOUT, readPads, XRP } from "../public/gravity-force/gf-xr.js";
+import { READOUT, readPads, XRP, wrapLines } from "../public/gravity-force/gf-xr.js";
 
 const pub = new URL("../public/", import.meta.url);
 const read = (n) => readFileSync(new URL(n, pub), "utf8");
@@ -214,4 +214,34 @@ test("painted style: one cream label style sized on screen, ink outlines with 8 
   assert.equal(S.S5_TEXT.bhLabel, "Up close, Newton's law isn't accurate");
   assert.equal(ROBOT.h, 1.267); assert.deepEqual(ROBOT.onScale, [0, 0.0485, -0.086]);
   assert.equal(PROP_SIZE.traveler.legs / PROP_SIZE.traveler.h, 0.5, "Angelo: traveler legs about half the height");
+  const props = read("gravity-force/gf-props.js");
+  assert.match(props, /hoodie/); assert.match(props, /jeans/); assert.match(props, /sneak/); assert.match(props, /noNoise/);
+  assert.match(view, /color: 0x2A2420, ghost: 0x6B6158/);
+  assert.match(view, /MeshBasicMaterial\(\{ color, toneMapped: false \}\)/);
+});
+
+test("headset text is never truncated: wrap keeps every word at 56 px, and S5c cards auto-fit their wrap", () => {
+  const xr = read("gravity-force/gf-xr.js");
+  assert.match(xr, /export function wrapLines/);
+  assert.match(xr, /bodyPx = M.figure \? 56/);
+  assert.doesNotMatch(xr, /if \(\+\+n >= maxLines\)/);
+  assert.doesNotMatch(xr, /lines < [0-9]/);
+  const colW = (XRP.W - 80 - 20) / 2, maxW = colW - 16, typ = 56;
+  const measure = (t) => String(t).length * typ * 0.52;
+  const texts = [
+    ...S.SORT_CARDS.map((c) => c.text),
+    S.S3_TEXT.words, S.S3_TEXT.scaleHelp,
+    S.s3Model(lab("scene=weigh&world=moon&help=1")).lines[0],
+    S.s3Model(lab("scene=weigh&world=ns&help=1")).lines[0],
+    S.s3Model(lab("scene=weigh&world=earth&help=1")).lines[0],
+  ];
+  for (const text of texts) {
+    const lines = wrapLines(measure, text, maxW);
+    assert.equal(lines.join(" "), text, text);
+    assert.ok(lines.every((ln) => ln.length), "no empty line");
+  }
+  const sixth = S.SORT_CARDS.find((c) => c.id === "c5").text;
+  const lines = wrapLines(measure, sixth, maxW);
+  assert.ok(lines.length >= 1); assert.equal(lines.join(" "), sixth);
+  assert.match(sixth, /under the table/);
 });

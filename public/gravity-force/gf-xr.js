@@ -8,6 +8,13 @@ export const XRP = { W: 1024, H: 1536, M: 0.8 };   // texture px and panel width
 const FONT = (px, w = 600) => `${w} ${px}px Inter, -apple-system, system-ui, sans-serif`;
 /** Readout sizes: main value 96 px on a 1280 px/m panel is 7.5 cm tall, about 3.6 degrees at 1.2 m (over 56 headset px). */
 export const READOUT = { mainPx: 96, subScale: 0.6, subAlpha: 0.7, ink: INK, dial: CREAM };
+/** Word-wrap that never drops a word. measure(text) returns width in the current font. */
+export function wrapLines(measure, text, maxW) {
+  const words = String(text).split(" ").filter((w) => w.length); const lines = []; let line = "";
+  for (const wd of words) { const t = line ? line + " " + wd : wd; if (line && measure(t) > maxW) { lines.push(line); line = wd; } else line = t; }
+  if (line) lines.push(line); return lines;
+}
+
 
 export class XRPanel {
   constructor(THREE) {
@@ -56,28 +63,29 @@ export class XRPanel {
   draw(M, controls, tabs, helps, force = false) {
     const key = JSON.stringify([M.title, M.lines, M.cards, M.predict, M.reveal, M.result, M.readout, controls, tabs, helps, this.hover, M.sort, M.wrongOpen, M.whyOpen]);
     if (!force && key === this.key) return; this.key = key;
-    const g = this.g, W = XRP.W, H = XRP.H; g.clearRect(0, 0, W, H); this.hits = [];
+    const g = this.g, W = XRP.W, H = XRP.H, hy = H - 92; g.clearRect(0, 0, W, H); this.hits = [];
     g.fillStyle = "rgba(10,13,32,0.93)"; g.beginPath(); g.roundRect ? g.roundRect(0, 0, W, H, 40) : g.rect(0, 0, W, H); g.fill();
     g.strokeStyle = "rgba(255,255,255,0.18)"; g.lineWidth = 3; g.stroke();
     let y = 24;
     // scene tabs
     let x = 32; const tw = (W - 64 - (tabs.length - 1) * 6) / tabs.length; for (const t of tabs) { this.btn(t.id, t.label, x, y, tw, 64, t.on, t.disabled); x += tw + 6; } y += 84;
-    g.fillStyle = "#A9B0D0"; g.font = FONT(30, 600); g.fillText(M.kicker || "", 40, y + 30); y += 46;
-    g.fillStyle = "#FFFFFF"; g.font = FONT(50, 700); g.fillText(M.title || "", 40, y + 48, W - 80); y += 70;
-    const wrap = (text, px, col, maxLines = 4, wgt = 550) => { g.font = FONT(px, wgt); g.fillStyle = col; const words = String(text).split(" "); let line = ""; let n = 0;
-      for (const wd of words) { const t = line ? line + " " + wd : wd; if (g.measureText(t).width > W - 80 && line) { g.fillText(line, 40, y + px); y += px * 1.28; line = wd; if (++n >= maxLines) { line = ""; break; } } else line = t; }
-      if (line) { g.fillText(line, 40, y + px); y += px * 1.28; } };
+    g.fillStyle = "#A9B0D0"; g.font = FONT(30, 600); g.fillText(M.kicker || "", 40, y + 30); y += M.figure ? 38 : 46;
+    g.fillStyle = "#FFFFFF"; g.font = FONT(50, 700); g.fillText(M.title || "", 40, y + 48, W - 80); y += M.figure ? 58 : 70;
+    const bodyPx = M.figure ? 56 : 30; let lead = M.figure ? 1.16 : 1.28;
+    const wrap = (text, px, col, maxLines = 12, wgt = 550) => { g.font = FONT(px, wgt); g.fillStyle = col;
+      for (const line of wrapLines((t) => g.measureText(t).width, text, W - 80)) { g.fillText(line, 40, y + px, W - 80); y += px * lead; } };
     // predict strip
     if (M.predict) {
       wrap(M.predict.text, 34, "#C9BDFF", 3, 600); y += 6; x = 40;
-      M.predict.ids.forEach((id, i) => { const lab = M.predict.chips[i]; g.font = FONT(30, 650); const w = Math.max(150, g.measureText(lab).width + 50); if (x + w > W - 30) { x = 40; y += 78; }
-        const on = M.predict.order ? (M.predict.progress || []).includes(lab) : M.predict.picked === lab; this.btn("predict:" + id, M.predict.order && on ? `${(M.predict.progress || []).indexOf(lab) + 1}. ${lab}` : lab, x, y, w, 66, on, M.predict.picked != null && M.predict.order); x += w + 10; });
-      y += 84;
+      const ch = M.figure ? 56 : 66, cy = M.figure ? 66 : 78;
+      M.predict.ids.forEach((id, i) => { const lab = M.predict.chips[i]; g.font = FONT(30, 650); const w = Math.max(150, g.measureText(lab).width + 50); if (x + w > W - 30) { x = 40; y += cy; }
+        const on = M.predict.order ? (M.predict.progress || []).includes(lab) : M.predict.picked === lab; this.btn("predict:" + id, M.predict.order && on ? `${(M.predict.progress || []).indexOf(lab) + 1}. ${lab}` : lab, x, y, w, ch, on, M.predict.picked != null && M.predict.order); x += w + 10; });
+      y += M.figure ? 70 : 84;
     }
     if (M.reveal) { wrap(`You picked: ${M.reveal.picked}`, 30, "#C9BDFF", 2); wrap(`The model: ${M.reveal.model}`, 30, "#AACDFF", 2); if (M.result) wrap(M.result, 32, "#F2F4FF", 3, 600); y += 4; }
     // readout dial (Leo): Inter semibold tabular figures, warm ink on a cream dial, 2% inner shadow, no glow
     if (M.readout) {
-      const second = M.readout.second; const dw = second ? (W - 100) * 0.62 : W - 80, dh = 230;
+      const second = M.readout.second; const dw = second ? (W - 100) * 0.62 : W - 80, dh = M.figure ? 168 : 230;
       this.dial(40, y, dw, dh, M.readout.label, M.readout.main, M.readout.sub || M.readout.unit, !M.readout.sub);
       if (second) this.dial(40 + dw + 20, y, W - 100 - dw, dh, second.label, second.main, null);
       y += dh + 16;
@@ -96,31 +104,50 @@ export class XRPanel {
       const rt = M.tiles.find((t) => t.id === "r");
       if (rt && rt.bubble) { g.fillStyle = "#E8A85A"; g.font = FONT(56, 650); g.fillText(pretty(rt.bubble), 40, y + 56, W - 80); y += 72; }
     }
-    if (M.view !== "sort") for (const c of (M.cards || []).slice(0, 1)) wrap(c, 30, "#E6E9F8", 4);
-    for (const l of (M.lines || []).slice(0, M.view === "sort" ? 0 : 5)) wrap(l, 29, "#C3C9E6", 3);
+    if (M.figure && M.view !== "sort") {
+      const mainBody = [...(M.cards || []).slice(0, 1).map((c) => [c, "#E6E9F8"]), ...(M.lines || []).slice(0, 2).map((l) => [l, "#C3C9E6"])];
+      g.font = FONT(bodyPx, 550);
+      let units = 0; for (const [text] of mainBody) units += bodyPx * wrapLines((s) => g.measureText(s).width, text, W - 80).length;
+      const room = Math.max(units, (hy - 130) - y);
+      lead = Math.min(1.16, Math.max(1.0, room / Math.max(1, units)));
+      for (const [text, col] of mainBody) wrap(text, bodyPx, col);
+      const extra = (M.lines || []).slice(2, 5);
+      if (extra.length) {
+        g.font = FONT(40, 550);
+        let need = 0; for (const text of extra) need += 40 * wrapLines((s) => g.measureText(s).width, text, W - 80).length;
+        if (y + need * Math.min(lead, 1.08) + 130 <= hy) { const saved = lead; lead = Math.min(lead, 1.08); for (const text of extra) wrap(text, 40, "#C3C9E6"); lead = saved; }
+      }
+    } else {
+      if (M.view !== "sort") for (const c of (M.cards || []).slice(0, 1)) wrap(c, bodyPx, "#E6E9F8");
+      for (const l of (M.lines || []).slice(0, M.view === "sort" ? 0 : 5)) wrap(l, M.figure ? 56 : 29, "#C3C9E6");
+    }
     if (M.whyOpen && M.why) { wrap(M.why.text, 28, "#E3DBFF", 3); wrap(M.why.foot, 24, "#A9B0D0", 1); }
     if ((M.wrongOpen || M.view === "sort") && M.wrong && M.view !== "sort") M.wrong.forEach((w, i) => wrap(`${i + 1}. ${w}`, 24, "#E3DBFF", 2));
     // S5 sort (two bins): Real / Model buttons per card
     if (M.sort && M.view === "sort") {
       y += 8;
-      const colW = (W - 80 - 20) / 2, btnH = 80, typ = 56, lineH = typ * 1.15, rowH = 12 + lineH * 3 + 10 + btnH + 16;
-      M.sort.forEach((c, i) => {
-        const col = i % 2, row = Math.floor(i / 2); const tx = 40 + col * (colW + 20), ty = y + row * rowH;
-        g.font = FONT(typ, 550); g.fillStyle = "#E6E9F8";
-        const words = String(c.text).split(" "); let line = "", yy = ty + typ, lines = 0; const maxW = colW - 16;
-        const flush = () => { if (line && lines < 3) { g.fillText(line, tx, yy, maxW); yy += lineH; lines++; line = ""; } };
-        for (const wd of words) { const t = line ? line + " " + wd : wd; if (g.measureText(t).width > maxW && line) { flush(); line = wd; } else line = t; }
-        flush();
-        const byCard = ty + 12 + lineH * 3 + 8;
-        this.btn(`sort:${c.id}:real`, "Real", tx, byCard, (colW - 16) / 2, btnH, c.picked === "real");
-        this.btn(`sort:${c.id}:model`, "Model", tx + (colW - 16) / 2 + 16, byCard, (colW - 16) / 2, btnH, c.picked === "model");
-      });
-      y += Math.ceil(M.sort.length / 2) * rowH + 8;
+      const colW = (W - 80 - 20) / 2, btnH = 80, typ = 56, lineH = typ * 1.15, maxW = colW - 16;
+      g.font = FONT(typ, 550);
+      const packed = M.sort.map((c, i) => { const lines = wrapLines((t) => g.measureText(t).width, c.text, maxW); return { c, i, col: i % 2, lines, h: 12 + lineH * Math.max(1, lines.length) + 10 + btnH + 16 }; });
+      for (let row = 0; row * 2 < packed.length; row++) {
+        const pair = packed.slice(row * 2, row * 2 + 2); const rowH = Math.max(...pair.map((p) => p.h));
+        for (const item of pair) {
+          const tx = 40 + item.col * (colW + 20), ty = y;
+          g.font = FONT(typ, 550); g.fillStyle = "#E6E9F8"; let yy = ty + typ;
+          for (const line of item.lines) { g.fillText(line, tx, yy, maxW); yy += lineH; }
+          const byCard = ty + 12 + lineH * item.lines.length + 8;
+          this.btn(`sort:${item.c.id}:real`, "Real", tx, byCard, (colW - 16) / 2, btnH, item.c.picked === "real");
+          this.btn(`sort:${item.c.id}:model`, "Model", tx + (colW - 16) / 2 + 16, byCard, (colW - 16) / 2, btnH, item.c.picked === "model");
+        }
+        y += rowH;
+      }
+      y += 8;
     }
     // controls sit under the content, never over it; help stays at the bottom
-    const hy = H - 92; let by = y + 16; if (by + 130 > hy) by = Math.max(y + 8, hy - 130);
+    let by = y + 16; const compact = by + 130 > hy; const bh = compact ? 52 : 56, step = compact ? 54 : 64;
+    if (compact) by = Math.max(y + 4, hy - 110);
     x = 40;
-    for (const b of controls.filter((c) => !/^sort:/.test(c.id))) { g.font = FONT(28, 650); const w = Math.max(130, Math.min(420, g.measureText(b.label).width + 44)); if (x + w > W - 30) { x = 40; by += 64; } if (by + 56 > hy) break; this.btn(b.id, b.label, x, by, w, 56, !!b.on || !!b.primary, b.disabled); x += w + 8; }
+    for (const b of controls.filter((c) => !/^sort:/.test(c.id))) { g.font = FONT(28, 650); const w = Math.max(130, Math.min(420, g.measureText(b.label).width + 44)); if (x + w > W - 30) { x = 40; by += step; } if (by + bh > hy) break; this.btn(b.id, b.label, x, by, w, bh, !!b.on || !!b.primary, b.disabled); x += w + 8; }
     x = 40; g.fillStyle = "#A9B0D0"; g.font = FONT(26, 600); g.fillText("Help", x, hy + 40); x += 80;
     for (const h of helps) { this.btn(h.id, h.label, x, hy, 200, 62, h.on, h.disabled); x += 210; }
     this.tex.needsUpdate = true;
