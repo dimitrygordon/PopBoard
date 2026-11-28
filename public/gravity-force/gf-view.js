@@ -4,7 +4,7 @@ import { GF, wellDepth, stepMarble } from "./gf-sim.js";
 import { S1, S2, S4, SHEET, SCENE_WORLDS, WORLD_NAME, OBJ_NAME, s4Height, needleAngleDeg, stepSheet } from "./gf-scenes.js";
 import { SORT_CARDS, pretty } from "./gf-scenes.js";
 import { springScale, balance, traveler, robot, station, stepPlatform, loadModel, cloneModel, rigSpringScaleGLB, rigBalanceGLB, PROP_SIZE, ROBOT, INK, CREAM } from "./gf-props.js";
-import { paintUniforms, paintTree, outlineMaterial, FatLine, PAINT } from "./gf-paint.js";
+import { paintUniforms, paintTree, outlineMaterial, skipOutline, FatLine, PAINT } from "./gf-paint.js";
 
 const FONT = (px, w = 600) => `${w} ${px}px Inter, -apple-system, system-ui, sans-serif`;
 export const ARROW = { color: 0xFFD27A, ghost: 0xE6E9F8, radius: 0.011, head: 0.045 };
@@ -103,8 +103,8 @@ export class LabView {
     this.root.add(new T.HemisphereLight(0xE8ECFF, 0x2E1E5C, 1.6)); const key = new T.DirectionalLight(0xFFF1DC, 1.6); key.position.set(-1.5, 3, 1.5); this.root.add(key);
   }
   bench(g, w, d, y, z) {
-    const T = this.T; const top = new T.Mesh(new T.BoxGeometry(w, 0.04, d), this.mat(0x2A2F5E)); top.position.set(0, y - 0.02, z); g.add(top);
-    for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const leg = new T.Mesh(new T.BoxGeometry(0.04, y - 0.04, 0.04), this.mat(0x1E2350)); leg.position.set(sx * (w / 2 - 0.05), (y - 0.04) / 2, z + sz * (d / 2 - 0.05)); g.add(leg); }
+    const T = this.T; const top = new T.Mesh(new T.BoxGeometry(w, 0.04, d), this.mat(0x5A6498)); top.position.set(0, y - 0.02, z); g.add(top);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const leg = new T.Mesh(new T.BoxGeometry(0.04, y - 0.04, 0.04), this.mat(0x3E4A7A)); leg.position.set(sx * (w / 2 - 0.05), (y - 0.04) / 2, z + sz * (d / 2 - 0.05)); g.add(leg); }
   }
   // ---------------- S1 Pull Meter ----------------
   buildPull() {
@@ -142,7 +142,7 @@ export class LabView {
     const yE = s.y + 0.1, yM = s.y + 0.17;
     s.aE.position.set(s.x0 + 0.06, yE, s.z); s.gE.position.copy(s.aE.position); s.aE.userData.setLength(m.arrowM, m.keepsGoing); s.gE.userData.setLength(m.ghostM);
     s.aM.position.set(mx - 0.03, yM, s.z); s.gM.position.copy(s.aM.position); s.aM.userData.setLength(m.arrowM, m.keepsGoing); s.gM.userData.setLength(m.ghostM);
-    s.lE.position.set(s.x0 - 0.02, yE + 0.035, s.z + 0.01); s.lM.position.set(mx + 0.04, yM + 0.04, s.z + 0.01);
+    s.lE.position.set(s.x0 + 0.08, yE + 0.08, s.z + 0.01); s.lM.position.set(mx + 0.04, yM + 0.04, s.z + 0.01);
     s.lPull.userData.set(m.lines[0]); s.lE.userData.set(pretty(m.labels.earth)); s.lM.userData.set(pretty(m.labels.moon));
     const key = JSON.stringify(lab.pins); if (key !== s.pinsKey) { s.pinsKey = key; this.drawPins(lab.pins); }
   }
@@ -191,26 +191,29 @@ export class LabView {
       const plat = stepPlatform(T); p.add(plat); plat.userData.noOutline = false;
       const tint = new T.Mesh(new T.CircleGeometry(PROP_SIZE.platform.r * 0.92, 48), this.mat(deck[w])); tint.rotation.x = -Math.PI / 2; tint.position.y = PROP_SIZE.platform.h + 0.0008; p.add(tint);
       if (w === "jupiter") { const cl = this.body("jupiter", 0.24); cl.scale.y = 0.18; cl.position.y = -0.02; p.add(cl); }
-      if (w === "ns") { const ns = new T.Mesh(new T.SphereGeometry(0.05, 24, 16), new T.MeshBasicMaterial({ color: 0xCFE3FF })); ns.position.set(0, 0.0, 0.32); p.add(ns); const halo = new T.Mesh(new T.SphereGeometry(0.075, 24, 16), new T.MeshBasicMaterial({ color: 0x9CC2FF, transparent: true, opacity: 0.25, depthWrite: false })); halo.position.copy(ns.position); p.add(halo); const nl = this.label("about 24 km across, the size of a city", { size: 0.022, color: "#C3C9E6", bold: 500 }); nl.position.set(0, 0.11, 0.34); p.add(nl); }
+      let nsL = null;
+      if (w === "ns") { const ns = new T.Mesh(new T.SphereGeometry(0.05, 24, 16), new T.MeshBasicMaterial({ color: 0xCFE3FF })); ns.position.set(0, 0.0, 0.32); p.add(ns); const halo = new T.Mesh(new T.SphereGeometry(0.075, 24, 16), new T.MeshBasicMaterial({ color: 0x9CC2FF, transparent: true, opacity: 0.25, depthWrite: false })); halo.position.copy(ns.position); p.add(halo); nsL = this.label("about 24 km across,\nthe size of a city"); nsL.position.set(0, 0.14, 0.28); p.add(nsL); }
       const sc = springScale(T); sc.position.y = PROP_SIZE.platform.h; p.add(sc);
-      const sign = this.label(WORLD_NAME[w] === "Jupiter" ? "Jupiter\n(near the cloud tops)" : WORLD_NAME[w], { size: 0.045 }); sign.position.set(0, 1.55, 0); p.add(sign);
-      this.s3.plats[w] = { p, sc, x, plat };
+      const sign = this.label(WORLD_NAME[w] === "Jupiter" ? "Jupiter\n(near the cloud tops)" : WORLD_NAME[w]); sign.position.set(0, 1.78, 0); p.add(sign);
+      this.s3.plats[w] = { p, sc, x, plat, sign, nsL };
     });
-    // the robot (Angelo v3.2) is the traveler on every world (Leo); the same figure, the same 50 kg
-    this.s3.robot = robot(T); g.add(this.s3.robot);
-    // balance on a small stand in front of the active platform, so its plate faces the student
-    const stand = new T.Group(); const col = new T.Mesh(new T.CylinderGeometry(0.03, 0.05, 0.78, 16), this.mat(0x2A2F5E)); col.position.y = 0.39; stand.add(col);
-    const top = new T.Mesh(new T.CylinderGeometry(0.16, 0.16, 0.02, 32), this.mat(0xD9B98A)); top.position.y = 0.79; stand.add(top);
+    // Dimitry t435: the student is the traveler on Earth, Moon, Mars and Jupiter; the robot is only at the neutron star
+    this.s3.traveler = traveler(T); g.add(this.s3.traveler);
+    this.s3.robot = robot(T); this.s3.robot.visible = false; g.add(this.s3.robot);
+    // balance on a stand 0.28 m farther from the platform so the figure's hand does not overlap the plinth (Angelo)
+    const stand = new T.Group(); const col = new T.Mesh(new T.CylinderGeometry(0.03, 0.05, 0.78, 16), this.mat(0x5A6498)); col.position.y = 0.39; stand.add(col);
+    const top = new T.Mesh(new T.CylinderGeometry(0.16, 0.16, 0.02, 32), this.mat(0xD9B98A)); top.position.y = 0.79; top.userData.noOutline = true; stand.add(top);
     const bal = balance(T); bal.position.y = 0.8; stand.add(bal); g.add(stand); this.s3.stand = stand; this.s3.bal = bal;
-    const balL = this.label("Balance: 50 kg", { size: 0.03 }); balL.position.set(0, 1.18, 0); stand.add(balL);
+    const balL = this.label("Balance: 50 kg"); balL.position.set(0.02, 1.36, 0.08); stand.add(balL);
     const bar = this.label("", { size: 0.034, color: "#FFE3A6" }); g.add(bar); this.s3.bar = bar;
   }
   /** Swap in Angelo's GLBs (gf-props MODEL_BASE). The code-built props stay until each file loads, and stay for good if
-   * it fails. Angelo's unlit paint is kept as is; Leo's treatment adds only the ink outline shell around each mesh. */
+   * it fails. Angelo's unlit albedo is kept as is (no tone mapping). Ink outlines are thinner, skipped on contact_shadow,
+   * pointer_shadow, the balance plinth (body) and tiny parts. */
   async swapGLB() {
     const T = this.T; const S = this.s3; this.glb = { loaded: [], failed: [] };
-    const outline = (root) => { const ol = outlineMaterial(T, this.U); const list = []; root.traverse((o) => { if (o.isMesh && !o.material.transparent && o.name !== "readout" && o.name !== "lens" && o.name !== "needle") list.push(o); });
-      for (const o of list) { const sh = new T.Mesh(this.weld(o.geometry), ol); sh.userData.gfOutline = true; o.add(sh); } };
+    const outline = (root) => { const ol = outlineMaterial(T, this.U); const list = []; root.traverse((o) => { if (o.isMesh && o.name !== "readout" && o.name !== "lens" && o.name !== "needle" && !skipOutline(o, root)) list.push(o); });
+      for (const o of list) { if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere(); const r = o.geometry.boundingSphere.radius * Math.max(o.scale.x, o.scale.y, o.scale.z); if (r < 0.01) continue; const sh = new T.Mesh(this.weld(o.geometry), ol); sh.userData.gfOutline = true; sh.userData.noPaint = true; o.add(sh); } };
     const done = (name, ok) => { (ok ? this.glb.loaded : this.glb.failed).push(name); };
     const [plat, sc, bal, rb] = await Promise.all(["step_platform", "spring_scale", "balance", "robot"].map((n) => loadModel(T, n)));
     for (const w of SCENE_WORLDS) {
@@ -235,9 +238,11 @@ export class LabView {
   updateWeigh(m, lab) {
     const s = this.s3; for (const w of SCENE_WORLDS) { const P = s.plats[w]; const n = GF.travelerKg * GF.G * GF.worlds[w].massKg / GF.worlds[w].radiusM ** 2; P.sc.userData.setReading(needleAngleDeg(n), w === lab.url.world ? m.spring.main : "", w === lab.url.world ? m.spring.sub : ""); P.p.scale.setScalar(w === lab.url.world ? 1 : 0.92); }
     const P = s.plats[lab.url.world];
-    const fig = s.robot; fig.visible = true; const sk = P.p.scale.x;   // robot root at scale-local (0, 0.0485, -0.086) (Angelo)
+    for (const w of SCENE_WORLDS) { const Q = s.plats[w]; Q.sign.visible = w === lab.url.world; if (Q.nsL) Q.nsL.visible = lab.url.world === "ns"; }
+    const useRobot = lab.url.world === "ns"; s.robot.visible = useRobot; s.traveler.visible = !useRobot;
+    const fig = useRobot ? s.robot : s.traveler; const sk = P.p.scale.x;   // stand on the scale at (0, 0.0485, -0.086) (Angelo)
     fig.position.set(P.x + ROBOT.onScale[0] * sk, (PROP_SIZE.platform.h + ROBOT.onScale[1]) * sk, s.z + ROBOT.onScale[2] * sk); fig.rotation.y = 0; fig.scale.setScalar(sk);
-    s.stand.position.set(P.x + 0.36, 0, s.z + 0.42);
+    s.stand.position.set(P.x + 0.64, 0, s.z + 0.38); s.stand.rotation.y = -0.28;
     s.bar.userData.set(`${m.name}: ${m.lines[0].split(":")[0] === m.name ? m.lines[0].slice(m.name.length + 2) : m.spring.main}`); s.bar.position.set(P.x, 1.66, s.z);
     s.bar.visible = false;
   }
@@ -249,12 +254,12 @@ export class LabView {
     const ruler = new T.Mesh(new T.BoxGeometry(0.03, S4.rulerM, 0.012), this.mat(0xF3E9D2)); ruler.position.set(x + 0.2, S4.rulerM / 2, z); g.add(ruler);
     for (let k = 0; k <= 4; k++) { const yy = k === 1 ? 0.5 : k * 0.5; const t = new T.Mesh(new T.BoxGeometry(k % 2 ? 0.07 : 0.11, 0.008, 0.016), this.mat(0x2A2420)); t.position.set(x + 0.2, yy, z + 0.002); g.add(t); if (k === 0 || k === 1 || k === 4) { const l = this.label(k === 0 ? "Ground" : k === 1 ? "100 km" : "400 km"); l.position.set(x + 0.36, yy + 0.02, z); g.add(l); } }
     // the 35,786 km stop is far off this ruler: a dashed cap at the top with its own cream tick label
-    const capL = this.label("35,786 km: about 179 m up this ruler"); capL.position.set(x + 0.05, 2.5, z); g.add(capL);
+    const capL = this.label("35,786 km:\nabout 179 m up this ruler"); capL.position.set(x - 0.08, 2.22, z); g.add(capL);
     const capLine = new FatLine(T, this.U, { color: 0xF3E9D2, width: 2, dashed: true, max: 4 }); capLine.setPoints([new T.Vector3(x + 0.2, 2.0, z), new T.Vector3(x + 0.2, 2.36, z)]); g.add(capLine.mesh);
     // the station at the 400 km mark, drawn far bigger than scale so it reads (Leo: about 15 to 20% of the frame)
-    const issR = station(T, 0.8); issR.position.set(x + 0.95, 2.05, z - 0.2); issR.rotation.set(1.15, -0.25, 0.08); g.add(issR);
-    const issRL = this.label("Space station, 400 km\n(drawn much bigger than scale)"); issRL.position.set(x + 0.95, 1.66, z - 0.2); g.add(issRL);
-    const note = this.label("Ruler to scale: 0.5 m stands for 100 km", { size: 0.045, color: "#C3C9E6", bold: 500 }); note.position.set(x + 0.75, 1.05, z); g.add(note);
+    const issR = station(T, 0.8); issR.position.set(x + 0.52, 1.95, z - 0.08); issR.rotation.set(1.05, -0.2, 0.08); g.add(issR);
+    const issRL = this.label("Space station, 400 km\n(drawn much bigger than scale)"); issRL.position.set(x + 0.52, 1.55, z - 0.08); g.add(issRL);
+    const note = this.label("Ruler to scale:\n0.5 m stands for 100 km"); note.position.set(x - 0.12, 0.72, z); g.add(note);
     const cable = new T.Mesh(new T.CylinderGeometry(0.002, 0.002, 1, 6), this.mat(0xC3C9E6)); g.add(cable);
     const cab = new T.Group(); const glass = new T.Mesh(new T.BoxGeometry(0.2, 0.26, 0.2), new T.MeshBasicMaterial({ color: 0xAACDFF, transparent: true, opacity: 0.18, depthWrite: false })); cab.add(glass);
     const edges = new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(0.2, 0.26, 0.2)), new T.LineBasicMaterial({ color: 0xE6E9F8, transparent: true, opacity: 0.7 })); cab.add(edges);
@@ -273,8 +278,8 @@ export class LabView {
     const st = station(T, 0.17); out.add(st);
     const orbit = new FatLine(T, this.U, { color: 0xF3E9D2, width: 2.5, dashed: true, opacity: 0.85, max: 200 }); orbit.setPoints(Array.from({ length: 181 }, (_, i) => new T.Vector3(Math.cos(i / 180 * Math.PI * 2) * orbitR, 0, Math.sin(i / 180 * Math.PI * 2) * orbitR))); out.add(orbit.mesh);
     const trailF = new FatLine(T, this.U, { color: 0xE8A85A, width: 4, max: 64 }); out.add(trailF.mesh); const trail = { trailF };
-    const stL = this.label("Space station (drawn much bigger than scale)"); st.add(stL); stL.position.set(0, 0.06, 0);
-    const orbL = this.label("Its path: about 400 km up, one lap in about 92 minutes"); orbL.position.set(0, -0.42, 0); out.add(orbL);
+    const stL = this.label("Space station\n(drawn much bigger than scale)"); st.add(stL); stL.position.set(0, 0.1, 0);
+    const orbL = this.label("Its path: about 400 km up,\none lap in about 92 minutes"); orbL.position.set(0, -0.42, 0); out.add(orbL);
     const outL = this.label("Outside view: the station falls around Earth", { size: 0.03 }); outL.position.set(0, 0.42, 0); out.add(outL);
     this.s4 = { ruler: g, x, z, earth, cab, cable, ghost, pullA, ghostL, pullL, cutL, scaleL, over, fig, ball, mini, out, st, trail, orbitR, fall: 0, step: "ride", y: 0 };
   }
@@ -303,7 +308,7 @@ export class LabView {
     const T = this.T, g = this.groups.well; const z = -1.15, y = 1.0;
     const sheet = new T.Group(); sheet.position.set(0, y, z); sheet.rotation.x = 0.2; g.add(sheet);
     const rim = new T.Mesh(new T.TorusGeometry(SHEET.radiusM, 0.012, 8, 96), this.mat(0xB8893A)); rim.rotation.x = Math.PI / 2; sheet.add(rim);
-    for (let i = 0; i < 3; i++) { const a = i * 2.094 + 0.5; const leg = new T.Mesh(new T.CylinderGeometry(0.015, 0.02, y + 0.1), this.mat(0x1E2350)); leg.position.set(Math.cos(a) * SHEET.radiusM, -(y + 0.1) / 2, Math.sin(a) * SHEET.radiusM); leg.rotation.x = -0.2; sheet.add(leg); }
+    for (let i = 0; i < 3; i++) { const a = i * 2.094 + 0.5; const leg = new T.Mesh(new T.CylinderGeometry(0.015, 0.02, y + 0.1), this.mat(0x3E4A7A)); leg.position.set(Math.cos(a) * SHEET.radiusM, -(y + 0.1) / 2, Math.sin(a) * SHEET.radiusM); leg.rotation.x = -0.2; sheet.add(leg); }
     const grid = new T.LineSegments(new T.BufferGeometry(), new T.LineBasicMaterial({ color: 0x9FC3FF, transparent: true, opacity: 0.75 })); sheet.add(grid);
     const fill = new T.Mesh(new T.BufferGeometry(), new T.MeshBasicMaterial({ color: 0x1A2A66, transparent: true, opacity: 0.5, side: T.DoubleSide, depthWrite: false, vertexColors: true })); sheet.add(fill);
     const center = new T.Group(); sheet.add(center);
@@ -323,8 +328,8 @@ export class LabView {
     const bins = {};
     for (const [k, x, title] of [["real", -0.33, "Real"], ["model", 0.33, "Model"]]) {
       const tray = new T.Group(); tray.position.set(x, y, z + 0.02); g.add(tray);
-      const base = new T.Mesh(new T.BoxGeometry(0.5, 0.02, 0.32), this.mat(0x22305F)); base.position.y = 0.01; tray.add(base);
-      for (const [w, d, px, pz] of [[0.5, 0.02, 0, -0.15], [0.5, 0.02, 0, 0.15], [0.02, 0.32, -0.24, 0], [0.02, 0.32, 0.24, 0]]) { const wall = new T.Mesh(new T.BoxGeometry(w, 0.07, d), this.mat(0x2B3B72)); wall.position.set(px, 0.045, pz); tray.add(wall); }
+      const base = new T.Mesh(new T.BoxGeometry(0.5, 0.02, 0.32), this.mat(0x3A4A80)); base.position.y = 0.01; tray.add(base);
+      for (const [w, d, px, pz] of [[0.5, 0.02, 0, -0.15], [0.5, 0.02, 0, 0.15], [0.02, 0.32, -0.24, 0], [0.02, 0.32, 0.24, 0]]) { const wall = new T.Mesh(new T.BoxGeometry(w, 0.07, d), this.mat(0x4A5A90)); wall.position.set(px, 0.045, pz); tray.add(wall); }
       const lip = new T.Mesh(new T.BoxGeometry(0.5, 0.006, 0.02), this.mat(0xE8C9A0)); lip.position.set(0, 0.082, 0.15); tray.add(lip);
       const l = this.label(title); l.position.set(0, -0.06, 0.2); tray.add(l);
       bins[k] = tray;
@@ -337,8 +342,8 @@ export class LabView {
         cg.fillStyle = INK; cg.font = FONT(38, 600); cg.textBaseline = "top";
         const words = c.text.split(" "); let line = "", yy = 22; for (const wd of words) { const t = line ? line + " " + wd : wd; if (cg.measureText(t).width > 460) { cg.fillText(line, 26, yy); yy += 48; line = wd; } else line = t; } cg.fillText(line, 26, yy);
         const tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; tex.anisotropy = 4;
-        const card = new T.Mesh(new T.PlaneGeometry(0.36, 0.135), new T.MeshBasicMaterial({ map: tex, toneMapped: false, side: T.DoubleSide }));
-        card.userData.noPaint = true; const home = new T.Vector3(-0.4 + (i % 3) * 0.4, 1.36 - Math.floor(i / 3) * 0.17, z - 0.05);
+        const card = new T.Mesh(new T.PlaneGeometry(0.42, 0.17), new T.MeshBasicMaterial({ map: tex, toneMapped: false, side: T.DoubleSide }));
+        card.userData.noPaint = true; const home = new T.Vector3(-0.44 + (i % 3) * 0.44, 1.38 - Math.floor(i / 3) * 0.2, z - 0.05);
         card.position.copy(home); card.userData.home = home; g.add(card); cards[c.id] = card;
       });
     }
@@ -348,8 +353,8 @@ export class LabView {
     const S = this.sortV; const T = this.T; const count = { real: 0, model: 0 };
     for (const [id, card] of Object.entries(S.cards)) {
       const bin = lab.sortPicks[id]; let tgt, rot;
-      if (bin) { const n = count[bin]++; const b = S.bins[bin].position; tgt = new T.Vector3(b.x + ((n % 2) ? 0.06 : -0.06), S.y + 0.03 + n * 0.006, b.z + 0.03 - n * 0.03); rot = -Math.PI / 2 + 0.2; }
-      else { tgt = card.userData.home; rot = -0.35; }
+      if (bin) { const n = count[bin]++; const b = S.bins[bin].position; tgt = new T.Vector3(b.x + ((n % 2) ? 0.08 : -0.08), S.y + 0.16 + n * 0.045, b.z + 0.04 - n * 0.02); rot = -0.48; }
+      else { tgt = card.userData.home; rot = -0.22; }
       const k = this.calm ? 1 : Math.min(1, dt * 6); card.position.lerp(tgt, k); card.rotation.x += (rot - card.rotation.x) * k;
     }
   }
@@ -401,30 +406,52 @@ export class LabView {
     if (cam) this.placeLabels(cam);
   }
   /** Upright, camera-facing, constant on-screen size. Flat: parallel to the screen (no tilt from the off-centre view).
-   * Headset: turned toward the eye with world up, so a head roll never tilts the text. */
+   * Headset: turned toward the eye with world up, so a head roll never tilts the text.
+   * Flat screens also declutter overlaps and clamp every pill to a 12 px safe margin inside the visible stage
+   * (the left column on desktop, so labels stay clear of the side panel; below the phone header). */
   placeLabels(cam) {
     const T = this.T; const wp = new T.Vector3(), pq = new T.Quaternion(), fwd = new T.Vector3(0, 0, -1).applyQuaternion(cam.quat);
     const k = 2 * Math.tan((cam.fov || 46) * Math.PI / 360) / Math.max(1, cam.hCss || 800); const px = cam.phone ? LABEL.phonePx : LABEL.deskPx;
     const placed = []; const up = new T.Vector3(0, 1, 0).applyQuaternion(cam.quat);
+    const right = new T.Vector3(1, 0, 0).applyQuaternion(cam.quat);
+    const hCss = cam.hCss || 800, wCss = cam.wCss || (cam.camera && cam.camera.aspect ? cam.camera.aspect * hCss : hCss * 1.6);
+    const visW = cam.visibleW || wCss, margin = 12;
+    const leftB = -wCss / 2 + margin, rightB = -wCss / 2 + visW - margin;
+    const topB = hCss / 2 - (cam.phone ? 70 : margin), botB = -hCss / 2 + margin;
     for (const l of this.labels) {
+      if (l.userData.hiddenForOverlap) { l.material.opacity = l.userData.text === "" ? 0 : 1; l.userData.hiddenForOverlap = false; }
       if (l.userData.off) { if (l.userData.lastPos && l.position.equals(l.userData.lastPos)) l.position.sub(l.userData.off); l.userData.off = null; l.userData.lastPos = null; }
       if (!l.parent || l.material.opacity === 0) continue; let vis = true; for (let o = l; o; o = o.parent) if (!o.visible) { vis = false; break; } if (!vis) continue;
       l.getWorldPosition(wp);
       if (cam.xr) l.lookAt(cam.pos); else { l.parent.getWorldQuaternion(pq); l.quaternion.copy(pq.invert().multiply(cam.quat)); }
       const d = Math.max(0.05, cam.xr ? wp.distanceTo(cam.pos) : wp.clone().sub(cam.pos).dot(fwd));
       const font = cam.xr ? d * LABEL.xrPerM : px * d * k;
-      const ps = l.parent.getWorldScale(new T.Vector3()).x || 1; const s = font / LABEL.fontPx / ps;
-      l.scale.set(l.userData.w * s, l.userData.h * s, 1);
-      // declutter (flat screens): if this pill overlaps one already placed, lift it just clear, in screen pixels
+      const ps = l.parent.getWorldScale(new T.Vector3()).x || 1; const sc = font / LABEL.fontPx / ps;
+      l.scale.set(l.userData.w * sc, l.userData.h * sc, 1);
       if (cam.xr) continue;
       const ppx = 1 / (d * k); let cx, cy;
-      if (cam.camera) { cam.camera.updateMatrixWorld(); const pr = wp.clone().project(cam.camera); cx = pr.x * cam.hCss * cam.camera.aspect / 2; cy = pr.y * cam.hCss / 2; }
-      else { const sx = wp.clone().sub(cam.pos); const right = new T.Vector3(1, 0, 0).applyQuaternion(cam.quat); cx = sx.dot(right) * ppx; cy = sx.dot(up) * ppx; } const hw = l.userData.w * font / LABEL.fontPx * ppx / 2 + 3, hh = l.userData.h * font / LABEL.fontPx * ppx / 2 + 2;
+      if (cam.camera) { cam.camera.updateMatrixWorld(); const pr = wp.clone().project(cam.camera); cx = pr.x * wCss / 2; cy = pr.y * hCss / 2; }
+      else { const sx = wp.clone().sub(cam.pos); cx = sx.dot(right) * ppx; cy = sx.dot(up) * ppx; }
+      const hw = l.userData.w * font / LABEL.fontPx * ppx / 2 + 3, hh = l.userData.h * font / LABEL.fontPx * ppx / 2 + 2;
       const solve = (dir) => { let lift = 0; for (let pass = 0; pass < 8; pass++) { const hit = placed.find((r) => Math.abs(r.x - cx) < r.hw + hw && Math.abs(r.y - (cy + lift)) < r.hh + hh); if (!hit) return lift; lift = dir > 0 ? hit.y + hit.hh + hh - cy : hit.y - hit.hh - hh - cy; } return lift; };
-      const upL = solve(1), dnL = solve(-1); const topY = (cam.hCss || 800) / 2 - (cam.phone ? 70 : 8);
-      const lift = cy + upL + hh > topY ? dnL : Math.abs(dnL) < Math.abs(upL) ? dnL : upL;
-      placed.push({ x: cx, y: cy + lift, hw, hh });
-      if (lift !== 0) { const pl = l.parent.getWorldScale(new T.Vector3()).x || 1; const off = up.clone().multiplyScalar(lift / ppx / pl); const inv = l.parent.getWorldQuaternion(new T.Quaternion()).invert(); off.applyQuaternion(inv); l.position.add(off); l.userData.off = off; l.userData.lastPos = l.position.clone(); }
+      const upL = solve(1), dnL = solve(-1);
+      let dy = cy + upL + hh > topB ? dnL : Math.abs(dnL) < Math.abs(upL) ? dnL : upL;
+      let dx = 0;
+      if (cx + hw > rightB) dx = rightB - hw - cx;
+      if (cx + dx - hw < leftB) dx = leftB + hw - cx;
+      if (cy + dy + hh > topB) dy = topB - hh - cy;
+      if (cy + dy - hh < botB) dy = botB + hh - cy;
+      const px_ = cx + dx, py = cy + dy;
+      const overflow = px_ - hw < leftB - 1 || px_ + hw > rightB + 1 || py - hh < botB - 1 || py + hh > topB + 1;
+      const hit = placed.some((r) => Math.abs(r.x - px_) < r.hw + hw && Math.abs(r.y - py) < r.hh + hh);
+      if (overflow || hit) { l.material.opacity = 0; l.userData.hiddenForOverlap = true; continue; }
+      placed.push({ x: px_, y: py, hw, hh });
+      if (dx !== 0 || dy !== 0) {
+        const pl = l.parent.getWorldScale(new T.Vector3()).x || 1;
+        const off = up.clone().multiplyScalar(dy / ppx / pl).add(right.clone().multiplyScalar(dx / ppx / pl));
+        const inv = l.parent.getWorldQuaternion(new T.Quaternion()).invert(); off.applyQuaternion(inv);
+        l.position.add(off); l.userData.off = off; l.userData.lastPos = l.position.clone();
+      }
     }
   }
   /** Pickable things for a ray or a tap: the S1 Moon and the S5 start ball. */

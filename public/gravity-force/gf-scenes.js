@@ -222,11 +222,11 @@ export function needleAngleDeg(n) { const f = Math.min(1, Math.max(0, n / SCALE_
 
 const S3_RATIO = { earth: "the starting pull", moon: "about 1/6 of Earth's", mars: "about 2/5 of Earth's", jupiter: "about 2 and a half times Earth's", ns: "over a hundred billion times Earth's" };
 const S3_LINE = {
-  earth: () => `On Earth: the pull on you is ${s3NewtonText("earth")} (${lbFromN(weighN("earth", GF.travelerKg)).text}). That is your weight here.`,
+  earth: () => `A 50 kg traveler like you. On Earth the pull on you is ${s3NewtonText("earth")} (${lbFromN(weighN("earth", GF.travelerKg)).text}). That is your weight here.`,
   moon: () => `On the Moon: ${s3NewtonText("moon")} (${lbFromN(weighN("moon", GF.travelerKg)).text}), about one sixth of Earth's. Your mass is still 50 kg.`,
   mars: () => `On Mars: ${s3NewtonText("mars")} (${lbFromN(weighN("mars", GF.travelerKg)).text}), about two fifths of Earth's.`,
   jupiter: () => `Near Jupiter's cloud tops: ${s3NewtonText("jupiter")} (${lbFromN(weighN("jupiter", GF.travelerKg)).text}), about 2.5 times Earth's. Jupiter has no solid ground. This is near where the thick clouds are.`,
-  ns: () => `On a neutron star: ${s3NewtonText("ns")} (${lbFromN(weighN("ns", GF.travelerKg)).text}), over 100 billion times Earth's. This star is a ball about 24 km across (about 12 km in radius), with about 1.4 Suns of mass. A 50 kg robot stands here, not you.`,
+  ns: () => `On a neutron star: ${s3NewtonText("ns")} (${lbFromN(weighN("ns", GF.travelerKg)).text}), over 100 billion times Earth's. This star is a ball about 24 km across (about 12 km in radius), with about 1.4 Suns of mass. Imagine the 50 kg robot here. A real one would be crushed flat.`,
 };
 export const S3_TEXT = {
   words: "In this lab, 'weight' means the pull of the world on you. Mass is how much matter you are made of.",
@@ -243,7 +243,7 @@ export function s3Model(lab) {
   const g = surfaceG(world);
   const W = GF.worlds[world];
   const out = {
-    world, name: WORLD_NAME[world], figure: "robot",
+    world, name: WORLD_NAME[world], figure: world === "ns" ? "robot" : "traveler",
     balance: { main: "50 kg", label: "Balance" },
     spring: { main: s3NewtonText(world), sub: lb.text, label: "Spring scale" },
     needleDeg: needleAngleDeg(n), offDial: n > SCALE_FULL_N,
@@ -318,7 +318,7 @@ export const S5_TEXT = {
     "Close to a black hole, Newton's rule is not enough. This lab only trusts it far from the hole.",
   ],
   notToScale: "Not to scale. Real masses differ much more than the sheet can show.",
-  bhLabel: "Newton's rule is not enough close to here",
+  bhLabel: "Up close, Newton's law isn't accurate",
   twin: "From far away, a black hole pulls just like a star of the same mass. This is a pretend swap: the Sun will not become a black hole.",
   twinLink: "See the full black hole pull test in Life of a Star.",
   result: "Heavier means more bending at the same speed and distance.",

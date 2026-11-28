@@ -18,14 +18,34 @@ export class XRPanel {
     this.mesh.renderOrder = 60; this.mesh.frustumCulled = false; this.mesh.visible = false;
     this.cursor = new THREE.Mesh(new THREE.RingGeometry(0.006, 0.011, 24), new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, depthWrite: false, transparent: true }));
     this.cursor.renderOrder = 61; this.cursor.visible = false; this.mesh.add(this.cursor);
-    this.hits = []; this.hover = null; this.key = ""; this.ray = new THREE.Raycaster();
+    // handle bar above the panel: grip or a hand pinch here moves the panel (Dimitry, from Stellar Life)
+    const handle = new THREE.Mesh(new THREE.BoxGeometry(XRP.M * 0.92, 0.04, 0.035), new THREE.MeshBasicMaterial({ color: 0xF3E9D2, toneMapped: false }));
+    handle.position.set(0, h / 2 + 0.03, 0.01); handle.renderOrder = 62; handle.userData.handle = true; this.mesh.add(handle); this.handle = handle;
+    this.offset = { pos: new THREE.Vector3(), quat: new THREE.Quaternion() }; this.hasOffset = false;
+    this._grabLocal = new THREE.Matrix4(); this.hits = []; this.hover = null; this.key = ""; this.ray = new THREE.Raycaster();
   }
-  /** 1.2 m in front of the student, to the left, tilted up toward a seated or standing view. */
-  place(headPos, headYaw) {
+  defaultPose(headPos, headYaw) {
     const d = 1.2, side = -0.62; const fx = -Math.sin(headYaw), fz = -Math.cos(headYaw), rx = Math.cos(headYaw), rz = -Math.sin(headYaw);
-    this.mesh.position.set(headPos.x + fx * d + rx * side, Math.max(0.95, headPos.y - 0.12), headPos.z + fz * d + rz * side);
-    this.mesh.rotation.set(-0.12, headYaw + 0.42, 0, "YXZ");
+    const pos = new this.T.Vector3(headPos.x + fx * d + rx * side, Math.max(0.95, headPos.y - 0.12), headPos.z + fz * d + rz * side);
+    const quat = new this.T.Quaternion().setFromEuler(new this.T.Euler(-0.12, headYaw + 0.42, 0, "YXZ"));
+    return { pos, quat };
   }
+  /** 1.2 m in front of the student, to the left, tilted up. Applies the session offset if the student has moved the panel. */
+  place(headPos, headYaw) {
+    const def = this.defaultPose(headPos, headYaw);
+    this.mesh.position.copy(def.pos); this.mesh.quaternion.copy(def.quat);
+    if (this.hasOffset) { this.mesh.position.add(this.offset.pos.clone().applyQuaternion(def.quat)); this.mesh.quaternion.multiply(this.offset.quat); }
+  }
+  resetOffset() { this.hasOffset = false; this.offset.pos.set(0, 0, 0); this.offset.quat.identity(); }
+  captureOffset(headPos, headYaw) {
+    const def = this.defaultPose(headPos, headYaw); const inv = def.quat.clone().invert();
+    this.offset.pos.copy(this.mesh.position).sub(def.pos).applyQuaternion(inv);
+    this.offset.quat.copy(inv).multiply(this.mesh.quaternion); this.hasOffset = true;
+  }
+  beginGrab(obj) { obj.updateMatrixWorld(); this.mesh.updateMatrixWorld(); this._grabLocal.copy(obj.matrixWorld).invert().multiply(this.mesh.matrixWorld); }
+  followGrab(obj) { obj.updateMatrixWorld(); const w = obj.matrixWorld.clone().multiply(this._grabLocal); w.decompose(this.mesh.position, this.mesh.quaternion, new this.T.Vector3()); }
+  hitHandle(origin, dir) { if (!this.mesh.visible) return false; this.ray.set(origin, dir); return this.ray.intersectObject(this.handle, false).length > 0; }
+  nearHandle(worldPoint, radius = 0.1) { if (!this.mesh.visible || !worldPoint) return false; return this.handle.getWorldPosition(new this.T.Vector3()).distanceTo(worldPoint) < radius; }
   pick(origin, dir) {
     if (!this.mesh.visible) return null; this.ray.set(origin, dir); const h = this.ray.intersectObject(this.mesh, false)[0];
     if (!h || !h.uv) { this.cursor.visible = false; return null; }
@@ -57,33 +77,51 @@ export class XRPanel {
     if (M.reveal) { wrap(`You picked: ${M.reveal.picked}`, 30, "#C9BDFF", 2); wrap(`The model: ${M.reveal.model}`, 30, "#AACDFF", 2); if (M.result) wrap(M.result, 32, "#F2F4FF", 3, 600); y += 4; }
     // readout dial (Leo): Inter semibold tabular figures, warm ink on a cream dial, 2% inner shadow, no glow
     if (M.readout) {
-      const second = M.readout.second; const dw = second ? (W - 100) * 0.62 : W - 80, dh = 190;
+      const second = M.readout.second; const dw = second ? (W - 100) * 0.62 : W - 80, dh = 230;
       this.dial(40, y, dw, dh, M.readout.label, M.readout.main, M.readout.sub || M.readout.unit, !M.readout.sub);
       if (second) this.dial(40 + dw + 20, y, W - 100 - dw, dh, second.label, second.main, null);
       y += dh + 16;
     }
     // S6: the live equation tiles (Leo's round 8 frame), drawn on cream like the dial
     if (M.tiles) {
-      const tw = (W - 80 - 30) / 4, th = 150; M.tiles.forEach((t, i) => {
-        const tx = 40 + i * (tw + 10); g.fillStyle = t.glow ? "#F7E2B8" : CREAM; g.beginPath(); g.roundRect ? g.roundRect(tx, y, tw, th, 20) : g.rect(tx, y, tw, th); g.fill();
-        g.fillStyle = INK; g.font = FONT(40, 700); g.fillText(pretty(t.sym), tx + 14, y + 46); g.font = FONT(24, 600); if ("fontVariantNumeric" in g) g.fontVariantNumeric = "tabular-nums"; g.fillText(pretty(t.val), tx + 14, y + 86, tw - 24);
-        g.globalAlpha = 0.7; g.font = FONT(19, 400); g.fillText(pretty(t.unit), tx + 14, y + 118, tw - 24); g.globalAlpha = 1; });
-      y += th + 14; g.fillStyle = "#FFFFFF"; g.font = FONT(34, 650); g.fillText(`F = G m\u2081 m\u2082 / r\u00B2 = ${pretty(M.force)}`, 40, y + 34, W - 80); y += 48;
-      const rt = M.tiles.find((t) => t.id === "r"); if (rt && rt.bubble) { g.fillStyle = "#E8A85A"; g.font = FONT(26, 650); g.fillText(pretty(rt.bubble), 40, y + 28); y += 40; }
+      const tw = (W - 80 - 16) / 2, th = 180; M.tiles.forEach((t, i) => {
+        const col = i % 2, row = Math.floor(i / 2); const tx = 40 + col * (tw + 16), ty = y + row * (th + 10);
+        g.fillStyle = t.glow ? "#F7E2B8" : CREAM; g.beginPath(); g.roundRect ? g.roundRect(tx, ty, tw, th, 24) : g.rect(tx, ty, tw, th); g.fill();
+        g.fillStyle = INK; g.font = FONT(56, 700); g.fillText(pretty(t.sym), tx + 18, ty + 58);
+        g.font = FONT(56, 600); if ("fontVariantNumeric" in g) g.fontVariantNumeric = "tabular-nums"; g.fillText(pretty(t.val), tx + 18, ty + 118, tw - 36);
+        const unit = pretty(t.unit || ""); if (unit && unit.length <= 18) { g.globalAlpha = 0.75; g.font = FONT(56, 400); g.fillText(unit, tx + 18, ty + 166, tw - 36); g.globalAlpha = 1; }
+      });
+      y += 2 * (th + 10) + 8;
+      g.fillStyle = "#FFFFFF"; g.font = FONT(56, 650); g.fillText(`F = G m\u2081 m\u2082 / r\u00B2 = ${pretty(M.force)}`, 40, y + 56, W - 80); y += 72;
+      const rt = M.tiles.find((t) => t.id === "r");
+      if (rt && rt.bubble) { g.fillStyle = "#E8A85A"; g.font = FONT(56, 650); g.fillText(pretty(rt.bubble), 40, y + 56, W - 80); y += 72; }
     }
-    for (const c of (M.cards || []).slice(0, 1)) wrap(c, 30, "#E6E9F8", 4);
+    if (M.view !== "sort") for (const c of (M.cards || []).slice(0, 1)) wrap(c, 30, "#E6E9F8", 4);
     for (const l of (M.lines || []).slice(0, M.view === "sort" ? 0 : 5)) wrap(l, 29, "#C3C9E6", 3);
     if (M.whyOpen && M.why) { wrap(M.why.text, 28, "#E3DBFF", 3); wrap(M.why.foot, 24, "#A9B0D0", 1); }
     if ((M.wrongOpen || M.view === "sort") && M.wrong && M.view !== "sort") M.wrong.forEach((w, i) => wrap(`${i + 1}. ${w}`, 24, "#E3DBFF", 2));
     // S5 sort (two bins): Real / Model buttons per card
     if (M.sort && M.view === "sort") {
-      y += 4; g.fillStyle = "#F2F4FF"; g.font = FONT(30, 700); g.fillText("Real or model?", 40, y + 30); y += 42;
-      for (const c of M.sort) { if (y > H - 360) break; g.font = FONT(24, 550); g.fillStyle = "#E6E9F8"; g.fillText(c.text, 40, y + 24, W - 330); this.btn(`sort:${c.id}:real`, "Real", W - 280, y - 6, 116, 46, c.picked === "real"); this.btn(`sort:${c.id}:model`, "Model", W - 156, y - 6, 116, 46, c.picked === "model"); y += 54; }
+      y += 8;
+      const colW = (W - 80 - 20) / 2, btnH = 80, typ = 56, lineH = typ * 1.15, rowH = 12 + lineH * 3 + 10 + btnH + 16;
+      M.sort.forEach((c, i) => {
+        const col = i % 2, row = Math.floor(i / 2); const tx = 40 + col * (colW + 20), ty = y + row * rowH;
+        g.font = FONT(typ, 550); g.fillStyle = "#E6E9F8";
+        const words = String(c.text).split(" "); let line = "", yy = ty + typ, lines = 0; const maxW = colW - 16;
+        const flush = () => { if (line && lines < 3) { g.fillText(line, tx, yy, maxW); yy += lineH; lines++; line = ""; } };
+        for (const wd of words) { const t = line ? line + " " + wd : wd; if (g.measureText(t).width > maxW && line) { flush(); line = wd; } else line = t; }
+        flush();
+        const byCard = ty + 12 + lineH * 3 + 8;
+        this.btn(`sort:${c.id}:real`, "Real", tx, byCard, (colW - 16) / 2, btnH, c.picked === "real");
+        this.btn(`sort:${c.id}:model`, "Model", tx + (colW - 16) / 2 + 16, byCard, (colW - 16) / 2, btnH, c.picked === "model");
+      });
+      y += Math.ceil(M.sort.length / 2) * rowH + 8;
     }
-    // controls and help at the bottom
-    let by = H - 290; x = 40;
-    for (const b of controls.filter((c) => !/^sort:/.test(c.id))) { g.font = FONT(28, 650); const w = Math.max(130, Math.min(420, g.measureText(b.label).width + 44)); if (x + w > W - 30) { x = 40; by += 64; } if (by > H - 110) break; this.btn(b.id, b.label, x, by, w, 56, !!b.on || !!b.primary, b.disabled); x += w + 8; }
-    x = 40; const hy = H - 92; g.fillStyle = "#A9B0D0"; g.font = FONT(26, 600); g.fillText("Help", x, hy + 40); x += 80;
+    // controls sit under the content, never over it; help stays at the bottom
+    const hy = H - 92; let by = y + 16; if (by + 130 > hy) by = Math.max(y + 8, hy - 130);
+    x = 40;
+    for (const b of controls.filter((c) => !/^sort:/.test(c.id))) { g.font = FONT(28, 650); const w = Math.max(130, Math.min(420, g.measureText(b.label).width + 44)); if (x + w > W - 30) { x = 40; by += 64; } if (by + 56 > hy) break; this.btn(b.id, b.label, x, by, w, 56, !!b.on || !!b.primary, b.disabled); x += w + 8; }
+    x = 40; g.fillStyle = "#A9B0D0"; g.font = FONT(26, 600); g.fillText("Help", x, hy + 40); x += 80;
     for (const h of helps) { this.btn(h.id, h.label, x, hy, 200, 62, h.on, h.disabled); x += 210; }
     this.tex.needsUpdate = true;
   }
@@ -93,28 +131,28 @@ export class XRPanel {
     if ("fontVariantNumeric" in g) g.fontVariantNumeric = "tabular-nums";
     g.fillStyle = READOUT.ink; g.globalAlpha = 0.7; g.font = FONT(26, 600); g.fillText(label || "", x + 24, y + 38, w - 48); g.globalAlpha = 1;
     let px = READOUT.mainPx; g.font = FONT(px, 600); while (g.measureText(main).width > w - 48 && px > 40) { px -= 4; g.font = FONT(px, 600); }
-    g.fillText(main, x + 24, y + 44 + px * 0.9, w - 48);
-    if (sub) { g.globalAlpha = READOUT.subAlpha; g.font = FONT(Math.round(READOUT.mainPx * READOUT.subScale * (subIsUnit ? 0.6 : 1)), 400); g.fillText(sub, x + 24, y + h - 18, w - 48); g.globalAlpha = 1; }
+    const mainBase = y + 44 + px * 0.9; g.fillText(main, x + 24, mainBase, w - 48);
+    if (sub) { const subPx = Math.round(READOUT.mainPx * READOUT.subScale * (subIsUnit ? 0.6 : 1)); g.globalAlpha = READOUT.subAlpha; g.font = FONT(subPx, 400); const gap = 0.25 * subPx; g.fillText(sub, x + 24, mainBase + gap + subPx * 0.9, w - 48); g.globalAlpha = 1; }
   }
   btn(id, label, x, y, w, h, on, disabled) {
     const g = this.g; const hov = this.hover === id;
     g.fillStyle = disabled ? "rgba(255,255,255,0.05)" : on ? "rgba(127,178,255,0.42)" : hov ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.12)";
     g.beginPath(); g.roundRect ? g.roundRect(x, y, w, h, h / 2) : g.rect(x, y, w, h); g.fill(); if (on || hov) { g.strokeStyle = "rgba(170,205,255,0.9)"; g.lineWidth = 3; g.stroke(); }
-    g.fillStyle = disabled ? "#7A809E" : "#FFFFFF"; g.font = FONT(Math.min(30, h * 0.5), 650); g.textAlign = "center"; g.fillText(label, x + w / 2, y + h * 0.66, w - 20); g.textAlign = "left";
+    g.fillStyle = disabled ? "#7A809E" : "#FFFFFF"; g.font = FONT(Math.min(56, Math.max(30, Math.round(h * 0.7))), 650); g.textAlign = "center"; g.fillText(label, x + w / 2, y + h * 0.66, w - 20); g.textAlign = "left";
     if (!disabled) this.hits.push({ id, x, y, w, h });
   }
 }
 
 /** Gamepad mapping (xr-standard): right A fires a marble, right thumbstick press next scene, left thumbstick picks a chip,
- *  grip held pauses motion, B or Y shows or hides the panel (handled in ns-input). Returns edge events for this frame. */
+ *  left X held pauses motion, grip or a hand pinch on the panel handle moves the panel (offset kept for the session),
+ *  B or Y shows or hides the panel (handled in ns-input). Returns edge events for this frame. */
 export function readPads(sources, prev) {
-  const ev = { fire: false, nextScene: false, chip: 0, grip: false, stickX: 0 };
+  const ev = { fire: false, nextScene: false, chip: 0, pause: false, stickX: 0 };
   for (const src of sources || []) {
     const gp = src && src.gamepad; if (!gp) continue; const hand = src.handedness; const p = prev[hand] || (prev[hand] = { a: false, stick: false, chip: 0 });
     const pressed = (i) => !!(gp.buttons[i] && gp.buttons[i].pressed);
-    if (pressed(1)) ev.grip = true;
     if (hand === "right") { const a = pressed(4); if (a && !p.a) ev.fire = true; p.a = a; const st = pressed(3); if (st && !p.stick) ev.nextScene = true; p.stick = st; ev.stickX = gp.axes.length >= 4 ? gp.axes[2] : 0; }
-    if (hand === "left") { const x = gp.axes.length >= 4 ? gp.axes[2] : 0; const d = x > 0.7 ? 1 : x < -0.7 ? -1 : 0; if (d && d !== p.chip) ev.chip = d; p.chip = d; }
+    if (hand === "left") { ev.pause = pressed(4); const x = gp.axes.length >= 4 ? gp.axes[2] : 0; const d = x > 0.7 ? 1 : x < -0.7 ? -1 : 0; if (d && d !== p.chip) ev.chip = d; p.chip = d; }
   }
   return ev;
 }

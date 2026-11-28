@@ -107,14 +107,24 @@ function resize() {
   camera.updateProjectionMatrix();
 }
 addEventListener("resize", resize);
-function flatCamera() {
+const camEase = { pos: new THREE.Vector3(), tgt: new THREE.Vector3(), fov: 44, ready: false };
+function flatCamera(dt) {
   const sc = lab.url.scene; let V = VIEWS[sc]; if (sc === "iss" && lab.issStep === "station") V = VIEWS.issStation; if (lab.view === "sort" && sc === "well") V = VIEWS.sort;
   const tgt = new THREE.Vector3(...V.target), pos = new THREE.Vector3(...V.pos);
   if (sc === "weigh") { const x = S3_X(["earth", "moon", "mars", "jupiter", "ns"].indexOf(lab.url.world)); tgt.x += x; pos.x += x * 0.85; }
-  const fov = V.fov; const pr = !layout.phone ? panelEl.getBoundingClientRect() : null;
-  const effAspect = (pr && pr.width ? pr.left : layout.w) / layout.h; const pull = Math.min(2.1, Math.max(1, (layout.phone ? 1.4 : 1.6) / Math.max(0.3, effAspect)));
+  const pr = !layout.phone ? panelEl.getBoundingClientRect() : null;
+  const visW = pr && pr.width ? pr.left : layout.w;
+  const effAspect = visW / layout.h;
+  const ride = sc === "iss" && lab.issStep !== "station";
+  const base = layout.phone ? (sc === "weigh" ? 1.85 : ride ? 1.35 : 1.7) : 1.6;
+  const pull = Math.min(2.35, Math.max(1, base / Math.max(0.3, effAspect)));
+  const fovBump = (effAspect < 1.05 && !ride) ? (layout.phone ? 1.14 : 1.08) : 1;
+  const fov = Math.min(64, V.fov * fovBump);
   const off = pos.clone().sub(tgt).multiplyScalar(pull); const sph = new THREE.Spherical().setFromVector3(off); sph.theta += viewOff.yaw; sph.phi = Math.min(Math.PI * 0.49, Math.max(0.2, sph.phi + viewOff.pitch));
-  camera.position.copy(tgt).add(new THREE.Vector3().setFromSpherical(sph)); camera.fov = fov; camera.lookAt(tgt); camera.updateProjectionMatrix();
+  const goalPos = tgt.clone().add(new THREE.Vector3().setFromSpherical(sph));
+  if (!camEase.ready) { camEase.pos.copy(goalPos); camEase.tgt.copy(tgt); camEase.fov = fov; camEase.ready = true; }
+  else { const k = 1 - Math.exp(-8 * Math.max(0.001, dt || 0.016)); camEase.pos.lerp(goalPos, k); camEase.tgt.lerp(tgt, k); camEase.fov += (fov - camEase.fov) * k; }
+  camera.position.copy(camEase.pos); camera.fov = camEase.fov; camera.lookAt(camEase.tgt); camera.updateProjectionMatrix();
 }
 const ray = new THREE.Raycaster(); let drag = null;
 function ndc(e) { const r = canvas.getBoundingClientRect(); return new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); }
@@ -158,7 +168,7 @@ if (vrBtn) vrBtn.addEventListener("click", async () => {
   if (xrSession) { await xrSession.end(); return; }
   try {
     const session = await navigator.xr.requestSession("immersive-vr", { optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking"] });
-    xrSession = session; placed = false;
+    xrSession = session; placed = false; panel.resetOffset(); panelGrab = null;
     session.addEventListener("end", () => { xrSession = null; panel.mesh.visible = false; vrBtn.querySelector(".lbl").textContent = "Enter VR"; resize(); });
     camera.clearViewOffset(); await renderer.xr.setSession(session); vrBtn.querySelector(".lbl").textContent = "In VR";
   } catch (err) { xrSession = null; console.warn(err); fail("Could not start VR: " + (err && err.message ? err.message : err)); }
@@ -167,13 +177,14 @@ const xdrag = [null, null]; let paused = false;
 function tick(src) { const srcs = src ? [src] : (xrSession ? [...xrSession.inputSources] : []); for (const s of srcs) { const h = s && s.gamepad && s.gamepad.hapticActuators && s.gamepad.hapticActuators[0]; if (h && h.pulse) h.pulse(0.4, 25); } }
 const xin = renderer ? new XRInput(THREE, renderer, scene, {
   onSelectStart: (i, r) => {
-    const id = panel.pick(r.origin, r.dir); if (id && id !== "panel") { doAct(id); return; } if (id === "panel") return;
+    if (tryPanelGrab(i, r, "pinch")) return;
+    const id = panel.pick(r.origin, r.dir); if (id && id !== "panel" && id !== "handle") { doAct(id); return; } if (id === "panel" || id === "handle") return;
     const hit = new THREE.Raycaster(r.origin, r.dir).intersectObjects(view.pickables(lab.url.scene), false)[0];
     if (hit) xdrag[i] = lab.url.scene === "pull" ? "moon" : "start";
     else if (lab.url.scene === "well" && lab.view !== "sort") xdrag[i] = "start";
   },
   onSelectEnd: (i) => { if (xdrag[i] === "start") doAct("flick"); if (xdrag[i] === "moon") syncUrl(); xdrag[i] = null; },
-  onScrubHours: (dh) => { if (paused || lab.url.scene !== "pull") return; lab.url.dist = clampDist(lab.url.dist + dh * 2); renderPanelDom(); },
+  onScrubHours: (dh) => { if (panelGrab || paused || lab.url.scene !== "pull") return; lab.url.dist = clampDist(lab.url.dist + dh * 2); renderPanelDom(); },
   onTogglePanel: () => { panel.mesh.visible = !panel.mesh.visible; },
   onHover: (i, r) => {
     const id = panel.pick(r.origin, r.dir); if (i === 1 || id) panel.hover = id && id !== "panel" ? id : null;
@@ -181,11 +192,36 @@ const xin = renderer ? new XRInput(THREE, renderer, scene, {
   },
 }) : null;
 const padPrev = {};
+let panelGrab = null;
+function headYawOf(xc) { const d = new THREE.Vector3(0, 0, -1).applyQuaternion(xc.getWorldQuaternion(new THREE.Quaternion())); return Math.atan2(-d.x, -d.z); }
+function gripWorld(i) { const st = xin && xin.ctrl[i]; if (!st) return null; const obj = st.grip || st.c; obj.updateMatrixWorld(); return obj.getWorldPosition(new THREE.Vector3()); }
+function tryPanelGrab(i, r, why) {
+  const st = xin && xin.ctrl[i]; if (!st || panelGrab) return false;
+  const near = panel.nearHandle(gripWorld(i)); const aim = r ? panel.hitHandle(r.origin, r.dir) : false;
+  if (!aim && !near) return false;
+  const obj = st.c; panel.beginGrab(obj); panelGrab = { i, obj }; return true;
+}
+function updatePanelGrab(hp, yaw) {
+  if (!xin) return;
+  for (let i = 0; i < 2; i++) {
+    const st = xin.ctrl[i]; if (!st) continue;
+    const squeezing = !!st.squeeze; const pinching = !!(st.selecting && st.handInput);
+    if (panelGrab && panelGrab.i === i) {
+      if (!squeezing && !pinching) { panel.captureOffset(hp, yaw); panelGrab = null; }
+      else panel.followGrab(panelGrab.obj);
+      return;
+    }
+    if (squeezing && !panelGrab) tryPanelGrab(i, xin.rayOf(i), "grip");
+  }
+}
 function xrFrame() {
   const xc = renderer.xr.getCamera(); const hp = new THREE.Vector3(); xc.getWorldPosition(hp);
-  if (!placed) { const d = new THREE.Vector3(0, 0, -1).applyQuaternion(xc.getWorldQuaternion(new THREE.Quaternion())); panel.place(hp, Math.atan2(-d.x, -d.z)); panel.mesh.visible = true; placed = true; }
+  const yaw = headYawOf(xc);
+  if (!placed) { panel.resetOffset(); panel.place(hp, yaw); panel.mesh.visible = true; placed = true; }
+  updatePanelGrab(hp, yaw);
+  if (!panelGrab) panel.place(hp, yaw);
   const ev = readPads(xrSession ? [...xrSession.inputSources] : [], padPrev);
-  paused = ev.grip; view.paused = paused;
+  paused = ev.pause; view.paused = paused;
   if (ev.fire && lab.url.scene === "well" && lab.view !== "sort") doAct("flick");
   if (ev.nextScene) doAct("next");
   if (ev.chip) { const ctr = controlsFor(lab).filter((c) => /^(obj|world|alt|speed):/.test(c.id) && !c.disabled); if (ctr.length) { const cur = ctr.findIndex((c) => c.on); const n = ctr[(Math.max(0, cur) + ev.chip + ctr.length) % ctr.length]; doAct(n.id); } }
@@ -199,11 +235,11 @@ let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.1, Math.max(0, (now - last) / 1000)); last = now;
   const presenting = renderer.xr.isPresenting; let camPos;
-  if (presenting) camPos = xrFrame(); else { flatCamera(); camPos = camera.position; }
+  if (presenting) camPos = xrFrame(); else { flatCamera(dt); camPos = camera.position; }
   if (xin) xin.update(dt);
   let cam;
   if (presenting) { const xc = renderer.xr.getCamera(); cam = { pos: camPos, quat: xc.getWorldQuaternion(new THREE.Quaternion()), fov: 90, xr: true }; view.U.uRes.value.set(1700, 1700); }
-  else { cam = { pos: camera.position, quat: camera.quaternion, fov: camera.fov, hCss: layout.h, phone: layout.phone, camera }; view.U.uRes.value.set(layout.w, layout.h); }
+  else { const pr2 = !layout.phone ? panelEl.getBoundingClientRect() : null; cam = { pos: camera.position, quat: camera.quaternion, fov: camera.fov, hCss: layout.h, wCss: layout.w, visibleW: pr2 && pr2.width ? pr2.left : layout.w, phone: layout.phone, camera }; view.U.uRes.value.set(layout.w, layout.h); }
   const M = sceneModel(lab); view.update(M, lab, dt, cam);
   if (!presenting && lab.url.scene === "well" && !lab.view && lab.marbles.some((m) => !m.done)) renderPanelDom();
   renderer.render(scene, camera); window.__gf.frames++;

@@ -97,7 +97,12 @@ test("T19: the S3 spring scale shows newtons and pounds; the balance shows 50 kg
     const L = lab("scene=weigh&world=" + w); const m = S.s3Model(L);
     assert.equal(m.spring.main, n); assert.equal(m.spring.sub, lb); assert.equal(m.balance.main, "50 kg"); assert.equal(m.readout.second.main, "50 kg");
   }
-  for (const w of S.SCENE_WORLDS) assert.equal(S.s3Model(lab("scene=weigh&world=" + w)).figure, "robot", "the same robot on every world (Leo)");
+  for (const w of S.SCENE_WORLDS) assert.equal(S.s3Model(lab("scene=weigh&world=" + w)).figure, w === "ns" ? "robot" : "traveler", w);
+  const e1 = S.s3Model(lab("scene=weigh&world=earth&help=1")).lines[0];
+  assert.match(e1, /A 50 kg traveler like you/); assert.match(e1, /On Earth the pull on you is 491 N/);
+  assert.match(S.s3Model(lab("scene=weigh&world=moon&help=1")).lines[0], /Your mass is still 50 kg/);
+  assert.match(S.s3Model(lab("scene=weigh&world=ns&help=1")).lines[0], /Imagine the 50 kg robot here\. A real one would be crushed flat/);
+  assert.ok(read("gravity-force/gf-panel.js").includes("Imagine a 50 kg robot on a neutron star"));
   assert.ok(S.s3Model(lab("scene=weigh&world=jupiter&help=1")).lines[0].startsWith("Near Jupiter's cloud tops: 1,240 N (about 279 lb)"));
   for (const sc of ["pull", "mass", "iss", "well"]) for (const h of [0, 1, 2]) assert.ok(!/\blb\b|pound/i.test(JSON.stringify(S.sceneModel(lab(`scene=${sc}&help=${h}`)))), `${sc} help ${h}`);
   assert.equal(S.needleAngleDeg(0), -45); assert.equal(S.needleAngleDeg(1e9), -315); assert.equal(dialClockDeg(-45), -135);
@@ -126,7 +131,7 @@ test("S5: the twin uses the Sun's strength, marble mass does not matter, and the
   assert.equal(run("sun", "slow").done, "surface"); assert.ok(run("sun", "medium").turn > 90, "medium swings around"); assert.ok(run("sun", "fast").turn < 60, "fast bends a little");
   assert.ok(run("earth", "fast").turn < run("sun", "fast").turn, "heavier bends more at the same speed and distance");
   assert.equal(run("bh", "slow").done, "fell in");
-  assert.ok(S.objCard("bh").includes(bhHorizonText())); assert.equal(S.s5Model(lab("scene=well&obj=bh")).label, "Newton's rule is not enough close to here");
+  assert.ok(S.objCard("bh").includes(bhHorizonText())); assert.equal(S.s5Model(lab("scene=well&obj=bh")).label, "Up close, Newton's law isn't accurate");
   const T = lab("scene=well&obj=earth"); assert.equal(S.act(T, "twin"), false, "the twin replaces the Sun only");
   const R = lab("scene=well"); for (const c of S.SORT_CARDS) S.act(R, `sort:${c.id}:real`);
   const rev = S.sortReveal(R); assert.equal(rev.length, 6); assert.ok(!/wrong|incorrect/i.test(JSON.stringify(rev))); assert.ok(rev.every((r) => r.picked === "real" && r.model));
@@ -152,10 +157,15 @@ test("headset: Leo's readout spec and the Quest 3 button map", () => {
   const btn = (on) => ({ pressed: !!on });
   const pad = (hand, buttons, axes = [0, 0, 0, 0]) => ({ handedness: hand, gamepad: { buttons: buttons.map(btn), axes } });
   const prev = {};
-  let ev = readPads([pad("right", [0, 0, 0, 0, 1]), pad("left", [0, 1, 0, 0, 0], [0, 0, 0.9, 0])], prev);
-  assert.ok(ev.fire); assert.ok(ev.grip); assert.equal(ev.chip, 1);
+  let ev = readPads([pad("right", [0, 0, 0, 0, 1]), pad("left", [0, 0, 0, 0, 1], [0, 0, 0.9, 0])], prev);
+  assert.ok(ev.fire); assert.ok(ev.pause); assert.equal(ev.chip, 1); assert.equal(ev.grip, undefined, "grip moves the panel, it does not pause");
   ev = readPads([pad("right", [0, 0, 0, 1, 1]), pad("left", [0, 0, 0, 0, 0], [0, 0, 0.9, 0])], prev);
   assert.ok(!ev.fire, "A fires once per press"); assert.ok(ev.nextScene); assert.equal(ev.chip, 0, "one chip step per flick");
+  ev = readPads([pad("left", [0, 1, 0, 0, 0])], {});
+  assert.equal(ev.pause, false, "left grip is not pause");
+  const xr = read("gravity-force/gf-xr.js"), main = read("gravity-force/gf-main.js");
+  assert.match(xr, /userData.handle/); assert.match(xr, /captureOffset/); assert.match(xr, /hitHandle/);
+  assert.match(main, /tryPanelGrab/); assert.match(main, /camEase/); assert.match(main, /Math\.exp\(-8/);
 });
 
 test("S4 Moon stop: 384,400 km centre to centre, the same distance as S1 (Tesla's ruling)", () => {
@@ -197,7 +207,11 @@ test("S5c Real or model? and S6 The Equation: views on top of the S5 and S1 scen
 test("painted style: one cream label style sized on screen, ink outlines with 8 fps boil, robot v3.2 proportions", () => {
   const view = read("gravity-force/gf-view.js"), paint = read("gravity-force/gf-paint.js");
   assert.match(view, /phonePx: 15, deskPx: 16, xrPerM: 56 \/ 1280 \/ 1\.2/); assert.ok(15 >= 14);
-  assert.match(paint, /ink: 0x2A2420/); assert.match(paint, /boilFps: 8/);
+  assert.match(view, /margin = 12/);
+  assert.match(paint, /ink: 0x2A2420/); assert.match(paint, /boilFps: 8/); assert.match(paint, /outlinePx: 0\.8/);
+  assert.match(paint, /skipOutline/); assert.match(paint, /shadow\|plinth/);
+  assert.match(view, /contact_shadow/);
+  assert.equal(S.S5_TEXT.bhLabel, "Up close, Newton's law isn't accurate");
   assert.equal(ROBOT.h, 1.267); assert.deepEqual(ROBOT.onScale, [0, 0.0485, -0.086]);
   assert.equal(PROP_SIZE.traveler.legs / PROP_SIZE.traveler.h, 0.5, "Angelo: traveler legs about half the height");
 });

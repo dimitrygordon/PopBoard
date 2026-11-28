@@ -7,7 +7,7 @@
 // Line boil: outlines and strokes step to a new random offset 8 times a second, like the Stellar Life frames.
 // Calm lines holds them still (uBoil = 0), and is on by default with prefers-reduced-motion.
 import { mergeVertices } from "../vendor/three/BufferGeometryUtils.js";
-export const PAINT = { ink: 0x2A2420, cream: [1.0, 0.925, 0.81], navy: [0.12, 0.15, 0.34], boilFps: 8, outlinePx: 1.6 };
+export const PAINT = { ink: 0x2A2420, cream: [1.0, 0.925, 0.81], navy: [0.12, 0.15, 0.34], boilFps: 8, outlinePx: 0.8 };
 
 export function paintUniforms(THREE) {
   return { uBoilT: { value: 0 }, uBoil: { value: 1 }, uRes: { value: new THREE.Vector2(1280, 800) } };
@@ -31,14 +31,15 @@ export function paintMaterial(mat, U, o = {}) {
       {
         vec3 c = gl_FragColor.rgb; float l = dot(c, vec3(0.299, 0.587, 0.114));
         float step8 = floor(uBoilT * ${PAINT.boilFps.toFixed(1)}) * uBoil;
-        vec3 q = vGfW * ${(38 * strokeScale).toFixed(1)};
-        float n = gfN(vec3(q.x * 0.18 + q.z * 0.12, q.y * 1.6 + q.x * 0.3, q.z * 0.18) + vec3(step8 * 0.37, 0.0, step8 * 0.11));
-        float n2 = gfN(q * 0.35 + 11.0);
-        float band = floor(l * 4.0 + 0.5) / 4.0; float lb = mix(l, band, 0.45);
+        vec3 q = vGfW * ${(28 * strokeScale).toFixed(1)};
+        float n = gfN(vec3(q.x * 0.22 + q.z * 0.14, q.y * 1.15 + q.x * 0.25, q.z * 0.22) + vec3(step8 * 0.37, 0.0, step8 * 0.11));
+        float n2 = gfN(q * 0.42 + 11.0);
+        float band = floor(l * 5.0 + 0.5) / 5.0; float lb = mix(l, band, 0.72);
         vec3 col = c * (lb / max(l, 1e-3));
-        col = mix(col, col * vec3(${PAINT.navy.map((v) => (v * 2.2).toFixed(3)).join(", ")}) + vec3(${PAINT.navy.map((v) => (v * 0.35).toFixed(3)).join(", ")}), (1.0 - smoothstep(0.08, 0.42, l)) * 0.45);
-        col = mix(col, vec3(${PAINT.cream.join(", ")}) * max(l, 0.6), smoothstep(0.55, 0.95, l) * 0.32);
-        col *= 0.9 + 0.2 * n * (0.7 + 0.6 * n2);
+        col += vec3(0.045, 0.05, 0.09) * (1.0 - smoothstep(0.12, 0.58, l));
+        col = mix(col, col * vec3(${PAINT.navy.map((v) => (v * 2.2).toFixed(3)).join(", ")}) + vec3(${PAINT.navy.map((v) => (v * 0.35).toFixed(3)).join(", ")}), (1.0 - smoothstep(0.05, 0.48, l)) * 0.4);
+        col = mix(col, vec3(${PAINT.cream.join(", ")}) * max(l, 0.52), smoothstep(0.38, 0.92, l) * 0.46);
+        col *= 0.78 + 0.4 * n * (0.6 + 0.7 * n2);
         gl_FragColor.rgb = min(col, vec3(${PAINT.cream.join(", ")}));
       }`);
   };
@@ -55,23 +56,33 @@ export function outlineMaterial(THREE, U, px = PAINT.outlinePx) {
         vec4 clip = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         vec3 nv = normalize(normalMatrix * normal); vec2 nd = (projectionMatrix * vec4(nv, 0.0)).xy; float L = length(nd);
         float step8 = floor(uBoilT * ${PAINT.boilFps.toFixed(1)}) * uBoil;
-        float wob = 0.65 + 0.7 * gfN(position * 60.0 + vec3(step8 * 1.7, step8 * 0.9, 0.0));
+        float wob = 0.94 + 0.12 * gfN(position * 28.0 + vec3(step8 * 0.8, step8 * 0.45, 0.0));
         if (L > 1e-5) clip.xy += nd / L * (uPx * wob * 2.0 / uRes.y) * clip.w;
         gl_Position = clip;
       }`,
     fragmentShader: "uniform vec3 uInk; void main(){ gl_FragColor = vec4(uInk, 1.0); }",
   });
 }
-/** Paint and outline every opaque Lambert mesh under root. Skips labels, lines, glows and anything tiny. */
+/** True when a mesh should not get an ink outline: named shadows, the balance plinth (body), tiny parts, or a flag. */
+export function skipOutline(mesh, root) {
+  if (!mesh || mesh.userData.noOutline) return true;
+  const n = mesh.name || "", mn = (mesh.material && mesh.material.name) || "";
+  if (/shadow|plinth/i.test(n) || /shadow|plinth/i.test(mn)) return true;
+  const mat = mesh.material; if (mat && (mat.transparent || mat.opacity < 0.99)) return true;
+  const rn = (root && root.name) || (mesh.parent && mesh.parent.name) || "";
+  if (n === "body" && /balance/i.test(rn)) return true;
+  return false;
+}
+/** Paint and outline every opaque Lambert mesh under root. Skips labels, lines, glows, shadows and anything tiny. */
 export function paintTree(THREE, root, U, o = {}) {
   const olMat = outlineMaterial(THREE, U, o.px);
   const list = []; root.traverse((m) => { if (m.isMesh && !m.userData.noPaint && m.material && m.material.isMeshLambertMaterial && !m.material.transparent) list.push(m); });
   for (const m of list) {
     paintMaterial(m.material, U, o);
-    if (m.userData.noOutline) continue;
+    if (skipOutline(m, root)) continue;
     if (!m.geometry.boundingSphere) m.geometry.computeBoundingSphere();
     const s = m.getWorldScale(new THREE.Vector3()); const r = m.geometry.boundingSphere.radius * Math.max(s.x, s.y, s.z);
-    if (r < (o.minR || 0.004)) continue;
+    if (r < (o.minR || 0.01)) continue;
     const ol = new THREE.Mesh(smoothShell(THREE, m.geometry), olMat); ol.userData.noPaint = true; ol.userData.gfOutline = true; ol.renderOrder = m.renderOrder;
     m.add(ol);
   }

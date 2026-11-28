@@ -119,11 +119,11 @@ export function traveler(THREE, h = PROP_SIZE.traveler.h) {
   return g;
 }
 
-/** The S3 traveler is Angelo's robot v3.2, the same figure on every world (Leo, review round 1). Built in code to the
- * v3.2 look and proportions: 1.267 m tall, cream torso and head, navy limbs, brass joints, a chest gauge screen and a
- * visor with two warm eyes. Heights follow the v3.2 front render: hip collar at 0.33 m, torso 0.48 to 0.89 m, arm
- * pivots at (+-0.250, 0.800), head pivot at 0.935 m. Origin at floor contact, faces +Z. Named nodes match the GLB
- * (body, head, arm_left, arm_right) so a later MODEL_BASE swap keeps the same placement. */
+/** Angelo's robot v3.2, used only on the neutron star (Dimitry, t435). Built in code to the v3.2 look and
+ * proportions: 1.267 m tall, cream torso and head, navy limbs, brass joints, a chest gauge screen and a visor with
+ * two warm eyes. Heights follow the v3.2 front render: hip collar at 0.33 m, torso 0.48 to 0.89 m, arm pivots at
+ * (+-0.250, 0.800), head pivot at 0.935 m. Origin at floor contact, faces +Z. Named nodes match the GLB (body, head,
+ * arm_left, arm_right) so the MODEL_BASE swap keeps the same placement. */
 export const ROBOT = Object.freeze({ h: 1.267, hip: 0.33, knee: 0.22, torso: [0.48, 0.89], shoulder: 0.8, armX: 0.25, headPivot: 0.935, footSpan: 0.26, onScale: [0, 0.0485, -0.086] });
 export function robot(THREE) {
   const g = new THREE.Group(); g.name = "robot";
@@ -204,7 +204,7 @@ export function loadModel(THREE, name) {
 }
 /** Clone a loaded GLB for one placement. Materials are cloned too, so per-copy readouts can differ. */
 export function cloneModel(scene) {
-  const c = scene.clone(true); c.traverse((o) => { if (o.isMesh) o.material = o.material.clone(); }); return c;
+  const c = scene.clone(true); c.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.toneMapped = false; } }); return c;
 }
 /** Spring scale GLB: turn the needle about the hub (Angelo: angle_Y = -45 deg - 270 deg x f) and draw the numbers on
  * the blank readout node. The needle node carries meshopt offsets, so it is rotated about the hub, not its origin. */
