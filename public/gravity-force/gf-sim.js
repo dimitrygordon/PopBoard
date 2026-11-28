@@ -55,6 +55,7 @@ export const GF = freeze({
   bhSuns: 10,
   bhMassKg: 10 * SUN,
   schwarzschildMPerSun: 2953,
+  // 10 * 2.953 km = 29.53 km. Student text is bhHorizonText(), "about 29.5 km".
   bhHorizonM: 10 * 2953,
   worlds: {
     earth: { massKg: EARTH_M, radiusM: EARTH_R },
@@ -185,6 +186,11 @@ function groupInt(n) {
   const sign = n < 0 ? "-" : "";
   const s = String(Math.abs(Math.round(n)));
   return sign + s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+/** Student line for the 10 Sun example. The stored radius is 29.53 km. */
+export function bhHorizonText() {
+  return "about 29.5 km";
 }
 
 /**

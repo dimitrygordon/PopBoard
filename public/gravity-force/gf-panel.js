@@ -39,12 +39,15 @@ function groupInt(n) {
   return sign + s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-/** A force for the live readout. Hundreds and thousands round to the nearest newton. */
+/** A force for the live readout, at `sig` significant figures.
+ *  1239.33 N prints as 1,240 N, the same caption as the S3 Jupiter label. */
 export function formatNewtons(n, sig = 3) {
   if (!Number.isFinite(n)) return "";
   const a = Math.abs(n);
-  if (a >= 100 && a < 10000) return `${groupInt(Math.round(n))} N`;
-  if (a >= 0.1 && a < 100) return `${trimNum(roundSig(n, 3))} N`;
+  if (a >= 0.1 && a < 10000) {
+    const rounded = roundSig(n, sig);
+    return Math.abs(rounded) >= 100 ? `${groupInt(rounded)} N` : `${trimNum(rounded)} N`;
+  }
   return `${formatSci(n, sig)} N`;
 }
 

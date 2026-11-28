@@ -9,7 +9,7 @@ import {
 } from "../public/gravity-force/gf-sim.js";
 import {
   workedProblems, formatAnswer, equationModel, panelMarkup, renderPanel, renderAnswerKey,
-  answerKeyMarkup, helpButtons,
+  answerKeyMarkup, helpButtons, formatNewtons,
 } from "../public/gravity-force/gf-panel.js";
 import { flags } from "../public/gravity-force/gf-state.js";
 
@@ -110,6 +110,24 @@ test("help level gates equation strings", () => {
   const html = renderPanel(el, { ...input, help: 2 });
   assert.equal(el.innerHTML, html);
   assert.match(el.innerHTML, /data-help="2"/);
+});
+
+test("Jupiter's traveler pull prints as 1,240 N on the panel", () => {
+  const n = weighN("jupiter", GF.travelerKg);
+  assert.equal(formatNewtons(n), "1,240 N");
+  const html = panelMarkup({
+    help: 2,
+    m1: GF.travelerKg,
+    m2: GF.worlds.jupiter.massKg,
+    r: GF.worlds.jupiter.radiusM,
+  });
+  assert.match(html, /1,240 N/);
+  const shown = [
+    html,
+    answerKeyMarkup(),
+    ...workedProblems().flatMap((p) => [p.prompt, p.fullText, p.ratioText, p.setup || ""]),
+  ].join("\n");
+  assert.equal(shown.includes("1,239"), false);
 });
 
 test("the Help tab follows the help flag and lock", () => {

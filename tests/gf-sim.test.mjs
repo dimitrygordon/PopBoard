@@ -5,8 +5,9 @@ import assert from "node:assert/strict";
 import {
   GF, pull, surfaceG, weighN, lbFromN, issAt, wellDepth, stepMarble, marbleAccel,
   distanceFactor, massFactor, accelOf, pairForce, s2Arrows, s1ArrowLength,
-  timesEarth, moonDistanceRatio, sameMassTwin, worldsBySurfaceG, s3NewtonText,
+  timesEarth, moonDistanceRatio, sameMassTwin, worldsBySurfaceG, s3NewtonText, bhHorizonText,
 } from "../public/gravity-force/gf-sim.js";
+import { formatNewtons } from "../public/gravity-force/gf-panel.js";
 
 const near = (got, want, tol, msg) => assert.ok(Math.abs(got - want) <= tol, `${msg || ""} got ${got} want ${want} tol ${tol}`);
 const rel = (got, want, tol, msg) => assert.ok(Math.abs(got - want) / Math.abs(want) <= tol, `${msg || ""} got ${got} want ${want}`);
@@ -52,6 +53,10 @@ test("T5 pull on the 50 kg traveler", () => {
   near(got[1], 81.2, 0.05);
   near(got[2], 186.4, 0.1);
   near(got[3], 1239, 1);
+  assert.equal(s3NewtonText("jupiter"), "1,240 N");
+  assert.equal(formatNewtons(got[3]), "1,240 N");
+  assert.equal(lbFromN(got[3]).text, "about 279 lb");
+  assert.equal(`${s3NewtonText("jupiter")} ${formatNewtons(got[3])}`.includes("1,239"), false);
 });
 
 test("T6 neutron star, 1.4 Suns, 12 km radius, to 1 percent", () => {
@@ -216,4 +221,6 @@ test("world order and S3 newton captions", () => {
   assert.equal(s3NewtonText("mars"), "186 N");
   assert.equal(s3NewtonText("jupiter"), "1,240 N");
   assert.equal(s3NewtonText("ns"), "about 6.5 x 10^13 N");
+  assert.equal(GF.bhHorizonM, 29530);
+  assert.equal(bhHorizonText(), "about 29.5 km");
 });

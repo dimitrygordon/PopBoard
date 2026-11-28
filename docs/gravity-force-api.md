@@ -51,6 +51,7 @@ pairForce(m1, m2, r) -> { on1, on2 }   // always equal
 s2Arrows(m1, m2, r) -> { a, b }         // always the same length
 s1ArrowLength(distanceRatio, startLength = 0.2) -> meters, capped at 4x
 sameMassTwin(r, kg = 1) -> { sun, twin, aboveSurface }
+bhHorizonText() -> "about 29.5 km"
 wellDepth(s, r, e) -> -s / sqrt(r^2 + e^2)
 marbleAccel(x, y, s, e) -> { ax, ay }   // toward the origin
 stepMarble(state, dt) -> next state
@@ -69,7 +70,9 @@ s3NewtonText("earth")                         // "491 N"
 lbFromN(weighN("earth", GF.travelerKg)).text  // "about 110 lb"
 ```
 
-Jupiter's unrounded pull is 1,239.3 N (T5's 1,239 N). `s3NewtonText("jupiter")` is `1,240 N`, three significant figures, which is the section 4.3 sentence. `formatNewtons` in the panel rounds that same pull to `1,239 N`.
+`weighN("jupiter", 50)` stays the unrounded 1239.33 N. Every student-facing newton line uses three significant figures, so `s3NewtonText("jupiter")` and `formatNewtons` of that pull are both `1,240 N`. `lbFromN` of the unrounded pull is still `about 279 lb`.
+
+`GF.bhHorizonM` stays 29530 (29.53 km). The student line is `bhHorizonText()`, `about 29.5 km`.
 
 `stepMarble` takes one velocity-Verlet step of exactly `dt`. It does not subdivide, and it does not read `state.mass`.
 
@@ -123,7 +126,7 @@ Spec section 5 and acceptance test T15 describe the `true` setting. This build s
 ```
 equationModel({ m1, m2, r, help, previous }) -> { help, visible, form, text, tiles, notes, force }
 changeNotes(prev, next) -> [{ tile, text }]
-formatNewtons(n, sig = 3) -> "491 N" or "1.98 x 10^20 N"
+formatNewtons(n, sig = 3) -> "491 N" or "1,240 N" or "1.98 x 10^20 N"
 formatValue(n) -> tile text
 workedProblems() -> Set A, Set B, and exit item E1
 problemById(id)
