@@ -103,7 +103,7 @@ with sync_playwright() as p:
     br.close()
 
 for path in ["study-stellar-life.html", "study-hrdiagram.html", "study-stars.html", "study.html", "stellar-life/data/tracks.json", "stellar-life/data/stages.json", "vendor/three/three.module.min.js", "night-sky/ns-input.js", "night-sky/ui/fonts/inter-latin-var.woff2", "board-return.js", "stellar-life/sl-page-ui.js", "stellar-life/sl.css"]:
-    try: code = urllib.request.urlopen(f"{BASE}/{path}").status
+    try: code = urllib.request.urlopen(urllib.request.Request(f"{BASE}/{path}", headers={"User-Agent": "Mozilla/5.0 (PopBoard link check)"})).status
     except Exception as e: code = str(e)
     check(code == 200, f"link {path}: {code}")
 print("\n".join(notes))
