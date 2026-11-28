@@ -4,6 +4,8 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: var(--sl-bg); color: var(--sl-text); font-family: Inter, -apple-system, "SF Pro Text", system-ui, sans-serif; overflow: hidden; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+html { background: #04081A; }
+body { background: linear-gradient(166deg, #04081A 0%, #0C143A 60%, #2E1E5C 100%) fixed; }   /* LOOK-SPEC style B sky wash: navy to violet */
 #slCanvas { position: fixed; inset: 0; width: 100vw; height: var(--pb-vh, 100vh); display: block; }
 .sl-top { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: calc(8px + var(--pb-safe-top, 0px)) 12px 8px; background: linear-gradient(rgba(5, 10, 30, 0.85), rgba(5, 10, 30, 0)); z-index: 5; }
 .sl-top .title { margin: 0 auto 0 4px; font-weight: 650; font-size: 17px; }
@@ -129,8 +131,8 @@ html, body { margin: 0; height: 100%; background: var(--sl-bg); color: var(--sl-
 .ticket section p { margin: 4px 0; }
 .ticket svg { width: 100%; height: auto; display: block; }
 .ticket .keys { font-size: 13px; color: #444; }
-.ticket .bank span { display: inline-block; margin: 0 6px 0 0; padding: 2px 8px; border: 1px solid #555; border-radius: 6px; corner-shape: round; --sq: 0; }
-.ticket .confusing .box { height: 90px; border: 1.5px solid #333; border-radius: 8px; corner-shape: round; --sq: 0; background: #fff; }
+.ticket .bank span { display: inline-block; margin: 0 6px 0 0; padding: 2px 8px; border: 1px solid #555; border-radius: calc(var(--r-6, 6px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
+.ticket .confusing .box { height: 90px; border: 1.5px solid #333; border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: #fff; }
 .ticket .nameline { margin: 10px 0 0; }
 body.sl-has-sheet .sl-hrcard { visibility: hidden; }
 @media (max-width: 699px) { .sl-sheet { padding: calc(96px + var(--pb-safe-top, 0px)) 8px 12px; } .sl-sheet-in { padding: 12px; } .mc, .mc thead { font-size: 13px; } .mc thead { display: none; } .mc tr:not(.model) { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); } .mc tr:not(.model) th { grid-column: 1 / -1; border: none; } .mc tr:not(.model) td { border: none; padding: 0; display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px; } .mc td::before { content: attr(data-l); font-size: 12px; color: var(--sl-text-3); } }

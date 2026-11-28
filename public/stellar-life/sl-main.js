@@ -22,11 +22,11 @@ const fail = (msg) => { if (statusEl) { statusEl.hidden = false; statusEl.textCo
 const canvas = $("slCanvas");
 let renderer;
 try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", preserveDrawingBuffer: q.has("shot") });
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance", preserveDrawingBuffer: q.has("shot") });
 } catch (e) { fail("This device could not start 3D graphics (WebGL). Try another browser."); throw e; }
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.xr.enabled = true; renderer.xr.setReferenceSpaceType("local-floor"); renderer.xr.setFramebufferScaleFactor(1.0);
-renderer.setClearColor(0x050a1e, 1);
+renderer.setClearColor(0x050a1e, 0);   // the navy to violet wash of the style-B frames is the page background (sl.css); the headset clears its own
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(48, 1, 0.05, 6000);
 const world = new THREE.Group(); scene.add(world);   // XR scales and places this group; desktop leaves it at identity

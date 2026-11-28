@@ -113,7 +113,7 @@ export class Scenes {
         const ca = Math.cos(a), sa = Math.sin(a), x = cc[3 * i] * ca + cc[3 * i + 2] * sa, z = -cc[3 * i] * sa + cc[3 * i + 2] * ca, y = cc[3 * i + 1]; const dx = x - camLocal.x, dy = y - camLocal.y, dz = z - camLocal.z; keys[i] = dx * dx + dy * dy + dz * dz; }
       order.sort((a, b) => keys[b] - keys[a]); for (let k = 0; k < nS; k++) { const s = order[k]; idxArr.set(baseIdx.subarray(s * per, s * per + per), k * per); } idxAttr.needsUpdate = true;
     };
-    const sc = { root: g, kind: "disk", kmPerUnit: () => KM.AU, camDist: 50, radius: 19, strokes: D.disk.n + D.add.n + (massive ? D.wrap.n : 0), meshes: 4 + (sp ? 1 : 0) + (mw ? 1 : 0), bodies: D.bodies,
+    const sc = { root: g, kind: "disk", kmPerUnit: () => KM.AU, camDist: 36, radius: 19, strokes: D.disk.n + D.add.n + (massive ? D.wrap.n : 0), meshes: 4 + (sp ? 1 : 0) + (mw ? 1 : 0), bodies: D.bodies,
       chips: planets ? ["Planets drawn far larger than real"] : [],
       update: (c) => {
         const id = c.v.stage ? c.v.stage.id : ""; const t = c.v.t; const row = c.v.row; const Teff = row ? Math.pow(10, row.logT) : 4410;
@@ -146,14 +146,14 @@ export class Scenes {
     const lab = this.label("", { size: 2.2 }); g.add(lab);
     const orbits = {}; for (const [n, a] of [["Mercury", 0.387], ["Venus", 0.723], ["Earth", 1.0], ["Jupiter", 5.2]]) { const o = this.dashedRing(1, { color: 0xC3C9E6, opacity: 0.75 }); o.userData.a = a; const l = this.label(n, { size: 1.2, color: "#C3C9E6", plate: false }); g.add(o, l); orbits[n] = { o, l, a }; }
     const levels = [0.001, 0.01, 0.1, 1, 10, 100, 1000];
-    const sc = { root: g, kind: "star", s: 1, camDist: 70, radius: 10, strokes: sb.n + wb.n, meshes: 3, body, ms, halo,
+    const sc = { root: g, kind: "star", s: 1, camDist: 44, radius: 10, strokes: sb.n + wb.n, meshes: 3, body, ms, halo,
       kmPerUnit: () => sc.s * KM.RSUN,
       zoomFor(R, hi = 24) { const lo = hi / 10; let s = sc.s; if (R / s > hi || R / s < lo) { s = levels.find((L) => R / L <= hi && R / L >= lo) || levels.reduce((a, b) => (Math.abs(Math.log10(R / b / 8)) < Math.abs(Math.log10(R / a / 8)) ? b : a)); } return s; },
-      reset(R) { sc.s = levels.find((L) => R / L <= 24 && R / L >= 2.4) || 1; },
+      reset(R) { sc.s = levels.find((L) => R / L <= 16 && R / L >= 1.6) || 1; },
       update: (c) => {
         const row = c.v.row; if (!row) return; const R = Math.pow(10, row.logR), Teff = Math.pow(10, row.logT);
         const lock = c.v.stage && c.v.stage.zoomLock && c.v.refR;   // R2: hold the zoom of its main-sequence size, so it visibly shrinks
-        sc.s = lock ? (levels.find((L) => c.v.refR / L <= 24 && c.v.refR / L >= 2.4) || sc.s) : sc.zoomFor(R, c.fitMax || 24); const r = R / sc.s; body.scale.setScalar(r); sc.radius = r;
+        sc.s = lock ? (levels.find((L) => c.v.refR / L <= 24 && c.v.refR / L >= 2.4) || sc.s) : sc.zoomFor(R, c.fitMax || 16); const r = R / sc.s; body.scale.setScalar(r); sc.radius = r;
         const exp = 1.0;
         for (const m of [ms, mw]) { m.material.uniforms.uTeff.value = Teff; m.material.uniforms.uExposure.value = exp; }
         halo.material.uniforms.uTeff.value = Teff; halo.material.uniforms.uExposure.value = 1.08;
@@ -187,7 +187,7 @@ export class Scenes {
     const lab = this.label("Core, enlarged (not to scale)", { size: 1.4 }); g.add(lab);
     const key = this.label("Colors are a key to the fuels, not real colors", { size: 1.0, color: "#C3C9E6", plate: false }); g.add(key);
     const layLabs = ONION.map(([n]) => { const l = this.label(n, { size: 0.9, color: "#FFFFFF", plate: false }); face.add(l); return l; });
-    const sc = { root: g, kind: "cutaway", camDist: 70, radius: 10, strokes: b.n + st.strokes, meshes: 2 + st.meshes, star: st,
+    const sc = { root: g, kind: "cutaway", camDist: 46, radius: 10, strokes: b.n + st.strokes, meshes: 2 + st.meshes, star: st,
       kmPerUnit: () => st.kmPerUnit(),
       update: (c) => {
         st.update(c); st.ms.material.uniforms.uAlpha.value = 0.32; st.halo.material.uniforms.uAlpha.value = 0.55;
