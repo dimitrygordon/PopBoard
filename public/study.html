@@ -63,7 +63,10 @@ button,input,textarea{font-family:inherit;}
 .brand h1{font-size:22px; margin:0; color:var(--text); letter-spacing:0.08em;}
 .subtitle{text-align:center; color:var(--text-dimmer); font-size:12px; font-family:'JetBrains Mono',monospace; letter-spacing:0.08em; margin-bottom:32px;}
 
-.search-wrap{max-width:520px; margin:0 auto 36px; position:relative;}
+.search-row{
+  max-width:680px; margin:0 auto 36px; display:flex; align-items:center; gap:10px;
+}
+.search-wrap{flex:1; min-width:0; margin:0; position:relative;}
 .search-icon{position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--text-dimmer); pointer-events:none;}
 #searchInput{
   width:100%; padding:13px 16px 13px 44px; border-radius:999px; corner-shape: round; --sq: 0; border:1.5px solid var(--border);
@@ -72,6 +75,32 @@ button,input,textarea{font-family:inherit;}
 }
 #searchInput::placeholder{color:var(--text-dimmer);}
 #searchInput:focus{border-color:var(--amber-dim); box-shadow:0 0 0 3px rgba(255,179,0,0.12);}
+.vr-filter-btn{
+  flex:0 0 auto; padding:11px 14px; border-radius:999px; corner-shape: round; --sq: 0;
+  border:1.5px solid var(--border); background:var(--panel-2); color:var(--text-dim);
+  font-size:13px; font-weight:600; letter-spacing:0.04em; cursor:pointer; white-space:nowrap;
+  transition:color 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.vr-filter-btn:hover{color:var(--text); border-color:var(--border-lit);}
+.vr-filter-btn:focus-visible{outline:none; border-color:var(--amber-dim); box-shadow:0 0 0 3px rgba(255,179,0,0.12);}
+.vr-filter-btn[aria-pressed="true"]{
+  color:var(--bg); background:var(--cyan); border-color:var(--cyan);
+  box-shadow:0 0 0 3px rgba(95,211,196,0.16);
+}
+.vr-filter-btn[aria-pressed="true"]:hover{color:var(--bg); border-color:var(--cyan);}
+.vr-badge{
+  position:absolute; top:12px; right:12px; z-index:1;
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 7px 3px 5px; border-radius:999px; corner-shape: round; --sq: 0;
+  border:1px solid var(--border-lit); background:var(--panel-3); color:var(--cyan);
+  font-size:10px; font-weight:700; letter-spacing:0.08em; line-height:1; pointer-events:none;
+}
+.vr-badge svg{width:11px; height:11px; display:block;}
+.module-card:has(.vr-badge) .fun-badges{ top:40px; }
+@media (max-width:520px){
+  .search-row{max-width:520px;}
+  .vr-filter-btn{padding:11px 12px;}
+}
 
 #cardGrid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px;}
 
@@ -262,9 +291,12 @@ input.icon-cell::placeholder{ color:var(--text-dimmer); font-size:17px; }
       </a>
     </div>
   </section>
-  <div class="search-wrap">
-    <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
-    <input id="searchInput" type="text" placeholder="Search modules..." autocomplete="off">
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+      <input id="searchInput" type="text" placeholder="Search modules..." autocomplete="off">
+    </div>
+    <button type="button" id="vrFilterBtn" class="vr-filter-btn" aria-pressed="false" aria-label="Show only VR modules">VR only</button>
   </div>
   <div id="cardGrid"></div>
 </div>
@@ -668,6 +700,7 @@ var BUILTIN_MODULES = [
     name: "Spaceships",
     description: "Official NASA spacecraft in 3D and in AR. Open a craft to turn it around in the browser, or view it in your space at real size.",
     file: "study-spaceships.html",
+    vr: true,
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="10" width="8" height="5" rx="1"/><path d="M17 12.5h3"/><path d="M9 12H5l-2 2"/><path d="M11 10V7h3"/><circle cx="11.5" cy="15.8" r="1.1"/><circle cx="16" cy="15.8" r="1.1"/></svg>'
   },
   {
@@ -716,6 +749,7 @@ var BUILTIN_MODULES = [
     name: "Night Sky VR",
     description: "Stand under the real sky for any date, time and place from 1900 to 2050, in a Meta Quest 3 headset or on any screen. Tap a star for its name, brightness, colour, distance and position, turn constellation lines, art and names on and off, find Polaris, run time forward to watch the sky turn, and follow the Moon and planets.",
     file: "study-night-sky.html",
+    vr: true,
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19h20"/><path d="M4 19a8 8 0 0 1 16 0"/><path d="M8 9.5l3-2.5 4 1.5 2.5 3"/><circle cx="8" cy="9.5" r="1" fill="currentColor" stroke="none"/><circle cx="11" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="8.5" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>'
     },
     {
@@ -724,6 +758,7 @@ var BUILTIN_MODULES = [
     name: "Stellar Life Cycle VR",
     description: "Follow five stars from birth to death, from 0.2 to 40 times the Sun's mass, in a Meta Quest 3 headset or on any screen. Watch a cloud collapse into a star and planets, predict each stage before it plays, follow the star across a live H-R diagram from real stellar models, and see it end as a white dwarf, a neutron star or a black hole.",
     file: "study-stellar-life.html",
+    vr: true,
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="17" r="1.5"/><circle cx="11" cy="12" r="3"/><circle cx="18.5" cy="6.5" r="2"/><path d="M6.5 15.5l2.3-1.8M13.4 10.2l3.4-2.4" stroke-dasharray="1.5 2"/></svg>'
     },
     {
@@ -732,6 +767,7 @@ var BUILTIN_MODULES = [
     name: "Gravity Force Lab VR",
     description: "Five scenes about the pull of gravity, in a Meta Quest 3 headset or on any screen. Drag the Moon and watch the pull fall off with distance, change masses and see that both objects feel the same pull, weigh a 50 kg traveler on five worlds, ride an elevator to the space station, flick marbles across a gravity-well sheet, and connect it all to F = G m1 m2 / r^2.",
     file: "study-gravity-force.html",
+    vr: true,
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="12" r="4"/><circle cx="18.5" cy="12" r="2"/><path d="M11.5 12h3"/><path d="M13 10.5l1.5 1.5-1.5 1.5"/></svg>'
     },
     {
@@ -836,6 +872,7 @@ var BUILTIN_MODULES = [
     name: "Beyond 3D",
     description: "Turn the pages of a picture book about dimensions: drag a point into a line, a square and a cube, help a flatlander make sense of a ball passing through their world, spin a cube above a lamp and follow its gold face in the shadow, slice a cube into triangles and hexagons, count corners and edges (2\u207f and n\u00b72\u207f\u207b\u00b9) up to the tesseract's 16 and 32, turn a tesseract's 3D shadow in 3D and in 4D (XW, YW, ZW), slice it and a hypersphere, unfold a cube and a tesseract into nets, and play in a sandbox with the 16-cell and 24-cell.",
     file: "study-fourth-dimension.html",
+    vr: true,
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1"/><rect x="8" y="8" width="8" height="8" rx="0.5"/><path d="M3 3l5 5M21 3l-5 5M3 21l5-5M21 21l-5-5"/></svg>'
   },
   {
@@ -1101,6 +1138,7 @@ function wireHoldToConfirmDelete(btn, iconEl, onConfirmed) {
    Gallery: merge built-ins + custom links, search/filter, open.
    ============================================================ */
 var currentSearchText = "";
+var vrOnly = false;
 
 function resolveIconHtml(iconType, iconValue) {
   if (iconType === "emoji") {
@@ -1138,7 +1176,7 @@ function setupCoursesBand() {
 
 function buildCombinedList() {
   var builtins = BUILTIN_MODULES.filter(function(m) { return COURSE_IDS.indexOf(m.id) === -1; }).map(function(m) {
-    return { kind: "builtin", id: m.id, name: m.name, description: m.description, file: m.file, iconHtml: m.icon, cover: m.cover || null };
+    return { kind: "builtin", id: m.id, name: m.name, description: m.description, file: m.file, iconHtml: m.icon, cover: m.cover || null, vr: !!m.vr };
   });
   var custom = customLinks.map(function(link) {
     return {
@@ -1199,6 +1237,13 @@ function makeModuleCard(m) {
   var p = document.createElement("p");
   p.textContent = m.description;
   body.appendChild(p);
+  if (m.vr) {
+    var badge = document.createElement("span");
+    badge.className = "vr-badge";
+    badge.setAttribute("aria-label", "VR capable");
+    badge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13a8 8 0 0 1 18 0"/><path d="M3 13v2a3 3 0 0 0 3 3h1.2a1.8 1.8 0 0 0 1.8-1.8V15H3Z"/><path d="M21 13v2a3 3 0 0 1-3 3h-1.2a1.8 1.8 0 0 1-1.8-1.8V15H21Z"/></svg><span aria-hidden="true">VR</span>';
+    card.appendChild(badge);
+  }
   card.onclick = function() { openModule(m); };
   if (m.kind === "builtin" && window.PopBoardFun) { var fb = window.PopBoardFun.badge(m.id); if (fb) card.appendChild(fb); }
 
@@ -1248,6 +1293,7 @@ function render(filterText) {
   var ft = currentSearchText.trim().toLowerCase();
   var combined = buildCombinedList();
   var filtered = combined.filter(function(m) {
+    if (vrOnly && !m.vr) return false;
     return !ft || m.name.toLowerCase().indexOf(ft) !== -1 || m.description.toLowerCase().indexOf(ft) !== -1;
   });
   if (!filtered.length) {
@@ -1377,9 +1423,32 @@ linkFormSaveBtn.onclick = async function() {
 /* ============================================================
    Boot
    ============================================================ */
+function vrFilterFromSearch(search) {
+  return new URLSearchParams(search || location.search).get("vr") === "1";
+}
+
+function writeVrFilterToUrl(on) {
+  var url = new URL(location.href);
+  if (on) url.searchParams.set("vr", "1");
+  else url.searchParams.delete("vr");
+  if (url.href !== location.href) history.replaceState(null, "", url);
+}
+
+function applyVrFilter(on, syncUrl) {
+  vrOnly = !!on;
+  var btn = document.getElementById("vrFilterBtn");
+  if (btn) btn.setAttribute("aria-pressed", vrOnly ? "true" : "false");
+  if (syncUrl) writeVrFilterToUrl(vrOnly);
+}
+
 document.getElementById("searchInput").addEventListener("input", function(e) { render(e.target.value); });
+document.getElementById("vrFilterBtn").addEventListener("click", function() {
+  applyVrFilter(!vrOnly, true);
+  render(currentSearchText);
+});
 
 setupCoursesBand();
+applyVrFilter(vrFilterFromSearch(location.search), false);
 render(""); // built-ins (and the add-tile, in teacher mode) show immediately, not blocked on network
 
 (async function boot() {
