@@ -426,7 +426,7 @@ export class Scenes {
     const GY = -58; const land = new T.Group(); g.add(land); const cb = buildCity(81, 0); const city = this.mesh(cb, {}, 5);
     const gq = new T.PlaneGeometry(4000, 2000); gq.translate(0, -1000, 0); const ground = new T.Mesh(gq, new T.MeshBasicMaterial({ color: 0x070B22, depthTest: false, depthWrite: false })); ground.renderOrder = 4;
     const hz = horizonGlow(T); hz.scale.set(55, 3.2, 1); hz.material.opacity = 0.55; hz.renderOrder = 5; land.add(ground, hz, city);
-    const wisps = []; const Rw = rng(31); for (let i = 0; i < 26; i++) { const a = Rw() * Math.PI * 2, rr = 120 + Rw() * 170; wisps.push({ p: [-300 + Math.cos(a) * rr * 1.2, 20 + Math.sin(a) * rr * 0.8, -700], r: 70 + Rw() * 90, rgb: i % 3 ? [255, 90, 106] : [79, 216, 192], a: 0.04 + Rw() * 0.04, breath: 0 }); }
+    const wisps = []; const Rw = rng(31); for (let i = 0; i < 26; i++) { const a = Rw() * Math.PI * 2, rr = 120 + Rw() * 170; wisps.push({ p: [-300 + Math.cos(a) * rr * 1.2, 20 + Math.sin(a) * rr * 0.8, -700], r: 70 + Rw() * 90, rgb: i % 3 ? [255, 90, 106] : [79, 216, 192], a: 0.04 + Rw() * 0.04, breath: 1 });   /* the far remnant's wisps breathe */ }
     const rem = this.sprites(wisps, 0); g.add(rem);
     const coN = this.callout("Neutron star", { sub: "about 12 km radius", side: 1 }), coC = this.callout("A city about 20 km wide", { sub: "at the same scale", side: -1 }), coR = this.callout("Supernova remnant", { sub: "far behind, not to scale", side: -1 });
     g.add(coN.grp, coC.grp, coR.grp);
@@ -435,7 +435,8 @@ export class Scenes {
     const sc = { root: g, kind: "ns", camDist: 62, radius: 14, barAt: [58, -67], reach: 98, strokes: sb.n + cb.n, meshes: 6, kmPerUnit: () => 1,
       fit: () => ({ r: 12, right: 98, down: 64, up: 20, pdown: 64, frac: 72 / 1080, pfrac: 72 * 390 / 860 / 844, ar: 1 }),
       update: (c) => {
-        body.scale.setScalar(12); body.position.set(0, 0, 0); land.quaternion.copy(c.camQuatLocal); land.position.copy(new T.Vector3(0, GY, 0).applyQuaternion(c.camQuatLocal));
+        body.scale.setScalar(12); body.position.set(0, 0, 0); if (!c.calm) body.rotation.y += c.dt * 0.7;   /* round 6: the neutron star spins (its strokes sweep across the disc) */
+        land.quaternion.copy(c.camQuatLocal); land.position.copy(new T.Vector3(0, GY, 0).applyQuaternion(c.camQuatLocal));
         ms.material.uniforms.uTeff.value = 1e6; ms.material.uniforms.uExposure.value = 2.2; halo.material.uniforms.uTeff.value = 1e6; halo.material.uniforms.uExposure.value = 2.0;
         const q = c.camQuatLocal; const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q);
         coN.place(new T.Vector3().addScaledVector(rt, 12 * 0.7).addScaledVector(up, 12 * 0.7), 9, 7, q, 0.4);
@@ -456,11 +457,13 @@ export class Scenes {
     const ls = buildLensedStars(41, 420, 0.92); const ml = this.mesh(ls, { additive: true }, 2); ml.scale.setScalar(RS); face.add(ml);
     const hor = this.dashedRing(RH, { color: 0xAACDFF, opacity: 0.85 }); hor.rotation.x = Math.PI / 2; hor.renderOrder = 5; face.add(hor);
     const swapStar = this.glow([[RH * 2.2, 0.25], [RH * 1.2, 0.5], [RH * 0.8, 1.0]], { useTeff: true, order: 4 }); swapStar.material.uniforms.uTeff.value = 30000; g.add(swapStar);
+    let drift = 0;
     const coR = this.callout("Bent light ring", { sub: "stars behind are bent too", side: 1 }), coH = this.callout("Horizon of a 10 Sun example", { sub: "about 30 km radius", side: 1 }); g.add(coR.grp, coH.grp);
     const sc = { root: g, kind: "bh", camDist: 125, radius: RS * 1.15, strokes: pr.n + ls.n, meshes: 5, kmPerUnit: () => 2,
       fit: () => ({ r: RS, frac: 230 / 1080, pfrac: 230 * 390 / 860 / 844 }),
       update: (c) => {
-        face.quaternion.copy(c.camQuatLocal); const swap = !!c.st.toggles.swap; ring.visible = mp.visible = ml.visible = hor.visible = !swap; swapStar.visible = swap;
+        face.quaternion.copy(c.camQuatLocal); const swap = !!c.st.toggles.swap;
+        if (!c.calm) { drift += c.dt; ml.rotation.z = drift * 0.11; mp.rotation.z = -drift * 0.05; }   /* round 6: the stars behind drift, so their bent images slide along the ring; the ring's bright side turns slowly */ ring.visible = mp.visible = ml.visible = hor.visible = !swap; swapStar.visible = swap;
         const q = c.camQuatLocal; const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q);
         coR.set(swap ? "A star with the same mass" : "Bent light ring", swap ? "size not to scale" : "stars behind are bent too");
         coR.place(new T.Vector3().addScaledVector(rt, RS * 0.62).addScaledVector(up, RS * 0.8), RS * 0.45, RS * 0.25, q, 0.6);
