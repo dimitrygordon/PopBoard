@@ -221,7 +221,7 @@ export function buildStar(seed = 21, counts = { broad: 420, medium: 1150, hi: 52
 // to a fresh spot on the camera-facing half every few seconds (crossfaded), aims it along the live convection flow (swirl around
 // the nearest giant cell plus 0.45 rad outward upwelling) and colours it from the live cell heat, so the surface churns and nothing stretches.
 export const RSG = { R: 380, broad: { n: 520, len: [50, 120], w: [34, 70], br: 8, a: [0.55, 0.8] }, medium: { n: 1500, len: [26, 64], w: [12, 26], br: 6, a: [0.6, 0.9] },
-  hot: { n: 700, len: [14, 36], w: [5, 11], br: 4, a: [0.5, 0.85] }, cells: { count: 26, rad: [0.27, 0.40] } };   // 26 over the whole sphere: about 13 large roundish cells of different sizes on the visible half
+  hot: { n: 700, len: [14, 36], w: [5, 11], br: 4, a: [0.5, 0.85] }, cells: { count: 18, rad: [0.34, 0.82] } };   // 20 over the whole sphere: about 10 to 14 large cells on the visible disc, the biggest about a third of the disk across
 export function buildRSG(seed = 15) {
   const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
   ["broad", "medium", "hot"].forEach((name, li) => { const L = RSG[name];
@@ -236,16 +236,17 @@ export function rsgCells(t, seed = 15) {
   // home spots spread evenly over the sphere (Fibonacci), like the frame's minimum separation; each cell is reborn near its home
   const home = (i) => { const z = 1 - 2 * (i + 0.5) / N, r = Math.sqrt(1 - z * z), a = i * 2.39996 + seed; return [r * Math.cos(a), z, r * Math.sin(a)]; };
   const near = (i) => { let bj = 0, bd = -2; for (let j = 0; j < N; j++) { if (j === i) continue; const d = home(j).reduce((s2, v, k) => s2 + v * home(i)[k], 0); if (d > bd) { bd = d; bj = j; } } return bj; };
-  const spot = (i, cyc) => { const h0 = home(i); const e1 = norm(cross(Math.abs(h0[1]) < 0.95 ? [0, 1, 0] : [1, 0, 0], h0)), e2 = cross(h0, e1); const an = hsh(i, 5, cyc) * TAU, ra = 0.35 * Math.sqrt(hsh(i, 6, cyc));
+  const spot = (i, cyc) => { const h0 = home(i); const e1 = norm(cross(Math.abs(h0[1]) < 0.95 ? [0, 1, 0] : [1, 0, 0], h0)), e2 = cross(h0, e1); const an = hsh(i, 5, cyc) * TAU, ra = 0.55 * Math.sqrt(hsh(i, 6, cyc));
     return norm(h0.map((v, k) => v + ra * (Math.cos(an) * e1[k] + Math.sin(an) * e2[k]))); };
   const out = []; for (let i = 0; i < N; i++) {
-    const L = 24 + 14 * hsh(i, 1), ag = t / L + hsh(i, 2), cyc = Math.floor(ag), age = ag - cyc;
-    let d = spot(i, cyc); const ax = norm(cross(d, spot(i, cyc + 0.5))); const dr = (0.004 + 0.004 * hsh(i, 3)) * age * L;   // slow drift along a great circle
+    const L = 28 + 12 * hsh(i, 1), ag = t / L + hsh(i, 2), cyc = Math.floor(ag), age = ag - cyc;   /* each cell lives 28 to 40 s */
+    let d = spot(i, cyc); const ax = norm(cross(d, spot(i, cyc + 0.5))); const dr = (0.0025 + 0.0025 * hsh(i, 3)) * age * L;   // slower drift along a great circle
     const cx = cross(ax, d); d = norm(d.map((v, k) => v * Math.cos(dr) + cx[k] * Math.sin(dr)));
-    const j = near(i), Lj = 24 + 14 * hsh(j, 1), dj = spot(j, Math.floor(t / Lj + hsh(j, 2)));
-    const m = 0.5 * Math.max(0, Math.min(1, (age - 0.7) / 0.3)) ** 2; d = norm(d.map((v, k) => v * (1 - m) + dj[k] * m));   // late in life it slides into its neighbour (they merge)
-    const env = Math.min(1, age / 0.15) * Math.min(1, (1 - age) / 0.25); const sm = env * env * (3 - 2 * env);
-    out.push({ d, rad: (RSG.cells.rad[0] + (RSG.cells.rad[1] - RSG.cells.rad[0]) * hsh(i, 4)) * (0.75 + 0.25 * sm), h: (0.55 + 0.45 * hsh(i, 7)) * sm, sgn: hsh(i, 8) < 0.5 ? -1 : 1 }); }
+    const j = near(i), Lj = 28 + 12 * hsh(j, 1), dj = spot(j, Math.floor(t / Lj + hsh(j, 2)));
+    const m = 0.5 * Math.max(0, Math.min(1, (age - 0.72) / 0.28)) ** 2; d = norm(d.map((v, k) => v * (1 - m) + dj[k] * m));   // late in life it slides into its neighbour (they merge)
+    const env = Math.min(1, age / 0.20) * Math.min(1, (1 - age) / 0.30); const sm = env * env * (3 - 2 * env);   /* fade in ~6 s, fade out ~9 s: nothing pops */
+    out.push({ d, rad: (RSG.cells.rad[0] + (RSG.cells.rad[1] - RSG.cells.rad[0]) * hsh(i, 4)) * (0.50 + 0.50 * sm), h: (0.55 + 0.45 * hsh(i, 7)) * sm, sgn: hsh(i, 8) < 0.5 ? -1 : 1 }); }
+  while (out.length < 26) out.push({ d: [0, -1, 0], rad: 0.001, h: 0, sgn: 1 });
   return out;
 }
 

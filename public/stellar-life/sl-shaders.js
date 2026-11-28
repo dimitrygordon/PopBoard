@@ -331,24 +331,44 @@ void main(){
   gl_FragColor = vec4(enc(c) * a, a);
 }`;
 
-// round 9: the supergiant's dark intergranular lanes, drawn once over the painted disc from the live cell field (the same weighted Voronoi the strokes use),
-// so the lanes are thin, continuous and round the cells whatever the dab size. Soft, ragged and warm; they fade out toward the limb.
+// round 10: the painted supergiant is a smooth cell field (frame 3a):  about 10 to 14 large brightness
+// domes, wide blurry amber valleys, a faint large-scale mottle, mild limb darkening, a soft ragged limb.
+// Unlit, equal-bleed, temperatureToSRGB. One disc, no pebble strokes.
 export const rsgLaneFrag = /* glsl */`
 precision highp float; varying vec2 vC; varying float vBr;
-uniform vec4 uCell[26]; uniform vec2 uCellH[26]; uniform vec3 uCamO; uniform vec3 uCamX; uniform vec3 uCamY; uniform float uMaxR; uniform float uAlpha; uniform float uFlowT;
+uniform vec4 uCell[26]; uniform vec2 uCellH[26]; uniform vec3 uCamO; uniform vec3 uCamX; uniform vec3 uCamY;
+uniform float uMaxR; uniform float uAlpha; uniform float uTeff; uniform float uExposure; uniform float uFlowT;
 ${SRGB}
+${LUT}
 ${HASH}
 void main(){
-  vec2 q = vC * uMaxR; float rho = length(q); if (rho > 0.985) discard;
+  vec2 q = vC * uMaxR; float rho = length(q);
+  float an0 = atan(vC.y, vC.x);
+  float rg = 0.65 + 0.45 * vn(vec2(an0 * 4.5, 3.1)) + 0.15 * vn(vec2(an0 * 11.0, 7.4));
+  float dEdge = 1.0 + 0.045 * (rg - 0.7);   /* a slightly more ragged, fuzzy limb */
+  if (rho > dEdge + 0.02) discard;
+  float mu = sqrt(max(0.0, 1.0 - min(rho * rho, 1.0)));
   vec3 z = normalize(uCamO); vec3 ex = normalize(uCamX - z * dot(uCamX, z)); vec3 ey = cross(z, ex);
-  vec3 c = normalize(q.x * ex + q.y * ey + sqrt(max(1.0 - rho * rho, 0.0)) * z);
-  float best = 99.0, second = 99.0;
-  for (int i = 0; i < 26; i++) { float a = sqrt(2.0 * max(1.0 - dot(uCell[i].xyz, c), 0.0)); float wd = a / (uCell[i].w * (0.72 + 0.28 * uCellH[i].x)); if (wd < best) { second = best; best = wd; } else if (wd < second) second = wd; }
-  float gap = (second - best) / (second + best + 1e-3) * 1.6; float fw = fwidth(gap);
-  float rag = 0.55 + 0.9 * vn(c.xy * 19.0 + c.z * 13.0) * (0.6 + 0.4 * vn(c.yz * 41.0));
-  float lane = 1.0 - smoothstep(0.0 - fw, 0.30 * rag + fw, gap);
-  lane *= smoothstep(0.985, 0.82, rho);
-  float a = lane * lane * 0.62 * uAlpha; if (a < 0.004) discard;
-  vec3 col = vec3(0.36, 0.17, 0.06);
+  vec3 c0 = normalize(q.x * ex + q.y * ey + mu * z);
+  vec3 c = normalize(c0 + 0.07 * vec3(vn(c0.yz * 1.6 + 2.1) - 0.5, vn(c0.zx * 1.6 + 4.3) - 0.5, vn(c0.xy * 1.6 + 6.7) - 0.5));
+  float best = 99.0, second = 99.0, chh = 0.35, a1 = 0.0, a2 = 1.0;
+  for (int i = 0; i < 26; i++) {
+    float rad = uCell[i].w; if (rad < 0.02) continue;
+    float a = sqrt(2.0 * max(1.0 - dot(uCell[i].xyz, c), 0.0));
+    float wd = a / (rad * (0.72 + 0.28 * uCellH[i].x));
+    if (wd < best) { second = best; a2 = a1; best = wd; a1 = a; chh = uCellH[i].x; }
+    else if (wd < second) { second = wd; a2 = a; }
+  }
+  float dome = exp(-0.95 * best * best);                          /* smooth low-frequency brightness dome */
+  float wall = 0.5 * max(a2 - a1, 0.0);                          /* distance to the Voronoi edge, in star radii */
+  float valley = 1.0 - smoothstep(0.04, 0.14, wall);             /* 6 to 10 percent wide, very blurry, never a line */
+  float mot = vn(c0.xy * 1.05 + c0.z * 0.9);                     /* at most one very faint large-scale mottle */
+  float heat = clamp((0.62 + 0.38 * chh) * (0.42 + 0.58 * dome) * (1.0 - 0.22 * valley), 0.50, 1.0);  /* floor: no rust holes */
+  float ld = 0.74 + 0.26 * pow(mu, 0.75);                        /* a little limb darkening so it reads round */
+  float dT = 160.0 * (heat - 0.30) - 18.0 * valley;              /* cream and peach tops, muted amber valleys */
+  float br = (0.90 + 0.32 * heat) * ld * (0.984 + 0.032 * mot);
+  vec3 col = bleed(tlin(uTeff + dT) * br * uExposure);
+  float edge = 1.0 - smoothstep(dEdge * 0.91, dEdge, rho);
+  float a = edge * uAlpha; if (a < 0.004) discard;
   gl_FragColor = vec4(enc(col) * a, a);
 }`;

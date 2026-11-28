@@ -462,7 +462,7 @@ function frame(now) {
   uni.uCamLocal.value.copy(camLocal); uni.uCosElev.value = Math.max(0.25, Math.hypot(camLocal.x, camLocal.z) / (camLocal.length() || 1));
   bg.root.position.copy(camLocal);   // the sky stays at infinity
   const extra = {};
-  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt: sdt, flowT: flowS, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
+  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt: sdt, flowT: flowS, flowSmooth: flowT, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
   else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); o.l.position.y = layout.phone && !presenting && o.i % 2 ? o.R + 3 : -o.R - 3;  const ph = layout.phone && !presenting; hubTitle.position.y = ph ? 15 : 12; hubNote.position.y = ph ? -15 : -12; }   /* phone: every other key label sits above its orb so the five never overlap */
   hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? "Place your pins" : "Pick a starting mass");
   // scale bar and zoom labels (labelled zoom changes, never a fake scale)

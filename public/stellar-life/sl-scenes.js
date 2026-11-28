@@ -265,10 +265,10 @@ void main(){
       transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide, blending: T.NormalBlending, premultipliedAlpha: true }));
     rsg.frustumCulled = false; rsg.renderOrder = 2; rsg.visible = false;
     const rsgLane = new T.Mesh(new T.PlaneGeometry(2, 2), new T.ShaderMaterial({ vertexShader: glowVert, fragmentShader: rsgLaneFrag, transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide, blending: T.NormalBlending, premultipliedAlpha: true,
-      uniforms: { ...this.uni, uMaxR: { value: 1.0 }, uAlpha: { value: 0 }, uBreath: { value: 0 }, uCamO: rsg.material.uniforms.uCamO, uCell: rsg.material.uniforms.uCell, uCellH: rsg.material.uniforms.uCellH, uCamX: { value: new T.Vector3(1, 0, 0) }, uCamY: { value: new T.Vector3(0, 1, 0) } } }));
+      uniforms: { ...this.uni, uMaxR: { value: 1.0 }, uAlpha: { value: 0 }, uBreath: { value: 0 }, uTeff: { value: 3400 }, uExposure: { value: 1 }, uLut: { value: this.lut }, uCamO: rsg.material.uniforms.uCamO, uCell: rsg.material.uniforms.uCell, uCellH: rsg.material.uniforms.uCellH, uCamX: { value: new T.Vector3(1, 0, 0) }, uCamY: { value: new T.Vector3(0, 1, 0) } } }));
     rsgLane.frustumCulled = false; rsgLane.renderOrder = 3; rsgLane.visible = false;
     const rsgHalo = this.glow([[2.3, 0.34, [255, 150, 110]], [1.7, 0.42, [255, 164, 118]], [1.35, 0.42, [255, 176, 128]], [1.1, 0.5, [236, 146, 86]]], { disc: 1.0, useTeff: false, order: 1 });   /* extended warm-pink falloff like 3a, a dimmer disc so the lanes read */
-    rsgHalo.material.uniforms.uRing.value.set(0, 0, 0, 1e-4);   /* any uRing.w above 0 gives this disc the soft, ragged supergiant limb (the ring term itself is nil) */
+    rsgHalo.material.uniforms.uRing.value.set(0, 0, 0, 1e-4); rsgHalo.material.uniforms.uDisc.value = 0;   /* glow only: the surface shader paints the disc, so no rust-orange ground shows through */
     const rsgRing = this.glow([[1.08, 0]], { useTeff: false, order: 7 }); rsgRing.material.uniforms.uRing.value.set(1.0, 0.74, 0.58, 0.22);   /* gold-pink, lower peak, ragged in the shader */
     Object.assign(rsgRing.material, { blending: T.CustomBlending, blendEquation: T.AddEquation, blendSrc: T.OneFactor, blendDst: T.OneFactor, blendSrcAlpha: T.OneFactor, blendDstAlpha: T.OneFactor });   /* the ring adds light */
     for (const m of [rsgHalo, rsgRing]) m.material.uniforms.uBreath = { value: 0 };   /* no breathing scale: the disc edge stays on the painted limb */
@@ -318,13 +318,14 @@ void main(){
           sc.rsgOn = on; const TeffShow = wide ? (on < 0.35 ? Math.pow(10, Math.log10(22000) * (1 - on / 0.35) + Math.log10(8500) * (on / 0.35))
             : on < 0.7 ? Math.pow(10, Math.log10(8500) * (1 - (on - 0.35) / 0.35) + Math.log10(4800) * ((on - 0.35) / 0.35))
             : Math.pow(10, Math.log10(4800) * (1 - (on - 0.7) / 0.3) + Math.log10(Math.max(Teff, 3300)) * ((on - 0.7) / 0.3))) : Teff;
-          rsg.visible = rsgHalo.visible = rsgRing.visible = rsgLane.visible = on > 0.001; ms.visible = on < 0.999;
+          rsg.visible = false; rsgHalo.visible = rsgRing.visible = rsgLane.visible = on > 0.001; ms.visible = on < 0.999;   /* round 10: a smooth cell-field disc, no pebble strokes */
           ms.material.uniforms.uAlpha.value = 1 - on; halo.material.uniforms.uAlpha.value = 1 - on; giantGlow.material.uniforms.uAlpha.value *= 1 - on;
           mw.material.uniforms.uAlpha.value = 1 - 0.7 * on;
           for (const m of [ms, mw, halo, tight, giantGlow]) m.material.uniforms.uTeff.value = TeffShow;
-          if (rsg.visible) { const u = rsg.material.uniforms; u.uAlpha.value = on; u.uTeff.value = TeffShow; u.uRedeal.value = (wide && on > 0.05 && on < 0.98) ? 1 : 0; rsgHalo.material.uniforms.uTeff.value = TeffShow; rsgHalo.material.uniforms.uExposure.value = 0.7; u.uExposure.value = 1.0;
-            rsgHalo.material.uniforms.uAlpha.value = on; rsgRing.material.uniforms.uAlpha.value = on; rsgLane.material.uniforms.uAlpha.value = on; { const bq = body.quaternion.clone().invert(); rsgLane.material.uniforms.uCamX.value.set(1, 0, 0).applyQuaternion(c.camQuatLocal).applyQuaternion(bq); }
-            const cells = rsgCells(c.flowT || 0); cells.forEach((ce, i) => { u.uCell.value[i].set(ce.d[0], ce.d[1], ce.d[2], ce.rad); u.uCellH.value[i].set(ce.h, ce.sgn); });
+          if (rsgHalo.visible) { const u = rsg.material.uniforms; rsgLane.material.uniforms.uAlpha.value = on; rsgLane.material.uniforms.uTeff.value = TeffShow; rsgLane.material.uniforms.uExposure.value = 1.08;
+            rsgHalo.material.uniforms.uTeff.value = TeffShow; rsgHalo.material.uniforms.uExposure.value = 0.7; rsgHalo.material.uniforms.uAlpha.value = on; rsgRing.material.uniforms.uAlpha.value = on;
+            { const bq = body.quaternion.clone().invert(); rsgLane.material.uniforms.uCamX.value.set(1, 0, 0).applyQuaternion(c.camQuatLocal).applyQuaternion(bq); }
+            const cells = rsgCells(c.flowSmooth != null ? c.flowSmooth : (c.flowT || 0)); cells.forEach((ce, i) => { u.uCell.value[i].set(ce.d[0], ce.d[1], ce.d[2], ce.rad); u.uCellH.value[i].set(ce.h, ce.sgn); });
             g.updateMatrix(); body.updateMatrix(); const m = new T.Matrix4().multiplyMatrices(g.matrix, body.matrix).invert(); u.uCamO.value.copy(c.camLocal).applyMatrix4(m).normalize(); } }
         const peek = c.st.peek && c.st.answers["S1:0"]; const pk = peek ? tRGB255Peek(c.st.answers["S1:0"]) : null;
         for (const m of [ms, halo, tight]) { m.material.uniforms.uPeekOn.value = pk ? 1 : 0; if (pk) m.material.uniforms.uPeek.value.set(pk[0] / 255, pk[1] / 255, pk[2] / 255); }
