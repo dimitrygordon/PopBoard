@@ -295,8 +295,8 @@ void main(){
         const lock = c.v.stage && c.v.stage.zoomLock && c.v.refR;   // R2: hold the zoom of its main-sequence size, so it visibly shrinks
         const cls = heroClass(c.v.stage ? c.v.stage.id : ""), Rmax = c.v.maxR || R, wide = cls === "super" && !lock;   /* H2/V2: one zoom for the stage's largest radius, so the star swells in a steady frame */
         sc.s = lock ? (levels.find((L) => c.v.refR / L <= 24 && c.v.refR / L >= 2.4) || sc.s) : sc.zoomFor(wide ? Rmax : R, c.fitMax || 16);
-        let Rshow = R; if (wide && Rmax > 2) { const l0 = Math.log10(Rmax) - 1.6, l1 = Math.log10(Rmax) - 0.15, l = Math.log10(Math.max(R, 1.01));
-          if (l > l0 && l < l1) { const u = (l - l0) / (l1 - l0), e = 1 - (1 - u) * (1 - u); Rshow = Math.pow(10, l0 + (l1 - l0) * e); } }   /* ease-out swell in log radius, so the last part of the growth is slower */
+        let Rshow = R; const sw = c.v.swell, tt = c.v.t, lR0 = Math.log10(Math.max(Rmax, 2)) - 1.6, lR1 = Math.log10(Math.max(Rmax, 2)) - 0.15;
+        if (wide && sw && tt > sw.a && tt < sw.b) { const u = (tt - sw.a) / (sw.b - sw.a), e = u * u * (3 - 2 * u); Rshow = Math.pow(10, sw.la + (sw.lb - sw.la) * e); }   /* round 9: the swell is about 3 s and eases in and out (smoothstep on log radius), then rejoins the track exactly */
         const r = Rshow / sc.s; body.scale.setScalar(r); sc.radius = wide ? Rmax / sc.s : r; sc.barMax = wide ? (Rmax / sc.s) * 0.8 : undefined;
         { const hc = HERO[cls]; const Rref = lock ? Math.max(c.v.refR, R) : cls === "ms" ? R : wide ? Rmax : Math.pow(Math.max(Rmax, R), 0.6) * Math.pow(R, 0.4);
           sc.fitF = c.fitMax ? null : { r: Rref / sc.s, frac: hc[0], pfrac: hc[1], cover: true, up: Rref / sc.s * 1.15, pover: cls === "super" ? 1.25 : 1.12 }; }
@@ -310,7 +310,7 @@ void main(){
         halo.visible = true; tight.visible = false;   // stars keep the equal-bleed glow; only the remnants get tight glows
         giantGlow.visible = giant > 0.05; giantGlow.material.uniforms.uAlpha.value = 0.9 * smooth(0.2, 1, giant);
         { /* cool giants switch to the live painted supergiant (frame 3a). On a super stage the mix eases out over the swell (2 to 3 s), with a blue-white, yellow, orange-red colour path, not a pop. */
-          const on = wide ? (() => { const u = smooth(Math.log10(Math.max(Rmax, 2)) - 1.6, Math.log10(Math.max(Rmax, 2)) - 0.15, Math.log10(Math.max(Rshow, 1.01))); return 1 - (1 - u) * (1 - u); })() : smooth(0.45, 0.75, giant) * smooth(4700, 4200, Teff);
+          const on = wide ? (() => { return smooth(lR0, lR1, Math.log10(Math.max(Rshow, 1.01))); })() : smooth(0.45, 0.75, giant) * smooth(4700, 4200, Teff);
           sc.rsgOn = on; const TeffShow = wide ? (on < 0.35 ? Math.pow(10, Math.log10(22000) * (1 - on / 0.35) + Math.log10(8500) * (on / 0.35))
             : on < 0.7 ? Math.pow(10, Math.log10(8500) * (1 - (on - 0.35) / 0.35) + Math.log10(4800) * ((on - 0.35) / 0.35))
             : Math.pow(10, Math.log10(4800) * (1 - (on - 0.7) / 0.3) + Math.log10(Math.max(Teff, 3300)) * ((on - 0.7) / 0.3))) : Teff;

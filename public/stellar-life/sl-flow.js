@@ -142,6 +142,12 @@ export function createFlow(S, tracks, opts = {}) {
     if (s.ref === "msRing") v.refR = Math.pow(10, tr.end.logR);
     // the stage's largest radius (Suns), for the camera framing: the star fills Leo's share of the frame at its biggest
     if (row && (seg.type === "mist" || seg.type === "mist+wd" || seg.type === "predicted")) { const key = m + ":" + st.si; if (st._maxRKey !== key) { let mx = 0; for (let i = 0; i <= 48; i++) { const q = seg.type === "predicted" ? predictedAt(tr, i / 48) : atEEP(tr, r[0] + (r[1] - r[0]) * i / 48); if (q) mx = Math.max(mx, Math.pow(10, q.logR)); } st._maxRKey = key; st._maxR = mx; } v.maxR = st._maxR; }   // R2: its size at the end of its main sequence, same scale
+    // round 9: the swell window (a swell of about 3 s): centred on the steepest growth of the radius, with the radius at both ends, so the scene can ease its drawn size in and out (smoothstep on log radius) and then rejoin the track exactly
+    if (row && seg.type === "mist" && !seg.thenFreeze && !seg.thenFork && /^(H2|V2)$/.test(s.id)) { const key = m + ":" + st.si;
+      if (st._swKey !== key) { const N = 80, lg = []; for (let i = 0; i <= N; i++) lg.push(atEEP(tr, r[0] + (r[1] - r[0]) * i / N).logR); let bi = 0, bd = -1; for (let i = 0; i < N; i++) if (lg[i + 1] - lg[i] > bd) { bd = lg[i + 1] - lg[i]; bi = i; }
+        const half = 1.5 / (s.dur || 14), tc = (bi + 0.5) / N, a = Math.max(0, tc - half), b = Math.min(1, a + 2 * half); const ia = Math.round(a * N), ib = Math.round(b * N);
+        st._swKey = key; st._sw = { a: ia / N, b: ib / N, la: lg[ia], lb: lg[ib] }; }
+      v.swell = st._sw; }
     v.hideDotNote = hideDot ? "Its track starts on the main sequence. It is still wrapped in its cloud." : "";
     return v;
   };
