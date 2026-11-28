@@ -110,7 +110,7 @@ export function buildCloud(seed = 11) {
 }
 
 // ---------- F3 to F5: protostar disk, jets and young planets (world units: AU) ----------
-// Layout matched to Angelo's hand-placed GP disk v4.1 (approved by Leo; strokes_v4_1.json, not shipped): the same stroke
+// Layout matched to Angelo's hand-placed GP disk v4.1 and v4.2 (approved by Leo; strokes_v4_1.json and strokes_v4_2.json, not shipped): the same stroke
 // count per radial band, arc span, width, height above the plane, opacity and colour (tools/stellar-life/disk-v4-stats.py
 // prints this table from his file). The strokes here are generated, not copied. Washes and marks lie flat in the disk
 // plane (his ribbons face the disk normal), the jets and the soft nested knots blend with alpha.
@@ -121,8 +121,13 @@ const COVER = 1.5;
 const V4_WASH = [[1, 2, 17, 2.83, 1.08, 0.46, 0.02, "#F59B3B"], [2, 3, 10, 2.68, 1.19, 0.49, 0.03, "#C9671C"], [3, 4, 5, 3.25, 1.45, 0.45, 0.05, "#C48448"], [4, 6, 12, 2.76, 1.37, 0.47, 0.07, "#97693A"],
   [6, 8, 4, 1.55, 1.43, 0.52, 0.09, "#986432"], [8, 10, 6, 0.94, 0.59, 0.47, 0.17, "#634021"], [10, 12, 6, 1.11, 1.01, 0.46, 0.21, "#674226"], [12, 14, 1, 1.23, 1.16, 0.41, 0.35, "#543722"]];
 const V4_MARK = [[0.3, 1, 4, 1.52, 0.30, 0.89, 0.01, "#F7D27B"], [1, 2, 19, 1.33, 0.41, 0.89, 0.03, "#E09340"], [2, 3, 22, 1.34, 0.47, 0.88, 0.04, "#D27E34"], [3, 4, 12, 1.23, 0.60, 0.88, 0.06, "#BD7B40"],
-  [4, 6, 14, 1.30, 0.54, 0.88, 0.07, "#B67D46"], [6, 8, 11, 1.27, 0.77, 0.88, 0.12, "#97693C"], [8, 10, 21, 0.44, 0.30, 0.89, 0.19, "#7B5331"], [10, 12, 17, 0.35, 0.41, 0.86, 0.22, "#6B492E"],
-  [12, 14, 17, 0.52, 0.48, 0.88, 0.21, "#5F3F27"], [14, 17.5, 8, 0.40, 0.52, 0.88, 0.25, "#543521"]];
+  [4, 6, 14, 1.30, 0.54, 0.88, 0.07, "#B67D46"], [6, 8, 11, 1.27, 0.77, 0.88, 0.12, "#97693C"], [8, 10, 21, 0.44, 0.30, 0.89, 0.19, "#7B5331"], [10, 12, 15, 0.35, 0.41, 0.86, 0.22, "#6B492E"],
+  [12, 14, 15, 0.52, 0.48, 0.88, 0.21, "#5F3F27"], [14, 17.5, 4, 0.40, 0.52, 0.88, 0.25, "#543521"]];
+// v4.2 (Angelo, Leo-approved follow-up): the 8 split arc pieces follow true circular orbits, two pieces per parent arc with a
+// small gap. [radius AU, start angle deg, span deg, width AU, opacity, height AU], read from his v4.2 stats; the 8 are taken
+// out of the band counts above so the totals stay as in v4.
+const V42_PIECES = [[15.86, 62, 23.9, 0.618, 0.83, 0.03], [15.72, 91, 27.5, 0.598, 0.83, -0.19], [16.37, 37, 21.6, 0.602, 0.83, -0.03], [16.66, 123, 26.8, 0.601, 0.83, -0.38],
+  [13.08, -40, 27.7, 0.429, 0.90, -0.04], [13.03, -70, 26.1, 0.421, 0.90, -0.13], [10.92, -117, 20.1, 0.316, 0.83, 0.03], [10.75, -94, 22.0, 0.323, 0.83, -0.09]];
 export function buildDisk(opts = {}) {
   const T = opts.teff || 4410, seed = opts.seed || 7, ROUT = 17.5, EDGE = 17.5;
   const R = rng(seed); const disk = new Builder(16), add = new Builder(12), wrap = new Builder(); const sprites = [];
@@ -136,6 +141,8 @@ export function buildDisk(opts = {}) {
     disk.add(arc(r - dr, r + dr, ph, dph, y), { width: jit(w * COVER, 0.3), rgb: jitter(hex2rgb(col), R, 0.015, 0.05, 0.05), alpha: jit(op, 0.06), kind: KIND.FLAT, bristles: kindName === "wash" ? 1 : 2, boil: A_DISK, seed: S() });
   } };
   band(V4_WASH, "wash"); band(V4_MARK, "mark");
+  for (const [r, a0, sp, w, op, y] of V42_PIECES) { const col = (V4_MARK.find((B) => r >= B[0] && r < B[1]) || V4_MARK[V4_MARK.length - 1])[7]; const D = Math.PI / 180;
+    disk.add(arc(r, r, (a0 + sp / 2) * D, sp * D, y, 12), { width: w * COVER, rgb: jitter(hex2rgb(col), R, 0.015, 0.05, 0.05), alpha: op, kind: KIND.FLAT, bristles: 2, boil: A_DISK, seed: S() }); }
   // inner rim (14 bright cream arcs at 0.64 to 0.81 AU, opacity 1) and the frost line (7 arcs near 3.1 AU, opacity 0.9)
   for (let i = 0; i < 14; i++) { const r = 0.64 + R() * 0.17; disk.add(arc(r, r, R() * TAU, jit(2.3, 0.25), (R() - 0.5) * 0.14), { width: jit(0.19, 0.25), rgb: jitter(hex2rgb("#F5C896"), R, 0.01, 0.04, 0.04), alpha: 1, kind: KIND.FLAT, bristles: 3, boil: A_OTHER, seed: S() }); }
   const frost = opts.planets === "solar";
