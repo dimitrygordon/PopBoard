@@ -299,7 +299,7 @@ void main(){
     float mu = sqrt(max(0.0, 1.0 - (d / uDisc) * (d / uDisc))); float om = 1.0 - mu;
     // grey limb darkening (G coefficients of LOOK-SPEC 3.2) so every disc pixel is temperatureToSRGB(Teff) x a scalar: the hue never moves
     float ld = 1.0 - 0.47 * om - 0.13 * om * om;
-    vec3 disc = (uUseTeff > 0.5 ? tint : dec(uLay[3].rgb) * 0.9) * ld * uExposure;   /* painted RSG: a dimmer warm base so the cell lanes stay dark */
+    vec3 disc = (uUseTeff > 0.5 ? tint : dec(uLay[3].rgb)) * ld * uExposure;   /* painted RSG: a dimmer warm base so the cell lanes stay dark */
     if (uChroma > 0.0) { vec2 q = vC * uMaxR / (1.0 + 0.03 * vBr) / uDisc; float rho = length(q); vec2 g = (rho > 1e-4 ? q / rho * asin(min(rho, 0.9999)) : q) * 15.0;
       float cb; float gap = evoCells(g, uFlowT, cb); float fw = fwidth(gap); float ln = smoothstep(0.1 - fw, 0.1 + fw, gap);   /* crisp lanes at any size */
       /* round 7: lanes dark enough to read at viewing size like frame 2 (warm tan, the loupe's lane colour) */
