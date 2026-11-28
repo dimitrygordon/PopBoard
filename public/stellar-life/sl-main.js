@@ -423,15 +423,20 @@ const sp2 = new THREE.Vector3(), lq = new THREE.Quaternion(), wq2 = new THREE.Qu
 
 // ---------------- frame loop ----------------
 const tmp = new THREE.Vector3(), camLocal = new THREE.Vector3(), qW = new THREE.Quaternion(), qL = new THREE.Quaternion(), wq = new THREE.Quaternion();
+const MOTION_FPS = 8;   /* the boil cadence (strokeVert: floor(uBoilT * 8)) */
 let prev = 0, clock = 0, flowT = 0, boilT = 0, viewHalfH = 20, viewLam = 1;
 const stats = { frames: 0, acc: 0, fps: 0, ms: 0, cpu: 0, cpuAcc: 0, samples: [] };
 function frame(now) {
   const dt = (prev && !manual) ? Math.min(0.1, (now - prev) / 1000) : (manual ? manualDt : 0); prev = now; clock += dt;
   if (!calm) boilT += dt; flowT += dt * (calm ? 0.35 : 1);
-  uni.uBoilT.value = boilT; uni.uFlowT.value = flowT; uni.uBreathT.value = flowT;
+  /* round 7: one rhythm. Transform motion (stage time, scene motion, flow uniforms) advances in the same 8 steps per second as the
+     line boil, so paint and motion change together. Calm lines turns off both: no boil, and motion runs smooth and slower. */
+  const sdt = calm ? dt : (Math.floor(clock * MOTION_FPS + 1e-6) - Math.floor((clock - dt) * MOTION_FPS + 1e-6)) / MOTION_FPS;
+  const flowS = calm ? flowT : Math.floor(flowT * MOTION_FPS + 1e-6) / MOTION_FPS;
+  uni.uBoilT.value = boilT; uni.uFlowT.value = flowS; uni.uBreathT.value = flowS;
   if (!flow) { renderer.render(scene, camera); return; }
-  const before = flow.st.phase; flow.tick(dt); if (flow.st.phase !== before) uiDirty = true;
-  if (flow.st.screen === "compare") { const s0 = flow.cmp.c.step; flow.cmp.tick(dt); if (flow.cmp.c.step !== s0) { uiDirty = hrDirty = true; if (flow.cmp.c.step === "done") flow.compareDone(); } }
+  const before = flow.st.phase; flow.tick(sdt); if (flow.st.phase !== before) uiDirty = true;
+  if (flow.st.screen === "compare") { const s0 = flow.cmp.c.step; flow.cmp.tick(sdt); if (flow.cmp.c.step !== s0) { uiDirty = hrDirty = true; if (flow.cmp.c.step === "done") flow.compareDone(); } }
   const v = flow.st.screen === "stage" ? flow.view() : null;
   const sc = sceneFor(v); showScene(sc);
   const presenting = renderer.xr.isPresenting;
@@ -457,7 +462,7 @@ function frame(now) {
   uni.uCamLocal.value.copy(camLocal); uni.uCosElev.value = Math.max(0.25, Math.hypot(camLocal.x, camLocal.z) / (camLocal.length() || 1));
   bg.root.position.copy(camLocal);   // the sky stays at infinity
   const extra = {};
-  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
+  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt: sdt, flowT: flowS, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
   else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); o.l.position.y = layout.phone && !presenting && o.i % 2 ? o.R + 3 : -o.R - 3;  const ph = layout.phone && !presenting; hubTitle.position.y = ph ? 15 : 12; hubNote.position.y = ph ? -15 : -12; }   /* phone: every other key label sits above its orb so the five never overlap */
   hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? "Place your pins" : "Pick a starting mass");
   // scale bar and zoom labels (labelled zoom changes, never a fake scale)
