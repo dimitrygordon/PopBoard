@@ -6,6 +6,7 @@ import { createNarrator } from "../../astro-course/ac-narrate.js";
 import { createWorld } from "./vr4d-world.js";
 import { createAudio } from "./vr4d-audio.js";
 import { CaptionPanel } from "./vr4d-captions.js";
+import { freshRay, resolveSelect } from "./vr4d-input.js";
 import { buildSteps, LOOK, FADE, LEAF_SEC, bookHref, defaultModel, SCENE_TITLE, DECK, HELP_LEVELS } from "./vr4d-book.js";
 import { capDelta, notchEvents, segmentLength, sphereSliceRadius, BALL_R, BEAD_RANGE, HYPER_R, cyclePlane, EYE_Y, W_PLANES } from "./vr4d-math.js";
 
@@ -47,6 +48,7 @@ let didMotif = false, didHush = false, didSlice = false;
 let chordStage = 0;
 let lastDial = 0;
 let xrInput = null;
+const hoverId = [null, null];
 let vrGrab = null;
 let vrLast = null;
 let aligned = false;
@@ -103,7 +105,7 @@ function captionNow() {
 }
 function drawPanel() {
   panel.draw({
-    text: captionNow(), word, paper: model.paper, scale: model.captionScale, buttons: panelButtons(),
+    text: captionNow(), word, paper: model.paper, scale: model.captionScale, buttons: panelButtons(), hover: hoverId[0] || hoverId[1],
   });
 }
 function panelButtons() {
@@ -477,26 +479,53 @@ function tap(name) {
   }
 }
 
+// The controllers must exist before the session starts. three.js binds an input source to a
+// controller only in the inputsourceschange event that fires as the session opens; a controller
+// created after `await setSession` is never bound, so select events never reach it.
+const aimDots = [0, 1].map(() => {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(0.012, 12, 8), new THREE.MeshBasicMaterial({ color: 0x3ddc84, depthTest: false, transparent: true }));
+  m.renderOrder = 51; m.visible = false; scene.add(m);
+  return m;
+});
+function aimFor(i) {
+  const st = xrInput.ctrl[i];
+  const ray = st && st.source ? freshRay(THREE, st.c) : null;
+  const hit = ray ? panel.hitInfo(ray) : null;
+  return { ray, hit };
+}
+function showAim(i, hit) {
+  const dot = aimDots[i];
+  dot.visible = !!(hit && renderer.xr.isPresenting);
+  if (hit) dot.position.copy(hit.point);
+  xrInput.setRayLength(i, hit ? Math.max(0.15, hit.t) : 5);
+  const id = hit && hit.id !== "panel" ? hit.id : null;
+  if (id !== hoverId[i]) { hoverId[i] = id; drawPanel(); }
+}
+xrInput = new XRInput(THREE, renderer, scene, {
+  onHover(i) { const { hit } = aimFor(i); showAim(i, hit); },
+  onSelectStart(i) {
+    const st = xrInput.ctrl[i];
+    const ray = st && st.c ? freshRay(THREE, st.c) : null;
+    if (ray) vrDown(ray);
+  },
+  onSelectEnd() { vrGrab = null; vrLast = null; audio.release(); },
+  onScrubHours() {},
+  onTogglePanel() { panel.mesh.visible = !panel.mesh.visible; if (panel.mesh.visible) recenter(); },
+});
+
 async function enterVR() {
   const session = await navigator.xr.requestSession("immersive-vr", { optionalFeatures: ["local-floor", "hand-tracking"] });
   await renderer.xr.setSession(session);
-  if (!xrInput) {
-    xrInput = new XRInput(THREE, renderer, scene, {
-      onHover() {},
-      onSelectStart(i, ray) { vrDown(ray); },
-      onSelectEnd() { vrGrab = null; vrLast = null; audio.release(); },
-      onScrubHours() {},
-      onTogglePanel() { panel.mesh.visible = !panel.mesh.visible; if (panel.mesh.visible) recenter(); },
-    });
-  }
   session.addEventListener("end", () => {
     aligned = false; xrFrames = 0; world.root.position.y = 0;
+    hoverId[0] = hoverId[1] = null; aimDots.forEach((d) => { d.visible = false; });
   });
 }
 function vrDown(ray) {
+  panel.mesh.updateWorldMatrix(true, false);
   rayOf(ray.origin, ray.dir);
-  const panelId = panel.hit(raycaster.ray);
-  if (panelId && panelId !== "panel") { onPanel(panelId); return; }
+  const sel = resolveSelect(panel.hitInfo(ray));
+  if (sel.consumed) { if (sel.button) onPanel(sel.button); return; }
   const hit = firstGrab(raycaster.ray);
   const squeezing = xrInput ? xrInput.ctrl.filter((c) => c.squeeze).length : 0;
   if (hit && hit.object.userData.grab && hit.object.userData.grab.startsWith("cell-")) {
@@ -645,7 +674,10 @@ renderer.setAnimationLoop((now) => {
   }
   world.update(model, t, dt, _head);
   panel.mesh.visible = renderer.xr.isPresenting;
-  if (xrInput && renderer.xr.isPresenting) xrInput.update(dt);
+  if (xrInput && renderer.xr.isPresenting) {
+    xrInput.update(dt);
+    xrInput.ctrl.forEach((st, i) => { if (!st.source) { aimDots[i].visible = false; if (hoverId[i]) { hoverId[i] = null; drawPanel(); } } });
+  }
   renderer.render(scene, camera);
 });
 
