@@ -102,7 +102,7 @@ export class XRPanel {
     const card = M.cards && M.cards.length ? M.cards[M.cardIdx || 0] : "";
     if (card) { wrap(card, 36, "#F2F4FF"); if (M.cards.length > 1 && y + 70 < limit) { g.fillStyle = "#A9B0D0"; g.font = FONT(30); g.fillText(`Card ${M.cardIdx + 1} of ${M.cards.length}`, P, y + 40); this.box("text", P, y + 8, 260, 40); if (M.cardIdx < M.cards.length - 1) this.btn("card+", "Next card", W - P - 280, y, 280, 62, false); else this.btn("card-", "Previous card", W - P - 280, y, 280, 62, false); y += 76; } }
     if (M.question) { y += 6; if (M.question.head) line(M.question.head, 30, "#FFD27F", 700); wrap(M.question.text, 38, "#C9BDFF"); y += 6; this.choices(M.question, y, limit); y = this.cy; }
-    if (M.masses) { let x = P; for (const m of M.masses) { this.btn(m.act || "mass:" + m.id, m.label, x, y, 176, 76, m.on); x += 186; } y += 92; }
+    if (M.masses) { let x = P; for (const m of M.masses) { this.btn(m.act || "mass:" + m.id, m.short || m.label, x, y, 176, 76, m.on); x += 186; } y += 92; }
     for (const r of M.reveal || []) { wrap(`You predicted: ${r.picked}`, 32, "#C9BDFF", 2); wrap(`The model: ${r.model}${r.extra ? ". " + r.extra : ""}`, 32, "#AACDFF", 3); }
     if (M.pinPrompt) wrap(M.pinPrompt, 32, "#C9BDFF", 3);
     if (M.readouts && M.readouts.length) { g.font = FONT(32, 600); let x = P; const rh = 46; for (const [k, v] of M.readouts) { const t = `${k}: ${v}`; const tw = Math.min(W - 2 * P, g.measureText(t).width + 24); if (x + tw > W - P) { x = P; y += rh + 8; } if (y + rh > limit) break; g.fillStyle = "rgba(255,255,255,0.08)"; g.fillRect(x, y, tw, rh); g.fillStyle = "#E6E9F8"; g.fillText(t, x + 12, y + 33, tw - 24); this.box("readout", x, y, tw, rh); x += tw + 10; } y += rh + 14; }

@@ -3,7 +3,7 @@
   "noDot": "Not on this H-R diagram. A neutron star is far too small and faint for this chart, and a black hole has no surface to measure.",
   "credit1Sun": "1 Sun track adjusted slightly so today's Sun matches measured values.",
   "hub": [
-    { "id": "H-Pick", "caption": "Pick a starting mass in Suns. It is your only choice: the mass sets the whole life, and the model plays it out.", "act": [{ "code": "K", "kind": "mass" }] },
+    { "id": "H-Pick", "caption": "In this model, mass is your only choice. Pick a starting mass in Suns: the mass sets the whole life, and the model plays it out.", "act": [{ "code": "K", "kind": "mass" }] },
     { "id": "H-End", "caption": "What will your star become in the end?", "act": [{ "code": "P", "q": "What will your star become in the end?", "choices": ["white dwarf", "neutron star", "black hole"], "answerBy": { "0.2": "white dwarf", "1": "white dwarf", "3": "white dwarf", "15": "neutron star", "40": "black hole" } }], "mis": [3] },
     { "id": "H-Path", "caption": "Predict before you watch: place three guess pins on the H-R diagram for where it spends most of its life, where it swells the most, and where it ends. Then the model shows where it really goes.", "act": [{ "code": "P", "kind": "pins", "pins": ["most of its life", "where it swells the most", "where it ends"] }], "mis": [5] }
   ],
@@ -127,7 +127,7 @@
         "caption": "The core runs out of fuel that releases energy and collapses.", "act": [{ "code": "O" }], "mis": [9] },
       { "id": "V5", "title": "Two paths", "scene": "twopaths", "seg": { "type": "fork" }, "dur": 14,
         "caption": "Scientists are not sure how stars this massive die. Some may explode first. Others may collapse with little or no visible explosion. A few candidates have been seen, such as N6946-BH1, but none is confirmed yet.",
-        "chips": ["Both paths at once: the faint shell is a possible explosion. The star itself fades in a quiet collapse."], "act": [{ "code": "O" }] },
+        "chips": ["Both possible endings at once: the faint shell shows an explosion, the star itself shows a quiet collapse. Scientists are still not sure which happens."], "act": [{ "code": "O" }] },
       { "id": "V6", "title": "Black hole", "scene": "bh", "seg": { "type": "gone" }, "dur": 14, "massLabel": "about 10 Suns (example)",
         "caption": "Most stars this massive are expected to leave black holes, but some may leave neutron stars. Far from it, a black hole pulls like any object of the same mass.",
         "labels": ["A black hole, probably 5 to 20 or more times the Sun's mass. Black holes from stars in our galaxy measured so far mostly fall in this range.", "about 3 km of radius for each Sun of mass"],

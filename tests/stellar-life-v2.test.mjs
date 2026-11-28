@@ -7,9 +7,9 @@ import { readFileSync } from "node:fs";
 import * as THREE from "../public/vendor/three/three.module.min.js";
 import { prepareTracks } from "../public/stellar-life/sl-data.js";
 import { createFlow } from "../public/stellar-life/sl-flow.js";
-import { uiModel, ONLY_CHOICE, PREDICT_HEAD, SPEEDS } from "../public/stellar-life/sl-ui.js";
-import { buildQuillSurface, buildQuillHalo, buildQuillRim, buildQuillWind, QUILL } from "../public/stellar-life/sl-quill.js";
-import { lookFor, bandTarget, springStep, dollyStep, FRAME, AU_RSUN, ORBIT_AU, MODEL_NODES, MODEL_BASE, TEX_STARS, texName } from "../public/stellar-life/sl-world.js";
+import { uiModel, ONLY_CHOICE, PREDICT_HEAD, SPEEDS, PRESETS, GALLERY_TITLE, PREDICT_TOGGLE } from "../public/stellar-life/sl-ui.js";
+import { buildQuillSurface, buildQuillHalo, buildQuillRim, buildQuillWind, buildProminence, buildWisps, QUILL } from "../public/stellar-life/sl-quill.js";
+import { lookFor, bandTarget, springStep, dollyStep, FRAME, AU_RSUN, ORBIT_AU, MODEL_NODES, MODEL_BASE, TEX_STARS, texName, drawnBigger, GLOW, LIMB_QUAD, SIZES } from "../public/stellar-life/sl-world.js";
 
 const pub = new URL("../public/", import.meta.url);
 const read = (p) => readFileSync(new URL(p, pub), "utf8");
@@ -18,7 +18,7 @@ const T = prepareTracks(JSON.parse(read("stellar-life/data/tracks.json")));
 const RUN = ["0.2", "1", "3", "15", "40"];
 
 function started(mass) {
-  const f = createFlow(S, T); f.pickMass(mass); f.answerHub("white dwarf"); [[3.74, 0.3], [3.56, 2.6], [4.45, -2.2]].forEach(([logT, logL]) => f.addPin({ logT, logL })); f.start(); return f;
+  const f = createFlow(S, T, { predict: true }); f.pickMass(mass); f.answerHub("white dwarf"); [[3.74, 0.3], [3.56, 2.6], [4.45, -2.2]].forEach(([logT, logL]) => f.addPin({ logT, logL })); f.start(); return f;
 }
 const answerAll = (f) => { let p, g = 0; while ((p = f.pending()) && g++ < 8) f.commit(p.i, p.a.kind === "massMeter" ? (p.a.min + p.a.max) / 2 : p.a.choices[0]); };
 
@@ -33,7 +33,7 @@ test("science: mass is the only choice; no mid-life path choice anywhere; every 
   }
   // every question is shown under the head "Predict what happens next" (Tesla's question text itself is kept)
   for (const m of RUN) { const f = started(m); for (let i = 0; i < f.st.stages.length; i++) { f.enter(i); if (f.pending()) { const M = uiModel(f, { view: f.view() }); assert.equal(M.question.head, PREDICT_HEAD, `${m} ${f.stage().id}`); answerAll(f); } } }
-  const hub = createFlow(S, T); hub.pickMass("1"); assert.equal(uiModel(hub).question.head, PREDICT_HEAD, "hub end question");
+  const hub = createFlow(S, T, { predict: true }); hub.pickMass("1"); assert.equal(uiModel(hub).question.head, PREDICT_HEAD, "hub end question");
   assert.match(ONLY_CHOICE, /only choice/); assert.match(PREDICT_HEAD, /^Predict/);
   const hp = ALL.find((h) => h.id === "H-Pick"); assert.match(hp.caption, /only choice/);
   const v5 = ALL.find((s) => s.id === "V5"); assert.ok(!(v5.act || []).some((a) => a.code === "P"), "V5 shows both paths, no choice");
@@ -89,7 +89,10 @@ test("dolly: a smooth eased log-radius move both ways, never a jump, and the sta
     const cam = { L: Math.log10(hero) + 3, v: 0 }; for (let i = 0; i < 1200; i++) springStep(cam, bandTarget(cam.L, hero, band), 1 / 60);
     const frac = hero / Math.pow(10, cam.L); const [a, b] = FRAME[band]; assert.ok(frac >= a - 1e-3 && frac <= b + 1e-3, `${band} ${hero}: ${frac}`);
   }
-  assert.ok(FRAME.star[0] >= 0.30 && FRAME.star[1] <= 0.45);
+  assert.ok(FRAME.star[0] >= 0.40 && FRAME.star[1] <= 0.50 && FRAME.wide[0] >= 0.40 && FRAME.wide[1] <= 0.50, "40 to 50 percent of the frame height (Leo, round 2)");
+  // on screen the band is a share of the frame height: frameK scales it, and the settled star still sits inside it
+  const cam = { L: 3, v: 0 }; for (let i = 0; i < 1200; i++) springStep(cam, bandTarget(cam.L, 1, "star", 0.97), 1 / 60); const fr = 1 / Math.pow(10, cam.L) / 0.97;
+  assert.ok(fr >= FRAME.star[0] - 1e-3 && fr <= FRAME.star[1] + 1e-3, "frameK band " + fr);
 });
 
 test("Angelo's GLB node names and Leo's texture names are wired; no GLB is committed", () => {
@@ -106,18 +109,65 @@ test("Angelo's GLB node names and Leo's texture names are wired; no GLB is commi
 
 test("art is 3D: spheres plus an animated quill overlay built as geometry; no camera-facing card anywhere", () => {
   const world = read("stellar-life/sl-world.js");
-  const facing = world.split("\n").filter((l) => /quaternion\.copy\(q\)/.test(l)); assert.ok(facing.every((l) => /lab\.quaternion\.copy\(q\)/.test(l)), "only text labels turn to the camera: " + facing.length);
+  // only text labels and the limb group turn to the viewer; the limb group holds 3D ribbons with depth (tested below), no card
+  const facing = world.split("\n").filter((l) => /quaternion\.copy\(q\)/.test(l)); assert.ok(facing.every((l) => /(lab|labIn|labOut|limbG)\.quaternion\.copy\(q\)/.test(l)), "only text labels and the limb group turn: " + facing.length);
   assert.ok(!/HALO_FRAG|LENS_FRAG|THREE\.Points|T\.Points|new T\.Sprite/.test(world), "no flat halo, lens card, point sprites or sprites in the art");
   for (const n of ["quill_surface", "quill_halo", "quill_rim", "quill_wind", "photon_ring"]) assert.ok(world.includes(`"${n}"`), n + " is built");
   const h = buildQuillHalo(); const rim = buildQuillRim(); const sf = buildQuillSurface(); const w = buildQuillWind();
-  assert.ok(h.n > 300 && rim.n > 200 && sf.n > 400 && w.n > 200, "stroke counts");
-  // halo quills stand on the sphere and reach 1.05 to 1.2 R; rim quills hug it; all rooted on the unit sphere (no floating cards)
+  assert.ok(h.n >= 3 && h.n <= 12 && rim.n > 200 && sf.n > 400 && w.n >= 10, "stroke counts: only a few limb strokes");
+  // no fur (Leo, round 2): limb and wind strokes lie TANGENT to the limb, 1.0 to 1.13 R, never pointing outward
   const radii = (b, kind) => { const out = []; for (let i = 0; i < b.pos.length / 3; i++) if (b.uvk[i * 3 + 2] === kind) out.push(Math.hypot(b.pos[i * 3], b.pos[i * 3 + 1], b.pos[i * 3 + 2])); return out; };
-  const hr = radii(h, QUILL.HALO); assert.ok(Math.min(...hr) > 0.99 && Math.max(...hr) < 1.21, `halo ${Math.min(...hr)} to ${Math.max(...hr)}`);
+  const radialDot = (b) => { let m = 0; for (let i = 0; i < b.pos.length / 3; i++) { const p = [b.pos[i * 3], b.pos[i * 3 + 1]], t = [b.tan[i * 3], b.tan[i * 3 + 1]]; const r = Math.hypot(...p), tl = Math.hypot(...t) || 1; m = Math.max(m, Math.abs((p[0] * t[0] + p[1] * t[1]) / r / tl)); } return m; };
+  const hr = radii(h, QUILL.HALO); assert.ok(Math.min(...hr) > 1.0 && Math.max(...hr) < 1.09, `limb strokes ${Math.min(...hr)} to ${Math.max(...hr)}`);
+  assert.ok(radialDot(h) < 0.2, "limb strokes are tangent: " + radialDot(h)); assert.ok(radialDot(w) < 0.2, "wind strokes are tangent: " + radialDot(w));
+  assert.ok(Math.max(...h.col.filter((_, i) => i % 4 === 3)) <= 0.25, "limb strokes are low alpha");
+  // the prominence is a painted H-alpha braid rooted on the limb, about 0.3 R tall, with real depth (not a flat card)
+  const pr = buildProminence(); const prr = radii(pr, QUILL.PROM); assert.ok(Math.min(...prr) < 1.03 && Math.max(...prr) > 1.25 && Math.max(...prr) < 1.4, `prominence ${Math.min(...prr)} to ${Math.max(...prr)}`);
+  const zs = []; for (let i = 0; i < pr.pos.length / 3; i++) zs.push(pr.pos[i * 3 + 2]); assert.ok(Math.max(...zs) - Math.min(...zs) > 0.04, "the braid twists in depth");
+  assert.match(world, /"#FF5A6A"/); assert.match(world, /"#FF7A8E"/);
+  const wi = buildWisps(); assert.ok(wi.n >= 5 && wi.n <= 10, "5 to 10 red supergiant wisps"); const wr = radii(wi, QUILL.PROM); assert.ok(Math.max(...wr) < 1.1, "wisps are short");
+  // the glow is a bloom shell (spec sigmas and weights), not stroke spikes
+  assert.deepEqual(GLOW.sun.w, [0.30, 0.24, 0.13, 0.05]); assert.deepEqual(GLOW.sun.s.map((x) => Math.round(x * 400)), [5, 20, 70, 220]); assert.equal(GLOW.sun.fade, 0.6);
+  assert.ok(world.includes('"bloom_shell"') && /BLOOM_FRAG/.test(world), "bloom shell built"); assert.deepEqual(LIMB_QUAD.a, [0.40, 0.47, 0.56]);
   const rr = radii(rim, QUILL.RIM); assert.ok(Math.min(...rr) > 1.0 && Math.max(...rr) < 1.02, "rim on the surface");
   const sr = radii(sf, 0); assert.ok(Math.abs(Math.min(...sr) - 1) < 0.01 && Math.abs(Math.max(...sr) - 1) < 0.01, "surface quills lie on the sphere");
   const rimInk = rim.col.filter((_, i) => i % 4 === 0); assert.ok(Math.max(...rimInk) <= QUILL.ink * 1.1 + 1e-9, "rim ink is the star hue x 0.35 (multiply only)");
   const q = read("stellar-life/sl-quill.js"); assert.match(q, /uBoilT \* 8\.0/, "quills boil at 8 fps"); assert.match(q, /uBoil/, "Calm lines holds the boil");
+});
+
+test("guided by default (Dimitry, round 14): a gallery preset plays its whole life with no click; predictions are optional", () => {
+  for (const m of RUN) {
+    const f = createFlow(S, T); assert.equal(f.st.predict, false, "predictions are off by default");
+    assert.ok(f.playPreset(m), m + ": a preset starts at once, with no hub question or pins"); assert.equal(f.st.screen, "stage");
+    let guard = 0; const seen = new Set();
+    while (f.st.phase !== "done" && guard++ < 400000) { assert.notEqual(f.st.phase, "predict", `${m}: never waits for a prediction`); assert.equal(f.pending(), null); seen.add(f.st.si); f.tick(1 / 30); }
+    assert.equal(f.st.phase, "done", `${m}: the life reaches its end by itself`); assert.equal(seen.size, f.st.stages.length, `${m}: every stage played`);
+    const M = uiModel(f); assert.equal(M.question, null); assert.ok(!M.buttons.some((b) => /^(next|choice|meter|end)/.test(b.id)), "no click-through buttons");
+  }
+  // the gallery: five presets, one per fate the model shows, in mass order; each names its mass and fate
+  const g = createFlow(S, T); const H = uiModel(g); assert.equal(H.title, GALLERY_TITLE); assert.deepEqual(H.masses.map((x) => x.id), ["0.2", "1", "3", "15", "40"]);
+  assert.deepEqual(PRESETS.map((p) => p.fate), ["white dwarf, predicted", "white dwarf", "white dwarf", "neutron star", "black hole"]);
+  for (const p of PRESETS) assert.ok(T[p.id], "preset mass has a model track: " + p.id);
+  const tg = H.toggles.find((t) => t.id === "predict"); assert.ok(tg && tg.on === false && tg.label === PREDICT_TOGGLE, "a tucked-away predictions toggle, off");
+  // turning predictions on restores the T1 flow (the timeline waits at a prediction)
+  const p = createFlow(S, T); p.setPredict(true); p.pickMass("1"); assert.equal(p.st.hubStep, "end"); assert.equal(p.start(), false, "with predictions on, the hub prediction comes first");
+  const main = read("stellar-life/sl-main.js"); assert.match(main, /life\.tileStar\(/, "gallery tiles are our own 3D star spheres"); assert.ok(!/scenes\.glow\(/.test(main.split("// ---------------- scale bar")[0]), "no flat glow cards in the gallery");
+});
+
+test("star bakes map like Leo's README: u = 0.5 faces +Z, seam at -Z, u grows toward +X, row 0 is +Y (no mirror, no quarter turn)", () => {
+  const w = read("stellar-life/sl-world.js"); assert.match(w, /vec2 uv = vec2\(atan\(n\.x, n\.z\) \/ 6\.2831853 \+ 0\.5 \+ uRot, 1\.0 - acos\(clamp\(n\.y, -1\.0, 1\.0\)\) \/ 3\.14159265\)/);
+  const uOf = (x, z) => Math.atan2(x, z) / (2 * Math.PI) + 0.5; assert.equal(uOf(0, 1), 0.5); assert.equal(uOf(1, 0), 0.75); assert.ok(Math.abs(uOf(0, -1) - 1) < 1e-9, "seam at -Z");
+  // Leo: direction = (cos lat sin lon, sin lat, cos lat cos lon), lon = (u - 0.5) 2 pi
+  for (const u of [0.1, 0.3, 0.5, 0.7, 0.9]) { const lon = (u - 0.5) * 2 * Math.PI; assert.ok(Math.abs(uOf(Math.sin(lon), Math.cos(lon)) - u) < 1e-9); }
+});
+
+test("the 'drawn bigger than scale' chip fires whenever the drawn-size floor is in use (xr < minX)", () => {
+  assert.equal(drawnBigger(FRAME.minX * 0.999), true); assert.equal(drawnBigger(FRAME.minX / 2), true); assert.equal(drawnBigger(FRAME.minX / 3.5), true);
+  assert.equal(drawnBigger(FRAME.minX), false); assert.equal(drawnBigger(0.4), false);
+  const world = read("stellar-life/sl-world.js"); assert.ok(!/minX \/ 3\)/.test(world), "no minX / 3 threshold left");
+  assert.equal((world.match(/drawnBigger\(/g) || []).length >= 2, true, "both chips (star and neutron star) use it");
+  // the neutron star is tiny on screen: its framing hero is 7 radii, so it spans about 13 percent of the frame height
+  assert.ok(Math.abs(lookFor({ stage: { scene: "ns" }, t: 0.5 }, "15").hero / SIZES.ns - 7) < 1e-9);
 });
 
 // ---------------- headset panel (same harness as tests/gf-xr-panel.test.mjs) ----------------
@@ -201,7 +251,7 @@ test("panel: no text, button, timeline or diagram box overlaps another, in any s
     for (const b of B) { assert.ok(b.x >= 0 && b.y >= 0 && b.x + b.w <= XRP.W + 0.5 && b.y + b.h <= XRP.H + 0.5, `${label}: ${b.kind} inside the panel`); if (b.kind === "text" || b.kind === "readout" || b.kind === "hr") assert.ok(b.y + b.h <= XRL.ctlTop + 1, `${label}: content stays above the control band`); }
     for (let i = 0; i < B.length; i++) for (let j = i + 1; j < B.length; j++) assert.ok(!overlaps(B[i], B[j]), `${label}: ${B[i].kind} overlaps ${B[j].kind} ${JSON.stringify([B[i], B[j]])}`);
   };
-  const h = createFlow(S, T); drawState(panel, h); check("hub pick"); h.pickMass("15"); drawState(panel, h); check("hub end"); h.answerHub("neutron star"); drawState(panel, h); check("hub pins");
+  const h = createFlow(S, T, { predict: true }); drawState(panel, h); check("hub pick"); h.pickMass("15"); drawState(panel, h); check("hub end"); h.answerHub("neutron star"); drawState(panel, h); check("hub pins");
   for (const m of RUN) {
     const f = started(m);
     for (let i = 0; i < f.st.stages.length; i++) {

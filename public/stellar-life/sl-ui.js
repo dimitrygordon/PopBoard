@@ -3,8 +3,20 @@ import { MASSES, MASS_LABEL, fmtYears, about, splitCaption } from "./sl-data.js"
 import { COMPARE_TEXT, tierChoices, lifeChoices, COLOR_WORDS, END_WORDS, cardComplete, rowFilled, sentenceText, modelRow, FRAME_TIER1, FRAME_WORDS, logPos, LOGCLOCK, ZONES } from "./sl-compare.js";
 
 export const YOUR_JOB = 'Your job: run 1, 15 and 40 Suns (the Sun, a neutron star maker, a black hole maker). Then run COMPARE with the Sun and one of 0.2 or 3 Suns. Then fill in the Mass Card: for each mass, its lifetime, color and ending, and the sentence "Mass decides ___ because ___."';   // teaching spec section 0, core task, in the student's words
-export const ONLY_CHOICE = "Mass is your only choice. After Start, the star's whole path on the H-R diagram follows from its mass.";
+export const ONLY_CHOICE = "In this model, mass is your only choice. After Start, the star's whole path on the H-R diagram follows from its mass.";
 export const PIN_TITLE = "Predict: place guess pins";
+/** The gallery (round 14): five real model stars, one per fate the model shows. Mass is the only difference between them. */
+export const PRESETS = Object.freeze([
+  { id: "0.2", name: "Red dwarf", fate: "white dwarf, predicted", short: "Red dwarf" },
+  { id: "1", name: "Sun-like star", fate: "white dwarf", short: "Sun-like" },
+  { id: "3", name: "Intermediate star", fate: "white dwarf", short: "Intermediate" },
+  { id: "15", name: "Massive star", fate: "neutron star", short: "Massive" },
+  { id: "40", name: "Very massive star", fate: "black hole", short: "Very massive" },
+]);
+export const GALLERY_TITLE = "Pick a star to watch its life";
+export const GALLERY_TEXT = "Each star here is a real model star. Pick one and its whole life plays as one guided journey. Pause, scrub or change speed any time, or just watch.";
+export const PREDICT_TOGGLE = "Pause to predict";
+export const GALLERY_CHIP = "In this model, mass is the only difference between these stars.";
 export const MASS_TEFF = { "0.2": 3229, "1": 5772, "3": 12368, "15": 31293, "40": 43704 };   // ZAMS colours for the hub orbs (LOOK-SPEC 2 table)
 
 export function uiModel(flow, x = {}) {
@@ -12,9 +24,9 @@ export function uiModel(flow, x = {}) {
   const M = { screen: st.screen, help: st.help, calm: !!x.calm, chips: [], buttons: [], toggles: [], readouts: [], widgets: [], reveal: [], cards: [], credit: "", question: null };
   if (st.screen === "hub") {
     M.kicker = st.runs.length ? `Runs so far: ${st.runs.map((m) => MASS_LABEL[m]).join(", ")}` : "Life of a star";
-    M.title = "Pick a starting mass";
-    M.masses = MASSES.map((m) => ({ id: m, label: MASS_LABEL[m], teff: MASS_TEFF[m], on: st.mass === m, done: st.runs.includes(m) }));
-    if (st.hubStep === "pick") M.cards = [S.hub[0].caption];
+    M.title = st.predict ? "Pick a starting mass" : GALLERY_TITLE;
+    M.masses = PRESETS.map((p) => ({ id: p.id, label: `${p.name}, ${MASS_LABEL[p.id]}`, short: p.short, fate: `Ends as a ${p.fate}`, teff: MASS_TEFF[p.id], on: st.mass === p.id, done: st.runs.includes(p.id) }));
+    if (st.hubStep === "pick") M.cards = [st.predict ? S.hub[0].caption : GALLERY_TEXT];
     if (st.hubStep === "end") { const a0 = S.hub[1].act[0]; M.cards = [S.hub[1].caption]; M.question = { key: "H-End", head: PREDICT_HEAD, text: S.hub[1].caption, choices: tierChoices(a0.choices, a0.answerBy && a0.answerBy[st.mass], st.tier).map((c) => ({ label: c, picked: st.answers["H-End"] === c })) }; }
     if (st.hubStep === "pins" || st.hubStep === "ready") {
       M.cards = [S.hub[2].caption]; if (st.hubStep === "pins") M.title = PIN_TITLE;
@@ -24,6 +36,8 @@ export function uiModel(flow, x = {}) {
     }
     if (st.hubStep === "ready") M.buttons.push({ id: "start", label: `Start: ${MASS_LABEL[st.mass]}`, primary: true });
     if (flow.canSkip()) M.toggles.push({ id: "skipForm", label: "Skip formation", on: st.skipFormation });
+    M.toggles.push({ id: "predict", label: PREDICT_TOGGLE, on: !!st.predict });   // optional, off by default: the life never waits for a click
+    if (st.hubStep === "pick" && !st.predict) M.chips.push(GALLERY_CHIP);
     if (st.hubStep === "pick") M.chips.push(YOUR_JOB);
     if (st.hubStep !== "pick") M.chips.push(ONLY_CHOICE);
     if (flow.canCompare() && st.hubStep === "pick") { M.buttons.push({ id: "compare", label: "Compare two masses" }); M.buttons.push({ id: "card", label: cardComplete(st.card) ? "Mass Card (complete)" : "Mass Card" }); M.buttons.push({ id: "ticket", label: "Exit ticket" }); }
@@ -33,7 +47,7 @@ export function uiModel(flow, x = {}) {
   if (st.screen === "card") return cardModel(flow, M);
   if (st.screen === "ticket") { M.kicker = "Exit ticket"; M.title = "Same cloud, three stars."; M.cards = ["Print this page or answer it on paper. It ends with: What's confusing?"]; M.sheet = { kind: "ticket" };
     M.chips.push("The exit ticket is a printed page. Open it on the desktop or phone view to print it.");
-    M.buttons.push({ id: "print", label: "Print" }, { id: "card", label: "Mass Card" }, { id: "hub", label: "Masses" }); return M; }
+    M.buttons.push({ id: "print", label: "Print" }, { id: "card", label: "Mass Card" }, { id: "hub", label: "All stars" }); return M; }
   const s = flow.stage(); const v = x.view || flow.view();
   M.kicker = `${MASS_LABEL[st.mass]}  |  stage ${st.si + 1} of ${st.stages.length}`;
   M.title = s.id === "H2" && !v.rsg ? "Supergiant" : s.title;
@@ -55,7 +69,8 @@ export function uiModel(flow, x = {}) {
       const k = `${stg.id}:${i}`; const picked = st.answers[k]; if (picked == null) return; const model = flow.modelAnswer(a); const extra = flow.revealText(a);
       M.reveal.push({ q: a.q, picked: a.kind === "massMeter" ? `about ${about(+picked, 2)} Suns` : picked, model, extra, optional: a.optionalReveal && st.optionalShown[k] ? a.optionalReveal : null, optionalKey: a.optionalReveal ? k : null }); });
     if (stg.act && stg.act.some((a) => a.kind === "checkEnd")) M.reveal.push({ q: "What will your star become in the end?", picked: st.answers["H-End"] || "(no guess)", model: endName(st.mass) }); };
-  if (!pend && (st.phase === "done" || st.t >= REVEAL_AT)) revealOf(s);
+  if (!st.predict) { /* guided: no predictions, so no reveals */ }
+  else if (!pend && (st.phase === "done" || st.t >= REVEAL_AT)) revealOf(s);
   else if (!pend && st.si > 0 && st.t < REVEAL_KEEP) revealOf(st.stages[st.si - 1]);
   // chips
   for (const c of s.chips || []) M.chips.push(c);
@@ -104,7 +119,7 @@ export function uiModel(flow, x = {}) {
   if (!pend) M.buttons.push({ id: done ? "restart" : "play", label: done ? "Watch again" : playing ? "Pause" : "Play", primary: !playing && !done });
   M.buttons.push({ id: "speed", label: `Speed ${st.speed || 1}x` });
   if (done) M.buttons.push({ id: "finish", label: "Finish run", primary: true });
-  M.buttons.push({ id: "hub", label: "Masses" });
+  M.buttons.push({ id: "hub", label: "All stars" });
   return M;
 }
 export const PREDICT_HEAD = "Predict what happens next";
@@ -119,7 +134,7 @@ function compareModel(flow, M, x) {
     M.cards = [COMPARE_TEXT.setup];
     M.masses = MASSES.map((m) => ({ id: m, label: MASS_LABEL[m], teff: MASS_TEFF[m], on: c.pair.includes(m), done: st.runs.includes(m), act: "cmp:mass:" + m }));
     M.chips.push(C.coreOk() ? "Your job pair: the Sun and one of 0.2 or 3 Suns." : "Your job: pick the Sun and one of 0.2 or 3 Suns.");
-    M.buttons.push({ id: "cmp:begin", label: "Run them together", primary: true, disabled: c.pair.length !== 2 }, { id: "hub", label: "Masses" });
+    M.buttons.push({ id: "cmp:begin", label: "Run them together", primary: true, disabled: c.pair.length !== 2 }, { id: "hub", label: "All stars" });
     return M;
   }
   const [a, b] = C.sorted();
@@ -127,7 +142,7 @@ function compareModel(flow, M, x) {
     const q = C.pending(); M.cards = [COMPARE_TEXT.predict];
     if (q) M.question = { key: "cmp:" + q.id, head: PREDICT_HEAD, text: q.q, kind: "choice", choices: tierChoices(q.choices, q.answer, st.tier, q.tier1).map((l) => ({ label: l, act: `cmp:pick:${q.id}:${l}` })) };
     for (const p of C.questions()) if (c.picks[p.id] != null) M.chips.push(`${p.q} You picked: ${c.picks[p.id]}`);
-    M.buttons.push({ id: "cmp:reset", label: "Pick other masses" }, { id: "hub", label: "Masses" });
+    M.buttons.push({ id: "cmp:reset", label: "Pick other masses" }, { id: "hub", label: "All stars" });
     return M;
   }
   M.cards = [COMPARE_TEXT.run];
@@ -141,7 +156,7 @@ function compareModel(flow, M, x) {
   }
   const playing = c.step === "run" && c.playing;
   M.buttons.push({ id: c.step === "done" ? "cmp:replay" : "cmp:play", label: c.step === "done" ? "Replay" : playing ? "Pause" : "Play" });
-  M.buttons.push({ id: "card", label: "Mass Card", primary: c.step === "done" }, { id: "cmp:reset", label: "Compare others" }, { id: "hub", label: "Masses" });
+  M.buttons.push({ id: "card", label: "Mass Card", primary: c.step === "done" }, { id: "cmp:reset", label: "Compare others" }, { id: "hub", label: "All stars" });
   return M;
 }
 
@@ -154,7 +169,7 @@ function cardModel(flow, M) {
     rows: MASSES.map((m) => ({ mass: m, label: MASS_LABEL[m], run: st.seen.includes(m), core: ["1", "15", "40"].includes(m), filled: rowFilled(card.rows[m]) })) };
   M.chips.push(done ? "Complete: 1, 15 and 40 plus a third mass, and both blanks of the sentence." : "Complete when 1, 15 and 40 plus a third mass are filled and the sentence has both blanks filled.");
   M.chips.push("Fill in the card on the desktop or phone view. Nothing is saved: print it or save it as a PDF.");
-  M.buttons.push({ id: "print", label: "Print or save as PDF" }, { id: "ticket", label: "Exit ticket" }, { id: "hub", label: "Masses" });
+  M.buttons.push({ id: "print", label: "Print or save as PDF" }, { id: "ticket", label: "Exit ticket" }, { id: "hub", label: "All stars" });
   return M;
 }
 export { ZONES };

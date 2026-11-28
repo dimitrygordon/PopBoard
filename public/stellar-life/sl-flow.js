@@ -2,9 +2,10 @@
 // so node tests can drive it. HUB (pick a mass, predict) -> one continuous life: formation F1 to F5 -> the mass track -> remnant.
 // v2 (Dimitry): the starting mass is the student's only choice. After Start the life plays out on one timeline (play, pause,
 // scrub, speed) through every stage with no Next button; the stages are chapters of the same scene, never separate scenes.
-// Predictions stay (teaching spec T1), phrased as "predict what happens": the timeline waits at a prediction, then plays on.
-// Rule T1: a stage with a P (predict) action cannot play until the choice is committed. The reveal shows the
-// student's choice next to the model and never marks it wrong.
+// Round 14 (Dimitry): no click-through. A preset star from the gallery plays its whole life as one guided experience
+// (captions and camera guide it); nothing waits for a click. Predictions are optional ("Pause to predict", off by default):
+// only when st.predict is on does rule T1 apply (a stage with a P action waits until the choice is committed; the reveal
+// shows the student's choice next to the model and never marks it wrong).
 import { createCompare, newCard, applyFrame, snapToZone } from "./sl-compare.js";
 import { stagesFor, stageRange, atEEP, wdAt, predictedAt, predictedPath, typeLabel, isRSG, msRatio, about, fmtYears, MASS_LABEL } from "./sl-data.js";
 
@@ -13,12 +14,16 @@ export function createFlow(S, tracks, opts = {}) {
     screen: "hub", hubStep: "pick", mass: null, stages: [], ranges: [], si: 0, t: 0, phase: "predict", playing: true,
     answers: {}, cardIdx: 0, toggles: { ir: false, cut: true, scope: false, swap: false }, pins: [], help: opts.help || 0, lockHelp: !!opts.lockHelp,
     tier: [1, 2, 3].includes(opts.tier) ? opts.tier : 2, card: newCard(), seen: [],
-    runs: [], ghosts: [], skipFormation: false, massGuess: {}, timebar: null, peek: false, optionalShown: {}, speed: 1,
+    runs: [], ghosts: [], skipFormation: false, massGuess: {}, timebar: null, peek: false, optionalShown: {}, speed: 1, predict: !!opts.predict,
   };
   const api = { st, S, tracks };
   api.cmp = createCompare(tracks);
 
-  api.pickMass = (m) => { if (!tracks[m]) return; st.mass = m; st.hubStep = "end"; st.pins = []; };
+  api.pickMass = (m) => { if (!tracks[m]) return; st.mass = m; st.hubStep = st.predict ? "end" : "ready"; st.pins = []; };
+  /** Predictions on or off (off by default: the life plays straight through). */
+  api.setPredict = (on) => { st.predict = !!on; if (st.screen === "hub" && st.mass) st.hubStep = st.predict ? "end" : "ready"; if (st.screen === "stage" && !st.predict && st.phase === "predict") { st.phase = "play"; st.playing = true; } };
+  /** The gallery: pick a preset star and its life starts playing at once. */
+  api.playPreset = (m) => { api.pickMass(m); return api.start(); };
   api.answerHub = (choice) => { st.answers["H-End"] = choice; st.hubStep = "pins"; };
   api.addPin = (p0) => { if (st.pins.length >= 3) return; const p = st.tier === 1 ? snapToZone(p0) : p0;   // Tier 1: pins snap to the highlighted zones
     st.pins.push({ ...p, n: st.pins.length + 1, label: S.hub[2].act[0].pins[st.pins.length] }); if (st.pins.length === 3) st.hubStep = "ready"; };
@@ -26,7 +31,7 @@ export function createFlow(S, tracks, opts = {}) {
   /** Teaching spec 3.0: "Skip" is offered only after the first track. A skipped formation drops F1 to F5, except that
    * 15 and 40 Suns still play F4 (the massive-star difference: still wrapped in its cloud) as a 20 s fast version. */
   api.canSkip = () => st.runs.length > 0;
-  api.hubReady = () => !!st.mass && st.answers["H-End"] != null && st.pins.length === 3;
+  api.hubReady = () => !!st.mass && (!st.predict || (st.answers["H-End"] != null && st.pins.length === 3));
   api.start = () => {
     if (!api.hubReady()) return false;   // skipping never jumps past the HUB prediction
     let list = stagesFor(S, st.mass); const massive = st.mass === "15" || st.mass === "40";
@@ -39,7 +44,7 @@ export function createFlow(S, tracks, opts = {}) {
   api.stage = () => st.stages[st.si];
   api.actKey = (i) => `${api.stage().id}:${i}`;
   api.pending = () => {   // the first uncommitted prediction (P, or a K with choices) of this stage
-    const s = api.stage(); if (!s) return null;
+    const s = api.stage(); if (!s || !st.predict) return null;   // guided by default: nothing waits for a click
     const acts = s.act || [];
     for (let i = 0; i < acts.length; i++) { const a = acts[i];
       const needs = (a.code === "P") || (a.code === "K" && a.choices && !a.kind); if (needs && st.answers[api.actKey(i)] == null) return { i, a }; }

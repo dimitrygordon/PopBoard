@@ -9,7 +9,7 @@
 // Every size is the model's: the star radius is MIST (or Bedard cooling) at this moment, never an eased "drawn" radius.
 import { temperatureToSRGB } from "../night-sky/ns-astro.js";
 import { ONION } from "./sl-strokes.js";
-import { quillMesh, buildQuillSurface, buildQuillHalo, buildQuillRim, buildQuillWind, QUILL } from "./sl-quill.js";
+import { quillMesh, buildQuillSurface, buildQuillHalo, buildQuillRim, buildQuillWind, buildProminence, buildWisps, QUILL } from "./sl-quill.js";
 
 export const RSUN_KM = 695700;
 export const AU_RSUN = 1.495978707e8 / RSUN_KM;   // 215.03 Suns of radius per AU
@@ -17,8 +17,22 @@ export const KM_RSUN = 1 / RSUN_KM;
 /** Sizes in Suns of radius for the drawn-not-modelled pieces (schematic sizes, labelled by the scale bar). */
 export const SIZES = Object.freeze({ cloud0: 2.0e6, cloud1: 4.0e4, disk: 100 * AU_RSUN, nebula: 4.0e6, snShell: 4.0e7, ns: 12 * KM_RSUN, bhPerSun: 2.95 * KM_RSUN, bhMass: 10, earth: 6371 * KM_RSUN });
 export const ORBIT_AU = Object.freeze({ Mercury: 0.387, Venus: 0.723, Earth: 1.0, Mars: 1.524, Jupiter: 5.2 });
-/** Framing (Leo, style B 3D): the hero fills about 30 to 45 percent of the free view. x = radius / frame radius is that share. */
-export const FRAME = Object.freeze({ star: [0.32, 0.43], wide: [0.40, 0.50], minX: 0.006, omega: 3.0, vmax: 4.0, amax: 30 });
+/** Framing (Leo, round 2): the hero spans 40 to 50 percent of the frame height in every stage, and the pull-back holds it.
+ *  x = radius / frame unit; on screen the page passes frameK (half the view height in frame units), so x = band x frameK. */
+export const FRAME = Object.freeze({ star: [0.42, 0.50], wide: [0.42, 0.50], minX: 0.006, omega: 3.0, vmax: 4.0, amax: 30 });
+/** The "drawn bigger than scale" chip: true whenever the minimum drawn size (the floor) is in use (Tesla, round 13). */
+export const drawnBigger = (x) => x < FRAME.minX;
+/** LOOK-SPEC 3.2 Sun limb darkening, I(mu) = 1 - a(1 - mu) - b(1 - mu)^2 per channel (R, G, B). */
+export const LIMB_QUAD = Object.freeze({ a: [0.40, 0.47, 0.56], b: [0.12, 0.13, 0.14] });
+/** Star display (LOOK-SPEC 3.2, 3.3, 3.4): exposure in linear light, then the equal film bleed; the bloom shell outside the
+ *  limb uses the spec's sigmas as fractions of the radius (Sun: 5/20/70/220 px at R 400 px) at weights 0.30/0.24/0.13/0.05. */
+export const GLOW = Object.freeze({
+  sun: { expo: 1.18, mode: 0, s: [0.0125, 0.05, 0.175, 0.55], w: [0.30, 0.24, 0.13, 0.05], fade: 0.6, ext: 1.7 },
+  rsg: { expo: 1.0, mode: 0, s: [0.016, 0.06, 0.2, 0.45], w: [0.30, 0.34, 0.14, 0.08], fade: 0.9, ext: 2.0 },
+  ns: { expo: 1.0, mode: 1, s: [6, 24, 80, 1], w: [0.42, 0.16, 0.04, 0], ring: [0.85, 1.8], core: 2.6 },   // px: a tight blue-white bloom
+  point: { expo: 1.18, mode: 1, s: [3, 12, 40, 1], w: [0.5, 0.25, 0.08, 0] },
+  bh: { mode: 1, s: [4, 16, 50, 1], w: [0.35, 0.12, 0.03, 0] },
+});
 
 // Angelo's sculpted pieces (unlit painted style B, meshopt GLB, Y up, 1 m unit radius, an empty "core_anchor" where our
 // star sphere goes). MODEL_FILES stays empty until his files are hosted: nothing is fetched, and the code-built placeholders
@@ -92,7 +106,7 @@ export function lookFor(v, mass, st = {}) {
   else if (sc === "nebula") { star(); const r0 = Math.max(200, R); L.nebula = { a: smooth(0, 0.2, t), r: logLerp(r0 * 1.6, SIZES.nebula, Math.pow(t, 0.6)) }; L.hero = L.nebula.r * (tg.scope ? 3 : 1); L.band = "wide"; if (v.cooling) L.star.kind = "wd"; }
   else if (sc === "wd") { star({ kind: "wd" }); L.earth.a = 1; L.hero = R * 3.2; L.band = "wide"; }
   else if (sc === "supernova") { star({ a: 1 - smooth(0.04, 0.3, t), bright: 1 + 6 * (1 - smooth(0, 0.12, t)) * smooth(0, 0.02, t) }); const r = logLerp(R * 1.3, SIZES.snShell, smooth(0, 1, t)); L.sn = { a: 1, r, ghost: 0 }; L.ns = { a: smooth(0.2, 0.5, t), beams: 0 }; L.hero = r; L.band = "wide"; }
-  else if (sc === "ns") { L.ns = { a: 1, beams: 1 }; L.sn = { a: 1 - smooth(0, 0.35, t), r: SIZES.snShell * (1 + 0.2 * t), ghost: 0 }; L.hero = SIZES.ns * 4; L.band = "wide"; }
+  else if (sc === "ns") { L.ns = { a: 1, beams: 1 }; L.sn = { a: 1 - smooth(0, 0.35, t), r: SIZES.snShell * (1 + 0.2 * t), ghost: 0 }; L.hero = SIZES.ns * 7; L.band = "wide"; }   // tiny and white-hot: about 13 percent of the frame height, as in frame 3b
   else if (sc === "twopaths") { star({ a: 1 - 0.9 * smooth(0.3, 1, t), bright: 1 - 0.5 * smooth(0.3, 1, t), R: R * (1 - 0.4 * smooth(0.4, 1, t)) }); L.sn = { a: 0.45 * smooth(0, 0.25, t) * (1 - smooth(0.85, 1, t)), r: R * (1.2 + 2.2 * smooth(0, 1, t)), ghost: 1 }; L.hero = R * 1.25; }
   else if (sc === "bh") { L.bh.a = 1; L.hero = L.bh.rs * 5; L.band = "wide"; }
   if (s.orbits) for (const p of s.orbits) if (ORBIT_AU[p]) L.orbits.push({ name: p, r: ORBIT_AU[p] * AU_RSUN });
@@ -103,10 +117,11 @@ export function lookFor(v, mass, st = {}) {
 
 /** The smooth dolly (log10 of the frame radius, in Suns): a critically damped spring towards the nearest framing that keeps
  *  the hero inside its band, with a speed cap. Velocity is continuous, so it eases in and out and never jumps. */
-export function bandTarget(Lf, heroR, band) { const [lo, hi] = FRAME[band] || FRAME.star; const h = Math.log10(heroR); return clamp(Lf, h - Math.log10(hi), h - Math.log10(lo)); }
+export function bandTarget(Lf, heroR, band, k = 1) { const [lo, hi] = (FRAME[band] || FRAME.star).map((x) => x * k); const h = Math.log10(heroR); return clamp(Lf, h - Math.log10(hi), h - Math.log10(lo)); }
 export function springStep(c, target, dt, vRef = 0) {
   // vRef: how fast the target itself is moving (a fast swell): tracking it removes the lag, so the star never balloons past the frame
-  const w = FRAME.omega; let a = w * w * (target - c.L) + 2 * w * (vRef - c.v); a = clamp(a, -FRAME.amax, FRAME.amax);   // capped acceleration too: it always eases in, even after a jump
+  // a star bigger than its band pulls the camera back twice as briskly (Leo: the pull-back holds 40 to 50 percent)
+  const w = FRAME.omega * (target > c.L + 0.05 ? 2 : 1); let a = w * w * (target - c.L) + 2 * w * (vRef - c.v); a = clamp(a, -FRAME.amax, FRAME.amax);   // capped acceleration too: it always eases in, even after a jump
   c.v += a * dt; c.v = clamp(c.v, -FRAME.vmax, FRAME.vmax); c.L += c.v * dt; return c;
 }
 
@@ -127,6 +142,8 @@ float vn3(vec3 p){ vec3 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
              mix(mix(h31(i + vec3(0,0,1)), h31(i + vec3(1,0,1)), f.x), mix(h31(i + vec3(0,1,1)), h31(i + vec3(1,1,1)), f.x), f.y), f.z); }
 float fbm(vec3 p){ float a = 0.5, s = 0.0; for (int i = 0; i < 4; i++) { s += a * vn3(p); p = p * 2.03 + 1.7; a *= 0.5; } return s; }
 vec3 bleed(vec3 c){ float o = max(max(c.r, c.g), c.b) - 1.0; if (o > 0.0) c = min(c, vec3(1.0)) + o * 0.9; return min(c, vec3(1.0)); }
+vec3 toLin(vec3 c){ return pow(max(c, vec3(0.0)), vec3(2.2)); }
+vec3 toSrgb(vec3 c){ return pow(max(c, vec3(0.0)), vec3(1.0 / 2.2)); }
 `;
 const SPHERE_VERT = /* glsl */`
 varying vec3 vObj; varying vec3 vVN; varying vec3 vVP;
@@ -135,7 +152,7 @@ const STAR_FRAG = /* glsl */`
 uniform sampler2D uA0; uniform sampler2D uA1; uniform sampler2D uA2; uniform sampler2D uB0; uniform sampler2D uB1; uniform sampler2D uB2;
 uniform vec3 uW; uniform float uMixB; uniform vec2 uMode; uniform vec3 uKA; uniform vec3 uKB; uniform vec3 uBase; uniform vec3 uLimb; uniform float uLimbK; uniform float uAmp;
 uniform float uBoilT; uniform float uBoil; uniform float uRot; uniform float uPxR; uniform float uAlpha; uniform float uBright;
-uniform float uCut; uniform vec3 uCtr; uniform float uRadV; uniform vec3 uInside; uniform float uInk; uniform vec3 uCore; uniform float uCoreOn;
+uniform float uCut; uniform vec3 uCtr; uniform float uRadV; uniform vec3 uInside; uniform float uInk; uniform vec3 uCore; uniform float uCoreOn; uniform float uExpo; uniform float uCoreK; uniform vec3 uLdA; uniform vec3 uLdB;
 varying vec3 vObj; varying vec3 vVN; varying vec3 vVP;
 ${NOISE}
 vec3 tex3(sampler2D a, sampler2D b, sampler2D c, vec2 uv){ return uW.x * texture2D(a, uv).rgb + uW.y * texture2D(b, uv).rgb + uW.z * texture2D(c, uv).rgb; }
@@ -144,15 +161,19 @@ void main(){
   if (uCut > 0.5 && rel.x > 0.0 && rel.y > 0.0 && rel.z > 0.0) discard;   // cutaway: the octant facing the student is removed
   if (!gl_FrontFacing) { float d = length(rel) / max(uRadV, 1e-6); gl_FragColor = vec4(uInside * (0.78 + 0.22 * d), uAlpha); return; }
   vec3 n = normalize(vObj);
-  vec2 uv = vec2(atan(n.z, n.x) / 6.2831853 + 0.5 + uRot, acos(clamp(n.y, -1.0, 1.0)) / 3.14159265);
+  vec2 uv = vec2(atan(n.x, n.z) / 6.2831853 + 0.5 + uRot, 1.0 - acos(clamp(n.y, -1.0, 1.0)) / 3.14159265);   // Leo's bakes: u = 0.5 faces +Z, seam at -Z, u grows toward +X; row 0 is +Y (TextureLoader flips Y, so v = 1 there)
   vec3 ta = tex3(uA0, uA1, uA2, uv), tb = tex3(uB0, uB1, uB2, uv);
   vec3 ca = uMode.x > 0.5 ? ta * uKA : uBase * (1.0 + uAmp * (ta.r - 0.55) * 1.3);
   vec3 cb = uMode.y > 0.5 ? tb * uKB : uBase * (1.0 + uAmp * (tb.r - 0.55) * 1.3);
   vec3 col = mix(ca, cb, uMixB);
   float mu = clamp(dot(normalize(vVN), normalize(-vVP)), 0.0, 1.0);
   col *= mix(vec3(1.0), uLimb, pow(1.0 - mu, uLimbK));
-  col = mix(col, uCore, uCoreOn * pow(mu, 2.2));   // neutron star: white-hot core #F1F2F7 inside the #95B1FF edge
-  col = bleed(col * uBright);
+  if (uCoreOn > 0.5) {   // neutron star (LOOK-SPEC 3.4): I = 1 + 2.6 mu^3.2 on #95B1FF, white mixed in where it overflows, so the core is white-hot
+    float lum = dot(ta, vec3(0.3333)); vec3 lin = toLin(uBase) * (1.0 + 0.16 * (lum - 0.5)) * (1.0 + uCoreK * pow(mu, 3.2)) * uBright;
+    float o = max(max(lin.r, lin.g), lin.b) - 1.0; lin = mix(min(lin, vec3(1.0)), toLin(uCore), o > 0.0 ? 1.0 - exp(-o) : 0.0); col = toSrgb(lin);
+  } else {   // emissive: exposure in linear light, the overflow bled equally into all channels (adds white, keeps the hue)
+    float m1 = 1.0 - mu; vec3 lin = toLin(col) * max(vec3(0.0), 1.0 - uLdA * m1 - uLdB * m1 * m1) * uExpo * uBright; float o = max(max(lin.r, lin.g), lin.b) - 1.0; if (o > 0.0) lin = min(lin, vec3(1.0)) + o * 0.9; col = toSrgb(min(lin, vec3(1.0)));
+  }
   // silhouette ink: 2 to 3 px, uneven and broken, boiling at 8 fps (held by Calm lines); the star's hue x 0.35, never black
   float r = sqrt(max(0.0, 1.0 - mu * mu)); float ang = atan(rel.y, rel.x); float bf = floor(uBoilT * 8.0) * uBoil;
   float px = 1.0 / max(uPxR, 1.0); float w = 2.5 * px * (0.55 + 0.9 * vn1(ang * 9.0 + bf * 3.7));
@@ -196,12 +217,25 @@ ${NOISE}
 void main(){ float bf = floor(uBoilT * 8.0) * uBoil; float y = clamp(vObj.y, 0.0, 1.0);
   float n = vn3(vec3(vObj.x * 9.0, vObj.y * 7.0 - uT * 2.4 - bf * 0.2, vObj.z * 9.0)); float a = (0.25 + 0.75 * smoothstep(0.35, 0.7, n)) * (1.0 - y) * smoothstep(0.0, 0.06, y) * uAlpha * uGain;
   gl_FragColor = vec4(uCol * a, a); }`;
-// prominences: H-alpha loops (#FF5A6A to #FF7A8E), seen only off the limb (over the disc they would read as a band)
-const PROM_FRAG = /* glsl */`
-uniform float uAlpha; uniform float uT; uniform vec3 uCtr; uniform float uRadV; varying vec3 vObj; varying vec3 vVN; varying vec3 vVP;
+// the bloom shell: a sphere around the star whose fragments measure how far their view ray passes from the star's centre, so the
+// glow sits only OUTSIDE the limb (it never washes out the limb darkening) and is real 3D geometry, not a camera-facing card.
+// mode 0: the spec's equal-bleed bloom, a disc blurred by four Gaussians (sigmas in radii), faded out by uFade radii;
+// mode 1: compact objects, exponential falloffs in screen px plus a thin ring just off the edge (neutron star).
+const BLOOM_FRAG = /* glsl */`
+uniform vec3 uCtr; uniform float uRadV; uniform float uPxR; uniform vec3 uGlow; uniform vec3 uRingCol; uniform vec4 uS; uniform vec4 uW; uniform float uMode; uniform float uFade; uniform float uAlpha; uniform vec3 uRing;
+varying vec3 vObj; varying vec3 vVN; varying vec3 vVP;
 ${NOISE}
-void main(){ float off = smoothstep(0.98, 1.03, length(vVP.xy - uCtr.xy) / max(uRadV, 1e-6)); float n = vn3(vObj * 40.0 + vec3(0.0, uT * 0.6, 0.0));
-  vec3 c = mix(vec3(1.0, 0.353, 0.416), vec3(1.0, 0.478, 0.557), n); float a = uAlpha * off * (0.55 + 0.45 * n); if (a < 0.01) discard; gl_FragColor = vec4(c * a, a); }`;
+float erfcA(float x){ float z = abs(x); float t = 1.0 / (1.0 + 0.5 * z);
+  float y = t * exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+  return x >= 0.0 ? y : 2.0 - y; }
+void main(){ vec3 D = normalize(vVP); float tt = dot(uCtr, D); float d = length(uCtr - D * tt) / max(uRadV, 1e-6) - 1.0; if (d < 0.0 || tt < 0.0) discard;
+  float I = 0.0; vec3 lin;
+  if (uMode < 0.5) { I = uW.x * 0.5 * erfcA(d / (uS.x * 1.41421356)) + uW.y * 0.5 * erfcA(d / (uS.y * 1.41421356)) + uW.z * 0.5 * erfcA(d / (uS.z * 1.41421356)) + uW.w * 0.5 * erfcA(d / (uS.w * 1.41421356));
+    I *= 1.0 - smoothstep(uFade * 0.4, uFade, d); lin = toLin(uGlow) * I; }
+  else { float dp = d * uPxR; I = uW.x * exp(-dp / uS.x) + uW.y * exp(-dp / uS.y) + uW.z * exp(-dp / uS.z); lin = toLin(uGlow) * I + toLin(uRingCol) * uRing.x * exp(-pow((dp - uRing.y) / uRing.z, 2.0)); }
+  float o = max(max(lin.r, lin.g), lin.b) - 1.0; if (o > 0.0) lin = min(lin, vec3(1.0)) + o * 0.9;
+  // added in linear light over the dark sky: encode(sky + glow) - encode(sky), so the faint tails stay faint
+  vec3 sky = vec3(0.010, 0.012, 0.045); vec3 c = toSrgb(sky + min(lin, vec3(1.0)) * uAlpha) - toSrgb(sky); if (max(c.r, max(c.g, c.b)) < 0.003) discard; gl_FragColor = vec4(c, 0.0); }`;
 const EARTH_FRAG = /* glsl */`
 uniform vec3 uSun; uniform float uPxR; uniform float uAlpha; varying vec3 vObj; varying vec3 vVN; varying vec3 vVP;
 ${NOISE}
@@ -247,7 +281,7 @@ export class LifeWorld {
     // the star
     const su = { uA0: { value: ph.fine[0] }, uA1: { value: ph.fine[1] }, uA2: { value: ph.fine[2] }, uB0: { value: ph.fine[0] }, uB1: { value: ph.fine[1] }, uB2: { value: ph.fine[2] },
       uW: { value: new T.Vector3(1, 0, 0) }, uMixB: { value: 0 }, uMode: { value: new T.Vector2(0, 0) }, uKA: { value: new T.Vector3(1, 1, 1) }, uKB: { value: new T.Vector3(1, 1, 1) }, uBase: { value: new T.Color(1, 0.945, 0.918) }, uLimb: { value: new T.Vector3(0.89, 0.87, 0.84) }, uLimbK: { value: 1.6 }, uAmp: { value: 0.5 },
-      uBoilT: uni.uBoilT, uBoil: uni.uBoil, uRot: { value: 0 }, uPxR: { value: 200 }, uAlpha: { value: 1 }, uBright: { value: 1 }, uCut: { value: 0 }, uCtr: { value: new T.Vector3() }, uRadV: { value: 1 }, uInside: { value: new T.Color(0.9, 0.6, 0.3) }, uInk: { value: 1 }, uCore: { value: new T.Color(...hex("#F1F2F7")) }, uCoreOn: { value: 0 } };
+      uBoilT: uni.uBoilT, uBoil: uni.uBoil, uRot: { value: 0 }, uPxR: { value: 200 }, uAlpha: { value: 1 }, uBright: { value: 1 }, uCut: { value: 0 }, uCtr: { value: new T.Vector3() }, uRadV: { value: 1 }, uInside: { value: new T.Color(0.9, 0.6, 0.3) }, uInk: { value: 1 }, uCore: { value: new T.Color(...hex("#F1F2F7")) }, uCoreOn: { value: 0 }, uExpo: { value: 1 }, uCoreK: { value: GLOW.ns.core }, uLdA: { value: new T.Vector3() }, uLdB: { value: new T.Vector3() } };
     this.starMat = new T.ShaderMaterial({ vertexShader: SPHERE_VERT, fragmentShader: STAR_FRAG, uniforms: su, side: T.DoubleSide });
     this.star = new T.Mesh(new T.SphereGeometry(1, 96, 64), this.starMat); this.star.name = "star_sphere"; this.star.renderOrder = 10; this.root.add(this.star);
     // cutaway layers (nested spheres, not to scale)
@@ -257,14 +291,17 @@ export class LifeWorld {
     // All of it is stroke geometry rooted on the sphere: no camera-facing card anywhere (Dimitry, round 13)
     this.qSurf = quillMesh(T, buildQuillSurface(21), uni, 11); this.qSurf.name = "quill_surface"; this.qSurf.scale.setScalar(1.004); this.star.add(this.qSurf);
     this.qG = new T.Group(); this.qG.name = "quill_overlay"; this.root.add(this.qG);
+    this.qRim = quillMesh(T, buildQuillRim(29), uni, 13); this.qRim.name = "quill_rim"; this.qG.add(this.qRim);
+    // limb pieces live in the limb plane (the group's +z is turned to the viewer each frame, as the labels are), so tangent
+    // strokes stay tangent and the prominence stays rooted on the visible limb; every piece is 3D ribbon geometry with depth
+    this.limbG = new T.Group(); this.limbG.name = "limb_overlay"; this.root.add(this.limbG);
     this.qHalo = quillMesh(T, buildQuillHalo(23), uni, 12); this.qHalo.name = "quill_halo";
-    this.qRim = quillMesh(T, buildQuillRim(29), uni, 13); this.qRim.name = "quill_rim";
-    this.qWind = quillMesh(T, buildQuillWind(31), uni, 12); this.qWind.name = "quill_wind"; this.qG.add(this.qHalo, this.qRim, this.qWind);
-    // prominences: H-alpha tubes rooted in the surface (children of the star, so they turn with it)
-    this.proms = new T.Group(); this.proms.name = "prominences"; this.star.add(this.proms);
-    const promMat = new T.ShaderMaterial({ vertexShader: SPHERE_VERT, fragmentShader: PROM_FRAG, transparent: true, depthWrite: false, premultipliedAlpha: true, uniforms: { uAlpha: { value: 0.9 }, uT: { value: 0 }, uCtr: su.uCtr, uRadV: su.uRadV } });
-    [[0.3, 0.2, 0.32], [2.2, -0.35, 0.16], [4.1, 0.55, 0.22]].forEach(([lon, lat, hgt]) => { const pts = []; for (let k = 0; k <= 16; k++) { const f = k / 16, a = lon + (f - 0.5) * 0.4, h = 1 + hgt * Math.sin(Math.PI * f); pts.push(new T.Vector3(Math.cos(lat) * Math.cos(a) * h, Math.sin(lat) * h + (f - 0.5) * 0.05, Math.cos(lat) * Math.sin(a) * h)); }
-      const m = new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts), 32, 0.02, 8), promMat); this.proms.add(m); }); this.promMat = promMat;
+    this.qWind = quillMesh(T, buildQuillWind(31), uni, 12); this.qWind.name = "quill_wind";
+    this.promSun = quillMesh(T, buildProminence(43), uni, 12); this.promSun.name = "prominence_halpha"; this.promSun.material.uniforms.uBase.value.setRGB(...hex("#FF5A6A")); this.promSun.material.uniforms.uBase2.value.setRGB(...hex("#FF7A8E"));
+    this.wisps = quillMesh(T, buildWisps(47), uni, 12, true); this.wisps.name = "rsg_wisps"; this.wisps.material.uniforms.uBase.value.setRGB(...srgb(3000)); this.wisps.material.uniforms.uBase2.value.setRGB(...srgb(3400));
+    this.limbG.add(this.qHalo, this.qWind, this.promSun, this.wisps);
+    // the bloom shell (equal-bleed glow outside the limb), one for the star (and the neutron star) and one for the black hole
+    this.bloom = this.bloomMesh(); this.bloom.name = "bloom_shell"; this.root.add(this.bloom);
     this.buildProtostar(); this.buildNebula(); this.buildRemnant(); this.buildPulsar(); this.buildLens(); this.buildEarth(); this.buildWinds(); this.buildOrbits();
     this.loadManifest();
     this.holders = { protostar: this.proto.g, planetary_nebula: this.neb.g, supernova_remnant: this.rem.g, pulsar_beams: this.pulsar.g };
@@ -278,6 +315,33 @@ export class LifeWorld {
       const c = src.clone(true); c.position.set(0, 0, 0); c.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.toneMapped = false; o.material.transparent = true; o.material.depthWrite = false; o.userData.sculpt = true; } });
       if (dst.material) dst.material.visible = false; dst.traverse((o) => { if (o !== dst && o.material && !o.userData.sculpt) o.material.visible = false; }); dst.add(c); n++; }
     holder.userData.sculpted = n > 0; return n;
+  }
+  bloomMesh() { const T = this.T; const m = new T.Mesh(new T.SphereGeometry(1, 64, 40), new T.ShaderMaterial({ vertexShader: SPHERE_VERT, fragmentShader: BLOOM_FRAG, transparent: true, depthWrite: false, depthTest: true, premultipliedAlpha: true, blending: T.AdditiveBlending,
+    uniforms: { uCtr: { value: new T.Vector3() }, uRadV: { value: 1 }, uPxR: { value: 100 }, uGlow: { value: new T.Color(1, 1, 1) }, uRingCol: { value: new T.Color(...hex("#C8D8FF")) }, uS: { value: new T.Vector4() }, uW: { value: new T.Vector4() }, uMode: { value: 0 }, uFade: { value: 0.6 }, uAlpha: { value: 1 }, uRing: { value: new T.Vector3(0, 0, 1) } } }));
+    m.renderOrder = 11; m.frustumCulled = false; m.visible = false; return m; }
+  /** Set a bloom shell: g is a GLOW entry, col the glow colour (sRGB), ctr the view-space centre, radV the view radius, pxR px per radius. */
+  setBloom(m, g, col, a, ctr, radV, pxR, scale) { const u = m.material.uniforms; u.uMode.value = g.mode; u.uS.value.set(...g.s); u.uW.value.set(...g.w); u.uFade.value = g.fade || 0.6; u.uGlow.value.setRGB(...col); u.uAlpha.value = a; u.uCtr.value.copy(ctr); u.uRadV.value = radV; u.uPxR.value = Math.max(pxR, 0.5);
+    u.uRing.value.set(g.ring ? g.ring[0] : 0, 0.016 * pxR, g.ring ? g.ring[1] : 1); const ext = g.mode ? 1 + Math.min(40, 3.2 * g.s[2] / Math.max(pxR, 0.5)) : g.ext; m.scale.setScalar(scale * ext); m.visible = a > 0.01; }
+  /** A gallery tile star (round 14): a real sphere with the same painted star shader, Leo's bake (tinted to the model colour)
+   *  and the same bloom shell as the life, so the gallery shows our own 3D stars, never a flat card. rModel is its radius in Suns. */
+  tileStar(teff, rModel) {
+    const T = this.T; const ph = this.placeholderTex(); const name = starTex(teff, rModel, "star"); const p0 = this.phFor(name); const base = srgb(teff);
+    const u = { uA0: { value: p0[0] }, uA1: { value: p0[1] }, uA2: { value: p0[2] }, uB0: { value: p0[0] }, uB1: { value: p0[1] }, uB2: { value: p0[2] }, uW: { value: new T.Vector3(1, 0, 0) }, uMixB: { value: 0 }, uMode: { value: new T.Vector2(0, 0) },
+      uKA: { value: new T.Vector3(1, 1, 1) }, uKB: { value: new T.Vector3(1, 1, 1) }, uBase: { value: new T.Color(...base) }, uLimb: { value: new T.Vector3(1, 1, 1) }, uLimbK: { value: 1 }, uAmp: { value: 0.55 }, uBoilT: this.uni.uBoilT, uBoil: this.uni.uBoil,
+      uRot: { value: 0 }, uPxR: { value: 100 }, uAlpha: { value: 1 }, uBright: { value: 1 }, uCut: { value: 0 }, uCtr: { value: new T.Vector3() }, uRadV: { value: 1 }, uInside: { value: new T.Color(...base) }, uInk: { value: 1 }, uCore: { value: new T.Color(...hex("#F1F2F7")) }, uCoreOn: { value: 0 },
+      uExpo: { value: teff < 4200 && rModel > 6 ? GLOW.rsg.expo : GLOW.sun.expo }, uCoreK: { value: GLOW.ns.core }, uLdA: { value: new T.Vector3(...LIMB_QUAD.a) }, uLdB: { value: new T.Vector3(...LIMB_QUAD.b) } };
+    if (teff < 4600) { u.uLdA.value.set(0.5, 0.5, 0.5); u.uLdB.value.set(0.15, 0.15, 0.15); }
+    const mesh = new T.Mesh(new T.SphereGeometry(1, 64, 40), new T.ShaderMaterial({ vertexShader: SPHERE_VERT, fragmentShader: STAR_FRAG, uniforms: u })); mesh.name = "tile_star"; mesh.renderOrder = 10;
+    const bloom = this.bloomMesh(); bloom.name = "tile_bloom"; const g = new T.Group(); g.name = "gallery_tile"; g.add(mesh, bloom);
+    const ctr = new T.Vector3(); const tile = { g, mesh, bloom, name, base, tex: null };
+    /** viewMatrix: the camera's world-to-view matrix; radV: the sphere's radius in view units; pxR: its radius on screen in px. */
+    tile.update = (viewMatrix, radV, pxR, time = 0) => {
+      if (!tile.tex && this.manifest) { const t = this.starTextures(name, "1k"); tile.tex = t;
+        if (t.mode) { ["uA0", "uA1", "uA2"].forEach((k, i) => { u[k].value = t.tex[i]; }); ["uB0", "uB1", "uB2"].forEach((k, i) => { u[k].value = t.tex[i]; }); u.uMode.value.set(1, 1); const kk = base.map((b, i) => Math.min(1.1, b / Math.max(0.05, t.mean ? t.mean[i] : b))); u.uKA.value.set(...kk); u.uKB.value.set(...kk); } }
+      if (this.uni.uBoil.value > 0.5) { const bt = (this.uni.uBoilT.value || 0) * 8, f = Math.floor(bt), fr = bt - f; const w = [0, 0, 0]; w[f % 3] = 1 - fr; w[(f + 1) % 3] += fr; u.uW.value.set(...w); } else u.uW.value.set(1, 0, 0);
+      mesh.updateMatrixWorld(); ctr.setFromMatrixPosition(mesh.matrixWorld).applyMatrix4(viewMatrix); u.uCtr.value.copy(ctr); u.uRadV.value = radV; u.uPxR.value = pxR; u.uInk.value = pxR > 6 ? 1 : 0; u.uRot.value = time * 0.006;
+      this.setBloom(bloom, GLOW.sun, base, 1, ctr, radV, pxR, 1); };
+    return tile;
   }
   placeholderTex() {
     const T = this.T; if (this.ph) return this.ph; const mk = (kind) => [0, 1, 2].map((v) => { const cv = typeof document !== "undefined" ? paintPlaceholder(kind, v) : null; const t = cv ? new T.CanvasTexture(cv) : new T.DataTexture(new Uint8Array([140, 140, 140, 255]), 1, 1); t.wrapS = T.RepeatWrapping; t.needsUpdate = true; return t; });
@@ -326,25 +390,25 @@ export class LifeWorld {
     const anchor = new T.Object3D(); anchor.name = "core_anchor"; shock.renderOrder = 14; fil.renderOrder = 15; g.add(shock, fil, anchor); this.root.add(g); this.rem = { g, shock, fil }; }
   /** pulsar_beams.glb placeholder: beam_n, beam_s, field_lines (dipole loops), spin_axis (an empty along +Y). The neutron star sphere is ours. */
   buildPulsar() { const T = this.T; const g = new T.Group(); g.name = "pulsar_beams"; const axis = new T.Object3D(); axis.name = "spin_axis";
-    const bg = new T.CylinderGeometry(0.16, 0.01, 1, 24, 6, true); bg.translate(0, 0.5, 0); const bm = this.jetMat("#B8C8FF");
-    bm.uniforms.uGain.value = 1.6; const bn = new T.Mesh(bg, bm); bn.name = "beam_n"; bn.scale.set(1, 5, 1); const bs = new T.Mesh(bg, bm); bs.name = "beam_s"; bs.scale.set(1, 5, 1); bs.rotation.z = Math.PI;
+    const bg = new T.CylinderGeometry(0.06, 0.004, 1, 24, 6, true); bg.translate(0, 0.5, 0); const bm = this.jetMat("#8FA8FF");   // narrow, soft synchrotron blue
+    bm.uniforms.uGain.value = 0.75; const bn = new T.Mesh(bg, bm); bn.name = "beam_n"; bn.scale.set(1, 5, 1); const bs = new T.Mesh(bg, bm); bs.name = "beam_s"; bs.scale.set(1, 5, 1); bs.rotation.z = Math.PI;
     const pts = []; for (const Lk of [2.2, 3.4, 5]) for (let az = 0; az < 6; az++) { const a = az * Math.PI / 3; let prev = null; for (let k = 4; k <= 56; k++) { const th = Math.PI * k / 60; const r = Lk * Math.sin(th) ** 2; if (r < 1) { prev = null; continue; } const p = [r * Math.sin(th) * Math.cos(a), r * Math.cos(th), r * Math.sin(th) * Math.sin(a)]; if (prev) pts.push(...prev, ...p); prev = p; } }
-    const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pts, 3)); const fl = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x8FA8FF, transparent: true, opacity: 0.45, depthWrite: false })); fl.name = "field_lines";
+    const lg = new T.BufferGeometry(); lg.setAttribute("position", new T.Float32BufferAttribute(pts, 3)); const fl = new T.LineSegments(lg, new T.LineBasicMaterial({ color: 0x8FA8FF, transparent: true, opacity: 0.16, depthWrite: false })); fl.name = "field_lines";
     axis.add(bn, bs, fl); bn.renderOrder = bs.renderOrder = 16; const anchor = new T.Object3D(); anchor.name = "core_anchor"; g.add(axis, anchor); g.rotation.z = 0.35; this.root.add(g); this.pulsar = { g, axis, beamMat: bm }; }
   /** Black hole: a black sphere at the shadow radius (2.6 horizon radii, schematic) with a warm photon ring of rim quills and faint halo quills. */
   buildLens() { const T = this.T; const g = new T.Group(); g.name = "black_hole";
     const shadow = new T.Mesh(new T.SphereGeometry(1, 48, 32), new T.MeshBasicMaterial({ color: 0x000000 })); shadow.name = "shadow"; shadow.renderOrder = 10;
     const ring = quillMesh(T, buildQuillRim(37, 420, 1.0), this.uni, 14); ring.name = "photon_ring"; ring.scale.setScalar(1.01); ring.material.uniforms.uBase.value.setRGB(1.0, 0.86, 0.68);
-    const glow = quillMesh(T, buildQuillHalo(41, 260), this.uni, 13); glow.name = "lensed_light"; glow.material.uniforms.uBase.value.setRGB(1.0, 0.86, 0.68); glow.material.uniforms.uLen.value = 0.6;
+    const glow = this.bloomMesh(); glow.name = "lensed_light"; glow.renderOrder = 13;
     g.add(shadow, ring, glow); this.root.add(g); this.lens = g; this.bh = { g, shadow, ring, glow }; }
   buildEarth() { const T = this.T; this.earth = new T.Mesh(new T.SphereGeometry(1, 48, 32), new T.ShaderMaterial({ vertexShader: SPHERE_VERT, fragmentShader: EARTH_FRAG, transparent: true, uniforms: { uSun: { value: new T.Vector3(-1, 0.2, 0.4) }, uPxR: { value: 40 }, uAlpha: { value: 1 } } })); this.earth.name = "earth"; this.root.add(this.earth); }
   buildWinds() { this.winds = this.qWind; }   // winds are quills now (sl-quill.js kind 3)
   buildOrbits() { const T = this.T; this.orbitObjs = {}; const pts = []; for (let i = 0; i <= 160; i++) { const a = i / 160 * Math.PI * 2; pts.push(new T.Vector3(Math.cos(a), 0, Math.sin(a))); }
     const geo = new T.BufferGeometry().setFromPoints(pts);
     for (const name of [...Object.keys(ORBIT_AU), "ring0", "ring1"]) { const line = new T.Line(geo, new T.LineDashedMaterial({ color: 0xAACDFF, dashSize: 0.04, gapSize: 0.035, transparent: true, opacity: 0.85, depthWrite: false })); line.computeLineDistances(); line.renderOrder = 19; line.visible = false; line.rotation.x = 0.28;
-      const lab = this.scenes.label(name.startsWith("ring") ? "" : `${name}'s orbit`, { size: 0.04, plate: true }); lab.visible = false; this.root.add(line, lab); this.orbitObjs[name] = { line, lab }; }
+      const lab = this.scenes.label(name.startsWith("ring") ? "" : `${name}'s orbit`, { size: 0.04, plate: true }); lab.visible = false; lab.userData.clamp = true; this.root.add(line, lab); this.orbitObjs[name] = { line, lab }; }
     // planet orbits are named in at most two rows (inside the star, outside it), so labels can never pile up
-    this.orbRows = [0, 1].map(() => { const lab = this.scenes.label("", { size: 0.04, plate: true }); lab.visible = false; this.root.add(lab); return lab; }); }
+    this.orbRows = ["left", "left"].map((align) => { const lab = this.scenes.label("", { size: 0.04, plate: true, align }); lab.visible = false; this.root.add(lab); return lab; }); }
 
   /** Snap the dolly to the current hero (used once when a run starts from the masses screen). */
   reset() { this.fresh = true; }
@@ -354,19 +418,22 @@ export class LifeWorld {
   update(c) {
     const T = this.T; const v = c.v; if (!v || !v.stage) return; const dt = this.fresh ? 0 : Math.max(0, Math.min(0.1, c.dt || 0)); const look = lookFor(v, c.st && c.st.mass, c.st || {}); this.look = look;
     // the dolly
-    // on a phone the strip is short: pull back a little more while orbit labels are up so they fit above the star
-    const hero = look.hero * (c.phone && this.labRows ? 1 + 0.4 * this.labRows : 1);
-    const target = bandTarget(this.fresh ? Math.log10(hero) - Math.log10(look.band === "wide" ? 0.45 : 0.38) : this.cam.L, hero, look.band);
+    // frameK: half the view height in frame units (the page passes it), so the band is a share of the frame height
+    const K = c.frameK || 1; const hero = look.hero * (this.labRows ? 1 + 0.3 * this.labRows : 1);
+    const target = bandTarget(this.fresh ? Math.log10(hero) - Math.log10(0.46 * K) : this.cam.L, hero, look.band, K);
     if (this.fresh) { this.cam.L = target; this.cam.v = 0; this.cam.vRef = 0; this.cam.lastT = target; } else dollyStep(this.cam, target, dt);
     const Rf = Math.pow(10, this.cam.L); const u = (rSun) => rSun / Rf; this.Rf = Rf;
     const q = c.camQuatLocal; const ppu = c.ppu || 300; const chips = [];
     // star
     const S = look.star; const aStar = this.ease("star", S.on ? S.a : 0, dt, 0.5); let R = S.R; let xr = u(R);
     if (S.kind === "ns" || look.ns.a > 0.01) { /* the neutron star is drawn below */ }
-    const drawn = Math.max(xr, FRAME.minX); if (S.on && xr < FRAME.minX / 3 && aStar > 0.5) chips.push("The star is drawn bigger than scale here, so you can see where it is.");
+    const drawn = Math.max(xr, FRAME.minX); if (S.on && drawnBigger(xr) && aStar > 0.5) chips.push("The star is drawn bigger than scale here, so you can see where it is.");
     this.star.visible = aStar > 0.01; this.star.scale.setScalar(drawn);
     const sm = this.starMat.uniforms; const base = S.kind === "proto" && S.teff < 5000 ? hex("#FFDCB8") : srgb(S.teff); sm.uBase.value.setRGB(...base);
     const [limb, lk] = limbFor(S.teff); sm.uLimb.value.set(...limb); sm.uLimbK.value = lk; sm.uAlpha.value = aStar; this.starMat.transparent = aStar < 0.99; this.starMat.depthWrite = aStar >= 0.99;
+    const rsgLike = S.teff < 4200 && R > 6, point = drawn > xr * 1.5 && S.kind !== "wd"; const gl = point ? GLOW.point : rsgLike ? GLOW.rsg : GLOW.sun; sm.uExpo.value = gl.expo;
+    // limb darkening: hot stars use the spec's quadratic per channel in linear light (the limb turns amber); cool giants keep the multiply towards their cooler limb
+    const quad = S.teff >= 4600 && S.kind !== "wd"; if (quad) { sm.uLimb.value.set(1, 1, 1); sm.uLdA.value.set(...LIMB_QUAD.a); sm.uLdB.value.set(...LIMB_QUAD.b); } else { sm.uLdA.value.set(0, 0, 0); sm.uLdB.value.set(0, 0, 0); }
     sm.uBright.value = S.bright; sm.uCoreOn.value = 0; sm.uCut.value = S.cut; sm.uInside.value.setRGB(...base.map((x) => x * 0.85)); sm.uAmp.value = S.kind === "wd" ? 0.15 : 0.55;
     sm.uRot.value = (c.time || 0) * (c.calm ? 0.004 : 0.006); const pxR = drawn * ppu; sm.uPxR.value = pxR; sm.uInk.value = pxR > 6 ? 1 : 0;
     const wB = this.uni.uBoil.value > 0.5; if (wB) { const bt = (this.uni.uBoilT.value || 0) * 8, f = Math.floor(bt), fr = bt - f; const w = [0, 0, 0]; w[f % 3] = 1 - fr; w[(f + 1) % 3] += fr; sm.uW.value.set(...w); } else sm.uW.value.set(1, 0, 0);
@@ -386,11 +453,15 @@ export class LifeWorld {
     const qa = aStar * Math.min(1, S.bright); const radV = drawn * (c.worldScale || 1);
     const qset = (m, a, len) => { const uq = m.material.uniforms; uq.uAlpha.value = a; uq.uCtr.value.copy(ctr); uq.uRadV.value = radV; uq.uT.value = c.time || 0; if (len != null) uq.uLen.value = len; m.visible = a > 0.01; };
     this.qG.position.copy(this.star.position); this.qG.scale.setScalar(drawn); this.qG.visible = this.star.visible;
-    qset(this.qSurf, S.cut > 0.01 ? 0 : qa * 0.5); this.qSurf.material.uniforms.uBase.value.setRGB(...base); this.qSurf.rotation.y = sm.uRot.value * 6.2831853;
-    qset(this.qHalo, qa * 0.9, hLen); this.qHalo.material.uniforms.uBase.value.setRGB(...base);
+    qset(this.qSurf, S.cut > 0.01 ? 0 : qa * 0.5); this.qSurf.material.uniforms.uExpo.value = gl.expo; this.qSurf.material.uniforms.uBase.value.setRGB(...base); this.qSurf.rotation.y = sm.uRot.value * 6.2831853;
+    this.limbG.position.copy(this.star.position); this.limbG.quaternion.copy(q); this.limbG.scale.setScalar(drawn); this.limbG.visible = this.star.visible;
+    qset(this.qHalo, pxR > 30 && S.cut < 0.01 ? qa : 0, 1); this.qHalo.material.uniforms.uBase.value.setRGB(...base);
     qset(this.qRim, pxR > 6 ? qa : 0); this.qRim.material.uniforms.uBase.value.setRGB(...base);
-    // prominences
-    const ap = this.ease("proms", look.proms && S.on ? 1 : 0, dt); this.proms.visible = ap > 0.02 && this.star.visible; this.promMat.uniforms.uAlpha.value = 0.9 * ap; this.promMat.uniforms.uT.value = c.time || 0;
+    // the bloom shell: soft emissive glow outside the limb, in the limb colour (Sun) or the star colour (red supergiant)
+    const glowCol = base; this.bloom.position.copy(this.star.position); this.setBloom(this.bloom, gl, glowCol, aStar * Math.min(1, S.bright) * (S.cut > 0.01 ? 0.5 : 1), ctr, radV, pxR, drawn);
+    // prominences: the Sun's H-alpha loop; a few wisps on red supergiants (both rooted on the limb, boiling at 8 fps)
+    const ap = this.ease("proms", look.proms && S.on && S.cut < 0.01 ? 1 : 0, dt); qset(this.promSun, pxR > 30 ? 0.95 * ap * qa : 0);
+    const aw2 = this.ease("wisps", S.on && S.teff < 4200 && R > 100 && S.cut < 0.01 ? 1 : 0, dt); qset(this.wisps, pxR > 30 ? aw2 * qa : 0);
     // protostar pieces
     const ac = this.ease("cloud", look.cloud.a, dt, 0.8); this.proto.shell.visible = ac > 0.01; this.proto.shell.scale.setScalar(u(look.cloud.r)); this.proto.shell.children.forEach((m) => { m.material.uniforms.uAlpha.value = ac * (look.cloud.ir ? 0.35 : 0.8); });
     const ad = this.ease("disk", look.disk.a, dt, 0.8); this.proto.disk.visible = ad > 0.01; this.proto.disk.scale.setScalar(u(look.disk.r)); this.proto.disk.material.uniforms.uAlpha.value = ad; this.proto.disk.material.uniforms.uT.value = (c.flowT || 0) * 0.5; this.proto.disk.material.uniforms.uIn.value = clamp(u(R * 4) / Math.max(u(look.disk.r), 1e-9), 0.012, 0.2);
@@ -402,14 +473,17 @@ export class LifeWorld {
     // neutron star (12 km sphere, NS colour #95B1FF with a white-hot core) and its beams
     const ans = this.ease("ns", look.ns.a, dt, 0.5); this.pulsar.g.visible = ans > 0.01 && look.ns.beams > 0; const nsR = Math.max(u(SIZES.ns), FRAME.minX);
     this.pulsar.g.scale.setScalar(nsR); this.pulsar.axis.rotation.y = (c.time || 0) * (c.calm ? 0.6 : 2.4); this.pulsar.beamMat.uniforms.uAlpha.value = ans; this.pulsar.beamMat.uniforms.uT.value = c.time || 0;
-    if (ans > 0.01 && aStar < 0.05) { this.star.visible = true; this.star.scale.setScalar(nsR); sm.uBase.value.setRGB(...hex("#95B1FF")); sm.uLimb.value.set(1, 1, 1); sm.uLimbK.value = 1; sm.uCoreOn.value = 1; sm.uAlpha.value = ans; this.starMat.transparent = ans < 0.99; sm.uAmp.value = 0.2; sm.uCut.value = 0;
-      sm.uPxR.value = nsR * ppu; sm.uInk.value = 1; sm.uBright.value = 1.35; this.qG.visible = true; this.qG.scale.setScalar(nsR); const nsC = hex("#95B1FF"); const radN = nsR * (c.worldScale || 1);
-      for (const [m, a, len] of [[this.qHalo, ans * 0.8, 0.35], [this.qRim, ans, null], [this.qSurf, ans * 0.4, null]]) { const uq = m.material.uniforms; uq.uAlpha.value = a; uq.uCtr.value.copy(ctr); uq.uRadV.value = radN; uq.uBase.value.setRGB(...nsC); if (len != null) uq.uLen.value = len; m.visible = true; } }
-    if (ans > 0.01 && u(SIZES.ns) < FRAME.minX / 3) chips.push("The neutron star is drawn bigger than scale here. It is only about 24 km across.");
+    if (ans > 0.01 && aStar < 0.05) { this.star.visible = true; this.star.scale.setScalar(nsR); sm.uBase.value.setRGB(...hex("#95B1FF")); sm.uLimb.value.set(1, 1, 1); sm.uLimbK.value = 1; sm.uCoreOn.value = 1; sm.uAlpha.value = ans; this.starMat.transparent = ans < 0.99; this.starMat.depthWrite = true; sm.uLdA.value.set(0, 0, 0); sm.uLdB.value.set(0, 0, 0); sm.uAmp.value = 0.2; sm.uCut.value = 0;
+      // white-hot and emissive (LOOK-SPEC 3.4): core #F1F2F7, edge #95B1FF, a crisp edge and a tight blue-white bloom; no fur, no ink
+      sm.uPxR.value = nsR * ppu; sm.uInk.value = 0; sm.uBright.value = 1; sm.uExpo.value = 1; this.qG.visible = false; this.limbG.visible = false; this.qSurf.visible = false; const radN = nsR * (c.worldScale || 1);
+      this.star.updateMatrixWorld(); ctr.setFromMatrixPosition(this.star.matrixWorld); if (c.viewMatrix) ctr.applyMatrix4(c.viewMatrix); sm.uCtr.value.copy(ctr); sm.uRadV.value = radN;
+      this.setBloom(this.bloom, GLOW.ns, hex("#95B1FF").map((x) => x + (1 - x) * 0.3), ans, ctr, radN, nsR * ppu, nsR); }
+    if (ans > 0.01 && drawnBigger(u(SIZES.ns))) chips.push("The neutron star is drawn bigger than scale here. It is only about 24 km across.");
     // black hole lens
     const ab = this.ease("bh", look.bh.a, dt, 0.6); this.lens.visible = ab > 0.01; const rsU = Math.max(u(look.bh.rs), FRAME.minX / 2.6); this.lens.scale.setScalar(rsU * 2.6);
     if (this.lens.visible) { this.lens.updateMatrixWorld(); const bc = new T.Vector3().setFromMatrixPosition(this.lens.matrixWorld); if (c.viewMatrix) bc.applyMatrix4(c.viewMatrix); const br = rsU * 2.6 * (c.worldScale || 1);
-      for (const m of [this.bh.ring, this.bh.glow]) { const uq = m.material.uniforms; uq.uAlpha.value = ab * (m === this.bh.glow ? 0.55 : 1); uq.uCtr.value.copy(bc); uq.uRadV.value = br * (m === this.bh.ring ? 1.01 : 1); uq.uT.value = c.time || 0; } this.bh.shadow.material.transparent = ab < 0.99; this.bh.shadow.material.opacity = ab; }
+      { const uq = this.bh.ring.material.uniforms; uq.uAlpha.value = ab; uq.uCtr.value.copy(bc); uq.uRadV.value = br * 1.01; uq.uT.value = c.time || 0; }
+      this.setBloom(this.bh.glow, GLOW.bh, [1.0, 0.86, 0.68], ab * 0.8, bc, br * 1.01, br / (c.worldScale || 1) * ppu, 1.01); this.bh.shadow.material.transparent = ab < 0.99; this.bh.shadow.material.opacity = ab; }
     // Earth beside the white dwarf, same scale
     const ae = this.ease("earth", look.earth.a, dt, 0.6); this.earth.visible = ae > 0.01; this.earth.scale.setScalar(u(SIZES.earth)); this.earth.position.set(xr * 2.4 + u(SIZES.earth) * 1.2, 0, 0); this.earth.material.uniforms.uAlpha.value = ae; this.earth.material.uniforms.uPxR.value = u(SIZES.earth) * ppu; this.earth.material.transparent = ae < 0.99;
     // winds
@@ -418,11 +492,20 @@ export class LifeWorld {
     const want2 = {}; const labs = []; const inside = [], outside = []; for (const o of look.orbits) want2[o.name] = o.r; look.rings.forEach((r, i) => { want2["ring" + i] = r.r; });
     for (const [name, o] of Object.entries(this.orbitObjs)) { const r = want2[name]; const a = this.ease("orb" + name, r != null && u(r) < 4 && u(r) > 0.04 ? 1 : 0, dt, 0.5); o.line.visible = a > 0.02; if (r != null) { o.r = r; } const rr = u(o.r || 1); o.line.scale.setScalar(rr); o.line.material.opacity = 0.85 * a; o.line.material.dashSize = 0.04 / Math.max(rr, 1e-6) * 0.6; o.line.material.gapSize = 0.03 / Math.max(rr, 1e-6) * 0.6;
       const ringLab = name.startsWith("ring") ? (look.rings[+name.slice(4)] || {}).label : null; if (ringLab) this.scenes.setLabel(o.lab, ringLab);
-      const show = o.line.visible && a > 0.5; if (!name.startsWith("ring")) { o.lab.visible = false; if (show) (rr < drawn ? inside : outside).push(name); continue; }
+      const show = o.line.visible && a > 0.5; o.rr = rr; if (!name.startsWith("ring")) { o.lab.visible = false; if (show) (rr < drawn ? inside : outside).push(name); continue; }
       o.lab.visible = show; if (show) labs.push({ o, rr }); }
     const names = (L) => { const n = L.map((x) => `${x}'s`); return (n.length > 1 ? n.slice(0, -1).join(", ") + " and " + n[n.length - 1] : n[0]) + (L.length > 1 ? " orbits" : " orbit"); };
-    [[inside, (L) => `Inside the star: ${names(L)}`], [outside, names]].forEach(([L, txt], k) => { const lab = this.orbRows[k]; lab.visible = L.length > 0; if (lab.visible) { this.scenes.setLabel(lab, txt(L)); labs.push({ o: { lab }, rr: k === 0 ? -1 : drawn * 1.3 }); } });
-    // labels stack above the star, never on it or their ring, one row each, so they never stack on each other
+    // planet orbits are named ON their own dashed rings (Leo, round 2): the inside one hangs off its ring's right end, over the
+    // star ("Earth's orbit, 1 AU, would be deep inside"); the outside one hangs off its ring's left end. They sit on different
+    // rows, and the page keeps both plates inside the free view (left or right aligned labels are clamped there).
+    const rAU = R / AU_RSUN; const [labIn, labOut] = this.orbRows;
+    labIn.visible = inside.length > 0; labOut.visible = outside.length > 0;
+    if (labIn.visible) { const pl = inside.includes("Earth") ? "Earth" : inside[inside.length - 1];
+      if (pl === "Earth") this.scenes.setLabel(labIn, "Earth's orbit, 1 AU,", rAU > 1.5 ? "would be deep inside" : "would be inside the star"); else this.scenes.setLabel(labIn, `Inside the star: ${names(inside)}`);
+      labIn.position.set(this.orbitObjs[pl].rr, 0, 0).add(new T.Vector3(0.012, -0.13, 0).applyQuaternion(q)); labIn.quaternion.copy(q); }
+    if (labOut.visible) { const pl = outside[0]; this.scenes.setLabel(labOut, names(outside));
+      labOut.position.set(-this.orbitObjs[pl].rr, 0, 0).add(new T.Vector3(0.012, 0.09, 0).applyQuaternion(q)); labOut.quaternion.copy(q); }
+    // comparison ring labels stack above the star, one row each
     labs.sort((p, q2) => p.rr - q2.rr).forEach(({ o, rr }, i) => { o.lab.quaternion.copy(q); o.lab.position.copy(new T.Vector3(0, Math.max(drawn * 1.06, Math.min(rr, drawn * 1.3)) + 0.06 + i * 0.1, 0).applyQuaternion(q)); }); this.labRows = labs.length;
     // sculpted GLB pieces fade with the placeholder they replace
     const fades = { protostar: Math.max(ac, ad, aj), planetary_nebula: an, supernova_remnant: as, pulsar_beams: ans };
@@ -430,7 +513,7 @@ export class LifeWorld {
     // pieces far outside the view (or far too small to see) are hidden, so nothing huge sits past the far plane
     for (const o of [this.proto.shell, this.proto.disk, this.neb.g, this.rem.g]) { const k = o.scale.x; if (k > 400 || k < 1e-4) o.visible = false; }
     for (const j of this.proto.jets) if (j.scale.y > 400 || j.scale.y < 1e-4) j.visible = false;
-    this.radius = clamp(u(look.hero), 0.2, 1); this.barAt = [0, -Math.min(Math.max(drawn * 1.15, look.band === "wide" ? 0.45 : 0) + 0.06, 0.44)]; this.barMax = 0.3;   // the bar always sits inside the scene region, so it never goes under a card
+    this.radius = clamp(u(look.hero), 0.2, 1); const by = Math.min(Math.max(drawn * 1.04, look.band === "wide" ? 0.5 : 0) + 0.07, 0.62); this.barAt = c.phone ? [-0.34, -0.47] : [0, -by]; this.barMax = c.phone ? 0.24 : 0.3;   // phone: the bar sits in the free lower-left corner of the strip, off the star   // the bar always sits inside the scene region, so it never goes under a card
     this.chips = chips; this.strokes = 0; this.fresh = false;
   }
 }

@@ -10,7 +10,7 @@ import { drawHR, plotRect, fromXY, VIEWS } from "./sl-hr.js";
 import { Scenes, scaleBar, zoomText, KM } from "./sl-scenes.js";
 import { ONION } from "./sl-strokes.js";
 import { LifeWorld } from "./sl-world.js";
-import { uiModel, MASS_TEFF, SPEEDS } from "./sl-ui.js";
+import { uiModel, MASS_TEFF, SPEEDS, PRESETS, GALLERY_TITLE, PIN_TITLE } from "./sl-ui.js";
 import { ZONES, cardComplete, FRAME_WORDS, TICKET, logPos, LOGCLOCK, COMPARE_TEXT } from "./sl-compare.js";
 import { XRPanel, XRP, panelInputAt } from "./sl-xrpanel.js";
 import { temperatureToSRGB } from "../night-sky/ns-astro.js";
@@ -47,15 +47,19 @@ const helpQ = Math.max(0, Math.min(2, parseInt(q.get("help") || "0", 10) || 0));
 const tierQ = [1, 2, 3].includes(+q.get("tier")) ? +q.get("tier") : 2;
 let flow = null, tracks = null;
 
-// ---------------- hub: five mass orbs (ZAMS colours from temperatureToSRGB) ----------------
+// ---------------- hub: the preset gallery (round 14). Five real 3D model stars in mass order, each with its name, mass and
+// fate; pick one (tap, click, or ray and pinch in the headset) and its life plays at once. The tiles are our own painted star
+// spheres with the bloom shell (life.tileStar), never flat cards. Desktop and headset: one row; phone: one column. ----------------
 const hub = new THREE.Group(); world.add(hub); const hubOrbs = {};
-MASSES.forEach((m, i) => {
+const ZAMS_R = { "0.2": 0.21, "1": 0.89, "3": 1.6, "15": 4.8, "40": 8.0 };   // starting radii in Suns (for the texture choice only)
+PRESETS.forEach((p, i) => { const m = p.id;
   const R = { "0.2": 1.3, "1": 2.0, "3": 2.6, "15": 3.4, "40": 4.0 }[m];
-  const o = scenes.glow([[R * 2.4, 0.12], [R * 1.5, 0.3], [R, 1.0], [R * 0.6, 1.0]], { useTeff: true, order: 3 }); o.material.uniforms.uTeff.value = MASS_TEFF[m];
-  const l = scenes.label(MASS_LABEL[m], { size: 2.2 }); const grp = new THREE.Group(); grp.add(o, l); l.position.set(0, -R - 3, 0);
-  grp.position.set((i - 2) * 13, 0, 0); hub.add(grp); hubOrbs[m] = { grp, o, l, R, i };
+  const tile = life.tileStar(MASS_TEFF[m], ZAMS_R[m]); tile.g.scale.setScalar(R); const o = tile.g;
+  const l = scenes.label(p.name, { size: 2.2, sub: `${MASS_LABEL[m]}\nends as a ${p.fate}` }); const lp = scenes.label(p.name, { size: 2.2, sub: `${MASS_LABEL[m]}: ${p.fate}`, align: "left" }); lp.visible = false; l.userData.clamp = true;   // kept inside the free view like the aligned labels
+  const grp = new THREE.Group(); grp.name = "preset_" + m; grp.add(o, l, lp); l.position.set(0, -R - 3.6, 0);
+  grp.position.set((i - 2) * 14, 0, 0); hub.add(grp); hubOrbs[m] = { grp, o, tile, l, lp, R, i };
 });
-const hubTitle = scenes.label("Pick a starting mass", { size: 3.2 }); hubTitle.position.set(0, 12, 0); hub.add(hubTitle);
+const hubTitle = scenes.label(GALLERY_TITLE, { size: 3.2 }); hubTitle.position.set(0, 12, 0); hub.add(hubTitle);
 const hubNote = scenes.label("Sizes and colors here are a key, not to scale", { size: 1.6, color: "#C3C9E6", plate: false }); hubNote.position.set(0, -12, 0); hub.add(hubNote);
 
 // ---------------- scale bar (3D, same scale as the scene) ----------------
@@ -65,6 +69,7 @@ const sbarTick = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new TH
 sbarLine.renderOrder = sbarTick.renderOrder = 41; sbarLine.frustumCulled = sbarTick.frustumCulled = false;
 const sbarBody = new THREE.Group(); sbarBody.add(sbarLine, sbarTick); sbar.add(sbarBody);
 const sbarLab = scenes.label("", { size: 1.4, plate: false, color: "#E6E9F8" }); sbar.add(sbarLab);
+sbarLab.userData.clamp = true; sbarLab.userData.moveGroup = sbar;   // on screen the whole bar steps out from under a card, with its label
 
 // ---------------- camera: drag to look (orbit), wheel or pinch to move closer ----------------
 const D2R = Math.PI / 180;
@@ -143,7 +148,7 @@ function renderUI(M) {
   // the pin prompt (and the Tier 1 zone hint) come before the mass tiles, so on phone they sit above the fold
   if (M.pinPrompt) qh += `<p class="sl-pinprompt">${esc(M.pinPrompt)}</p>`;
   if (M.pinChip) qh += `<div class="sl-chip sl-pinchip">${esc(M.pinChip)}</div>`;
-  if (M.masses) qh += `<div class="sl-masses">${M.masses.map((m) => `<button type="button" class="sl-mass${m.on ? " on" : ""}" data-act="${m.act || "mass:" + m.id}" aria-pressed="${m.on}"><span class="dot" style="--c:${m.css}"></span>${esc(m.label)}${m.done ? ' <span class="done">run</span>' : ""}</button>`).join("")}</div>`;
+  if (M.masses) qh += `<div class="sl-masses">${M.masses.map((m) => `<button type="button" class="sl-mass${m.on ? " on" : ""}" data-act="${m.act || "mass:" + m.id}" aria-pressed="${m.on}"><span class="dot" style="--c:${m.css}"></span><span class="nm">${esc(m.label)}${m.fate ? `<small>${esc(m.fate)}</small>` : ""}</span>${m.done ? ' <span class="done">watched</span>' : ""}</button>`).join("")}</div>`;
   if (M.question) {
     const Q = M.question; qh += `<div class="sl-q">${Q.head ? `<p class="sl-qhead">${esc(Q.head)}</p>` : ""}<p class="sl-qtext">${esc(Q.text)}</p>`;
     if (Q.kind === "massMeter") qh += `<label class="sl-meter">Your guess: <output id="slMeterOut">${Q.value.toFixed(1)} Suns</output><input type="range" id="slMeter" min="${Q.min}" max="${Q.max}" step="0.1" value="${Q.value}"></label><button type="button" class="sl-btn primary" data-act="meter:${Q.i}">Lock in my prediction</button>`;
@@ -256,7 +261,8 @@ addEventListener("keydown", (e) => { if (!flow || (e.target && /^(INPUT|TEXTAREA
 function act(id) {
   if (!flow) return; const st = flow.st; const [k, a, b] = id.split(":"); const rest = id.slice(id.indexOf(":") + 1);
   if (k === "readAloud") { const p = document.querySelector("#slCaption p"); if (p && window.speechSynthesis) { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(p.textContent)); } return; }
-  if (k === "mass") flow.pickMass(a);
+  if (k === "mass") { flow.pickMass(a); if (!st.predict) return act("start"); }   // the gallery: a preset plays at once, no further clicks
+  else if (k === "predict") flow.setPredict(!st.predict);
   else if (k === "end") flow.answerHub(rest);
   else if (k === "pinUndo") flow.undoPin();
   else if (k === "start") { if (flow.start()) { if (st.skipped && st.stages[0].id !== "F4") { transient.skip = `Skipping about ${fmtYears(atEEP(tracks[st.mass], 202).age)} of formation.`; transient.skipUntil = clock + 4; } onStageChange(); } }
@@ -488,8 +494,12 @@ function sizeLabels(cam, xr) {
     let dx = 0, dy = 0; if (Rr > xMax) dx = xMax - Rr; if (L + dx < 18) dx = 18 - L; if (top < yMin) dy = yMin - top; else if (bot > yMax) dy = yMax - bot;
     if (card && L + dx < card.right + 8 && bot + dy > card.top - 8) { const up = card.top - 8 - bot; const right = card.right + 8 - (L + dx); if (-up < right) dy = up; else dx += right; }
     if (!dx && !dy) return;
+    if (d.moveGroup) { const g = d.moveGroup, sw = new THREE.Vector3(dx / ppw, -dy / ppw, 0).applyQuaternion(lq); g.parent.getWorldQuaternion(wq2).invert(); sw.applyQuaternion(wq2).divide(g.parent.getWorldScale(new THREE.Vector3())); g.position.add(sw); return; }
     const shift = new THREE.Vector3(dx / ppw, -dy / ppw, 0).applyQuaternion(lq); o.parent.getWorldQuaternion(wq2).invert(); shift.applyQuaternion(wq2).divide(ps);
-    o.position.add(shift); if (d.line) { d.line.setXYZ(d.lineIdx != null ? d.lineIdx : 1, o.position.x, o.position.y, o.position.z); d.line.needsUpdate = true; } });
+    o.position.add(shift);
+    { o.updateWorldMatrix(true, false); o.getWorldPosition(lp); sp2.copy(lp).project(camera); const ax = (sp2.x + 1) / 2 * layout.w - sx, ay = (1 - sp2.y) / 2 * layout.h - sy, big = Math.abs(dx) >= Math.abs(dy), f = big ? (Math.abs(ax) > 0.5 ? dx / ax : 1) : (Math.abs(ay) > 0.5 ? dy / ay : 1);
+      if (f > 0 && Math.abs(f - 1) > 0.02) o.position.addScaledVector(shift, f - 1); }   // one correction step: the px-to-world guess is off when the view is offset or zoomed
+    if (d.line) { d.line.setXYZ(d.lineIdx != null ? d.lineIdx : 1, o.position.x, o.position.y, o.position.z); d.line.needsUpdate = true; } });
   // the scale bar keeps the same margin from the bottom edge in every scene (desktop: 7 percent of the height; phone: just above the sheet)
   if (!xr && sbar.visible) {
     sbarLab.position.set(0, -(sbarLab.scale.y * (sbarLab.userData.ph || 0.45) * 0.5 + sbarBody.scale.y * 0.5 + sbarLab.scale.y * 0.06), 0);
@@ -544,9 +554,17 @@ function frame(now) {
   uni.uCamLocal.value.copy(camLocal); uni.uCosElev.value = Math.max(0.25, Math.hypot(camLocal.x, camLocal.z) / (camLocal.length() || 1));
   bg.root.position.copy(camLocal);   // the sky stays at infinity
   const extra = {};
-  if (sc) sc.update({ ppu: presenting ? 320 : lifePpu, viewMatrix: cam.matrixWorldInverse, worldScale: world.scale.x, xr: presenting, v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt: sdt, flowT: flowS, flowSmooth: flowT, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
-  else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); o.l.position.y = layout.phone && !presenting && o.i % 2 ? o.R + 3 : -o.R - 3;  const ph = layout.phone && !presenting; hubTitle.position.y = ph ? 15 : 12; hubNote.position.y = ph ? -15 : -12; }   /* phone: every other key label sits above its orb so the five never overlap */
-  hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? "Predict: place guess pins" : "Pick a starting mass");
+  if (sc) sc.update({ frameK: presenting || layout.phone ? 1 : Math.min(1, (layout.h / 2) / Math.max(1, lifePpu)), ppu: presenting ? 320 : lifePpu, viewMatrix: cam.matrixWorldInverse, worldScale: world.scale.x, xr: presenting, v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt: sdt, flowT: flowS, flowSmooth: flowT, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
+  else { const ph = layout.phone && !presenting; const tanH = presenting ? 1 : Math.tan(camera.fov * Math.PI / 360); const vpH = presenting ? 1800 : layout.h; const camW = cam.getWorldPosition(new THREE.Vector3());
+    for (const [m, o] of Object.entries(hubOrbs)) { const k = flow.st.mass === m ? 1.12 : 1, kt = ph ? 1.5 : 1; o.grp.scale.setScalar(k); o.tile.g.scale.setScalar(o.R * kt);   // phone: the tiles are drawn a little bigger
+      // phone: a column down the strip with the names to the right; desktop and headset: a row with the names below
+      const pos = ph ? new THREE.Vector3(-19, (2 - o.i) * 13.5, 0) : new THREE.Vector3((o.i - 2) * 14, 0, 0); if (!presenting) pos.applyQuaternion(qL); o.grp.position.copy(pos);
+      // desktop and headset: names alternate below and above the row, so neighbours never touch
+      o.l.visible = !ph; o.lp.visible = ph; o.l.quaternion.copy(qL); o.lp.quaternion.copy(qL); o.l.position.y = o.i % 2 ? o.R + 4.2 : -o.R - 4.2; o.lp.position.copy(new THREE.Vector3(o.R * kt + 1.6, 0, 0).applyQuaternion(qL));
+      const wp = o.grp.getWorldPosition(new THREE.Vector3()); const radV = o.R * k * kt * world.scale.x; const pxR = radV * vpH / (2 * Math.max(1e-6, wp.distanceTo(camW)) * tanH);
+      o.tile.update(cam.matrixWorldInverse, radV, pxR, clock); }
+    hubTitle.position.copy(new THREE.Vector3(0, ph ? 40 : (presenting ? 19 : 15.5), 0).applyQuaternion(presenting ? new THREE.Quaternion() : qL)); hubNote.position.copy(new THREE.Vector3(0, ph ? -40 : (presenting ? -19 : -11), 0).applyQuaternion(presenting ? new THREE.Quaternion() : qL)); }
+  hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? PIN_TITLE : flow.st.predict ? "Pick a starting mass" : presenting || layout.phone ? GALLERY_TITLE : "");   // desktop: the panel heading already says it
   // scale bar and zoom labels (labelled zoom changes, never a fake scale)
   const km = sc && sc.kmPerUnit ? sc.kmPerUnit() : null;
   // lastKm is the scale of the last label (or of the scene's start), so slow drifts add up and small steps never label
