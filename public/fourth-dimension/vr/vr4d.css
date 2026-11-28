@@ -10,7 +10,7 @@ body.paper-mode .cap { background: #fffdf7; color: #18202c; border-color: #a39d8
 
 #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
 
-.cap { position: fixed; z-index: 5; left: 12px; right: 12px; bottom: calc(108px + env(safe-area-inset-bottom));
+.cap { position: fixed; z-index: 5; left: 12px; right: 12px; bottom: calc(76px + env(safe-area-inset-bottom));
   max-width: 760px; margin: 0 auto; padding: 10px 14px; border-radius: 16px;
   background: rgba(22, 30, 44, 0.88); border: 1px solid #3c4b62; }
 .cap .kicker { margin: 0 0 4px; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fd-gold); font-weight: 700; }
@@ -21,14 +21,33 @@ body.paper-mode .cap { background: #fffdf7; color: #18202c; border-color: #a39d8
 .cap.live #capText .nw.hl { color: var(--fd-gold); }
 .cap .hint { margin: 6px 0 0; color: var(--fd-text-dim); font-size: 0.85rem; }
 
-.dock { position: fixed; z-index: 6; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-  padding: 8px 12px max(8px, env(safe-area-inset-bottom)); background: rgba(18, 24, 35, 0.92); border-top: 1px solid #3c4b62; }
-.dock button, .dock select { min-height: 44px; }
-.dock label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--fd-text-dim); min-width: 140px; }
-.dock input[type="range"] { width: 120px; accent-color: var(--fd-gold); }
-#narr { display: flex; }
+.dock { position: fixed; z-index: 6; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 6px;
+  padding: 6px 10px max(6px, env(safe-area-inset-bottom)); background: rgba(18, 24, 35, 0.94); border-top: 1px solid #3c4b62; }
+.dock-bar { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.dock-bar #narr { flex: 1; min-width: 0; }
+.dock button, .dock select { min-height: 40px; min-width: 40px; padding: 0 10px; }
+.dock-actions { display: flex; flex-wrap: nowrap; gap: 6px; align-items: center; overflow-x: auto; }
+.dock-actions:empty { display: none; }
+.dock-actions button { flex: 0 0 auto; }
+.dock label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--fd-text-dim); white-space: nowrap; }
+.dock input[type="range"] { width: 92px; accent-color: var(--fd-gold); }
+#narr { display: flex; min-width: 0; }
 #narr[hidden] { display: none !important; }
-#tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
+#narr .narr { display: flex; align-items: center; gap: 4px; width: 100%; min-width: 0; }
+#narr .narr button { width: 40px; padding: 0; }
+#narr .narr-bar { flex: 1; min-width: 36px; display: flex; align-items: center; }
+#narr .narr-bar input { width: 100%; margin: 0; }
+.settings-sheet { position: absolute; left: 8px; right: 8px; bottom: calc(100% + 8px); display: grid; gap: 8px;
+  padding: 12px; border-radius: 16px; background: rgba(22, 30, 44, 0.96); border: 1px solid #3c4b62; }
+.settings-sheet[hidden] { display: none !important; }
+#settingsBody, #rateSlot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#rateSlot:empty { display: none; }
+#rateSlot .narr-rate { display: flex; align-items: center; gap: 8px; }
+@media (min-width: 960px) {
+  .dock { flex-direction: row; align-items: center; }
+  .dock-bar { flex: 1 1 auto; }
+  .dock-actions { flex: 1 1 auto; max-width: 50%; order: 2; }
+}
 
 #blackout { position: fixed; inset: 0; background: #000; opacity: 0; z-index: 8; pointer-events: none; }
 #curl { position: fixed; inset: 0; z-index: 7; pointer-events: none; opacity: 0;
@@ -56,8 +75,8 @@ body.paper-mode .cap { background: #fffdf7; color: #18202c; border-color: #a39d8
 
 @media (max-width: 720px) {
   #capHint { display: none; }
-  .cap { top: calc(52px + env(safe-area-inset-top)); bottom: auto; padding: 8px 10px; }
+  .cap { top: auto; bottom: calc(108px + env(safe-area-inset-bottom)); padding: 8px 10px; }
   #capText { font-size: 0.88rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .top .title { font-size: 0.9rem; }
-  .dock { max-height: 42vh; overflow: auto; }
+  #prevBtn, #nextBtn, #settingsBtn { padding: 0 8px; font-size: 0.82rem; }
 }

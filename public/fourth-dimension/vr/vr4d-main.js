@@ -66,6 +66,17 @@ const narrator = createNarrator($("narr"), "fourth-dimension/", {
   onEnded: () => audio.duck(false),
   onWord: () => paintWords(),
 });
+const rateControl = $("narr").querySelector(".narr-rate");
+if (rateControl) {
+  const speedName = rateControl.querySelector(".sr-only");
+  if (speedName) speedName.classList.remove("sr-only");
+  $("rateSlot").appendChild(rateControl);
+}
+$("settingsBtn").addEventListener("click", () => {
+  const sheet = $("settings");
+  sheet.hidden = !sheet.hidden;
+  $("settingsBtn").setAttribute("aria-expanded", String(!sheet.hidden));
+});
 
 function resize() {
   const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
@@ -237,18 +248,24 @@ function go(dir) {
 }
 
 function renderTools() {
-  const host = $("tools");
-  host.replaceChildren();
+  const actions = $("actions");
+  const settings = $("settingsBody");
+  const sheetOpen = !$("settings").hidden;
+  actions.replaceChildren();
+  settings.replaceChildren();
   const s = steps[step];
   const page = s.kind === "page" ? s.page : null;
-  const add = (el) => host.appendChild(el);
-  const btn = (label, fn, pressed) => {
+  const put = (host) => (el) => host.appendChild(el);
+  const makeBtn = (host, label, fn, pressed, aria) => {
     const b = document.createElement("button");
     b.type = "button"; b.textContent = label;
+    if (aria) b.setAttribute("aria-label", aria);
     if (pressed != null) b.setAttribute("aria-pressed", String(pressed));
     b.addEventListener("click", fn);
-    add(b); return b;
+    put(host)(b); return b;
   };
+  const btn = (label, fn, pressed, aria) => makeBtn(actions, label, fn, pressed, aria);
+  const setBtn = (label, fn, pressed) => makeBtn(settings, label, fn, pressed);
   const slider = (label, min, max, step, value, fn) => {
     const lab = document.createElement("label");
     lab.textContent = label;
@@ -256,21 +273,20 @@ function renderTools() {
     inp.type = "range"; inp.min = min; inp.max = max; inp.step = step; inp.value = value;
     inp.setAttribute("aria-label", label);
     inp.addEventListener("input", () => fn(Number(inp.value)));
-    lab.appendChild(inp); add(lab);
+    lab.appendChild(inp); actions.appendChild(lab);
   };
   if (s.kind === "handback") {
-    btn("Next page", () => go(1));
     btn("Open in the book", () => openBook(s.pageId));
   } else if (page) {
     const c = page.control;
     if (c === "bead" || c === "draw") slider("Bead", -1, 1, 0.01, model.bead, (v) => { model.bead = v; });
-    if (c === "draw") btn(model.sealed ? "Sealed" : "Seal guess", () => { model.sealed = true; audio.lock(); renderTools(); });
+    if (c === "draw") btn(model.sealed ? "Sealed" : "Seal", () => { model.sealed = true; audio.lock(); renderTools(); }, null, "Seal the guess");
     if (c === "lift") slider("Lift", 0, 1, 0.01, model.lift, (v) => { model.lift = v; });
-    if (c === "cube" || c === "slice") btn("Corner", () => setCorner());
+    if (c === "cube" || c === "slice") btn("Corner", () => setCorner(), null, "Tip the cube onto a corner");
     if (c === "slice") {
-      slider("Plane", -1, 1, 0.01, model.planeT, (v) => { model.planeT = v; });
-      for (const name of ["tri", "quad", "pent", "hex"]) {
-        btn(name === "quad" ? "four sides" : name === "tri" ? "triangle" : name === "pent" ? "pentagon" : "hexagon", () => { model.tile = name; audio.lock(); }, model.tile === name);
+      slider("Cut", -1, 1, 0.01, model.planeT, (v) => { model.planeT = v; });
+      for (const [name, short, aria] of [["tri", "3", "triangle"], ["quad", "4", "four sides"], ["pent", "5", "pentagon"], ["hex", "6", "hexagon"]]) {
+        btn(short, () => { model.tile = name; audio.lock(); renderTools(); }, model.tile === name, aria);
       }
     }
     if (c === "pull") slider("Pull", 0, 3, 0.01, model.pull[0] + model.pull[1] + model.pull[2], (v) => {
@@ -282,12 +298,12 @@ function renderTools() {
         if (Math.round(v) !== Math.round(model.dial)) audio.detent();
         model.dial = v;
       });
-      btn("Seal guess", () => sealDial());
+      btn("Seal", () => sealDial(), null, "Seal the guess");
     }
     if (c === "cell" || c === "turn") {
-      for (const p of W_PLANES) btn(model.help >= 2 ? p : "Turn " + (W_PLANES.indexOf(p) + 1), () => { model.plane = p; audio.plane(W_PLANES.indexOf(p)); }, model.plane === p);
-      const left = btn("Turn left", () => {});
-      const right = btn("Turn right", () => {});
+      W_PLANES.forEach((p, i) => btn(model.help >= 2 ? p : String(i + 1), () => { model.plane = p; audio.plane(i); }, model.plane === p, model.help >= 2 ? p + " plane" : "Turn " + (i + 1)));
+      const left = btn("Left", () => {}, null, "Turn left");
+      const right = btn("Right", () => {}, null, "Turn right");
       const hold = (b, dir) => {
         const on = () => { holdTurn = dir; };
         const off = () => { if (holdTurn === dir) holdTurn = 0; };
@@ -297,20 +313,19 @@ function renderTools() {
       };
       hold(left, -1); hold(right, 1);
       btn(model.stopped ? "Go" : "Stop", () => { model.stopped = !model.stopped; renderTools(); });
-      if (model.help >= 2) btn(model.tabletop ? "Room size" : "Tabletop size", () => { model.tabletop = !model.tabletop; renderTools(); });
     }
     if (c === "span") {
-      slider("How big (m)", 0.1, 1.6, 0.01, model.guessD || 0.6, (v) => { model.guessD = v; });
-      btn("Lock size", () => { audio.lock(); });
+      slider("Size", 0.1, 1.6, 0.01, model.guessD || 0.6, (v) => { model.guessD = v; });
+      btn("Lock", () => { audio.lock(); }, null, "Lock the guessed size");
     }
     if (c === "bead6") slider("Bead", -1, 1, 0.01, model.bead6, (v) => { model.bead6 = v; });
     if (c === "ticket") {
       btn("Slice", () => { model.ticket.slice = !model.ticket.slice; renderTools(); }, model.ticket.slice);
-      btn("Cube shadow", () => { model.ticket.shadow = !model.ticket.shadow; renderTools(); }, model.ticket.shadow);
-      btn("Tesseract shadow", () => { model.ticket.tess = !model.ticket.tess; renderTools(); }, model.ticket.tess);
+      btn("Cube", () => { model.ticket.shadow = !model.ticket.shadow; renderTools(); }, model.ticket.shadow, "Cube shadow");
+      btn("4D", () => { model.ticket.tess = !model.ticket.tess; renderTools(); }, model.ticket.tess, "Tesseract shadow");
     }
     if (c === "finale") btn("Open in the book", () => openBook("net-cube"));
-    if (c === "cover") btn("Open the book", () => go(1));
+    if (c === "cover") btn("Open", () => go(1), null, "Open the book");
   }
   const helpSel = document.createElement("select");
   helpSel.setAttribute("aria-label", "Help level");
@@ -320,14 +335,16 @@ function renderTools() {
     helpSel.appendChild(o);
   });
   helpSel.addEventListener("change", () => setHelp(+helpSel.value));
-  add(helpSel);
-  if (help < 2) btn("Teacher QR", () => setHelp(2));
-  btn(model.reduced ? "Motion: low" : "Motion: full", () => { model.reduced = !model.reduced; renderTools(); });
-  btn(model.paper ? "Paper captions" : "Dark captions", () => {
+  settings.appendChild(helpSel);
+  if (help < 2) setBtn("Teacher QR", () => setHelp(2));
+  setBtn(model.reduced ? "Motion: low" : "Motion", () => { model.reduced = !model.reduced; renderTools(); }, model.reduced);
+  setBtn(model.paper ? "Paper captions" : "Captions", () => {
     model.paper = !model.paper;
     document.body.classList.toggle("paper-mode", model.paper);
     drawPanel(); renderTools();
   }, model.paper);
+  if (model.scene === "tesseract") setBtn(model.tabletop ? "Room size" : "Tabletop", () => { model.tabletop = !model.tabletop; renderTools(); }, model.tabletop);
+  $("settings").hidden = !sheetOpen;
 }
 
 function setHelp(n) {
@@ -633,5 +650,6 @@ window.__vr4d = {
     const i = steps.findIndex((s) => s.page && s.page.id === id);
     if (i >= 0) { step = i; showStep(true); }
   },
+  corner() { setCorner(); },
   model, steps: () => steps.map((s) => s.page?.id || "card:" + s.scene),
 };

@@ -31,10 +31,17 @@
 </section>
 
 <div class="dock" id="dock">
-  <button id="prevBtn" type="button">Back</button>
-  <div id="narr"></div>
-  <div id="tools"></div>
-  <button id="nextBtn" type="button">Next</button>
+  <div id="actions" class="dock-actions"></div>
+  <div class="dock-bar">
+    <button id="prevBtn" type="button">Back</button>
+    <div id="narr"></div>
+    <button id="settingsBtn" type="button" aria-expanded="false" aria-controls="settings">Settings</button>
+    <button id="nextBtn" type="button">Next</button>
+  </div>
+  <div id="settings" class="settings-sheet" hidden>
+    <div id="rateSlot"></div>
+    <div id="settingsBody"></div>
+  </div>
 </div>
 
 <div id="splash">
