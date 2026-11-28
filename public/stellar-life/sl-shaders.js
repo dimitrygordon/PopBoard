@@ -162,7 +162,7 @@ void main(){
 // round 7: the painted red supergiant (frame 3a). One ShaderMaterial; strokes are dealt, aimed and coloured live (see buildRSG).
 export const rsgVert = /* glsl */`
 attribute vec3 aTan; attribute vec3 aUvK; attribute vec4 aA; attribute vec4 aColor; attribute vec4 aParam;
-uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform float uAlpha; uniform float uTeff; uniform float uExposure;
+uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform float uAlpha; uniform float uTeff; uniform float uExposure; uniform float uRedeal;
 uniform vec3 uCamO; uniform vec4 uCell[12]; uniform vec2 uCellH[12];
 varying vec4 vColor; varying vec4 vUV; varying float vRho;
 ${HASH}
@@ -171,7 +171,7 @@ ${LUT}
 void main(){
   const float TAU = 6.2831853; float side = aA.x, width = aA.y, seed = aA.w, t = aUvK.y, li = aParam.x;
   // deal: a fresh spot every LIFE s, crossfaded. Spots are even over the visible disc (the way frame 3a was painted), so no strokes are wasted on the far side
-  float life = 5.0 + 3.0 * h11(seed * 0.37); float ag = uFlowT / life + h11(seed * 0.71); float cyc = floor(ag), age = fract(ag);
+  float life = mix(5.0 + 3.0 * h11(seed * 0.37), 0.125, uRedeal); float ag = uFlowT / life + h11(seed * 0.71);   /* during the swell, re-deal at 8 fps so nothing stretches */ float cyc = floor(ag), age = fract(ag);
   float fade = smoothstep(0.0, 0.2, age) * smoothstep(1.0, 0.8, age);
   vec3 z = normalize(uCamO); vec3 e1 = normalize(cross(abs(z.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), z)); vec3 e2 = cross(z, e1);
   float rr = 1.02 * sqrt(h11(seed + cyc * 7.13)), an = TAU * h11(seed * 1.31 + cyc * 3.77); vec3 c;

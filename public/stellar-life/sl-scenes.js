@@ -262,7 +262,7 @@ void main(){
     // round 7: our own painted red supergiant (frame 3a): live-dealt strokes over a dark disc, crisp limb, thin ring and an equal-bleed halo
     const rb = buildRSG(15); const rsg = new T.Mesh(rb.geometry(T), new T.ShaderMaterial({ vertexShader: rsgVert, fragmentShader: strokeFrag, defines: { STAR: 1, CLIPR: 1 },
       uniforms: { ...this.uni, uAlpha: { value: 0 }, uTeff: { value: 3400 }, uExposure: { value: 1 }, uLut: { value: this.lut }, uCamO: { value: new T.Vector3(0, 0, 1) },
-        uCell: { value: Array.from({ length: 12 }, () => new T.Vector4(0, 1, 0, 0.4)) }, uCellH: { value: Array.from({ length: 12 }, () => new T.Vector2(0, 1)) } },
+        uCell: { value: Array.from({ length: 12 }, () => new T.Vector4(0, 1, 0, 0.4)) }, uCellH: { value: Array.from({ length: 12 }, () => new T.Vector2(0, 1)) }, uRedeal: { value: 0 } },
       transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide, blending: T.NormalBlending, premultipliedAlpha: true }));
     rsg.frustumCulled = false; rsg.renderOrder = 2; rsg.visible = false;
     const rsgHalo = this.glow([[2.1, 0.3, [255, 160, 96]], [1.55, 0.6, [255, 170, 104]], [1.22, 0.8, [255, 184, 118]], [1.07, 0.7, [255, 196, 136]]], { disc: 1.0, useTeff: false, order: 1 });
@@ -294,9 +294,12 @@ void main(){
         const L = c.lam || 1;   /* label offsets and dots keep their screen size when the framing moves the camera in */
         const row = c.v.row; if (!row) return; const R = Math.pow(10, row.logR), Teff = Math.pow(10, row.logT);
         const lock = c.v.stage && c.v.stage.zoomLock && c.v.refR;   // R2: hold the zoom of its main-sequence size, so it visibly shrinks
-        sc.s = lock ? (levels.find((L) => c.v.refR / L <= 24 && c.v.refR / L >= 2.4) || sc.s) : sc.zoomFor(R, c.fitMax || 16); const r = R / sc.s; body.scale.setScalar(r); sc.radius = r;
-        { /* style B framing: the stage's largest radius fills Leo's share of the frame, so the star visibly grows or shrinks inside a stage */
-          const cls = heroClass(c.v.stage ? c.v.stage.id : ""), hc = HERO[cls]; const Rref = lock ? Math.max(c.v.refR, R) : cls === "ms" ? R : Math.pow(Math.max(c.v.maxR || R, R), 0.6) * Math.pow(R, 0.4);
+        const cls = heroClass(c.v.stage ? c.v.stage.id : ""), Rmax = c.v.maxR || R, wide = cls === "super" && !lock;   /* H2/V2: one zoom for the stage's largest radius, so the star swells in a steady frame */
+        sc.s = lock ? (levels.find((L) => c.v.refR / L <= 24 && c.v.refR / L >= 2.4) || sc.s) : sc.zoomFor(wide ? Rmax : R, c.fitMax || 16);
+        let Rshow = R; if (wide && Rmax > 2) { const l0 = Math.log10(Rmax) - 1.6, l1 = Math.log10(Rmax) - 0.15, l = Math.log10(Math.max(R, 1.01));
+          if (l > l0 && l < l1) { const u = (l - l0) / (l1 - l0), e = 1 - (1 - u) * (1 - u); Rshow = Math.pow(10, l0 + (l1 - l0) * e); } }   /* ease-out swell in log radius, so the last part of the growth is slower */
+        const r = Rshow / sc.s; body.scale.setScalar(r); sc.radius = wide ? Rmax / sc.s : r; sc.barMax = wide ? (Rmax / sc.s) * 0.8 : undefined;
+        { const hc = HERO[cls]; const Rref = lock ? Math.max(c.v.refR, R) : cls === "ms" ? R : wide ? Rmax : Math.pow(Math.max(Rmax, R), 0.6) * Math.pow(R, 0.4);
           sc.fitF = c.fitMax ? null : { r: Rref / sc.s, frac: hc[0], pfrac: hc[1], cover: true, up: Rref / sc.s * 1.15, pover: cls === "super" ? 1.25 : 1.12 }; }
         for (const m of [ms, mw]) { m.material.uniforms.uTeff.value = Teff; m.material.uniforms.uExposure.value = 1.0; }
         const giant = clamp((row.logR - 0.9) / 1.0, 0, 1); const crisp = 1 - smooth(0.0, 0.5, giant);
@@ -307,12 +310,16 @@ void main(){
         halo.material.uniforms.uExposure.value = 1.08; tight.material.uniforms.uExposure.value = 1.08;
         halo.visible = true; tight.visible = false;   // stars keep the equal-bleed glow; only the remnants get tight glows
         giantGlow.visible = giant > 0.05; giantGlow.material.uniforms.uAlpha.value = 0.9 * smooth(0.2, 1, giant);
-        { /* round 7: cool giants switch to the live painted supergiant (frame 3a); the stroke star and its glows fade out */
-          const on = smooth(0.45, 0.75, giant) * smooth(4700, 4200, Teff); sc.rsgOn = on;
+        { /* cool giants switch to the live painted supergiant (frame 3a). On a super stage the mix eases out over the swell (2 to 3 s), with a blue-white, yellow, orange-red colour path, not a pop. */
+          const on = wide ? (() => { const u = smooth(Math.log10(Math.max(Rmax, 2)) - 1.6, Math.log10(Math.max(Rmax, 2)) - 0.15, Math.log10(Math.max(Rshow, 1.01))); return 1 - (1 - u) * (1 - u); })() : smooth(0.45, 0.75, giant) * smooth(4700, 4200, Teff);
+          sc.rsgOn = on; const TeffShow = wide ? (on < 0.35 ? Math.pow(10, Math.log10(22000) * (1 - on / 0.35) + Math.log10(8500) * (on / 0.35))
+            : on < 0.7 ? Math.pow(10, Math.log10(8500) * (1 - (on - 0.35) / 0.35) + Math.log10(4800) * ((on - 0.35) / 0.35))
+            : Math.pow(10, Math.log10(4800) * (1 - (on - 0.7) / 0.3) + Math.log10(Math.max(Teff, 3300)) * ((on - 0.7) / 0.3))) : Teff;
           rsg.visible = rsgHalo.visible = rsgRing.visible = on > 0.001; ms.visible = on < 0.999;
           ms.material.uniforms.uAlpha.value = 1 - on; halo.material.uniforms.uAlpha.value = 1 - on; giantGlow.material.uniforms.uAlpha.value *= 1 - on;
           mw.material.uniforms.uAlpha.value = 1 - 0.7 * on;
-          if (rsg.visible) { const u = rsg.material.uniforms; u.uAlpha.value = on; u.uTeff.value = Teff; rsgHalo.material.uniforms.uTeff.value = Teff; rsgHalo.material.uniforms.uExposure.value = 0.62; u.uExposure.value = 1.1;
+          for (const m of [ms, mw, halo, tight, giantGlow]) m.material.uniforms.uTeff.value = TeffShow;
+          if (rsg.visible) { const u = rsg.material.uniforms; u.uAlpha.value = on; u.uTeff.value = TeffShow; u.uRedeal.value = (wide && on > 0.05 && on < 0.98) ? 1 : 0; rsgHalo.material.uniforms.uTeff.value = TeffShow; rsgHalo.material.uniforms.uExposure.value = 0.62; u.uExposure.value = 1.1;
             rsgHalo.material.uniforms.uAlpha.value = on; rsgRing.material.uniforms.uAlpha.value = on;
             const cells = rsgCells(c.flowT || 0); cells.forEach((ce, i) => { u.uCell.value[i].set(ce.d[0], ce.d[1], ce.d[2], ce.rad); u.uCellH.value[i].set(ce.h, ce.sgn); });
             g.updateMatrix(); body.updateMatrix(); const m = new T.Matrix4().multiplyMatrices(g.matrix, body.matrix).invert(); u.uCamO.value.copy(c.camLocal).applyMatrix4(m).normalize(); } }
