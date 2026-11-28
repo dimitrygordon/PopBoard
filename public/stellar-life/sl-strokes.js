@@ -444,8 +444,8 @@ export function buildProminence(seed = 101, wk = 1) {   // wk widens the strands
   for (const A of PROM_ARCHES) {
     const arch = (u, ph, amp) => { const p = [0, 1, 2].map((k) => A.a[k] + (A.b[k] - A.a[k]) * u); const hgt = A.h * Math.sin(Math.PI * u) * (1 + 0.06 * Math.exp(-(((u - A.kink) / 0.06) ** 2))); p[1] += hgt; p[2] += amp * Math.sin(2 * Math.PI * 2.4 * u + ph); p[0] += amp * 0.5 * Math.cos(2 * Math.PI * 2.4 * u + ph); return p; };
     for (let s = 0; s < A.strands; s++) { const ph = s / A.strands * TAU; const pts = []; for (let k = 0; k <= 24; k++) pts.push(arch(k / 24, ph, A.w * 0.9));
-      const heavy = s === 2 ? 1.6 : 1; core.add(pts, { width: A.w * wk * heavy * (1 + A.thick * 0.5), rgb: jitter(mix(rose, pink, R()), R, 0.01, 0.04, 0.04), alpha: 0.6 + R() * 0.25, bristles: 3, boil: 0.004, seed: S() }); }
-    for (let L = 0; L < 14; L++) { const pts = []; for (let k = 0; k <= 24; k++) pts.push(arch(k / 24, 0, 0)); glow.add(pts, { width: A.w * wk * (3 + L * 1.6), rgb: pale, alpha: 0.004 + 0.016 * (1 - L / 14), bristles: 1, seed: S() }); }
+      const heavy = s === 2 ? 1.6 : 1; core.add(pts, { width: A.w * wk * heavy * (1 + A.thick * 0.5), rgb: jitter(mix(rose, pink, R()), R, 0.01, 0.04, 0.04), alpha: 0.6 + R() * 0.25, kind: KIND.PROM, bristles: 3, boil: 0.004, seed: S() }); }
+    for (let L = 0; L < 14; L++) { const pts = []; for (let k = 0; k <= 24; k++) pts.push(arch(k / 24, 0, 0)); glow.add(pts, { width: A.w * wk * (3 + L * 1.6), rgb: pale, alpha: 0.004 + 0.016 * (1 - L / 14), kind: KIND.PROM, bristles: 1, seed: S() }); }
   }
   return { core, glow };
 }

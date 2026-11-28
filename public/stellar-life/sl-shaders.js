@@ -4,7 +4,7 @@
 // fake bloom sprites, and Tesla's colour rule: overflow is bled equally into R, G and B and renormalised, never clamped per channel.
 // New here: a STAR mode that colours strokes from a temperatureToSRGB lookup at the live Teff (so the hue always comes
 // from Night Sky's function), limb darkening on a stroked sphere, radial wind drift and inward collapse flow.
-const HASH = /* glsl */`
+export const HASH = /* glsl */`
 float h11(float p){ p = fract(p * .1031); p *= p + 33.33; p *= p + p; return fract(p); }
 float h21(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 `;
@@ -25,10 +25,32 @@ const LUT = /* glsl */`
 uniform sampler2D uLut;
 vec3 tlin(float T){ float u = clamp((log(max(T, 1000.0)) / 2.302585 - 3.0) / 3.0, 0.0, 1.0); return dec(texture2D(uLut, vec2(u * (511.0 / 512.0) + 0.5 / 512.0, 0.5)).rgb); }
 `;
+// round 7: evolving granulation (Sun disc and the granulation loupe). Each grid cell owns one convective cell with its own life
+// (LIFE 8 to 10 s, the real 8 to 10 minutes scaled for the demo). A cell is born small at a fresh spot, swells, brightens,
+// splits in two late in life, then shrinks away while its neighbours fill in. Multiplicatively weighted Voronoi (distance / size),
+// so cells grow and fade in place; nothing scrolls. Returns the gap to the nearest lane (0 on a lane) and the cell's brightness.
+export const EVO = /* glsl */`
+vec2 h22(vec2 p){ return vec2(h21(p), h21(p + 17.31)); }
+float evoCells(vec2 g, float t, out float bright){
+  vec2 i0 = floor(g); float d1 = 9.0, d2 = 9.0, split = 9.0; bright = 1.0;
+  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+    vec2 c = i0 + vec2(float(i), float(j)); vec2 h = h22(c); float life = 8.0 + 2.0 * h.y;
+    float ag = t / life + h.x; float cyc = floor(ag), age = fract(ag); vec2 hc = h22(c + cyc * 13.7);
+    vec2 base = c + 0.2 + 0.6 * hc; float w = 0.1 + 0.9 * smoothstep(0.0, 0.22, age) * smoothstep(1.0, 0.78, age);
+    float b = (0.95 + 0.05 * h.y) * mix(1.0, 0.9, age) * (0.9 + 0.1 * smoothstep(0.0, 0.2, age));   /* hot when young, cooler as it ages */
+    float sp = 0.24 * smoothstep(0.5, 0.85, age); float an = 6.2831853 * hc.x; vec2 dv = vec2(cos(an), sin(an)) * sp;
+    /* the two daughters count as one cell against the neighbours; the lane between them opens as they separate */
+    float dA = length(g - base - dv) / w, dB = length(g - base + dv) / w, dd = min(dA, dB);
+    float sg = abs(dA - dB) / (dA + dB + 1e-3) * 1.6 + 1.0 - smoothstep(0.04, 0.2, sp);
+    if (dd < d1) { d2 = d1; d1 = dd; bright = b; split = sg; } else if (dd < d2) d2 = dd;
+  }
+  return min((d2 - d1) / (d1 + d2 + 1e-3) * 1.6, split);   /* scale-free gap: lanes keep one width whatever the cell sizes */
+}
+`;
 export const strokeVert = /* glsl */`
 attribute vec3 aTan; attribute vec3 aUvK; attribute vec4 aA; attribute vec4 aColor; attribute vec4 aParam;
 uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform vec3 uCamLocal; uniform float uCosElev;
-uniform float uAlpha; uniform float uWind; uniform float uWindLen; uniform float uPull; uniform float uLayerA[7]; uniform float uCrisp; uniform float uGrow;
+uniform float uAlpha; uniform float uWind; uniform float uWindLen; uniform float uPull; uniform float uLayerA[7]; uniform float uCrisp; uniform float uGrow; uniform float uRise;
 #ifdef STAR
 uniform float uTeff; uniform float uExposure; uniform vec3 uPeek; uniform float uPeekOn; uniform float uChroma;
 #endif
@@ -38,6 +60,8 @@ ${SRGB}
 #ifdef STAR
 ${LUT}
 #endif
+vec3 promDef(vec3 p){ float y0 = max(p.y, 0.0); p.y = y0 * (0.8 + 0.2 * uRise) + 0.9 * uRise * y0 * y0;
+  float ang = 0.9 * uRise * y0 + 0.05 * sin(uFlowT * 0.45 + y0 * 14.0); float ca = cos(ang), sa = sin(ang); p.xz = vec2(ca * p.x - sa * p.z, sa * p.x + ca * p.z); return p; }
 vec3 rotY(vec3 v, float a){ float c = cos(a), s = sin(a); return vec3(c * v.x + s * v.z, v.y, -s * v.x + c * v.z); }
 void main(){
   float side = aA.x, seed = aA.w; float width = aA.y; float kind = aUvK.z;
@@ -55,6 +79,10 @@ void main(){
   if (orbK) dth = omK * uFlowT;
   if (flatK) { const float LIFE = 6.0; float ag = uFlowT / LIFE + h11(seed * 0.173); float cyc = floor(ag), age = fract(ag);
     dth = omK * age * LIFE + h11(seed + cyc * 7.31) * TAU; fade = smoothstep(0.0, 0.15, age) * smoothstep(1.0, 0.85, age) / 0.87; }
+  // prominence (PROM, local frame: +y radially out, feet on the limb at y = 0): the arc lifts off the limb (the apex rises most,
+  // the feet stay put) and twists a little about the radial axis, more with height; a slow sway runs up the legs. A deformation, not a scale.
+  bool promK = kind > 9.5 && kind < 10.5;
+  if (promK) { vec3 q0 = promDef(p); tn = promDef(p + tn * 0.01) - q0; p = q0; }   // the tangent follows the deformation, so ribbons keep their width
   // jet knots (JETK): each knot rides out along the jet and fades, then a new one is launched at the base
   bool jetK = kind > 7.5 && kind < 8.5, jetS = kind > 8.5 && kind < 9.5;
   if (jetK) { float su = fract(uFlowT * 0.08 + aParam.x); p.y += sign(position.y) * 8.2 * (su - aParam.x); fade = smoothstep(0.0, 0.12, su) * (1.0 - smoothstep(0.65, 1.0, su)); }
@@ -74,6 +102,7 @@ void main(){
   if (kind > 2.5 && kind < 3.5) { al *= mix(1.0, 0.5, nearK); }
   vec4 vp = modelViewMatrix * vec4(p, 1.0);
   float sc = length(modelViewMatrix[0].xyz);
+  if (promK && aParam.z > 1.5) al *= 0.5 + 0.5 * smoothstep(-0.3, 0.9, sin(TAU * (aUvK.y * 3.0 - uFlowT * 0.22) + seed));   // plasma knots flow up one leg and down the other
   if (jetS) al *= 0.6 + 0.4 * smoothstep(0.2, 1.0, sin(TAU * (aUvK.y * 2.5 - uFlowT * 0.35)));   // jet strands: brighter pulses travel outward
 #ifdef GROW
   al *= min(1.0, gr * 3.0);
@@ -89,7 +118,7 @@ void main(){
   lin = mix(lin, dec(uPeek), uPeekOn);
   float mu1 = clamp(mu, 0.0, 1.0); float ld = 1.0 - 0.47 * (1.0 - mu1) - 0.13 * (1.0 - mu1) * (1.0 - mu1);
   vec3 cg = bleed(lin * aColor.r * ld * uExposure);
-  if (uChroma > 0.0) { cg = mix(cg, sunBase(lin) * ldChroma(mu) * (0.95 + (aColor.r - 0.86) * 0.8), uChroma); al *= mix(1.0, 0.4, uChroma); }   /* the Sun: faint painted texture over the granulated disc */
+  if (uChroma > 0.0) { cg = mix(cg, sunBase(lin) * ldChroma(mu) * (0.95 + (aColor.r - 0.86) * 0.8), uChroma); al *= mix(1.0, 0.22, uChroma); }   /* the Sun: faint painted texture over the granulated disc (round 7: lighter so the cells read) */
   col = enc(cg);
   al *= (kind > 3.5 && kind < 4.5) ? smoothstep(-0.7, -0.05, mu) : smoothstep(-0.02, 0.12, mu);   // outflow shells show at the limb
 #endif
@@ -173,21 +202,11 @@ void main(){
 export const glowFrag = /* glsl */`
 precision highp float; varying vec2 vC; varying float vBr;
 uniform vec4 uLay[5]; uniform float uRad[5]; uniform float uMaxR; uniform float uTeff; uniform float uDisc; uniform float uExposure; uniform float uAlpha;
-uniform vec3 uPeek; uniform float uPeekOn; uniform float uUseTeff; uniform float uChroma; uniform float uBoilT; uniform float uBoil;
+uniform vec3 uPeek; uniform float uPeekOn; uniform float uUseTeff; uniform float uChroma; uniform float uBoilT; uniform float uBoil; uniform float uFlowT;
 ${SRGB}
 ${LUT}
 ${HASH}
-// faint granulation on the Sun's disc: 2D Worley cells on the disc, foreshortened toward the limb (radius mapped to arc angle),
-// lanes from F2 - F1; the cell points boil in 8 steps per second like the strokes
-vec2 h22(vec2 p){ return vec2(h21(p), h21(p + 17.31)); }
-float granul(vec2 q, out float cellV){
-  float rho = length(q); vec2 g = rho > 1e-4 ? q / rho * asin(min(rho, 0.9999)) : q; g *= 15.0;
-  float ts = floor(uBoilT * 8.0) / 8.0 * uBoil; vec2 i0 = floor(g); float f1 = 9.0, f2 = 9.0; cellV = 0.0;
-  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) { vec2 c = i0 + vec2(float(i), float(j)); vec2 h = h22(c);
-    vec2 pt = c + 0.5 + 0.38 * sin(6.2831853 * (h + ts * 0.03 * (0.5 + h.yx))); float dd = length(g - pt);
-    if (dd < f1) { f2 = f1; f1 = dd; cellV = h.x; } else if (dd < f2) f2 = dd; }
-  return smoothstep(0.0, 0.16, f2 - f1);
-}
+${EVO}
 void main(){
   float d = length(vC) * uMaxR / (1.0 + 0.03 * vBr); vec3 c = vec3(0.0);
   vec3 tint = mix(tlin(uTeff), dec(uPeek), uPeekOn);
@@ -202,8 +221,10 @@ void main(){
     // grey limb darkening (G coefficients of LOOK-SPEC 3.2) so every disc pixel is temperatureToSRGB(Teff) x a scalar: the hue never moves
     float ld = 1.0 - 0.47 * om - 0.13 * om * om;
     vec3 disc = tint * ld * uExposure;
-    if (uChroma > 0.0) { float cv; float ln = granul(vC * uMaxR / (1.0 + 0.03 * vBr) / uDisc, cv);
-      vec3 sun = sunBase(tint) * ldChroma(mu) * mix(vec3(0.93, 0.89, 0.84), vec3(1.0), ln) * (0.985 + 0.03 * cv);
+    if (uChroma > 0.0) { vec2 q = vC * uMaxR / (1.0 + 0.03 * vBr) / uDisc; float rho = length(q); vec2 g = (rho > 1e-4 ? q / rho * asin(min(rho, 0.9999)) : q) * 15.0;
+      float cb; float gap = evoCells(g, uFlowT, cb); float fw = fwidth(gap); float ln = smoothstep(0.1 - fw, 0.1 + fw, gap);   /* crisp lanes at any size */
+      /* round 7: lanes dark enough to read at viewing size like frame 2 (warm tan, the loupe's lane colour) */
+      vec3 sun = sunBase(tint) * ldChroma(mu) * mix(vec3(0.84, 0.72, 0.6), vec3(1.0), ln) * (0.955 + 0.045 * cb) * mix(0.97, 1.0, smoothstep(0.1, 0.6, gap));
       disc = mix(disc, sun, uChroma); }
     float edge = smoothstep(uDisc, uDisc * 0.985, d);
     c = mix(c, disc + c * 0.15 * (1.0 - uChroma), edge); a = edge;

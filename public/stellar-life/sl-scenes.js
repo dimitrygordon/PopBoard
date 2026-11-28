@@ -4,7 +4,7 @@
 import { buildSky, buildCloud, buildDisk, buildStar, buildShells, buildOnion, ONION, buildNebula, buildRemnant, buildEarth, buildEarth2, buildCity, buildPhotonRing, buildLensedStars, buildProminence, buildFlare, spriteGeometry, lutData, tRGB255, hex2rgb, rng } from "./sl-strokes.js";
 import { about } from "./sl-data.js";
 import { paintGranulation, paintCity, GRAN_KM, CITY_M, CITY_ASPECT } from "./sl-loupes.js";
-import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag, glowVert, glowFrag } from "./sl-shaders.js";
+import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag, glowVert, glowFrag, EVO, HASH } from "./sl-shaders.js";
 
 export const KM = { RSUN: 695700, AU: 1.495978707e8, LY: 9.4607e12, REARTH: 6371 };
 const LABEL_K = 1.9;   // labels read at about 2 to 3 percent of the view height on desktop and in the headset
@@ -23,7 +23,7 @@ export class Scenes {
   }
   mat({ additive = false, star = false, own = {}, crisp = 0, grow = false } = {}) {
     const T = this.T;
-    const u = { ...this.uni, uCrisp: { value: crisp }, uGrow: { value: 1 }, uAlpha: { value: 1 }, uLut: { value: this.lut }, uTeff: { value: 5772 }, uExposure: { value: 1 }, uPeek: { value: new T.Vector3(1, 1, 1) }, uPeekOn: { value: 0 }, uChroma: { value: 0 }, uWind: { value: 0 }, uWindLen: { value: 0.6 }, uPull: { value: 1 }, uLayerA: { value: [1, 1, 1, 1, 1, 1, 1] }, ...own };
+    const u = { ...this.uni, uCrisp: { value: crisp }, uGrow: { value: 1 }, uAlpha: { value: 1 }, uLut: { value: this.lut }, uTeff: { value: 5772 }, uExposure: { value: 1 }, uPeek: { value: new T.Vector3(1, 1, 1) }, uPeekOn: { value: 0 }, uChroma: { value: 0 }, uRise: { value: 1 }, uWind: { value: 0 }, uWindLen: { value: 0.6 }, uPull: { value: 1 }, uLayerA: { value: [1, 1, 1, 1, 1, 1, 1] }, ...own };
     const defines = {}; if (additive) defines.ADDITIVE = 1; if (star) defines.STAR = 1; if (grow) defines.GROW = 1;
     return new T.ShaderMaterial({ vertexShader: strokeVert, fragmentShader: strokeFrag, uniforms: u, defines, transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide,
       ...(additive ? { blending: T.CustomBlending, blendEquation: T.AddEquation, blendSrc: T.OneFactor, blendDst: T.OneFactor, blendSrcAlpha: T.OneFactor, blendDstAlpha: T.OneFactor } : { blending: T.NormalBlending, premultipliedAlpha: true }) });
@@ -96,22 +96,42 @@ export class Scenes {
   /** A close-up inset (style B loupe): a framed plate with its own scale bar and a title chip, joined to the spot it magnifies by two
    * thin dashed lines. Plate width and bar length are exact: update() gets the plate width in scene units from the caller, which
    * derives it from the scene's km per unit and the stated magnification, so "50 times closer" is the real ratio. */
-  loupe({ title, note = "", noteSub = "", note2 = "", aspect = 1, paint, barLabel, barFrac, side = 1 }) {
+  loupe({ title, note = "", noteSub = "", note2 = "", aspect = 1, paint, live = false, barLabel, barFrac, side = 1 }) {
     const T = this.T; const grp = new T.Group();
     /* round 6: the picture is painted at full size (640 px, or 840 px wide for the city) and drawn into a plate styled like the UI panels:
        rounded corners at the panel radius (18 px on a plate about 180 px wide), a frosted navy border and a thin light frame */
-    const pic = document.createElement("canvas"); pic.width = aspect < 1 ? 840 : 640; pic.height = Math.round(pic.width * aspect); paint(pic);
+    const pic = document.createElement("canvas"); pic.width = aspect < 1 ? 840 : 640; pic.height = Math.round(pic.width * aspect); if (!live) paint(pic);   /* live: the picture is drawn by a shader (granulation that evolves) */
     const w = pic.width, h = pic.height, bp = Math.round(w * 0.035), cv = document.createElement("canvas"); cv.width = w + 2 * bp; cv.height = h + 2 * bp;
     const g2 = cv.getContext("2d"), rad = Math.round(cv.width * 0.1), rr = (x, y, ww, hh, r) => { g2.beginPath(); g2.roundRect(x, y, ww, hh, r); };
     const hair = Math.max(2, Math.round(w * 0.004));
     rr(hair / 2, hair / 2, cv.width - hair, cv.height - hair, rad); g2.fillStyle = "rgba(14,18,44,0.80)"; g2.fill(); g2.lineWidth = hair; g2.strokeStyle = "rgba(255,255,255,0.30)"; g2.stroke();
-    g2.save(); rr(bp, bp, w, h, rad - bp); g2.clip(); g2.drawImage(pic, bp, bp);
+    g2.save(); rr(bp, bp, w, h, rad - bp); g2.clip(); if (live) g2.clearRect(bp, bp, w, h); else g2.drawImage(pic, bp, bp);
     /* the scale bar is painted into the picture (barFrac is the bar's share of the picture width), so the inset is one draw call */
     const tk = Math.max(3, w * 0.012), bx = bp + w * 0.08, by = bp + h * 0.83; g2.fillStyle = "#FFFFFF"; g2.fillRect(bx, by - tk / 2, w * barFrac, tk); g2.fillRect(bx - tk / 2, by - tk * 2.5, tk, tk * 5); g2.fillRect(bx + w * barFrac - tk / 2, by - tk * 2.5, tk, tk * 5);
     g2.restore(); rr(bp, bp, w, h, rad - bp); g2.lineWidth = hair; g2.strokeStyle = "rgba(185,195,234,0.75)"; g2.stroke();
     const fx = cv.width / w, fy = cv.height / h;   /* the plate's size over the picture's size */
     const tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; tex.generateMipmaps = true; tex.minFilter = T.LinearMipmapLinearFilter; tex.magFilter = T.LinearFilter; tex.anisotropy = 4;
-    const plate = new T.Mesh(new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false, toneMapped: false })); plate.renderOrder = 37; plate.frustumCulled = false;
+    let pmat; if (!live) pmat = new T.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
+    else { tex.colorSpace = T.NoColorSpace;   /* raw sRGB bytes in, raw sRGB out, like the painted plate */
+      pmat = new T.ShaderMaterial({ uniforms: { uMap: { value: tex }, uFlowT: this.uni.uFlowT, uRect: { value: new T.Vector4(bp, bp, w, h) }, uSize: { value: new T.Vector2(cv.width, cv.height) }, uRad: { value: rad - bp } },
+        transparent: true, depthTest: false, depthWrite: false,
+        vertexShader: "varying vec2 vU; void main(){ vU = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+        fragmentShader: `precision highp float; varying vec2 vU; uniform sampler2D uMap; uniform float uFlowT; uniform vec4 uRect; uniform vec2 uSize; uniform float uRad;
+${HASH}
+${EVO}
+float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
+void main(){
+  vec4 t = texture2D(uMap, vU); vec2 px = vec2(vU.x, 1.0 - vU.y) * uSize;   /* canvas pixels from the top left */
+  vec2 q = px - uRect.xy - uRect.zw * 0.5, hb = uRect.zw * 0.5 - uRad; float sd = length(max(abs(q) - hb, 0.0)) - uRad;   /* rounded picture rect */
+  if (sd > 0.0) { if (t.a < 0.003) discard; gl_FragColor = t; return; }
+  vec2 g = (px - uRect.xy) / uRect.z * 9.0; float cb; float gap = evoCells(g, uFlowT, cb); float fw = fwidth(gap);
+  float lane = 1.0 - smoothstep(0.1 - fw, 0.1 + fw, gap), rim = (1.0 - smoothstep(0.1, 0.3, gap)) * (1.0 - lane), inner = smoothstep(0.1, 0.9, gap);
+  float mo = (vn(g * 3.1) - 0.5) * 0.06 + (vn(g * 7.3 + 3.3) - 0.5) * 0.04;
+  vec3 col = vec3(245.0, 227.0, 214.0) / 255.0 * (0.955 + 0.045 * inner + mo) * cb / 0.95;   /* cells about F5E3D6 */
+  col = mix(col, vec3(236.0, 196.0, 160.0) / 255.0, rim * 0.55); col = mix(col, vec3(191.0, 159.0, 125.0) / 255.0, lane);   /* warm rim, lanes about BF9F7D */
+  col = mix(col, t.rgb, t.a); gl_FragColor = vec4(col, 1.0);
+}` }); }
+    const plate = new T.Mesh(new T.PlaneGeometry(1, 1), pmat); plate.renderOrder = 37; plate.frustumCulled = false;
     const lines = new T.LineSegments(new T.BufferGeometry().setFromPoints([new T.Vector3(), new T.Vector3(1, 0, 0), new T.Vector3(), new T.Vector3(1, 0, 0)]), new T.LineDashedMaterial({ color: 0xE6E9F8, transparent: true, opacity: 0.8, dashSize: 1, gapSize: 1, depthTest: false, depthWrite: false })); lines.renderOrder = 35; lines.frustumCulled = false;
     const chip = this.label(title, { size: 1.0, color: "#FFFFFF", align: "left" }), nt = note ? this.label(note, { sub: noteSub, size: 0.9, plate: false, align: "left" }) : null;
     const nt2 = note2 ? this.label(note2, { size: 0.8, color: "#C3C9E6", plate: false, align: "left" }) : null; const bl = this.label(barLabel, { size: 0.8 }); bl.userData.minPx = 14; chip.userData.minPx = 20;
@@ -246,11 +266,11 @@ export class Scenes {
     const orbits = {}; for (const [n, [a, ph]] of Object.entries(ORB)) { const o = this.dashedRing(1, { color: 0xC3C9E6, opacity: 0.75 }); const co = this.callout(n, { size: 1.3, side: Math.cos(ph * Math.PI / 180) >= 0 ? 1 : -1 }); g.add(o, co.grp); orbits[n] = { o, co, a, ph }; }
     // Sun activity on S1, placed to match Angelo's v5 layouts (glow strokes additive; the arcade grows by birth order)
     const prom = buildProminence(101, 2.6), fl = buildFlare(111);
-    const promG = new T.Group(); promG.add(this.mesh(prom.glow, { additive: true }, 5), this.mesh(prom.core, {}, 6)); g.add(promG);
+    const promG = new T.Group(); const promM = [this.mesh(prom.glow, { additive: true }, 5), this.mesh(prom.core, {}, 6)]; promG.add(...promM); g.add(promG);
     const flG = new T.Group(); const flCore = this.mesh(fl.core, { grow: true }, 6), flGlow = this.mesh(fl.glow, { additive: true, grow: true }, 5); flG.add(flGlow, flCore); g.add(flG);
     const coP = this.callout("Prominence", { sub: "gas held up by magnetic fields", size: 1.3, side: -1 }), coL = this.callout("Limb darkening", { sub: "cooler, dimmer edge", size: 1.3, side: 1 }); g.add(coP.grp, coL.grp);
     // Leo frame 2: a granulation close-up, 50 times closer than the Sun's disc, on the main-sequence stage of the 1 Sun path (not on phone)
-    const lg = this.loupe({ title: "Close-up, 50 times closer", note: "Granulation", noteSub: "hot gas rising in cells", note2: "contrast boosted for visibility", aspect: 1, paint: (cv) => paintGranulation(cv), barLabel: "5,000 km", barFrac: 5000 / GRAN_KM, side: 1 }); g.add(lg.grp); lg.grp.visible = false;
+    const lg = this.loupe({ title: "Close-up, 50 times closer", note: "Granulation", noteSub: "hot gas rising in cells", note2: "contrast boosted for visibility", aspect: 1, paint: (cv) => paintGranulation(cv), live: true, barLabel: "5,000 km", barFrac: 5000 / GRAN_KM, side: 1 }); g.add(lg.grp); lg.grp.visible = false;
     const levels = [0.001, 0.01, 0.1, 1, 10, 100, 1000];
     const HERO = { ms: [321 / 1080, 321 * 390 / 760 / 844], giant: [328 / 1080, 328 * 390 / 920 / 844], super: [417 / 1080, 417 * 390 / 900 / 844] };
     const heroClass = (id) => (/^(S2|S4|S5|T2|T4|T5)$/.test(id) ? "giant" : /^(H2|V2)$/.test(id) ? "super" : "ms");
@@ -302,7 +322,7 @@ export class Scenes {
         const s1 = st.id === "S1"; promG.visible = flG.visible = coP.grp.visible = coL.grp.visible = s1;
         { const on = s1 && c.st.mass === "1" && !c.phone; const kpu = sc.s * KM.RSUN, MAG = 50, W = GRAN_KM * MAG / kpu;
           lg.update(q, new T.Vector3().addScaledVector(rt, -r * 1.58).addScaledVector(up, r * 0.34), W, new T.Vector3().addScaledVector(rt, -r * 0.62).addScaledVector(up, r * 0.62), on); }
-        if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.99)); { const rise = 0.5 + 0.5 * smooth(0.0, 0.75, c.v.t); promG.scale.set(r * 1.5, r * 1.5 * rise, r * 1.5 * (0.85 + 0.15 * rise)); }   /* the prominence rises off the limb through the stage */
+        if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.99)); promG.scale.setScalar(r * 1.5); { const rise = smooth(0.0, 0.8, c.v.t); for (const m of promM) m.material.uniforms.uRise.value = rise; }   /* the arc lifts and twists off the limb through the stage (a deformation in strokeVert) */
           const fd = new T.Vector3(0.52, -0.42, 0.74).normalize(); flG.quaternion.copy(basis(q, fd, new T.Vector3(0, 0, 1))); flG.position.copy(fd.clone().applyQuaternion(q).multiplyScalar(r)); flG.scale.setScalar(r);
           const gr = smooth(0.05, 0.9, c.v.t); flCore.material.uniforms.uGrow.value = gr; flGlow.material.uniforms.uGrow.value = gr;
           const ap = new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 1.2); coP.place(ap, -Math.max(2 * L, r * 0.45), capUp(ap.dot(up), Math.max(1.2 * L, r * 0.1)), q, 0.15 * L);
