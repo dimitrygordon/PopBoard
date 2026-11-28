@@ -139,7 +139,9 @@ export function createFlow(S, tracks, opts = {}) {
     if (m === "40" && (seg.type === "gone")) v.fork = tr.end;
     v.age = v.clock ? null : row ? row.age : null;
     v.hideTeff = !!s.hideTeff || seg.type === "gone" || seg.type === "fork";
-    if (s.ref === "msRing") v.refR = Math.pow(10, tr.end.logR);   // R2: its size at the end of its main sequence, same scale
+    if (s.ref === "msRing") v.refR = Math.pow(10, tr.end.logR);
+    // the stage's largest radius (Suns), for the camera framing: the star fills Leo's share of the frame at its biggest
+    if (row && (seg.type === "mist" || seg.type === "mist+wd" || seg.type === "predicted")) { const key = m + ":" + st.si; if (st._maxRKey !== key) { let mx = 0; for (let i = 0; i <= 48; i++) { const q = seg.type === "predicted" ? predictedAt(tr, i / 48) : atEEP(tr, r[0] + (r[1] - r[0]) * i / 48); if (q) mx = Math.max(mx, Math.pow(10, q.logR)); } st._maxRKey = key; st._maxR = mx; } v.maxR = st._maxR; }   // R2: its size at the end of its main sequence, same scale
     v.hideDotNote = hideDot ? "Its track starts on the main sequence. It is still wrapped in its cloud." : "";
     return v;
   };

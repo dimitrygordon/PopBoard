@@ -189,7 +189,7 @@ export class Scenes {
         const ca = Math.cos(a), sa = Math.sin(a), x = cc[3 * i] * ca + cc[3 * i + 2] * sa, z = -cc[3 * i] * sa + cc[3 * i + 2] * ca, y = cc[3 * i + 1]; const dx = x - camLocal.x, dy = y - camLocal.y, dz = z - camLocal.z; keys[i] = dx * dx + dy * dy + dz * dz; }
       order.sort((a, b) => keys[b] - keys[a]); for (let k = 0; k < nS; k++) { const s = order[k]; idxArr.set(baseIdx.subarray(s * per, s * per + per), k * per); } idxAttr.needsUpdate = true;
     };
-    const sc = { root: g, kind: "disk", centered: false, kmPerUnit: () => KM.AU, camDist: 36, radius: 19, barMax: 6, barAt: [4, -13], strokes: D.disk.n + D.add.n + (massive ? D.wrap.n : 0), meshes: 4 + (sp ? 1 : 0) + (mw ? 1 : 0), bodies: D.bodies,
+    const sc = { root: g, kind: "disk", centered: false, kmPerUnit: () => KM.AU, camDist: 36, radius: 19, fit: () => ({ r: 16, up: 9, down: 9, frac: 16 * 32 / 1080, pfrac: 16 * 32 * 390 / 800 / 844, wide: true, cover: true, ar: 0.5 }), barMax: 6, barAt: [4, -13], strokes: D.disk.n + D.add.n + (massive ? D.wrap.n : 0), meshes: 4 + (sp ? 1 : 0) + (mw ? 1 : 0), bodies: D.bodies,
       chips: planets ? ["Planets drawn far larger than real"] : [],
       update: (c) => {
         const id = c.v.stage ? c.v.stage.id : ""; const t = c.v.t; const row = c.v.row; const Teff = row ? Math.pow(10, row.logT) : 4410;
@@ -239,15 +239,21 @@ export class Scenes {
     // Leo frame 2: a granulation close-up, 50 times closer than the Sun's disc, on the main-sequence stage of the 1 Sun path (not on phone)
     const lg = this.loupe({ title: "Close-up, 50 times closer", note: "Granulation", noteSub: "hot gas rising in cells", note2: "contrast boosted for visibility", aspect: 1, paint: (cv) => paintGranulation(cv), barLabel: "5,000 km", barFrac: 5000 / GRAN_KM, side: 1 }); g.add(lg.grp); lg.grp.visible = false;
     const levels = [0.001, 0.01, 0.1, 1, 10, 100, 1000];
+    const HERO = { ms: [321 / 1080, 321 * 390 / 760 / 844], giant: [328 / 1080, 328 * 390 / 920 / 844], super: [417 / 1080, 417 * 390 / 900 / 844] };
+    const heroClass = (id) => (/^(S2|S4|S5|T2|T4|T5)$/.test(id) ? "giant" : /^(H2|V2)$/.test(id) ? "super" : "ms");
     const basis = (q, dirCam, zCam) => { const Y = dirCam.clone().applyQuaternion(q).normalize(), Z = zCam.clone().applyQuaternion(q).normalize(); const X = new T.Vector3().crossVectors(Y, Z).normalize(); Z.crossVectors(X, Y); return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(X, Y, Z)); };
     const sc = { root: g, kind: "star", s: 1, camDist: 44, radius: 10, strokes: sb.n + wb.n + prom.core.n + prom.glow.n + fl.core.n + fl.glow.n, meshes: 9, body, ms, halo,
-      kmPerUnit: () => sc.s * KM.RSUN,
+      kmPerUnit: () => sc.s * KM.RSUN, fitF: null, fit: () => sc.fitF, lamRef: true,
       zoomFor(R, hi = 24) { const lo = hi / 10; let s = sc.s; if (R / s > hi || R / s < lo) { s = levels.find((L) => R / L <= hi && R / L >= lo) || levels.reduce((a, b) => (Math.abs(Math.log10(R / b / 8)) < Math.abs(Math.log10(R / a / 8)) ? b : a)); } return s; },
       reset(R) { sc.s = levels.find((L) => R / L <= 16 && R / L >= 1.6) || 1; },
       update: (c) => {
+        const L = c.lam || 1;   /* label offsets and dots keep their screen size when the framing moves the camera in */
         const row = c.v.row; if (!row) return; const R = Math.pow(10, row.logR), Teff = Math.pow(10, row.logT);
         const lock = c.v.stage && c.v.stage.zoomLock && c.v.refR;   // R2: hold the zoom of its main-sequence size, so it visibly shrinks
         sc.s = lock ? (levels.find((L) => c.v.refR / L <= 24 && c.v.refR / L >= 2.4) || sc.s) : sc.zoomFor(R, c.fitMax || 16); const r = R / sc.s; body.scale.setScalar(r); sc.radius = r;
+        { /* style B framing: the stage's largest radius fills Leo's share of the frame, so the star visibly grows or shrinks inside a stage */
+          const cls = heroClass(c.v.stage ? c.v.stage.id : ""), hc = HERO[cls]; const Rref = lock ? Math.max(c.v.refR, R) : cls === "ms" ? R : Math.pow(Math.max(c.v.maxR || R, R), 0.6) * Math.pow(R, 0.4);
+          sc.fitF = c.fitMax ? null : { r: Rref / sc.s, frac: hc[0], pfrac: hc[1], cover: true, up: Rref / sc.s * 1.15, pover: cls === "super" ? 1.25 : 1.12 }; }
         for (const m of [ms, mw]) { m.material.uniforms.uTeff.value = Teff; m.material.uniforms.uExposure.value = 1.0; }
         const giant = clamp((row.logR - 0.9) / 1.0, 0, 1); const crisp = 1 - smooth(0.0, 0.5, giant);
         ms.material.uniforms.uCrisp.value = crisp; ms.material.uniforms.uMixG.value = giant; ms.scale.setScalar(1 - 0.045 * crisp);   // compact stars: strokes sit inside the crisp disc   // giant-cell look switches in smoothly as the star swells
@@ -264,19 +270,19 @@ export class Scenes {
         // the Sun-size reference ring (R1) and the main-sequence ring (R2), at the same scale as the star
         const st = c.v.stage || {}; ref.visible = coRef.grp.visible = st.ref === "sunRing" || (st.ref === "msRing" && !!c.v.refR);
         if (ref.visible) { const rr = (st.ref === "msRing" ? c.v.refR : 1) / sc.s; coRef.set(st.ref === "msRing" ? "Its size at the end of its main sequence" : "The Sun's size"); ref.scale.setScalar(rr); ref.quaternion.copy(q); ref.rotateX(Math.PI / 2);
-          coRef.place(new T.Vector3().addScaledVector(rt, rr * 0.707).addScaledVector(up, -rr * 0.707), Math.max(2, rr * 0.3), -Math.max(1.5, rr * 0.25), q, 0.18); }
+          coRef.place(new T.Vector3().addScaledVector(rt, rr * 0.707).addScaledVector(up, -rr * 0.707), Math.max(2 * L, rr * 0.3), -Math.max(1.5 * L, rr * 0.25), q, 0.18 * L); }
         const names = st.orbits || [];
         for (const [n, ob] of Object.entries(orbits)) {
           const on = names.includes(n); ob.o.visible = ob.co.grp.visible = on; if (!on) continue;
           const rr = ob.a * 215.032 / sc.s; ob.o.scale.setScalar(rr); ob.o.rotation.set(0.22, 0, 0); ob.o.material.opacity = rr < r ? 0.45 : 0.8;
           const tx = orbitText(st.id, n); ob.co.set(tx[0], tx[1]);
           const ph = ob.ph * Math.PI / 180; const p = new T.Vector3(Math.cos(ph) * rr, 0, -Math.sin(ph) * rr).applyAxisAngle(new T.Vector3(1, 0, 0), 0.22);
-          const sd = ob.co.side; ob.co.place(p, sd * Math.max(2.5, r * 0.25), capUp(p.y, Math.max(2, r * 0.3)), q, 0.18);
+          const sd = ob.co.side; ob.co.place(p, sd * Math.max(2.5 * L, r * 0.25), capUp(p.y, Math.max(2 * L, r * 0.3)), q, 0.18 * L);
         }
         // the star's own label hangs off its upper-left limb, kept inside the view (never clipped at the top)
         coT.set(c.v.type, c.help >= 1 && !c.v.hideTeff ? `${Math.round(Teff).toLocaleString("en-US")} K` : "");
         const aT = new T.Vector3().addScaledVector(rt, -r * 0.64).addScaledVector(up, r * 0.77); coT.grp.visible = !!c.v.type && !names.length && st.id !== "S1";
-        coT.place(aT, -Math.max(2, r * 0.22), capUp(aT.dot(up), Math.max(1.6, r * 0.2)), q, 0.16);
+        coT.place(aT, -Math.max(2 * L, r * 0.22), capUp(aT.dot(up), Math.max(1.6 * L, r * 0.2)), q, 0.16 * L);
         // S1: prominence on the upper-right limb, a flare arcade on the disc toward the lower right, limb darkening note
         const s1 = st.id === "S1"; promG.visible = flG.visible = coP.grp.visible = coL.grp.visible = s1;
         { const on = s1 && c.st.mass === "1" && !c.phone; const kpu = sc.s * KM.RSUN, MAG = 50, W = GRAN_KM * MAG / kpu;
@@ -284,8 +290,8 @@ export class Scenes {
         if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.99)); promG.scale.setScalar(r * 1.5);
           const fd = new T.Vector3(0.52, -0.42, 0.74).normalize(); flG.quaternion.copy(basis(q, fd, new T.Vector3(0, 0, 1))); flG.position.copy(fd.clone().applyQuaternion(q).multiplyScalar(r)); flG.scale.setScalar(r);
           const gr = smooth(0.05, 0.9, c.v.t); flCore.material.uniforms.uGrow.value = gr; flGlow.material.uniforms.uGrow.value = gr;
-          const ap = new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 1.2); coP.place(ap, -Math.max(2, r * 0.45), capUp(ap.dot(up), Math.max(1.2, r * 0.1)), q, 0.15);
-          const al = new T.Vector3().addScaledVector(rt, r * 0.83).addScaledVector(up, -r * 0.56); coL.place(al, r * 0.04, -Math.max(1.5, r * 0.36), q, 0.15); }
+          const ap = new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 1.2); coP.place(ap, -Math.max(2 * L, r * 0.45), capUp(ap.dot(up), Math.max(1.2 * L, r * 0.1)), q, 0.15 * L);
+          const al = new T.Vector3().addScaledVector(rt, r * 0.83).addScaledVector(up, -r * 0.56); coL.place(al, r * 0.04, -Math.max(1.5 * L, r * 0.36), q, 0.15 * L); }
       } };
     ms.material.uniforms.uMixG = { value: 0 };
     ms.material.vertexShader = ms.material.vertexShader.replace("uniform float uTeff;", "uniform float uTeff; uniform float uMixG;").replace("lin * aColor.r * ld", "lin * mix(aColor.r, aColor.b, uMixG) * ld").replace("tlin(uTeff + aColor.g * 1000.0 - 500.0)", "tlin(uTeff + (aColor.g * 1000.0 - 500.0) * uMixG)");
@@ -355,7 +361,7 @@ export class Scenes {
     const RW0 = 9.18, RE = 6.371, D = 2.77 * RW0;   // Leo's wd params: 166 px and 115.2 px radii, centres 460 px apart
     const xw = (RW0 - RE - D) / 2, xe = xw + D; const half = (D + RW0 + RE) / 2;
     const sc = { root: g, kind: "wd", body, camDist: 70, radius: Math.max(RW0, RE) * 1.1, strokes: sb.n + eb.n, meshes: 5, chips: [], kmPerUnit: () => 1000,
-      fit: () => ({ r: half, frac: 741 / 2 / 1080 }),
+      fit: () => ({ r: half, up: RW0 * 1.7, down: RE * 1.9, frac: 741 / 2 / 1080, pfrac: 741 / 2 * 390 / 900 / 844, ar: 0.5, cover: true }),
       update: (c) => {
         const row = c.v.cooling || c.v.row; if (!row) return; const Rsun = Math.pow(10, row.logR), Teff = Math.pow(10, row.logT); const Rkm = Rsun * KM.RSUN;
         const r = Rkm / 1000; body.scale.setScalar(r); earth.scale.setScalar(RE); body.position.set(xw, 0, 0); earth.position.set(xe, 0, 0); earth.quaternion.copy(c.camQuatLocal);
@@ -380,7 +386,7 @@ export class Scenes {
     const V = 10000, YR = 3.15576e7, Y0 = 1 / 365.25, Y1 = 250, S_END = 17;   // shell at Y1 drawn at S_END units (Leo: R0 290 px)
     const kEnd = 0.5 * KM.LY; /* half a light-year per unit at the end: the shell then spans about 17 units */ const levels = [0, 1, 2, 3, 4, 5, 6].map((k) => kEnd / Math.pow(10, k));
     const sc = { root: g, kind: "supernova", camDist: 75, radius: 18, strokes: db.n, meshes: 3, k: levels[6], kmPerUnit: () => sc.k,
-      fit: () => ({ r: S_END, frac: 262 / 1080 }),
+      fit: () => ({ r: S_END, frac: 290 / 1080, pfrac: 290 * 390 / 760 / 844, cover: true, pover: 1.25 }),
       update: (c) => {
         const t = c.v.t; const yrs = Math.pow(10, Math.log10(Y0) + (Math.log10(Y1) - Math.log10(Y0)) * t); const rkm = V * YR * yrs;
         sc.k = levels.slice().reverse().find((L) => rkm / L <= S_END * 1.05) || levels[0]; const S = rkm / sc.k; shell.scale.setScalar(S); sc.radius = Math.max(S, 3); shell.quaternion.copy(c.camQuatLocal);
@@ -417,7 +423,7 @@ export class Scenes {
     // Leo frame 3b: the city 80 times closer (a 840 m wide skyline, 200 m bar), joined to the city on the horizon
     const lc = this.loupe({ title: "80 times closer", aspect: CITY_ASPECT, paint: (cv) => paintCity(cv), barLabel: "200 m", barFrac: 200 / CITY_M, side: -1 }); g.add(lc.grp);
     const sc = { root: g, kind: "ns", camDist: 62, radius: 14, barAt: [58, -67], reach: 98, strokes: sb.n + cb.n, meshes: 6, kmPerUnit: () => 1,
-      fit: () => ({ r: 12, frac: 72 / 1080 }),
+      fit: () => ({ r: 12, right: 98, down: 64, up: 20, pdown: 64, frac: 72 / 1080, pfrac: 72 * 390 / 860 / 844, ar: 1 }),
       update: (c) => {
         body.scale.setScalar(12); body.position.set(0, 0, 0); land.quaternion.copy(c.camQuatLocal); land.position.copy(new T.Vector3(0, GY, 0).applyQuaternion(c.camQuatLocal));
         ms.material.uniforms.uTeff.value = 1e6; ms.material.uniforms.uExposure.value = 2.2; halo.material.uniforms.uTeff.value = 1e6; halo.material.uniforms.uExposure.value = 2.0;
@@ -442,7 +448,7 @@ export class Scenes {
     const swapStar = this.glow([[RH * 2.2, 0.25], [RH * 1.2, 0.5], [RH * 0.8, 1.0]], { useTeff: true, order: 4 }); swapStar.material.uniforms.uTeff.value = 30000; g.add(swapStar);
     const coR = this.callout("Bent light ring", { sub: "stars behind are bent too", side: 1 }), coH = this.callout("Horizon of a 10 Sun example", { sub: "about 30 km radius", side: 1 }); g.add(coR.grp, coH.grp);
     const sc = { root: g, kind: "bh", camDist: 125, radius: RS * 1.15, strokes: pr.n + ls.n, meshes: 5, kmPerUnit: () => 2,
-      fit: () => ({ r: RS, frac: 230 / 1080 }),
+      fit: () => ({ r: RS, frac: 230 / 1080, pfrac: 230 * 390 / 860 / 844 }),
       update: (c) => {
         face.quaternion.copy(c.camQuatLocal); const swap = !!c.st.toggles.swap; ring.visible = mp.visible = ml.visible = hor.visible = !swap; swapStar.visible = swap;
         const q = c.camQuatLocal; const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q);

@@ -341,17 +341,52 @@ const xin = new XRInput(THREE, renderer, scene, {
 function hrPointFromRay(r) { panel.ray.set(r.origin, r.dir); const h = panel.ray.intersectObject(panel.mesh, false)[0]; if (!h) return null; const x = h.uv.x * 1024 - 20, y = (1 - h.uv.y) * 1400 - 20; const rect = plotRect(panel.hr.width, panel.hr.height, 2.1); if (x < rect.x || x > rect.x + rect.w || y < rect.y || y > rect.y + rect.h) return null; return fromXY(VIEWS.normal, rect, x, y); }
 function xrPickOrb(r) { let best = null, bd = 1e9; for (const [m, o] of Object.entries(hubOrbs)) { const p = o.grp.getWorldPosition(new THREE.Vector3()); const d = new THREE.Ray(r.origin, r.dir).distanceToPoint(p); if (d < o.R * 1.6 * world.scale.x && d < bd) { bd = d; best = m; } } if (best) act("mass:" + best); }
 
+/** Style B hero framing (round 6): a scene's fit() gives its hero (radius r in world units, optional extents left/right/up/down in
+ * world units, Leo's radius as a share of frame height on desktop (frac) and on the 390 px frame (pfrac), whether it may run behind
+ * the frosted H-R card (cover) or off the left edge (wide)). heroPlace() finds the screen centre and the radius in px; the camera
+ * distance follows from them, so labels and scale bars, which come from km per unit, stay exact. */
+function heroPlace(f) {
+  const w = layout.w, h = layout.h;
+  const ext = (k) => (f[k] != null ? f[k] : f.r) / f.r;
+  if (layout.phone) {   // phone extents are their own (pleft, pright, pup, pdown), since the phone frames drop the insets
+    const pe = (k) => (f[k] != null ? f[k] : f.r) / f.r; const top = layout.free ? layout.free.top : 64, bot = layout.free ? layout.free.bottom : h * 0.5; const T = f.pfrac * h;
+    const R = f.wide ? T : Math.min(T, (w / 2 - 6) / Math.max(pe("pleft"), pe("pright")), ((bot - top) / 2) * (f.pover || 1.12) / ((pe("pup") + pe("pdown")) / 2));
+    return { cx: w / 2 + (pe("pleft") - pe("pright")) * R / 2, cy: (top + bot) / 2 + (pe("pup") - pe("pdown")) * R / 2 * (f.wide ? 0 : 1), R };
+  }
+  const x1 = (layout.panel ? layout.panel.left : w) - 16, x0 = 14, top = 70, bot = h - 10, card = layout.card, T = f.frac * h, ar = f.ar || 1;
+  const box = (cx, cy, R) => cx + ext("right") * R <= x1 && (f.wide || cx - ext("left") * R >= x0) && (f.wide || cy - ext("up") * R >= top) && (f.wide || cy + ext("down") * R <= bot);
+  const clearCard = (cx, cy, R) => { if (!card) return true; const dx = Math.max(card.left - 8 - cx, 0, cx - (card.right + 8)), dy = Math.max(card.top - 8 - cy, 0, cy - (card.bottom + 8)); return Math.hypot(dx / R, dy / (R * ar)) >= 1; };
+  const midFree = ((card ? card.right + 16 : x0) + x1) / 2, midAll = (x0 + x1) / 2, cys = [0.47, 0.44, 0.5, 0.41, 0.38, 0.53, 0.35];
+  const tryAt = (R, cover) => { const cxs = cover ? [Math.min(midAll, x1 - ext("right") * R), Math.min(midFree, x1 - ext("right") * R)] : [Math.min(midFree, x1 - ext("right") * R), x1 - ext("right") * R];
+    for (const cx of cxs) for (const k of cys) { const cy = f.wide ? h * 0.5 : Math.max(top + ext("up") * R, Math.min(bot - ext("down") * R, h * k)); if (box(cx, cy, R) && (cover || clearCard(cx, cy, R))) return { cx, cy, R }; } return null; };
+  for (let R = T; R >= T * 0.95; R -= 2) { const p = tryAt(R, false); if (p) return p; }
+  if (f.cover) for (let R = T; R >= T * 0.6; R -= 2) { const p = tryAt(R, true); if (p) return p; }
+  for (let R = T * 0.9; R >= 20; R -= 2) { const p = tryAt(R, false); if (p) return p; }
+  return { cx: midAll, cy: h * 0.47, R: T * 0.5 };
+}
+let heroRegion = null;
+const bv = new THREE.Vector3(), bo = new THREE.Vector3();
+/** Put the scale bar at a free screen spot: under the hero, right of the H-R card on desktop, just above the sheet on phone. */
+function placeBar(bar) {
+  const R = heroRegion; camera.updateMatrixWorld(); bo.set(0, 0, 0); world.localToWorld(bo); const p0 = bo.clone().project(camera);
+  const ppu = (() => { const e = bo.clone().add(new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion).multiplyScalar(world.scale.x)).project(camera); return Math.abs(e.x - p0.x) / 2 * layout.w; })();
+  const half = bar.units * ppu / 2; let sx, sy;
+  if (layout.phone) { sx = Math.min(layout.w - 16 - half, Math.max(16 + half, R.cx)); sy = (layout.free ? layout.free.bottom : layout.h * 0.5) - 34; }
+  else { const x0 = layout.card ? layout.card.right + 24 + half : 30 + half, x1 = (layout.panel ? layout.panel.left : layout.w) - 24 - half; sx = Math.min(x1, Math.max(x0, R.cx)); sy = Math.min(layout.h * 0.9, R.cy + R.maxR + 36); }
+  bv.set(sx / layout.w * 2 - 1, 1 - sy / layout.h * 2, p0.z).unproject(camera); world.worldToLocal(bv); sbar.position.copy(bv);
+}
 function sceneRegion(sc) {
-  const want = sc && sc.centered !== false && !layout.phone && layout.card && layout.panel && !document.body.classList.contains("sl-has-sheet");
+  const f = sc && sc.fit && !renderer.xr.isPresenting ? sc.fit() : null;
+  const want = sc && !f && sc.centered !== false && !layout.phone && layout.card && layout.panel && !document.body.classList.contains("sl-has-sheet");
   let off = layout.off0 || [0, 0], region = null;
   // phone: the free strip between the top bar and the bottom sheet (the sheet's height follows its content, so read it each frame)
   if (layout.phone) { const pe = $("slPanel"), te = $("slTop"); const pr = pe && !pe.hidden ? pe.getBoundingClientRect() : null; const top = te ? te.getBoundingClientRect().bottom : 0;
     if (pr && pr.height) { const bottom = Math.max(top + layout.h * 0.2, pr.top); layout.free = { top, bottom }; off = [0, layout.h / 2 - (top + bottom) / 2]; if (sc) region = { cx: layout.w / 2, cy: (top + bottom) / 2, maxR: Math.max(50, Math.min(layout.w / 2 - 10, (bottom - top) / 2 - 10)) }; } }
-  if (want) { const x0 = layout.card.right + 16, x1 = layout.panel.left - 16; let cx = (x0 + x1) / 2; const cy = layout.h * 0.47;
-    if (sc.reach && sc.fit) { const f = sc.fit(); const ppu = Math.min(f.frac, Math.max(80, Math.min((x1 - x0) / 2 - 8, layout.h * 0.40)) / layout.h) * layout.h / f.r; cx = Math.min(cx, x1 - sc.reach * ppu - 6); }   /* a scene with an inset to its right sits left of centre so the inset clears the panel */
-    region = { cx, cy, maxR: Math.max(80, Math.min((x1 - x0) / 2 - 8, layout.h * 0.40)) }; off = [layout.w / 2 - cx, layout.h / 2 - cy]; }
+  if (f && !document.body.classList.contains("sl-has-sheet") && (layout.phone ? layout.free : layout.panel)) { const p = heroPlace(f); region = { cx: p.cx, cy: p.cy, maxR: p.R, hero: p, f }; off = [layout.w / 2 - p.cx, layout.h / 2 - p.cy]; }
+  if (want) { const x0 = layout.card.right + 16, x1 = layout.panel.left - 16; const cx = (x0 + x1) / 2; const cy = layout.h * 0.47; region = { cx, cy, maxR: Math.max(80, Math.min((x1 - x0) / 2 - 8, layout.h * 0.40)) }; off = [layout.w / 2 - cx, layout.h / 2 - cy]; }
   if (!sc && !layout.phone && layout.card && layout.panel) off = [off[0], layout.h / 2 - (64 + layout.card.top) / 2];   // hub: the orbs sit above the H-R card
-  const k = off.join(","); if (k !== layout.offKey) { layout.offKey = k; camera.setViewOffset(layout.w, layout.h, off[0], off[1], layout.w, layout.h); camera.updateProjectionMatrix(); }
+  const k = off.map((v) => Math.round(v * 2) / 2).join(","); if (k !== layout.offKey) { layout.offKey = k; camera.setViewOffset(layout.w, layout.h, off[0], off[1], layout.w, layout.h); camera.updateProjectionMatrix(); }
+  heroRegion = region && region.hero ? region : null;
   return region;
 }
 // ---------------- 3D labels: never smaller than 18 pt (24 px) on desktop, 18 px on phone, 56 px in the headset ----------------
@@ -365,8 +400,8 @@ function sizeLabels(cam, xr) {
   const xMax = !xr && !layout.phone && layout.panel ? layout.panel.left - 10 : layout.w - 8, yMin = layout.phone && layout.free ? layout.free.top + 4 : 62, yMax = layout.phone && layout.free ? layout.free.bottom - 4 : layout.h - 8, card = !xr ? layout.card : null;
   scene.traverseVisible((o) => { const d = o.userData; if (!o.isSprite || !d.label || !d.base) return;
     o.getWorldPosition(lp); o.parent.getWorldScale(ps); const dist = Math.max(1e-6, lp.distanceTo(cp));
-    const ppw = vpH / (2 * dist * tanH); const px = d.base[1] * ps.y * LABEL_EM * ppw; const mp = !xr && d.minPx != null ? d.minPx : minPx; const k = px > 0 ? Math.max(1, mp / px) : 1;
-    d.k = k; o.scale.set(d.base[0] * k, d.base[1] * k, 1);
+    const ppw = vpH / (2 * dist * tanH); const lam = xr ? 1 : viewLam; const px = d.base[1] * ps.y * LABEL_EM * ppw * lam; const mp = !xr && d.minPx != null ? d.minPx : minPx; const k = px > 0 ? Math.max(1, mp / px) : 1;
+    d.k = k; o.scale.set(d.base[0] * k * lam, d.base[1] * k * lam, 1);
     if (xr || !d.clamp) return;
     sp2.copy(lp).project(camera); const sx = (sp2.x + 1) / 2 * layout.w, sy = (1 - sp2.y) / 2 * layout.h; if (sp2.z > 1) return;
     const W = o.scale.x * ps.x * ppw, H = o.scale.y * ps.y * ppw, cx = o.center.x;
@@ -378,6 +413,7 @@ function sizeLabels(cam, xr) {
     o.position.add(shift); if (d.line) { d.line.setXYZ(d.lineIdx != null ? d.lineIdx : 1, o.position.x, o.position.y, o.position.z); d.line.needsUpdate = true; } });
   // the scale bar keeps the same margin from the bottom edge in every scene (desktop: 7 percent of the height; phone: just above the sheet)
   if (!xr && sbar.visible) {
+    sbarLab.position.set(0, -(sbarLab.scale.y * (sbarLab.userData.ph || 0.45) * 0.5 + sbarBody.scale.y * 0.5 + sbarLab.scale.y * 0.06), 0);
     const o = sbarLab, d = o.userData; o.getWorldPosition(lp); o.parent.getWorldScale(ps); const dist = Math.max(1e-6, lp.distanceTo(cp)), ppw = vpH / (2 * dist * tanH);
     sp2.copy(lp).project(camera); const sy = (1 - sp2.y) / 2 * layout.h, hh = o.scale.y * ps.y * ppw * (d.ph || 0.45) / 2, bot = sy + hh, yMax = layout.phone && layout.free ? layout.free.bottom - 6 : layout.h * 0.93;
     if (bot > yMax && sp2.z < 1) { const shift = new THREE.Vector3(0, (bot - yMax) / ppw, 0).applyQuaternion(lq); sbar.parent.getWorldQuaternion(wq2).invert(); sbar.parent.getWorldScale(ps); shift.applyQuaternion(wq2).divide(ps); sbar.position.add(shift); }
@@ -387,7 +423,7 @@ const sp2 = new THREE.Vector3(), lq = new THREE.Quaternion(), wq2 = new THREE.Qu
 
 // ---------------- frame loop ----------------
 const tmp = new THREE.Vector3(), camLocal = new THREE.Vector3(), qW = new THREE.Quaternion(), qL = new THREE.Quaternion(), wq = new THREE.Quaternion();
-let prev = 0, clock = 0, flowT = 0, boilT = 0, viewHalfH = 20;
+let prev = 0, clock = 0, flowT = 0, boilT = 0, viewHalfH = 20, viewLam = 1;
 const stats = { frames: 0, acc: 0, fps: 0, ms: 0, cpu: 0, cpuAcc: 0, samples: [] };
 function frame(now) {
   const dt = (prev && !manual) ? Math.min(0.1, (now - prev) / 1000) : (manual ? manualDt : 0); prev = now; clock += dt;
@@ -409,7 +445,8 @@ function frame(now) {
     // style B framing: scenes with a fit (radius in world units and its share of the frame height in Leo's 1080 px frames)
     // are sized to match, centred in the free area right of the H-R card so nothing sits under it (desktop)
     const region = sceneRegion(sc); let dist = (sc ? sc.camDist : 80) * view.zoom * fit;
-    if (sc && sc.fit) { const f = sc.fit(); const tanH = Math.tan(camera.fov * Math.PI / 360); let frac = f.frac; if (region) frac = Math.min(frac, region.maxR * (layout.phone ? 0.62 : 1) / layout.h); /* phone: room for the callouts, as in Leo's 390 px frames */ if (layout.phone && !region) frac = Math.min(frac, 0.42 * layout.w / layout.h); dist = f.r / (2 * tanH * frac) * view.zoom; }
+    if (region && region.hero) { const tanH = Math.tan(camera.fov * Math.PI / 360); dist = region.f.r / (2 * tanH * region.hero.R / layout.h) * view.zoom; }
+    viewLam = sc && sc.lamRef && region && region.hero ? dist / view.zoom / ((sc.camDist || 80) * fit) : 1;
     viewHalfH = dist * Math.tan(camera.fov * Math.PI / 360) * (region ? Math.min(1, 2 * region.maxR / layout.h + 0.1) : 1);
     const cp = Math.cos(view.pitch);
     camera.position.set(Math.sin(view.yaw) * cp, Math.sin(view.pitch), Math.cos(view.yaw) * cp).multiplyScalar(dist); camera.lookAt(0, 0, 0);
@@ -420,7 +457,7 @@ function frame(now) {
   uni.uCamLocal.value.copy(camLocal); uni.uCosElev.value = Math.max(0.25, Math.hypot(camLocal.x, camLocal.z) / (camLocal.length() || 1));
   bg.root.position.copy(camLocal);   // the sky stays at infinity
   const extra = {};
-  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
+  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
   else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); o.l.position.y = layout.phone && !presenting && o.i % 2 ? o.R + 3 : -o.R - 3;  const ph = layout.phone && !presenting; hubTitle.position.y = ph ? 15 : 12; hubNote.position.y = ph ? -15 : -12; }   /* phone: every other key label sits above its orb so the five never overlap */
   hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? "Place your pins" : "Pick a starting mass");
   // scale bar and zoom labels (labelled zoom changes, never a fake scale)
@@ -429,7 +466,8 @@ function frame(now) {
   if (km && lastKm) { const t = zoomText(lastKm, km); if (t) { transient.zoom = t; transient.zoomUntil = clock + 4; uiDirty = true; lastKm = km; } }
   if (km && !lastKm) lastKm = km;
   const bar = km ? scaleBar(km, sc.barMax || (sc.radius || 10) * 0.8) : null; sbar.visible = !!bar && !(sc && (sc.kind === "twopaths"));
-  if (bar) { sbarBody.scale.set(bar.units, Math.max(0.6, (sc.radius || 10) * 0.05), 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy((sc.barAt ? new THREE.Vector3(...sc.barAt, 0) : new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4), 0)).applyQuaternion(qL)); sbarLab.position.set(0, -(sbarLab.scale.y * (sbarLab.userData.ph || 0.45) * 0.5 + Math.max(0.6, (sc.radius || 10) * 0.05) * 0.5 + sbarLab.scale.y * 0.06), 0);   /* the label clears the bar at any label size */ }
+  if (bar) { sbarBody.scale.set(bar.units, Math.max(0.6 * viewLam, (sc.radius || 10) * 0.05), 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy((sc.barAt ? new THREE.Vector3(...sc.barAt, 0) : new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4 * viewLam), 0)).applyQuaternion(qL)); sbarLab.position.set(0, -(sbarLab.scale.y * (sbarLab.userData.ph || 0.45) * 0.5 + Math.max(0.6 * viewLam, (sc.radius || 10) * 0.05) * 0.5 + sbarLab.scale.y * 0.06), 0);   /* the label clears the bar at any label size */ }
+  if (bar && heroRegion && !sc.barAt && !presenting) placeBar(bar);
   if (transient.zoom && clock > transient.zoomUntil) { transient.zoom = null; uiDirty = true; }
   sizeLabels(cam, presenting);
   if (transient.skip && clock > transient.skipUntil) { transient.skip = null; uiDirty = true; }
@@ -485,6 +523,9 @@ window.__stellar = {
   info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, scene: cur ? cur.kind : "hub", strokes: (cur ? cur.strokes : 0) + bg.strokes, sceneStrokes: cur ? cur.strokes : 0, skyStrokes: bg.strokes }),
   frameStats: () => ({ ...stats, samples: stats.samples.length }),
   canvas, renderer, camera, world, get panel() { return panel; },
+  /** CSS px per world unit at the scene origin (for the framing check), and the hero placement used this frame. */
+  pxPerUnit() { sceneRegion(cur); camera.updateMatrixWorld(); const r = canvas.getBoundingClientRect(); const o = new THREE.Vector3(0, 0, 0); world.localToWorld(o); const q = camera.quaternion; const e = o.clone().add(new THREE.Vector3(1, 0, 0).applyQuaternion(q).multiplyScalar(world.scale.x));
+    const a = o.clone().project(camera), b = e.project(camera); return { ppu: Math.hypot((b.x - a.x) / 2 * r.width, (b.y - a.y) / 2 * r.height), x: r.left + (a.x + 1) / 2 * r.width, y: r.top + (1 - a.y) / 2 * r.height }; },
   /** CSS px of the current star body's centre, plus the Teff the scene is drawing (for the hue check). */
   centerOf() {
     sceneRegion(cur); camera.updateMatrixWorld();   // a resize (screenshots fire one) resets the view offset until the next frame
