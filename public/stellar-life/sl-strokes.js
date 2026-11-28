@@ -216,40 +216,7 @@ export function buildStar(seed = 21, counts = { broad: 420, medium: 1150, hi: 52
   return b;
 }
 
-// ---------- round 7: our own painted red supergiant (style B frame 3a, f3a_styleB_params.json) ----------
-// Stroke sizes are the frame's pixels over its 380 px radius. Each stroke only carries its size, layer and jitter: rsgVert deals it
-// to a fresh spot on the camera-facing half every few seconds (crossfaded), aims it along the live convection flow (swirl around
-// the nearest giant cell plus 0.45 rad outward upwelling) and colours it from the live cell heat, so the surface churns and nothing stretches.
-export const RSG = { R: 380, broad: { n: 520, len: [50, 120], w: [34, 70], br: 8, a: [0.55, 0.8] }, medium: { n: 1500, len: [26, 64], w: [12, 26], br: 6, a: [0.6, 0.9] },
-  hot: { n: 700, len: [14, 36], w: [5, 11], br: 4, a: [0.5, 0.85] }, cells: { count: 18, rad: [0.34, 0.82] } };   // 20 over the whole sphere: about 10 to 14 large cells on the visible disc, the biggest about a third of the disk across
-export function buildRSG(seed = 15) {
-  const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
-  ["broad", "medium", "hot"].forEach((name, li) => { const L = RSG[name];
-    for (let i = 0; i < L.n; i++) { const d = randDir(R); const len = lerp(L.len[0], L.len[1], R()) / RSG.R, w = lerp(L.w[0], L.w[1], R()) / RSG.R;
-      b.add([d, d], { width: w, raw: [len, R(), R()], alpha: lerp(L.a[0], L.a[1], R()), bristles: L.br, boil: 0.004, omega: li, seed: S() }); } });
-  return b;
-}
-// the giant cells as a closed-form function of time (so a clip frame is the same however you reach it): each cell lives
-// 24 to 38 s, swells in, slowly drifts, and late in life slides into its neighbour while fading (the two merge), then is reborn elsewhere
-export function rsgCells(t, seed = 15, opt = {}) {
-  const N = opt.count != null ? opt.count : RSG.cells.count, radA = (opt.rad || RSG.cells.rad);
-  const fr = (x) => x - Math.floor(x), hsh = (i, k, c = 0) => fr(Math.sin((i * 12.9898 + k * 78.233 + c * 3.17 + seed) * 43758.5453));
-  // home spots spread evenly over the sphere (Fibonacci), like the frame's minimum separation; each cell is reborn near its home
-  const home = (i) => { const z = 1 - 2 * (i + 0.5) / N, r = Math.sqrt(1 - z * z), a = i * 2.39996 + seed; return [r * Math.cos(a), z, r * Math.sin(a)]; };
-  const near = (i) => { let bj = 0, bd = -2; for (let j = 0; j < N; j++) { if (j === i) continue; const d = home(j).reduce((s2, v, k) => s2 + v * home(i)[k], 0); if (d > bd) { bd = d; bj = j; } } return bj; };
-  const spot = (i, cyc) => { const h0 = home(i); const e1 = norm(cross(Math.abs(h0[1]) < 0.95 ? [0, 1, 0] : [1, 0, 0], h0)), e2 = cross(h0, e1); const an = hsh(i, 5, cyc) * TAU, ra = 0.55 * Math.sqrt(hsh(i, 6, cyc));
-    return norm(h0.map((v, k) => v + ra * (Math.cos(an) * e1[k] + Math.sin(an) * e2[k]))); };
-  const out = []; for (let i = 0; i < N; i++) {
-    const L = 28 + 12 * hsh(i, 1), ag = t / L + hsh(i, 2), cyc = Math.floor(ag), age = ag - cyc;   /* each cell lives 28 to 40 s */
-    let d = spot(i, cyc); const ax = norm(cross(d, spot(i, cyc + 0.5))); const dr = (0.0025 + 0.0025 * hsh(i, 3)) * age * L;   // slower drift along a great circle
-    const cx = cross(ax, d); d = norm(d.map((v, k) => v * Math.cos(dr) + cx[k] * Math.sin(dr)));
-    const j = near(i), Lj = 28 + 12 * hsh(j, 1), dj = spot(j, Math.floor(t / Lj + hsh(j, 2)));
-    const m = 0.5 * Math.max(0, Math.min(1, (age - 0.72) / 0.28)) ** 2; d = norm(d.map((v, k) => v * (1 - m) + dj[k] * m));   // late in life it slides into its neighbour (they merge)
-    const env = Math.min(1, age / 0.20) * Math.min(1, (1 - age) / 0.30); const sm = env * env * (3 - 2 * env);   /* fade in ~6 s, fade out ~9 s: nothing pops */
-    out.push({ d, rad: (radA[0] + (radA[1] - radA[0]) * hsh(i, 4)) * (0.50 + 0.50 * sm), h: (0.55 + 0.45 * hsh(i, 7)) * sm, sgn: hsh(i, 8) < 0.5 ? -1 : 1 }); }
-  while (out.length < 26) out.push({ d: [0, -1, 0], rad: 0.001, h: 0, sgn: 1 });
-  return out;
-}
+// (round 12: the painted red supergiant stroke set and giant-cell field are retired; the baked style B frames replace them, see sl-bake.js)
 
 // wind streaks leaving a star (unit sphere), radial drift in the vertex shader
 export function buildWind(seed = 31, n = 300) {

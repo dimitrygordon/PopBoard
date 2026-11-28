@@ -162,55 +162,6 @@ void main(){
   gl_Position = projectionMatrix * vp;
   vColor = vec4(col, al); vUV = vec4(aUvK.x, aUvK.y, seed, aParam.z);
 }`;
-// round 7: the painted red supergiant (frame 3a). One ShaderMaterial; strokes are dealt, aimed and coloured live (see buildRSG).
-export const rsgVert = /* glsl */`
-attribute vec3 aTan; attribute vec3 aUvK; attribute vec4 aA; attribute vec4 aColor; attribute vec4 aParam;
-uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform float uAlpha; uniform float uTeff; uniform float uExposure; uniform float uRedeal;
-uniform vec3 uCamO; uniform vec4 uCell[26]; uniform vec2 uCellH[26];
-varying vec4 vColor; varying vec4 vUV; varying float vRho;
-${HASH}
-${SRGB}
-${LUT}
-void main(){
-  const float TAU = 6.2831853; float side = aA.x, width = aA.y, seed = aA.w, t = aUvK.y, li = aParam.x;
-  // deal: a fresh spot every LIFE s, crossfaded. Spots are even over the visible disc (the way frame 3a was painted), so no strokes are wasted on the far side
-  float life = mix(5.0 + 3.0 * h11(seed * 0.37), 0.125, uRedeal); float ag = uFlowT / life + h11(seed * 0.71);   /* during the swell, re-deal at 8 fps so nothing stretches */ float cyc = floor(ag), age = fract(ag);
-  float fade = smoothstep(0.0, 0.2, age) * smoothstep(1.0, 0.8, age);
-  vec3 z = normalize(uCamO); vec3 e1 = normalize(cross(abs(z.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), z)); vec3 e2 = cross(z, e1);
-  float rr = 1.02 * sqrt(h11(seed + cyc * 7.13)), an = TAU * h11(seed * 1.31 + cyc * 3.77); vec3 c;
-  if (li > 1.5) {   /* hot strokes spawn inside a live cell's core */
-    vec4 ce = uCell[0]; float bh = -1.0; for (int i = 0; i < 26; i++) { float sc2 = uCellH[i].x * (0.5 + 0.5 * dot(uCell[i].xyz, z)) * h11(seed + cyc * 5.1 + float(i) * 1.7); if (sc2 > bh) { bh = sc2; ce = uCell[i]; } }   /* a hot, visible cell, picked at random */
-    vec3 f1 = normalize(cross(abs(ce.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), ce.xyz)), f2 = cross(ce.xyz, f1);
-    float ra = ce.w * 0.6 * sqrt(h11(seed + cyc * 2.3)); c = normalize(ce.xyz + ra * (cos(an) * f1 + sin(an) * f2));
-  } else { float rq = min(rr, 0.999); c = rq * cos(an) * e1 + rq * sin(an) * e2 + sqrt(1.0 - rq * rq) * z; }
-  // round 9, live convection at the spot: roundish bubbly cells (a weighted Voronoi over the live cell field, so they differ in size and merge and
-  // are reborn in place), dark intergranular lanes where two cells meet, a bright top at each cell's centre. No swirl, no flow: strokes sit at any angle.
-  float best = 99.0, second = 99.0, chh = 0.0;
-  for (int i = 0; i < 26; i++) { vec3 d = uCell[i].xyz; float a = sqrt(2.0 * max(1.0 - dot(d, c), 0.0)); float hh = uCellH[i].x;   /* chord length: same as the angle for near cells, no acos */
-    float wd = a / (uCell[i].w * (0.72 + 0.28 * hh)); if (wd < best) { second = best; best = wd; chh = hh; } else if (wd < second) second = wd; }
-  float gap = (second - best) / (second + best + 1e-3) * 1.6; float lane = smoothstep(0.012, 0.13, gap); float top = exp(-1.5 * best * best);
-  float heat = clamp(chh * (0.22 + 0.78 * top), 0.0, 1.0) * mix(0.12, 1.0, lane);
-  float ang2 = TAU * h11(seed * 2.9 + cyc * 1.7); vec3 g1 = normalize(cross(abs(c.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), c)); vec3 g2 = cross(c, g1);
-  vec3 td = cos(ang2) * g1 + sin(ang2) * g2;
-  float len = aColor.r * 0.55, s = (t - 0.5) * len; width *= 1.45;   /* round dabs, not streaks */
-  vec3 p = normalize(c + td * s); vec3 tn = normalize(td - p * dot(td, p));
-  vec4 vp = modelViewMatrix * vec4(p, 1.0); float sc = length(modelViewMatrix[0].xyz);
-  vec3 nrm = normalize(mat3(modelViewMatrix) * p); float mu = dot(nrm, -normalize(vp.xyz)); float mu1 = clamp(mu, 0.0, 1.0);
-  // colour: temperatureToSRGB(Teff + dT) x brightness, equal bleed. dT: cell heat (frame: +/-500 K) and a cooler limb (-600 K)
-  float jit = aColor.g - 0.5; float dT = 520.0 * (heat - 0.3) + 120.0 + (li > 1.5 ? 40.0 : 0.0) - 400.0 * (1.0 - pow(mu1, 0.8)) + 60.0 * jit;
-  float br = (0.8 + 0.2 * pow(mu1, 0.7)) * (1.0 + 0.1 * mu1 * mu1) * (0.95 + 0.10 * jit) * (0.86 + 0.24 * max(heat, 0.55 * smoothstep(0.5, 0.1, mu1))) * (li < 0.5 ? 0.94 : 1.0);
-  vec3 cg = bleed(tlin(uTeff + dT) * br * uExposure);
-  float al = min(1.0, aColor.a * 1.25) * fade * uAlpha * smoothstep(-0.03, 0.1, mu) * (li > 1.5 ? 1.0 : mix(0.10, 1.0, max(lane, smoothstep(0.5, 0.12, mu1))));   /* thinner paint in the lanes: dark intergranular lanes */
-  vec3 tv = normalize(mat3(modelViewMatrix) * tn); vec3 sd = cross(tv, normalize(vp.xyz)); float sl = length(sd); sd = sl > 1e-4 ? sd / sl : vec3(1.0, 0.0, 0.0);
-  float u = mod(floor(uBoilT * 8.0), 32.0) / 32.0; float A = uBoil * aParam.y;
-  vec4 hs = vec4(h21(vec2(seed, 1.0)), h21(vec2(seed, 2.0)), h21(vec2(seed, 3.0)), h21(vec2(seed, 4.0)));
-  vp.xy += A * vec2(sin(TAU * (u * (1.0 + floor(hs.x * 3.0)) + hs.z)), sin(TAU * (u * (1.0 + floor(hs.y * 3.0)) + hs.w))) * uBoilGain * sc;
-  vp.xyz += sd * side * width * 0.5 * sc;
-  // clean limb: the fragment shader cuts at the disc edge (rho 1 = the glow disc's edge, same projection)
-  vec4 cv = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0); vRho = length(vp.xy / -vp.z - cv.xy / -cv.z) / (sc / -cv.z);
-  gl_Position = projectionMatrix * vp;
-  vColor = vec4(enc(cg), al); vUV = vec4(aUvK.x, aUvK.y, seed, aParam.z);
-}`;
 export const strokeFrag = /* glsl */`
 precision highp float;
 varying vec4 vColor; varying vec4 vUV;
@@ -332,65 +283,44 @@ void main(){
   gl_FragColor = vec4(enc(c) * a, a);
 }`;
 
-// round 10: the painted supergiant is a smooth cell field (frame 3a):  about 10 to 14 large brightness
-// domes, wide blurry amber valleys, a faint large-scale mottle, mild limb darkening, a soft ragged limb.
-// Unlit, equal-bleed, temperatureToSRGB. One disc, no pebble strokes.
-export const rsgLaneFrag = /* glsl */`
+// round 12: the painted red supergiant and red giant are Leo's own style B frames, baked (tools/stellar-life/bake). One camera-facing
+// quad: disc layer A (3 boil variants) plus the soft halo layer B, added in linear light, unlit, equal-bleed, hue pulled onto temperatureToSRGB(Teff).
+export const bakeFrag = /* glsl */`
 precision highp float; varying vec2 vC; varying float vBr;
-uniform vec4 uCell[26]; uniform vec2 uCellH[26]; uniform vec3 uCamO; uniform vec3 uCamX; uniform vec3 uCamY;
-uniform float uMaxR; uniform float uAlpha; uniform float uTeff; uniform float uExposure; uniform float uFlowT; uniform float uSurf;
+uniform sampler2D uTexA0; uniform sampler2D uTexA1; uniform sampler2D uTexA2; uniform sampler2D uTexB;
+uniform float uMaxR; uniform float uAlpha; uniform float uTeff; uniform float uTeffBake; uniform float uTint; uniform float uExposure;
+uniform float uBoilT; uniform float uBoil; uniform float uSlowT; uniform float uExtA; uniform vec3 uPatch[4];
 ${SRGB}
 ${LUT}
-${HASH}
 void main(){
   vec2 q = vC * uMaxR; float rho = length(q);
-  float an0 = atan(vC.y, vC.x);
-  float rg = 0.5 + 0.85 * vn(vec2(an0 * 2.2, 1.8)) + 0.32 * vn(vec2(an0 * 5.2, 4.2));
-  float dEdge = 1.0 + 0.12 * (rg - 0.55);   /* soft ragged lobes, a fuzzier limb */
-  if (rho > 1.14) discard;
-  float mu = sqrt(max(0.0, 1.0 - min(rho * rho, 1.0)));
-  vec3 z = normalize(uCamO); vec3 ex = normalize(uCamX - z * dot(uCamX, z)); vec3 ey = cross(z, ex);
-  vec3 c0 = normalize(q.x * ex + q.y * ey + mu * z);
-  vec3 c = normalize(c0 + 0.07 * vec3(vn(c0.yz * 1.6 + 2.1) - 0.5, vn(c0.zx * 1.6 + 4.3) - 0.5, vn(c0.xy * 1.6 + 6.7) - 0.5));
-  if (uSurf < 0.5) {   /* S2 red giant: the round 9 dark-lane overlay over the painted strokes, not the smooth cell-field disc */
-    if (rho > 0.985) discard;
-    float bestL = 99.0, secondL = 99.0;
-    for (int i = 0; i < 26; i++) { float rad = uCell[i].w; if (rad < 0.02) continue;
-      float a = sqrt(2.0 * max(1.0 - dot(uCell[i].xyz, c0), 0.0)); float wd = a / (rad * (0.72 + 0.28 * uCellH[i].x));
-      if (wd < bestL) { secondL = bestL; bestL = wd; } else if (wd < secondL) secondL = wd; }
-    float gap = (secondL - bestL) / (secondL + bestL + 1e-3) * 1.6; float fw = fwidth(gap);
-    float rag = 0.55 + 0.9 * vn(c0.xy * 19.0 + c0.z * 13.0) * (0.6 + 0.4 * vn(c0.yz * 41.0));
-    float lane = 1.0 - smoothstep(0.0 - fw, 0.30 * rag + fw, gap);
-    lane *= smoothstep(0.985, 0.82, rho);
-    float aL = lane * lane * 0.62 * uAlpha; if (aL < 0.004) discard;
-    vec3 colL = vec3(0.36, 0.17, 0.06);
-    gl_FragColor = vec4(enc(colL) * aL, aL); return;
-  }
-  float best = 99.0, second = 99.0, chh = 0.35, a1 = 0.0, a2 = 1.0;
-  vec3 cwin = c;
-  for (int i = 0; i < 26; i++) {
-    float rad = uCell[i].w; if (rad < 0.02) continue;
-    float a = sqrt(2.0 * max(1.0 - dot(uCell[i].xyz, c), 0.0));
-    float wd = a / (rad * (0.72 + 0.28 * uCellH[i].x));
-    if (wd < best) { second = best; a2 = a1; best = wd; a1 = a; chh = uCellH[i].x; cwin = uCell[i].xyz; }
-    else if (wd < second) { second = wd; a2 = a; }
-  }
-  float dome = mix(0.82, 1.0, exp(-2.2 * best * best));          /* a brightness dome: bright top, darker sides, never a dead floor */
-  float cellR = max(0.5 * (a1 + a2), 0.02);
-  float u = clamp(a1 / cellR, 0.0, 1.0);                         /* 0 at the cell centre, 1 at the Voronoi edge */
-  float valley = smoothstep(0.55, 0.90, u);                      /* wide, blurry valleys that fade into the cells, never a crease */
-  float mot = vn(c0.xy * 1.05 + c0.z * 0.9);
-  vec3 light = normalize(z + 0.45 * ey + 0.30 * ex);
-  vec3 spotP = normalize(cwin + 0.16 * light);
-  float spot = exp(-48.0 * max(1.0 - dot(c, spotP), 0.0)) * (1.0 - valley);  /* a small soft bright spot near the cell top */
-  float ld = 0.50 + 0.50 * pow(mu, 0.7);                         /* about 50% at the limb */
-  float heat = clamp(0.28 + 0.72 * chh, 0.0, 1.0);               /* a mild floor so a dying cell stays ochre, not empty brown */
-  float dT = 180.0 * (heat - 0.22) - 240.0 * valley;             /* honey tops, darker ochre valleys around #8A5A2E */
-  float shape = mix(dome, 0.28, valley);                         /* valley floor about 50 to 60% of a cell-top, near #8A5A2E */
-  float br = 0.98 * shape * ld * (0.97 + 0.06 * mot);
-  br *= 1.0 + 0.28 * spot;
-  vec3 col = bleed(tlin(uTeff + dT) * br * uExposure);
-  float edge = 1.0 - smoothstep(dEdge * 0.80, dEdge, rho);       /* a wide, fuzzy falloff into the halo */
-  float a = edge * uAlpha; if (a < 0.004) discard;
-  gl_FragColor = vec4(enc(col) * a, a);
+  if (rho >= uMaxR) discard;
+  float z = sqrt(max(0.0, 1.0 - min(rho * rho, 1.0)));
+  /* a very slow drift of the painted surface: the sphere turns a few degrees back and forth (period 90 s), most at the centre, none at the limb */
+  float th = 0.09 * sin(6.2831853 * uSlowT / 90.0);
+  vec2 qs = q - th * vec2(z, -0.22 * z) * smoothstep(0.1, 0.6, z);
+  vec2 uvA = qs / (2.0 * uExtA) + 0.5; vec2 uvB = vC * 0.5 + 0.5;
+  /* boil: the three variants cycle at 8 steps a second; each holds for half a step, then crossfades into the next (no pop). Calm lines holds variant 1. */
+  float bt = uBoilT * 8.0; float k = floor(bt); float f = smoothstep(0.5, 1.0, fract(bt)); float i0 = mod(k, 3.0), i1 = mod(k + 1.0, 3.0);
+  float w0 = (1.0 - f) * step(abs(i0 - 0.0), 0.5) + f * step(abs(i1 - 0.0), 0.5);
+  float w1 = (1.0 - f) * step(abs(i0 - 1.0), 0.5) + f * step(abs(i1 - 1.0), 0.5);
+  float w2 = (1.0 - f) * step(abs(i0 - 2.0), 0.5) + f * step(abs(i1 - 2.0), 0.5);
+  if (uBoil < 0.5) { w0 = 1.0; w1 = 0.0; w2 = 0.0; }
+  vec3 a = vec3(0.0);
+  if (w0 > 0.001) a += w0 * dec(texture2D(uTexA0, uvA).rgb);
+  if (w1 > 0.001) a += w1 * dec(texture2D(uTexA1, uvA).rgb);
+  if (w2 > 0.001) a += w2 * dec(texture2D(uTexA2, uvA).rgb);
+  /* slow brightness breathing on four big patches through a soft low-frequency mask, 23 to 38 s each; a scalar, so the hue never moves */
+  float br = 0.0;
+  for (int p = 0; p < 4; p++) { vec2 d = qs - uPatch[p].xy; float g = exp(-dot(d, d) / (2.0 * uPatch[p].z * uPatch[p].z));
+    float per = 23.0 + 5.0 * float(p); br += g * 0.14 * sin(6.2831853 * uSlowT / per + 1.7 * float(p)); }
+  a *= 1.0 + br * smoothstep(1.0, 0.8, rho);
+  float cov = 1.0 - smoothstep(0.9985, 1.0006, rho);                       /* opaque disc inside the limb; outside it the halo and flares only add light */
+  vec3 b = dec(texture2D(uTexB, uvB).rgb) * (1.0 - cov) * mix(1.0, 0.6, uTint);
+  vec3 c = a + b;
+  /* the baked colour follows the stage temperature: same luminance, hue on the blackbody line, blended in as the stage drifts from the baked temperature (V2 at 4,823 K, the swell, 3 Sun giants) */
+  vec3 tl = tlin(uTeff); const vec3 LW = vec3(0.2126, 0.7152, 0.0722); c = mix(c, tl * (dot(c, LW) / max(dot(tl, LW), 0.02)) * 1.32, uTint);   /* same luminance, so patches, gaps and the halo keep their weight; only the hue moves */
+  c = bleed(c * uExposure);
+  float al = cov * uAlpha; if (uAlpha < 0.002) discard;
+  gl_FragColor = vec4(enc(c) * uAlpha, al);
 }`;

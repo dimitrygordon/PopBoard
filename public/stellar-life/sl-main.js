@@ -8,6 +8,7 @@ import { createFlow } from "./sl-flow.js";
 import { drawHR, plotRect, fromXY, VIEWS } from "./sl-hr.js";
 import { Scenes, scaleBar, zoomText, KM } from "./sl-scenes.js";
 import { ONION } from "./sl-strokes.js";
+import { bakedSet, bakedMemoryBytes } from "./sl-bake.js";
 import { uiModel, MASS_TEFF } from "./sl-ui.js";
 import { ZONES, cardComplete, FRAME_WORDS, TICKET, logPos, LOGCLOCK, COMPARE_TEXT } from "./sl-compare.js";
 import { XRPanel } from "./sl-xrpanel.js";
@@ -508,7 +509,7 @@ async function boot() {
 checkXr(); resize(); boot();
 
 // ---------------- test hook (headless checks; no effect on students) ----------------
-window.__stellar = {
+const stellarHook = {
   THREE_REVISION: THREE.REVISION,
   get flow() { return flow; }, get camera() { return camera; }, act, setCalm, view, scenes, uni,
   /** Jump straight to a stage (by id) of a mass at fraction t, answering any predictions with the first choice. */
@@ -525,7 +526,7 @@ window.__stellar = {
   },
   openCard() { if (!flow.st.runs.length) flow.st.runs.push("1"); flow.openCard(); uiDirty = true; }, openTicket() { flow.openTicket(); uiDirty = true; },
   renderAt(tSec, dt = 1 / 60) { manualDt = dt; flowT = tSec; boilT = calm ? boilT : tSec; frame(tSec * 1000); },
-  info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, scene: cur ? cur.kind : "hub", strokes: (cur ? cur.strokes : 0) + bg.strokes, sceneStrokes: cur ? cur.strokes : 0, skyStrokes: bg.strokes }),
+  info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, scene: cur ? cur.kind : "hub", strokes: (cur ? cur.strokes : 0) + bg.strokes, sceneStrokes: cur ? cur.strokes : 0, skyStrokes: bg.strokes, bakedTexBytes: bakedMemoryBytes(), memTextures: renderer.info.memory.textures }),
   frameStats: () => ({ ...stats, samples: stats.samples.length }),
   canvas, renderer, camera, world, get panel() { return panel; },
   /** CSS px per world unit at the scene origin (for the framing check), and the hero placement used this frame. */
@@ -539,3 +540,5 @@ window.__stellar = {
     return { x: r.left + (p.x + 1) / 2 * r.width, y: r.top + (1 - p.y) / 2 * r.height, teff: row ? Math.pow(10, row.logT) : null, radiusPx: cur && cur.radius ? cur.radius : null, scene: cur ? cur.kind : "hub" };
   },
 };
+/* manual (test) mode: the baked star textures are fetched first, so a headless check never samples a texture that has not arrived; live mode loads them one stage early */
+if (manual) Promise.all(["rsg", "rg"].map((k) => bakedSet(THREE, k).promise)).then(() => { window.__stellar = stellarHook; }); else window.__stellar = stellarHook;
