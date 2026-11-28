@@ -364,7 +364,7 @@ export function buildShells(seed = 31, n = 260) {
   const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
   for (let i = 0; i < n; i++) { const d = randDir(R); const r0 = 1.06 + R() * 0.12; const e1 = norm(cross(d, [0.3, 1, 0.2])); const e2 = cross(d, e1); const sw = 0.25 + R() * 0.5, ph = R() * TAU;
     const pts = []; for (let k = 0; k <= 6; k++) { const a = ph + sw * (k / 6 - 0.5); const v = norm([0, 1, 2].map((j) => d[j] + (e1[j] * Math.cos(a) + e2[j] * Math.sin(a)) * 0.35)); pts.push(v.map((x) => x * r0)); }
-    b.add(pts, { width: 0.07 + R() * 0.12, raw: [0.5 + R() * 0.25, 0.5, 0.55 + R() * 0.25], alpha: 0.10 + R() * 0.14, kind: KIND.WIND, bristles: 5, boil: 0.006, omega: R(), seed: S() }); }
+    b.add(pts, { width: 0.07 + R() * 0.12, raw: [0.5 + R() * 0.25, 0.5, 0.55 + R() * 0.25], alpha: 0.16 + R() * 0.2, kind: KIND.WIND, bristles: 5, boil: 0.006, omega: R(), seed: S() }); }
   return b;
 }
 

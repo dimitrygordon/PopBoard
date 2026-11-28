@@ -265,3 +265,9 @@ test("S7 (1 Sun) pauses at 13.8 billion years: Bedard radius 0.0132 Suns (9,180 
   // other masses never hold
   const g = createFlow(S, T); g.pickMass("3"); g.answerHub("white dwarf"); for (let i = 0; i < 3; i++) g.addPin({ logT: 3.8, logL: i }); g.start(); g.enter(g.st.stages.length - 1); assert.equal(g.holdT(), null);
 });
+
+test("zoom labels name billions and trillions (H5 debris at 250 years to the 12 km neutron star)", () => {
+  assert.equal(zoomText(0.5 * 9.4607e12, 1), "Zoomed in about 4.7 trillion times. Watch the scale bar.");
+  assert.equal(zoomText(1, 3e9), "Zoomed out 3 billion times. Watch the scale bar.");
+  assert.equal(zoomText(4e7, 1), "Zoomed in 40 million times. Watch the scale bar.");
+});

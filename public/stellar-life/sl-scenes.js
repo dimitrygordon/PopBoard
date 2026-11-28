@@ -310,7 +310,7 @@ export class Scenes {
     const prog = this.glow([[1.2, 0.5], [0.45, 1.0]], { useTeff: true, order: 3 }); prog.material.uniforms.uTeff.value = 3300; g.add(prog);
     const coS = this.callout("Debris shell", { side: -1 }), coN = this.callout("A neutron star hides at the center", { sub: "too small to see at this scale", side: -1 }); g.add(coS.grp, coN.grp);
     const V = 10000, YR = 3.15576e7, Y0 = 1 / 365.25, Y1 = 250, S_END = 17;   // shell at Y1 drawn at S_END units (Leo: R0 290 px)
-    const kEnd = V * YR * Y1 / S_END; const levels = [0, 1, 2, 3, 4, 5, 6].map((k) => kEnd / Math.pow(10, k));
+    const kEnd = 0.5 * KM.LY; /* half a light-year per unit at the end: the shell then spans about 17 units */ const levels = [0, 1, 2, 3, 4, 5, 6].map((k) => kEnd / Math.pow(10, k));
     const sc = { root: g, kind: "supernova", camDist: 75, radius: 18, strokes: db.n, meshes: 3, k: levels[6], kmPerUnit: () => sc.k,
       fit: () => ({ r: S_END, frac: 290 / 1080 }),
       update: (c) => {
@@ -345,7 +345,7 @@ export class Scenes {
     const rem = this.sprites(wisps, 0); g.add(rem);
     const coN = this.callout("Neutron star", { sub: "about 12 km radius", side: 1 }), coC = this.callout("A city about 20 km wide", { sub: "at the same scale", side: -1 }), coR = this.callout("Supernova remnant", { sub: "far behind, not to scale", side: -1 });
     g.add(coN.grp, coC.grp, coR.grp);
-    const sc = { root: g, kind: "ns", camDist: 62, radius: 14, strokes: sb.n + cb.n, meshes: 6, kmPerUnit: () => 1,
+    const sc = { root: g, kind: "ns", camDist: 62, radius: 14, barAt: [30, -40], strokes: sb.n + cb.n, meshes: 6, kmPerUnit: () => 1,
       fit: () => ({ r: 12, frac: 72 / 1080 }),
       update: (c) => {
         body.scale.setScalar(12); body.position.set(0, 0, 0); land.quaternion.copy(c.camQuatLocal); land.position.copy(new T.Vector3(0, GY, 0).applyQuaternion(c.camQuatLocal));
@@ -465,7 +465,7 @@ export const ZOOM_MIN = 2;
 export function zoomText(oldK, newK) {
   if (!oldK || !newK) return ""; const r = oldK / newK; const f = r > 1 ? r : 1 / r; if (!(f >= ZOOM_MIN - 1e-9)) return "";
   const sig = f < 10 ? 1 : 2; const e = Math.floor(Math.log10(f)); const p = Math.pow(10, e - sig + 1); const n = Math.round(f / p) * p;
-  const s = n >= 1e6 ? `${+(n / 1e6).toPrecision(2)} million` : Math.round(n).toLocaleString("en-US");
-  const ab = Math.abs(f / n - 1) < 0.02 ? "" : "about ";   // exact zoom steps (10, 100, ...) read without "about"
+  const big = [[1e12, "trillion"], [1e9, "billion"], [1e6, "million"]].find(([v]) => n >= v); const s = big ? `${+(n / big[0]).toPrecision(2)} ${big[1]}` : Math.round(n).toLocaleString("en-US");
+  const ab = Math.abs(f / n - 1) < 0.002 ? "" : "about ";   // exact zoom steps (10, 100, ...) read without "about"
   return `${r > 1 ? "Zoomed in" : "Zoomed out"} ${ab}${s} times. Watch the scale bar.`;
 }

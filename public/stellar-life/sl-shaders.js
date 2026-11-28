@@ -72,7 +72,7 @@ void main(){
   lin = mix(lin, dec(uPeek), uPeekOn);
   float mu1 = clamp(mu, 0.0, 1.0); float ld = 1.0 - 0.47 * (1.0 - mu1) - 0.13 * (1.0 - mu1) * (1.0 - mu1);
   col = enc(bleed(lin * aColor.r * ld * uExposure));
-  al *= smoothstep(-0.02, 0.12, mu);
+  al *= (kind > 3.5 && kind < 4.5) ? smoothstep(-0.7, -0.05, mu) : smoothstep(-0.02, 0.12, mu);   // outflow shells show at the limb
 #endif
   vec3 tv = normalize(mat3(modelViewMatrix) * tn);
   vec3 sd = cross(tv, normalize(vp.xyz)); float sl = length(sd); sd = sl > 1e-4 ? sd / sl : vec3(1.0, 0.0, 0.0);
