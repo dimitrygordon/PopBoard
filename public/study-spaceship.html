@@ -54,10 +54,14 @@
   <p class="status" id="status" role="status" aria-live="polite"></p>
   <p class="craft-name" id="craftName"></p>
   <p class="subtitle" id="subtitle"></p>
-  <dl class="facts" id="facts"></dl>
-  <div class="ar-row">
+  <p class="modes" id="modes">3D on this screen, AR in your space, or VR on a Meta Quest.</p>
+  <div class="ar-row" role="group" aria-label="View modes">
+    <span class="mode-chip" aria-current="true">3D</span>
     <button type="button" class="primary" id="arBtn" hidden>View in your space</button>
+    <button type="button" id="vrBtn" hidden>View in VR</button>
   </div>
+  <p class="vr-note" id="vrNote" hidden>VR needs a Meta Quest.</p>
+  <dl class="facts" id="facts"></dl>
   <p class="credit" id="credit"></p>
 </section>
 

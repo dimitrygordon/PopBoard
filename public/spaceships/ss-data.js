@@ -52,3 +52,14 @@ export function matchesQuery(craft, query) {
   const hay = [craft.id, craft.name, craft.subtitle, ...(craft.tags || [])].join(" ").toLowerCase();
   return q.split(/\s+/).every((part) => hay.includes(part));
 }
+
+// Next and previous in VR walk the listed fleet and wrap at the ends.
+export function neighborCraft(fleet, id, delta) {
+  const rows = listedCraft(fleet);
+  const n = rows.length;
+  if (!n) return null;
+  let i = rows.findIndex((c) => c.id === id);
+  if (i < 0) i = 0;
+  const d = Number.isFinite(delta) ? Math.trunc(delta) : 0;
+  return rows[((i + d) % n + n) % n];
+}
