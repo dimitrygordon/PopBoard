@@ -7,6 +7,7 @@
 export const HASH = /* glsl */`
 float h11(float p){ p = fract(p * .1031); p *= p + 33.33; p *= p + p; return fract(p); }
 float h21(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
 `;
 // sRGB transfer, IEC 61966-2-1 (same curve as temperatureToSRGB's encoder)
 const SRGB = /* glsl */`
@@ -18,7 +19,7 @@ vec3 bleed(vec3 c){ float m = max(c.r, max(c.g, c.b)); if (m > 1.0) { float w = 
 // than in red, as the real Sun's does (ECD1B6 at r = 0.95, E5C6A6 in the limb band). Scalar exposure plus per-channel linear
 // factors below 1: never a channel clamp.
 vec3 sunBase(vec3 lin){ return bleed(lin * 2.33) * 0.975; }
-vec3 ldChroma(float mu){ float x = 1.0 - clamp(mu, 0.0, 1.0); float x2 = x * x; return max(vec3(1.0) - vec3(0.283, 0.907, 1.352) * x2 + vec3(0.013, 0.477, 0.767) * x2 * x2, 0.0); }
+vec3 ldChroma(float mu){ float x = 1.0 - clamp(mu, 0.0, 1.0); float x2 = x * x; return max(vec3(1.0) - vec3(0.30, 0.88, 1.28) * x2 + vec3(0.02, 0.36, 0.48) * x2 * x2, 0.0); }   /* warmer-orange limb like frame 2; the centre is unchanged */
 `;
 // temperatureToSRGB lookup: 512 texels over log10(T) = 3.0 to 6.0, stored sRGB encoded (brightest channel 1)
 const LUT = /* glsl */`
@@ -193,10 +194,10 @@ void main(){
   vec4 vp = modelViewMatrix * vec4(p, 1.0); float sc = length(modelViewMatrix[0].xyz);
   vec3 nrm = normalize(mat3(modelViewMatrix) * p); float mu = dot(nrm, -normalize(vp.xyz)); float mu1 = clamp(mu, 0.0, 1.0);
   // colour: temperatureToSRGB(Teff + dT) x brightness, equal bleed. dT: cell heat (frame: +/-500 K) and a cooler limb (-600 K)
-  float jit = aColor.g - 0.5; float dT = 1250.0 * (heat - 0.2) + 200.0 + (li > 1.5 ? 40.0 : 0.0) - 1200.0 * (1.0 - pow(mu1, 0.8)) + 160.0 * jit;
-  float br = (0.36 + 0.6 * pow(mu1, 0.7)) * (1.0 + 0.1 * mu1 * mu1) * (0.88 + 0.24 * jit) * (0.84 + 0.46 * heat) * (li < 0.5 ? 0.93 : 1.0);
+  float jit = aColor.g - 0.5; float dT = 650.0 * (heat - 0.18) + 180.0 + (li > 1.5 ? 30.0 : 0.0) - 800.0 * (1.0 - pow(mu1, 0.8)) + 140.0 * jit;
+  float br = (0.46 + 0.54 * pow(mu1, 0.7)) * (1.0 + 0.1 * mu1 * mu1) * (0.90 + 0.24 * jit) * (0.80 + 0.38 * heat) * (li < 0.5 ? 0.92 : 1.0);
   vec3 cg = bleed(tlin(uTeff + dT) * br * uExposure);
-  float al = min(1.0, aColor.a * 1.25) * fade * uAlpha * smoothstep(-0.03, 0.1, mu) * (li > 1.5 ? 1.0 : 0.5 + 0.5 * smoothstep(0.0, 0.35, heat));   /* thinner paint between cells: dark lanes */
+  float al = min(1.0, aColor.a * 1.25) * fade * uAlpha * smoothstep(-0.03, 0.1, mu) * (li > 1.5 ? 1.0 : 0.40 + 0.60 * smoothstep(0.0, 0.4, heat));   /* thinner paint between cells: dark lanes */
   vec3 tv = normalize(mat3(modelViewMatrix) * tn); vec3 sd = cross(tv, normalize(vp.xyz)); float sl = length(sd); sd = sl > 1e-4 ? sd / sl : vec3(1.0, 0.0, 0.0);
   float u = mod(floor(uBoilT * 8.0), 32.0) / 32.0; float A = uBoil * aParam.y;
   vec4 hs = vec4(h21(vec2(seed, 1.0)), h21(vec2(seed, 2.0)), h21(vec2(seed, 3.0)), h21(vec2(seed, 4.0)));
@@ -214,7 +215,6 @@ varying vec4 vColor; varying vec4 vUV;
 varying float vRho;
 #endif
 ${HASH}
-float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
 void main(){
   float u = vUV.x, v = vUV.y, seed = vUV.z, nb = vUV.w;
   float a = vColor.a; vec3 col = vColor.rgb;
@@ -226,8 +226,13 @@ void main(){
     float s0 = h21(vec2(bi + 3.0, seed)) * 0.12, e0 = 1.0 - h21(vec2(bi + 9.0, seed)) * 0.15;
     float trim = smoothstep(s0, s0 + 0.05, v) * smoothstep(e0, e0 - 0.05, v);
     a *= streak * split * trim;
+#ifdef CLIPR
+    col *= 0.86 + 0.32 * hb;   /* mottled bristle tops, matching frame 3a (not a smooth wash) */
+    a *= mix(0.8, 1.06, hb);
+#else
 #ifndef STAR
     col *= 1.0 + (hb - 0.5) * 0.08;
+#endif
 #endif
   }
   a *= edge;
@@ -294,16 +299,20 @@ void main(){
     float mu = sqrt(max(0.0, 1.0 - (d / uDisc) * (d / uDisc))); float om = 1.0 - mu;
     // grey limb darkening (G coefficients of LOOK-SPEC 3.2) so every disc pixel is temperatureToSRGB(Teff) x a scalar: the hue never moves
     float ld = 1.0 - 0.47 * om - 0.13 * om * om;
-    vec3 disc = tint * ld * uExposure;
+    vec3 disc = (uUseTeff > 0.5 ? tint : dec(uLay[3].rgb) * 0.9) * ld * uExposure;   /* painted RSG: a dimmer warm base so the cell lanes stay dark */
     if (uChroma > 0.0) { vec2 q = vC * uMaxR / (1.0 + 0.03 * vBr) / uDisc; float rho = length(q); vec2 g = (rho > 1e-4 ? q / rho * asin(min(rho, 0.9999)) : q) * 15.0;
       float cb; float gap = evoCells(g, uFlowT, cb); float fw = fwidth(gap); float ln = smoothstep(0.1 - fw, 0.1 + fw, gap);   /* crisp lanes at any size */
       /* round 7: lanes dark enough to read at viewing size like frame 2 (warm tan, the loupe's lane colour) */
-      vec3 sun = sunBase(tint) * ldChroma(mu) * mix(vec3(0.84, 0.72, 0.6), vec3(1.0), ln) * (0.955 + 0.045 * cb) * mix(0.97, 1.0, smoothstep(0.1, 0.6, gap));
+      vec3 sun = sunBase(tint) * ldChroma(mu) * mix(vec3(0.78, 0.64, 0.48), vec3(1.0), ln) * (0.94 + 0.07 * cb) * mix(0.96, 1.0, smoothstep(0.1, 0.6, gap));
       disc = mix(disc, sun, uChroma); }
     float edge = smoothstep(uDisc, uDisc * 0.985, d);
     c = mix(c, disc + c * 0.15 * (1.0 - uChroma), edge); a = edge;
   }
-  if (uRing.w > 0.0) { float x = (d - 1.0) / 0.016; c += dec(uRing.rgb) * uRing.w * exp(-x * x) * (x < 0.0 ? 0.6 : 1.0); }   /* thin limb ring (frame 3a), drawn over the strokes' crisp edge */
+  if (uRing.w > 0.0) {
+    float ang = atan(vC.y, vC.x); float rag = 0.65 + 0.45 * vn(vec2(ang * 4.5, 3.1)) + 0.15 * vn(vec2(ang * 11.0, 7.4));
+    float x = (d - 1.0) / (0.055 + 0.03 * rag);   /* ragged, warm-pink falloff like frame 3a, not a thin CG ring */
+    c += dec(uRing.rgb) * uRing.w * exp(-x * x) * rag * (x < 0.0 ? 0.28 : 1.0);
+  }
   c = bleed(c);
   float m = max(c.r, max(c.g, c.b)); if (m < 1e-4 && a < 0.01) discard;
   a = max(a, clamp(m, 0.0, 1.0)) * uAlpha;

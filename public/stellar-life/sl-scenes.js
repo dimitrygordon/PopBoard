@@ -120,7 +120,6 @@ export class Scenes {
         fragmentShader: `precision highp float; varying vec2 vU; uniform sampler2D uMap; uniform float uFlowT; uniform vec4 uRect; uniform vec2 uSize; uniform float uRad;
 ${HASH}
 ${EVO}
-float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
 void main(){
   vec4 t = texture2D(uMap, vU); vec2 px = vec2(vU.x, 1.0 - vU.y) * uSize;   /* canvas pixels from the top left */
   vec2 q = px - uRect.xy - uRect.zw * 0.5, hb = uRect.zw * 0.5 - uRad; float sd = length(max(abs(q) - hb, 0.0)) - uRad;   /* rounded picture rect */
@@ -265,8 +264,8 @@ void main(){
         uCell: { value: Array.from({ length: 12 }, () => new T.Vector4(0, 1, 0, 0.4)) }, uCellH: { value: Array.from({ length: 12 }, () => new T.Vector2(0, 1)) }, uRedeal: { value: 0 } },
       transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide, blending: T.NormalBlending, premultipliedAlpha: true }));
     rsg.frustumCulled = false; rsg.renderOrder = 2; rsg.visible = false;
-    const rsgHalo = this.glow([[2.1, 0.3, [255, 160, 96]], [1.55, 0.6, [255, 170, 104]], [1.22, 0.8, [255, 184, 118]], [1.07, 0.7, [255, 196, 136]]], { disc: 1.0, useTeff: false, order: 1 });
-    const rsgRing = this.glow([[1.08, 0]], { useTeff: false, order: 7 }); rsgRing.material.uniforms.uRing.value.set(1.0, 0.82, 0.6, 0.5);
+    const rsgHalo = this.glow([[2.35, 0.24, [255, 176, 140]], [1.85, 0.30, [255, 180, 148]], [1.45, 0.22, [255, 186, 152]], [1.08, 0.32, [220, 150, 110]]], { disc: 1.0, useTeff: false, order: 1 });   /* extended warm-pink falloff like 3a, a dimmer disc so the lanes read */
+    const rsgRing = this.glow([[1.08, 0]], { useTeff: false, order: 7 }); rsgRing.material.uniforms.uRing.value.set(1.0, 0.74, 0.58, 0.22);   /* gold-pink, lower peak, ragged in the shader */
     Object.assign(rsgRing.material, { blending: T.CustomBlending, blendEquation: T.AddEquation, blendSrc: T.OneFactor, blendDst: T.OneFactor, blendSrcAlpha: T.OneFactor, blendDstAlpha: T.OneFactor });   /* the ring adds light */
     for (const m of [rsgHalo, rsgRing]) m.material.uniforms.uBreath = { value: 0 };   /* no breathing scale: the disc edge stays on the painted limb */
     body.add(halo, tight, ms, mw, giantGlow, rsgHalo, rsg, rsgRing);
@@ -319,7 +318,7 @@ void main(){
           ms.material.uniforms.uAlpha.value = 1 - on; halo.material.uniforms.uAlpha.value = 1 - on; giantGlow.material.uniforms.uAlpha.value *= 1 - on;
           mw.material.uniforms.uAlpha.value = 1 - 0.7 * on;
           for (const m of [ms, mw, halo, tight, giantGlow]) m.material.uniforms.uTeff.value = TeffShow;
-          if (rsg.visible) { const u = rsg.material.uniforms; u.uAlpha.value = on; u.uTeff.value = TeffShow; u.uRedeal.value = (wide && on > 0.05 && on < 0.98) ? 1 : 0; rsgHalo.material.uniforms.uTeff.value = TeffShow; rsgHalo.material.uniforms.uExposure.value = 0.62; u.uExposure.value = 1.1;
+          if (rsg.visible) { const u = rsg.material.uniforms; u.uAlpha.value = on; u.uTeff.value = TeffShow; u.uRedeal.value = (wide && on > 0.05 && on < 0.98) ? 1 : 0; rsgHalo.material.uniforms.uTeff.value = TeffShow; rsgHalo.material.uniforms.uExposure.value = 0.7; u.uExposure.value = 1.24;
             rsgHalo.material.uniforms.uAlpha.value = on; rsgRing.material.uniforms.uAlpha.value = on;
             const cells = rsgCells(c.flowT || 0); cells.forEach((ce, i) => { u.uCell.value[i].set(ce.d[0], ce.d[1], ce.d[2], ce.rad); u.uCellH.value[i].set(ce.h, ce.sgn); });
             g.updateMatrix(); body.updateMatrix(); const m = new T.Matrix4().multiplyMatrices(g.matrix, body.matrix).invert(); u.uCamO.value.copy(c.camLocal).applyMatrix4(m).normalize(); } }
@@ -350,8 +349,8 @@ void main(){
         { const on = s1 && c.st.mass === "1" && !c.phone; const kpu = sc.s * KM.RSUN, MAG = 50, W = GRAN_KM * MAG / kpu;
           lg.update(q, new T.Vector3().addScaledVector(rt, -r * 1.58).addScaledVector(up, r * 0.34), W, new T.Vector3().addScaledVector(rt, -r * 0.62).addScaledVector(up, r * 0.62), on); }
         if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.99)); promG.scale.setScalar(r * 1.5);
-          { const PERIOD = 10; const ph = ((c.flowT || 0) / PERIOD) % 1; const rise = 0.5 - 0.5 * Math.cos(2 * Math.PI * ph);   /* ping-pong lift: smooth cosine, no snap back */
-            for (const m of promM) m.material.uniforms.uRise.value = 0.22 + 0.78 * rise; }
+          { const PERIOD = 10; const ph = ((c.flowT || 0) / PERIOD + 0.4) % 1; const rise = 0.5 - 0.5 * Math.cos(2 * Math.PI * ph);   /* ping-pong lift: smooth cosine, no snap back; starts high so the stills show the loop */
+            for (const m of promM) m.material.uniforms.uRise.value = 0.22 + 0.50 * rise; }   /* cap the peak so the arc stays in frame */
           const fd = new T.Vector3(0.52, -0.42, 0.74).normalize(); flG.quaternion.copy(basis(q, fd, new T.Vector3(0, 0, 1))); flG.position.copy(fd.clone().applyQuaternion(q).multiplyScalar(r)); flG.scale.setScalar(r);
           const gr = smooth(0.05, 0.9, c.v.t); flCore.material.uniforms.uGrow.value = gr; flGlow.material.uniforms.uGrow.value = gr;
           const ap = new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 1.2); coP.place(ap, -Math.max(2 * L, r * 0.45), capUp(ap.dot(up), Math.max(1.2 * L, r * 0.1)), q, 0.15 * L);
