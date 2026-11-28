@@ -94,12 +94,20 @@ export class Scenes {
    * thin dashed lines. Plate width and bar length are exact: update() gets the plate width in scene units from the caller, which
    * derives it from the scene's km per unit and the stated magnification, so "50 times closer" is the real ratio. */
   loupe({ title, note = "", noteSub = "", note2 = "", aspect = 1, paint, barLabel, barFrac, side = 1 }) {
-    const T = this.T; const grp = new T.Group(); const cv = document.createElement("canvas"); cv.width = aspect < 1 ? 420 : 320; cv.height = Math.round(cv.width * aspect);
-    paint(cv); const g2 = cv.getContext("2d"), w = cv.width, h = cv.height;
-    /* the scale bar and the thin frame are painted into the plate texture (barFrac is the bar's share of the plate width), so the inset is one draw call */
-    const tk = Math.max(2, w * 0.012), bx = w * 0.08, by = h * 0.83; g2.fillStyle = "#FFFFFF"; g2.fillRect(bx, by - tk / 2, w * barFrac, tk); g2.fillRect(bx - tk / 2, by - tk * 2.5, tk, tk * 5); g2.fillRect(bx + w * barFrac - tk / 2, by - tk * 2.5, tk, tk * 5);
-    g2.strokeStyle = "rgba(185,195,234,0.9)"; g2.lineWidth = Math.max(3, w * 0.012); g2.strokeRect(0, 0, w, h);
-    const tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; tex.minFilter = T.LinearFilter; tex.generateMipmaps = false;
+    const T = this.T; const grp = new T.Group();
+    /* round 6: the picture is painted at full size (640 px, or 840 px wide for the city) and drawn into a plate styled like the UI panels:
+       rounded corners at the panel radius (18 px on a plate about 180 px wide), a frosted navy border and a thin light frame */
+    const pic = document.createElement("canvas"); pic.width = aspect < 1 ? 840 : 640; pic.height = Math.round(pic.width * aspect); paint(pic);
+    const w = pic.width, h = pic.height, bp = Math.round(w * 0.035), cv = document.createElement("canvas"); cv.width = w + 2 * bp; cv.height = h + 2 * bp;
+    const g2 = cv.getContext("2d"), rad = Math.round(cv.width * 0.1), rr = (x, y, ww, hh, r) => { g2.beginPath(); g2.roundRect(x, y, ww, hh, r); };
+    const hair = Math.max(2, Math.round(w * 0.004));
+    rr(hair / 2, hair / 2, cv.width - hair, cv.height - hair, rad); g2.fillStyle = "rgba(14,18,44,0.80)"; g2.fill(); g2.lineWidth = hair; g2.strokeStyle = "rgba(255,255,255,0.30)"; g2.stroke();
+    g2.save(); rr(bp, bp, w, h, rad - bp); g2.clip(); g2.drawImage(pic, bp, bp);
+    /* the scale bar is painted into the picture (barFrac is the bar's share of the picture width), so the inset is one draw call */
+    const tk = Math.max(3, w * 0.012), bx = bp + w * 0.08, by = bp + h * 0.83; g2.fillStyle = "#FFFFFF"; g2.fillRect(bx, by - tk / 2, w * barFrac, tk); g2.fillRect(bx - tk / 2, by - tk * 2.5, tk, tk * 5); g2.fillRect(bx + w * barFrac - tk / 2, by - tk * 2.5, tk, tk * 5);
+    g2.restore(); rr(bp, bp, w, h, rad - bp); g2.lineWidth = hair; g2.strokeStyle = "rgba(185,195,234,0.75)"; g2.stroke();
+    const fx = cv.width / w, fy = cv.height / h;   /* the plate's size over the picture's size */
+    const tex = new T.CanvasTexture(cv); tex.colorSpace = T.SRGBColorSpace; tex.generateMipmaps = true; tex.minFilter = T.LinearMipmapLinearFilter; tex.magFilter = T.LinearFilter; tex.anisotropy = 4;
     const plate = new T.Mesh(new T.PlaneGeometry(1, 1), new T.MeshBasicMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false, toneMapped: false })); plate.renderOrder = 37; plate.frustumCulled = false;
     const lines = new T.LineSegments(new T.BufferGeometry().setFromPoints([new T.Vector3(), new T.Vector3(1, 0, 0), new T.Vector3(), new T.Vector3(1, 0, 0)]), new T.LineDashedMaterial({ color: 0xE6E9F8, transparent: true, opacity: 0.8, dashSize: 1, gapSize: 1, depthTest: false, depthWrite: false })); lines.renderOrder = 35; lines.frustumCulled = false;
     const chip = this.label(title, { size: 1.0, color: "#FFFFFF", align: "left" }), nt = note ? this.label(note, { sub: noteSub, size: 0.9, plate: false, align: "left" }) : null;
@@ -111,12 +119,12 @@ export class Scenes {
       /** centre: plate centre; W: plate width in scene units; anchor: the spot it magnifies; show: visibility */
       update(q, centre, W, anchor, show) {
         grp.visible = show; if (!show) return; rt.set(1, 0, 0).applyQuaternion(q); up.set(0, 1, 0).applyQuaternion(q); const H = W * aspect;
-        plate.quaternion.copy(q); plate.position.copy(centre); plate.scale.set(W, H, 1);
+        plate.quaternion.copy(q); plate.position.copy(centre); plate.scale.set(W * fx, H * fy, 1); const Wo = W * fx, Ho = H * fy;
         bl.position.copy(P(centre, -W * 0.5 + W * 0.08 + W * barFrac / 2, -H * 0.5 + H * 0.17 + H * 0.13));
-        const left = -W * 0.5; chip.position.copy(P(centre, left, H * 0.5 + chip.scale.y * (chip.userData.ph || 0.45) * 0.5 + W * 0.03));
-        let yb = -H * 0.5 - W * 0.03; if (nt) { nt.position.copy(P(centre, left, yb - nt.scale.y * (nt.userData.ph || 0.45) * 0.5)); yb -= nt.scale.y * (nt.userData.ph || 0.45) + W * 0.01; }
+        const left = -Wo * 0.5; chip.position.copy(P(centre, left, Ho * 0.5 + chip.scale.y * (chip.userData.ph || 0.45) * 0.5 + W * 0.03));
+        let yb = -Ho * 0.5 - W * 0.03; if (nt) { nt.position.copy(P(centre, left, yb - nt.scale.y * (nt.userData.ph || 0.45) * 0.5)); yb -= nt.scale.y * (nt.userData.ph || 0.45) + W * 0.01; }
         if (nt2) nt2.position.copy(P(centre, left, yb - nt2.scale.y * (nt2.userData.ph || 0.45) * 0.5));
-        const sx = side > 0 ? 0.5 : -0.5, pa = lines.geometry.attributes.position, c1 = P(centre, sx * W, H * 0.5), c2 = P(centre, sx * W, -H * 0.5);
+        const sx = side > 0 ? 0.5 : -0.5, pa = lines.geometry.attributes.position, c1 = P(centre, sx * Wo, Ho * 0.42), c2 = P(centre, sx * Wo, -Ho * 0.42);
         pa.setXYZ(0, c1.x, c1.y, c1.z); pa.setXYZ(1, anchor.x, anchor.y, anchor.z); pa.setXYZ(2, c2.x, c2.y, c2.z); pa.setXYZ(3, anchor.x, anchor.y, anchor.z); pa.needsUpdate = true; lines.computeLineDistances();
         lines.material.dashSize = W * 0.035; lines.material.gapSize = W * 0.025;
       } };

@@ -7,27 +7,35 @@ export const GRAN_KM = 10440, CITY_M = 840, CITY_ASPECT = 480 / 840;
 function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
-/** Irregular convective cells: a jittered grid, nearest and second-nearest seed per pixel, a slight warp so the lanes wander. */
+/** Irregular convective cells (Leo's styleB loupe): a jittered grid of seeds, nearest and second-nearest seed per pixel, so the
+ * cells are crisp polygons. Cells about #F5E3D6, mottled and a little darker toward their edges; narrow dark lanes about #BF9F7D
+ * with a thin warm rim. Painted per pixel at full texture size with a one-pixel edge, so nothing is blurred. */
 export function paintGranulation(cv, seed = 11) {
-  const N = cv.width, G = 8, R = rng(seed), ctx = cv.getContext("2d"), img = ctx.createImageData(N, N);
-  const pts = []; for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) pts.push([(i + 0.12 + 0.76 * R()) / G, (j + 0.12 + 0.76 * R()) / G, 0.9 + 0.2 * R()]);
-  const warp = (x, y) => [x + 0.012 * Math.sin(y * 23 + 1.3) + 0.007 * Math.sin(y * 57 + x * 31), y + 0.012 * Math.sin(x * 19 + 0.4) + 0.007 * Math.sin(x * 61 - y * 29)];
-  const Rn = rng(seed + 5);
+  const N = cv.width, G = 9, R = rng(seed), ctx = cv.getContext("2d"), img = ctx.createImageData(N, N);
+  const pts = []; for (let j = 0; j < G; j++) for (let i = 0; i < G; i++) pts.push([(i + 0.1 + 0.8 * R()) / G, (j + 0.1 + 0.8 * R()) / G, R()]);
+  const Rn = rng(seed + 5), M = 48, mot = []; for (let i = 0; i < M * M; i++) mot.push(Rn());
+  const vn = (x, y) => { x *= M; y *= M; const i = Math.floor(x), j = Math.floor(y), fx = x - i, fy = y - j, a = (u, v) => mot[((v % M + M) % M) * M + ((u % M + M) % M)];
+    const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy); return (a(i, j) * (1 - sx) + a(i + 1, j) * sx) * (1 - sy) + (a(i, j + 1) * (1 - sx) + a(i + 1, j + 1) * sx) * sy; };
+  const px1 = 1 / N, lw = 0.0055, rim = 0.011;
   for (let py = 0; py < N; py++) for (let px = 0; px < N; px++) {
-    const [x, y] = warp(px / N, py / N); let d1 = 9, d2 = 9, id = 0;
+    const x = (px + 0.5) / N, y = (py + 0.5) / N; let d1 = 9, d2 = 9, id = 0, p1 = null, p2 = null;
     const ci = Math.floor(x * G), cj = Math.floor(y * G);
-    for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) {
+    for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) {
       const ii = ci + di, jj = cj + dj, wi = ((ii % G) + G) % G, wj = ((jj % G) + G) % G, p = pts[wj * G + wi];
-      const dx = x - (p[0] + (ii - wi) / G), dy = y - (p[1] + (jj - wj) / G), d = Math.hypot(dx, dy);
-      if (d < d1) { d2 = d1; d1 = d; id = wj * G + wi; } else if (d < d2) d2 = d;
+      const qx = p[0] + (ii - wi) / G, qy = p[1] + (jj - wj) / G, d = Math.hypot(x - qx, y - qy);
+      if (d < d1) { d2 = d1; p2 = p1; d1 = d; p1 = [qx, qy]; id = wj * G + wi; } else if (d < d2) { d2 = d; p2 = [qx, qy]; }
     }
-    const gap = (d2 - d1) * G;                    // 0 on a lane, grows toward the cell body
-    const lane = 1 - sm(0.04, 0.15, gap);          // narrow dark lane
-    const body = 0.93 + 0.07 * sm(0, 0.8, d1 * G) * 0 + 0.07 * (pts[id][2] - 0.9) / 0.2 - 0.05 * sm(0.1, 0.5, d1 * G);   // brighter toward the cell centre
-    const sp = (Rn() - 0.5) * 0.045;               // painted speckle
-    let r = 252 * body + sp * 255, g = 236 * body + sp * 255, b = 224 * body + sp * 255;
-    r += (200 - r) * lane * 0.8; g += (150 - g) * lane * 0.8; b += (110 - b) * lane * 0.8;
-    const k = (py * N + px) * 4; img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = 255;
+    /* distance to the cell edge: the bisector between the two nearest seeds */
+    const ex = p2[0] - p1[0], ey = p2[1] - p1[1], el = Math.hypot(ex, ey), e = ((x - (p1[0] + p2[0]) / 2) * -ex + (y - (p1[1] + p2[1]) / 2) * -ey) / el;
+    const lane = 1 - sm(lw - px1 * 0.5, lw + px1 * 0.5, e);       /* crisp: one-pixel edge */
+    const rimK = (1 - sm(lw, lw + rim, e)) * (1 - lane);
+    const inner = sm(0, 0.5 / G, e);                               /* 0 at the edge, 1 deep in the cell */
+    const mo = (vn(x * 1.7, y * 1.7) - 0.5) * 0.07 + (vn(x * 4.1 + 3.3, y * 4.1) - 0.5) * 0.05;
+    const k = 0.955 + 0.045 * inner + mo + (pts[id][2] - 0.5) * 0.035;
+    let r = 245 * k, g = 227 * k, b = 214 * k;
+    r += (236 - r) * rimK * 0.55; g += (196 - g) * rimK * 0.55; b += (160 - b) * rimK * 0.55;   /* thin warm rim along each lane */
+    r += (191 - r) * lane; g += (159 - g) * lane; b += (125 - b) * lane;
+    const o = (py * N + px) * 4; img.data[o] = r; img.data[o + 1] = g; img.data[o + 2] = b; img.data[o + 3] = 255;
   }
   ctx.putImageData(img, 0, 0); return cv;
 }
