@@ -49,6 +49,10 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--fd-gold); o
 :root[data-theme="light"] .caption .chapter { color: #8a5d00; }
 :root[data-theme="light"] .caption .stamp { border-color: #8a5d00; }
 :root[data-theme="light"] .caption { text-shadow: 0 0 6px rgba(255, 253, 247, 0.9); }
+.vr-entry-row { margin: 0 0 8px; }
+.vr-entry-row a { display: inline-flex; align-items: center; justify-content: center; min-height: var(--fd-hit); padding: 0 14px;
+  background: var(--fd-gold); color: #1c1c1c; font-weight: 700; text-decoration: none; border-radius: 999px; corner-shape: round; --sq: 0; }
+.vr-entry-row a:focus-visible { outline: 3px solid var(--fd-text); outline-offset: 2px; }
 .caption .chapter { margin: 0 0 4px; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fd-gold); font-weight: 700; display: flex; gap: 8px; align-items: center; }
 .caption .chapter .stamp { display: inline-block; padding: 1px 8px; border: 1.5px dashed var(--fd-gold); border-radius: 999px; corner-shape: round; --sq: 0; letter-spacing: 0.04em; text-transform: none; }
 .caption .narration { margin: 0; font-size: 1.02rem; line-height: 1.45; }

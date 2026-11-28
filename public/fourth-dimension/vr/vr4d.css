@@ -1,0 +1,63 @@
+/* Inline storybook chrome. The room itself is the module palette, drawn in WebGL. */
+body.paper-mode { --fd-text: #18202c; --fd-text-dim: #4a5566; --fd-gold: #d99a00; }
+body.paper-mode .cap { background: #fffdf7; color: #18202c; border-color: #a39d8c; }
+
+.top { position: fixed; z-index: 6; top: 0; left: 0; right: 0; display: flex; gap: 8px; align-items: center;
+  padding: max(8px, env(safe-area-inset-top)) 12px 8px; pointer-events: none; }
+.top > * { pointer-events: auto; }
+.top a, .top button { text-decoration: none; }
+.top .title { margin: 0 auto 0 4px; font-weight: 700; }
+
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+
+.cap { position: fixed; z-index: 5; left: 12px; right: 12px; bottom: calc(108px + env(safe-area-inset-bottom));
+  max-width: 760px; margin: 0 auto; padding: 10px 14px; border-radius: 16px;
+  background: rgba(22, 30, 44, 0.88); border: 1px solid #3c4b62; }
+.cap .kicker { margin: 0 0 4px; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fd-gold); font-weight: 700; }
+#capText { margin: 0; font-size: 1.02rem; line-height: 1.4; }
+#capText .nw { color: var(--fd-text); }
+.cap.live #capText .nw { color: var(--fd-text-dim); }
+.cap.live #capText .nw.said { color: var(--fd-text); }
+.cap.live #capText .nw.hl { color: var(--fd-gold); }
+.cap .hint { margin: 6px 0 0; color: var(--fd-text-dim); font-size: 0.85rem; }
+
+.dock { position: fixed; z-index: 6; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 8px 12px max(8px, env(safe-area-inset-bottom)); background: rgba(18, 24, 35, 0.92); border-top: 1px solid #3c4b62; }
+.dock button, .dock select { min-height: 44px; }
+.dock label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--fd-text-dim); min-width: 140px; }
+.dock input[type="range"] { width: 120px; accent-color: var(--fd-gold); }
+#narr { display: flex; }
+#narr[hidden] { display: none !important; }
+#tools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex: 1; }
+
+#blackout { position: fixed; inset: 0; background: #000; opacity: 0; z-index: 8; pointer-events: none; }
+#curl { position: fixed; inset: 0; z-index: 7; pointer-events: none; opacity: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(244, 241, 232, 0.96) 16%, rgba(244, 241, 232, 0.96) 84%, transparent 100%);
+  border-left: 3px solid #ffc43c; }
+#curl.go { animation: leaf 1.8s ease-in-out forwards; }
+@keyframes leaf {
+  0% { transform: translateX(75%); opacity: 0; }
+  18% { opacity: 0.94; }
+  100% { transform: translateX(-75%); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #curl.go { animation-duration: 0.6s; }
+}
+
+#splash { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; background: rgba(8, 12, 18, 0.55); padding: 24px; }
+#splash[hidden] { display: none !important; }
+#splash .sheet { width: min(440px, 100%); background: #f4f1e8; color: #10151d; padding: 28px 24px; border-radius: 18px; border: 2px solid #10151d; }
+#splash .kicker { margin: 0; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.75rem; color: #8a5d00; font-weight: 700; }
+#splash h2 { margin: 6px 0 8px; font-size: 1.8rem; }
+#splash p { margin: 0 0 14px; line-height: 1.45; }
+#splash .fine { color: #4a5566; font-size: 0.85rem; }
+#splash button { display: block; width: 100%; margin: 0 0 8px; min-height: 48px; background: #ffc43c; color: #1c1c1c; font-weight: 700; border-color: #ffc43c; }
+#splash button[hidden] { display: none !important; }
+
+@media (max-width: 720px) {
+  #capHint { display: none; }
+  .cap { top: calc(52px + env(safe-area-inset-top)); bottom: auto; padding: 8px 10px; }
+  #capText { font-size: 0.88rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .top .title { font-size: 0.9rem; }
+  .dock { max-height: 42vh; overflow: auto; }
+}
