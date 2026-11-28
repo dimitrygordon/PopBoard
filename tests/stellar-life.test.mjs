@@ -56,22 +56,24 @@ test("lifetimes from MIST at run time (T1 reveal, H1 reveal)", () => {
   assert.ok(msRatio(T, "3") > 20 && msRatio(T, "3") < 35);
   assert.ok(msRatio(T, "15") > 600 && msRatio(T, "15") < 1000);
   assert.ok(msRatio(T, "40") > msRatio(T, "15"));
-  const f = createFlow(S, T); f.pickMass("3"); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.7, logL: i }); f.start();
+  const f = createFlow(S, T, { predict: true }); f.pickMass("3"); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.7, logL: i }); f.start();
   f.enter(f.st.stages.findIndex((s) => s.id === "T1")); const a = f.stage().act.find((x) => x.code === "P");
   assert.equal(f.modelAnswer(a), "about 30");
 });
 
 test("rule T1: a stage with a prediction cannot play until the choice is committed; reveal never marks wrong", () => {
-  const f = createFlow(S, T); f.pickMass("1"); f.answerHub("black hole"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.7, logL: i }); f.start();
-  f.enter(f.st.stages.findIndex((s) => s.id === "S1")); assert.equal(f.st.phase, "predict"); f.tick(100); assert.equal(f.st.t, 0);
+  const f = createFlow(S, T, { predict: true }); f.pickMass("1"); f.answerHub("black hole"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.7, logL: i }); f.start();
+  const i0 = f.st.stages.findIndex((s) => s.id === "S1"); f.enter(i0); assert.equal(f.st.phase, "predict"); f.tick(100); assert.equal(f.st.t, 0);
   const p = f.pending(); f.commit(p.i, p.a.choices[0]); while (f.pending()) { const q = f.pending(); f.commit(q.i, q.a.choices[0]); }
-  assert.equal(f.st.phase, "play"); f.tick(1000); assert.equal(f.st.phase, "done");
+  // v2: one continuous timeline. Playing on flows into the next stage and stops at the next prediction, never skipping it.
+  assert.equal(f.st.phase, "play"); f.tick(1000); assert.ok(f.st.si > i0, "flowed on into a later stage");
+  assert.ok(f.st.phase === "predict" ? f.st.t === 0 && !!f.pending() : f.st.phase === "done", "stops at an unanswered prediction or at the end");
   const json = JSON.stringify(S); assert.ok(!/\b(wrong|incorrect)\b/i.test(json), "no wrong or incorrect anywhere in the stage text");
 });
 
 test("help level 2 only from the URL; lock stops changes", () => {
-  const f = createFlow(S, T); assert.equal(f.setHelp(2), false); assert.equal(f.st.help, 0); assert.equal(f.setHelp(2, true), true); assert.equal(f.st.help, 2);
-  const g = createFlow(S, T, { lockHelp: true }); assert.equal(g.setHelp(1), false);
+  const f = createFlow(S, T, { predict: true }); assert.equal(f.setHelp(2), false); assert.equal(f.st.help, 0); assert.equal(f.setHelp(2, true), true); assert.equal(f.st.help, 2);
+  const g = createFlow(S, T, { lockHelp: true, predict: true }); assert.equal(g.setHelp(1), false);
 });
 
 test("boundary rules: red supergiant label, shells start at EEP 707, MIST ends", () => {
@@ -86,7 +88,7 @@ test("boundary rules: red supergiant label, shells start at EEP 707, MIST ends",
 });
 
 test("dashed segments come only from drawn-not-modelled pieces: 0.2 after MIST, 40 after 4.99 Myr", () => {
-  const run = (m, id, t) => { const f = createFlow(S, T); f.pickMass(m); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.7, logL: i }); f.start(); f.enter(f.st.stages.findIndex((s) => s.id === id)); while (f.pending()) { const q = f.pending(); f.commit(q.i, (q.a.choices || ["Explode first"])[0]); } f.setT(t); return f.view(); };
+  const run = (m, id, t) => { const f = createFlow(S, T, { predict: true }); f.pickMass(m); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.7, logL: i }); f.start(); f.enter(f.st.stages.findIndex((s) => s.id === id)); while (f.pending()) { const q = f.pending(); f.commit(q.i, (q.a.choices || ["Explode first"])[0]); } f.setT(t); return f.view(); };
   for (const [m, id] of [["1", "S5"], ["3", "T4"], ["15", "H2"], ["40", "V2"]]) assert.ok(run(m, id, 0.9).trail.every((s) => !s.dashed), `${m} ${id} solid`);
   const r2 = run("0.2", "R2", 0.5); assert.ok(r2.trail.some((s) => s.dashed) && r2.predictedLabel, "0.2 predicted dashed");
   const v3 = run("40", "V3", 0.5); assert.ok(v3.fork && !v3.dot, "40 Suns fork, no dot");
@@ -172,13 +174,13 @@ test("Tesla fixes: remnant masses, V5 and T5 wording, no 'Suns wide', no solar s
   for (const id of ["S7", "R3"]) { const c = st(id === "S7" ? "1" : "0.2", id).caption; assert.ok(!/(stops cooling|becomes a black dwarf|turns into a black dwarf)/i.test(c), id); }
   // the mass readout at a remnant is the remnant's, not the star's before collapse
   for (const [m, id, want] of [["40", "V6", "about 10 Suns (example)"], ["15", "H6", "about 1.4 Suns"]]) {
-    const f = createFlow(S, T); f.pickMass(m); f.answerHub("black hole"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.8, logL: i }); f.start();
+    const f = createFlow(S, T, { predict: true }); f.pickMass(m); f.answerHub("black hole"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.8, logL: i }); f.start();
     f.enter(f.st.stages.findIndex((x) => x.id === id)); const M = uiModel(f); const mass = M.readouts.find((r) => r[0] === "Mass"); assert.equal(mass && mass[1], want);
   }
 });
 
 test("0.2 Suns R2: the late-life radius never exceeds its main-sequence size, and R2 holds one zoom with a same-scale ring", () => {
-  const f = createFlow(S, T); f.pickMass("0.2"); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.6, logL: -2 }); f.start();
+  const f = createFlow(S, T, { predict: true }); f.pickMass("0.2"); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.6, logL: -2 }); f.start();
   f.enter(f.st.stages.findIndex((x) => x.id === "R2")); const R0 = Math.pow(10, T["0.2"].end.logR);
   for (let t = 0; t <= 1; t += 0.05) { const v = f.view({ t }); assert.ok(Math.pow(10, v.row.logR) <= R0 * 1.0001, `t ${t}`); assert.ok(Math.abs(v.refR - R0) < 1e-9); }
   const r2 = stagesFor(S, "0.2").find((x) => x.id === "R2"); assert.equal(r2.ref, "msRing"); assert.equal(r2.zoomLock, true);
@@ -186,7 +188,7 @@ test("0.2 Suns R2: the late-life radius never exceeds its main-sequence size, an
 
 test("formation skip: none on the first track, offered after it, F4 fast version for massive stars, never past the HUB prediction", () => {
   const ready = (f, m) => { f.pickMass(m); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.8, logL: i }); };
-  const f = createFlow(S, T);
+  const f = createFlow(S, T, { predict: true });
   assert.equal(f.canSkip(), false); f.st.skipFormation = true; ready(f, "1"); f.start();
   assert.equal(f.st.stages[0].id, "F1", "first track always plays formation, even if skip was set");
   assert.equal(uiModel({ ...f, st: { ...f.st, screen: "hub", hubStep: "pick" } }).toggles.some((t) => t.id === "skipForm"), false);
@@ -205,7 +207,7 @@ test("COMPARE: verbatim captions, two clocks, one shared log clock, lifetimes eq
   assert.equal(COMPARE_TEXT.setup, "Two stars, one difference: mass. Run them together.");
   assert.equal(COMPARE_TEXT.predict, "Which one will live longer? Which will be bluer? Which ends in a white dwarf?");
   assert.equal(COMPARE_TEXT.run, "Each star has its own clock. The bar at the bottom is a log clock, so each notch is 10 times longer.");
-  const f = createFlow(S, T); assert.equal(f.openCompare(), false, "COMPARE comes after one track"); f.st.runs.push("1"); assert.equal(f.openCompare(), true);
+  const f = createFlow(S, T, { predict: true }); assert.equal(f.openCompare(), false, "COMPARE comes after one track"); f.st.runs.push("1"); assert.equal(f.openCompare(), true);
   const C = f.cmp; C.toggle("1"); C.toggle("3"); assert.ok(C.coreOk()); assert.equal(C.begin(), true);
   const qs = C.questions(); assert.deepEqual(qs.map((q) => q.answer), ["1 Sun", "3 Suns", "both"]);
   assert.equal(f.cmp.c.step, "predict"); for (const q of qs) C.pick(q.id, q.choices[0]); assert.equal(C.c.step, "run", "the run waits for all three picks");
@@ -244,10 +246,10 @@ test("Tier 1 supports: two choices that keep the answer, highlighted zones pins 
   // COMPARE white dwarf question: Tier 1 gets both and neither (the answer always stays)
   assert.deepEqual(tierChoices(["1 Sun", "3 Suns", "both", "neither"], "both", 1, ["both", "neither"]), ["both", "neither"]);
   assert.deepEqual(tierChoices(["1 Sun", "15 Suns", "both", "neither"], "1 Sun", 1, ["both", "neither"]), ["1 Sun", "both", "neither"]);
-  const f = createFlow(S, T, { tier: 1 }); f.pickMass("40"); const M = uiModel(f); assert.deepEqual(M.question.choices.map((c) => c.label), ["white dwarf", "black hole"]);
+  const f = createFlow(S, T, { tier: 1, predict: true }); f.pickMass("40"); const M = uiModel(f); assert.deepEqual(M.question.choices.map((c) => c.label), ["white dwarf", "black hole"]);
   for (const p of [{ logT: 4.3, logL: 0 }, { logT: 3.3, logL: 5.5 }, { logT: 4.7, logL: -2.8 }, { logT: 3.65, logL: 2.5 }]) { const q = snapToZone(p); assert.ok(ZONES.some((z) => inZone(z, q)), JSON.stringify(q)); }
   f.answerHub("black hole"); f.addPin({ logT: 4.3, logL: 0 }); assert.ok(f.st.pins[0].zone, "tier 1 pin snapped"); 
-  const g = createFlow(S, T); g.pickMass("1"); g.answerHub("white dwarf"); g.addPin({ logT: 4.3, logL: 0 }); assert.equal(g.st.pins[0].logT, 4.3, "tier 2 pins do not snap");
+  const g = createFlow(S, T, { predict: true }); g.pickMass("1"); g.answerHub("white dwarf"); g.addPin({ logT: 4.3, logL: 0 }); assert.equal(g.st.pins[0].logT, 4.3, "tier 2 pins do not snap");
 });
 
 test("exit ticket wording is verbatim from teaching spec section 7", () => {
@@ -258,14 +260,14 @@ test("exit ticket wording is verbatim from teaching spec section 7", () => {
 });
 
 test("S7 (1 Sun) pauses at 13.8 billion years: Bedard radius 0.0132 Suns (9,180 km), about 5,800 K (Tesla B, Leo frame 2c)", () => {
-  const f = createFlow(S, T); f.pickMass("1"); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.8, logL: i }); f.start();
+  const f = createFlow(S, T, { predict: true }); f.pickMass("1"); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.8, logL: i }); f.start();
   f.enter(f.st.stages.findIndex((s) => s.id === "S7")); const h = f.holdT(); assert.ok(h > 0 && h < 1);
   const r = wdAt(T["1"], h); assert.equal(fmtYears(r.age), "13.8 billion years");
   assert.equal(about(Math.pow(10, r.logR), 3), "0.0132"); assert.equal(about(Math.pow(10, r.logR) * 695700, 3), "9,180"); assert.equal(about(Math.pow(10, r.logT), 2), "5,800");
   // the clock dwells at the hold, then keeps cooling
   f.setT(h - 1e-4); f.st.playing = true; f.st.phase = "play"; f.tick(0.1); assert.equal(f.st.t, h); f.tick(1); assert.equal(f.st.t, h); f.tick(2.5); f.tick(0.1); assert.ok(f.st.t > h);
   // other masses never hold
-  const g = createFlow(S, T); g.pickMass("3"); g.answerHub("white dwarf"); for (let i = 0; i < 3; i++) g.addPin({ logT: 3.8, logL: i }); g.start(); g.enter(g.st.stages.length - 1); assert.equal(g.holdT(), null);
+  const g = createFlow(S, T, { predict: true }); g.pickMass("3"); g.answerHub("white dwarf"); for (let i = 0; i < 3; i++) g.addPin({ logT: 3.8, logL: i }); g.start(); g.enter(g.st.stages.length - 1); assert.equal(g.holdT(), null);
 });
 
 test("zoom labels name billions and trillions (H5 debris at 250 years to the 12 km neutron star)", () => {

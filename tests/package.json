@@ -58,7 +58,8 @@
     "test:ncf:browser": "python3 newtons-cannonball-fire-browser.py",
     "test:nightsky": "node --test night-sky-astro.test.mjs night-sky-state.test.mjs night-sky-data.test.mjs night-sky-ephem.test.mjs night-sky-names.test.mjs night-sky-pick.test.mjs night-sky-orient.test.mjs",
     "test:nightsky:browser": "python3 night-sky-browser.py",
-    "test:stellarlife": "node --test stellar-life.test.mjs",
+    "test:stellarlife": "node --test stellar-life.test.mjs stellar-life-v2.test.mjs",
+    "test:stellarlife:overlap": "python3 stellar-life-v2-browser.py",
     "test:stellarlife:browser": "python3 stellar-life-browser.py"
   },
   "devDependencies": {

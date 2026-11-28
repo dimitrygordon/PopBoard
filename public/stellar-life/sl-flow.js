@@ -1,7 +1,11 @@
 // Stellar Life Cycle VR: the lesson flow (teaching spec v1.3 sections 2 and 3). Pure state, no DOM or three,
-// so node tests can drive it. HUB (pick a mass, predict) -> formation F1 to F5 -> the mass track -> remnant -> HUB.
-// Rule T1: a stage with a P (predict) action cannot play until the choice is committed. The reveal shows the
-// student's choice next to the model and never marks it wrong.
+// so node tests can drive it. HUB (pick a mass, predict) -> one continuous life: formation F1 to F5 -> the mass track -> remnant.
+// v2 (Dimitry): the starting mass is the student's only choice. After Start the life plays out on one timeline (play, pause,
+// scrub, speed) through every stage with no Next button; the stages are chapters of the same scene, never separate scenes.
+// Round 14 (Dimitry): no click-through. A preset star from the gallery plays its whole life as one guided experience
+// (captions and camera guide it); nothing waits for a click. Predictions are optional ("Pause to predict", off by default):
+// only when st.predict is on does rule T1 apply (a stage with a P action waits until the choice is committed; the reveal
+// shows the student's choice next to the model and never marks it wrong).
 import { createCompare, newCard, applyFrame, snapToZone } from "./sl-compare.js";
 import { stagesFor, stageRange, atEEP, wdAt, predictedAt, predictedPath, typeLabel, isRSG, msRatio, about, fmtYears, MASS_LABEL } from "./sl-data.js";
 
@@ -10,12 +14,16 @@ export function createFlow(S, tracks, opts = {}) {
     screen: "hub", hubStep: "pick", mass: null, stages: [], ranges: [], si: 0, t: 0, phase: "predict", playing: true,
     answers: {}, cardIdx: 0, toggles: { ir: false, cut: true, scope: false, swap: false }, pins: [], help: opts.help || 0, lockHelp: !!opts.lockHelp,
     tier: [1, 2, 3].includes(opts.tier) ? opts.tier : 2, card: newCard(), seen: [],
-    runs: [], ghosts: [], skipFormation: false, pathFirst: null, massGuess: {}, timebar: null, peek: false, optionalShown: {},
+    runs: [], ghosts: [], skipFormation: false, massGuess: {}, timebar: null, peek: false, optionalShown: {}, speed: 1, predict: !!opts.predict,
   };
   const api = { st, S, tracks };
   api.cmp = createCompare(tracks);
 
-  api.pickMass = (m) => { if (!tracks[m]) return; st.mass = m; st.hubStep = "end"; st.pins = []; };
+  api.pickMass = (m) => { if (!tracks[m]) return; st.mass = m; st.hubStep = st.predict ? "end" : "ready"; st.pins = []; };
+  /** Predictions on or off (off by default: the life plays straight through). */
+  api.setPredict = (on) => { st.predict = !!on; if (st.screen === "hub" && st.mass) st.hubStep = st.predict ? "end" : "ready"; if (st.screen === "stage" && !st.predict && st.phase === "predict") { st.phase = "play"; st.playing = true; } };
+  /** The gallery: pick a preset star and its life starts playing at once. */
+  api.playPreset = (m) => { api.pickMass(m); return api.start(); };
   api.answerHub = (choice) => { st.answers["H-End"] = choice; st.hubStep = "pins"; };
   api.addPin = (p0) => { if (st.pins.length >= 3) return; const p = st.tier === 1 ? snapToZone(p0) : p0;   // Tier 1: pins snap to the highlighted zones
     st.pins.push({ ...p, n: st.pins.length + 1, label: S.hub[2].act[0].pins[st.pins.length] }); if (st.pins.length === 3) st.hubStep = "ready"; };
@@ -23,7 +31,7 @@ export function createFlow(S, tracks, opts = {}) {
   /** Teaching spec 3.0: "Skip" is offered only after the first track. A skipped formation drops F1 to F5, except that
    * 15 and 40 Suns still play F4 (the massive-star difference: still wrapped in its cloud) as a 20 s fast version. */
   api.canSkip = () => st.runs.length > 0;
-  api.hubReady = () => !!st.mass && st.answers["H-End"] != null && st.pins.length === 3;
+  api.hubReady = () => !!st.mass && (!st.predict || (st.answers["H-End"] != null && st.pins.length === 3));
   api.start = () => {
     if (!api.hubReady()) return false;   // skipping never jumps past the HUB prediction
     let list = stagesFor(S, st.mass); const massive = st.mass === "15" || st.mass === "40";
@@ -36,9 +44,9 @@ export function createFlow(S, tracks, opts = {}) {
   api.stage = () => st.stages[st.si];
   api.actKey = (i) => `${api.stage().id}:${i}`;
   api.pending = () => {   // the first uncommitted prediction (P, or a K with choices) of this stage
-    const s = api.stage(); if (!s) return null;
+    const s = api.stage(); if (!s || !st.predict) return null;   // guided by default: nothing waits for a click
     const acts = s.act || [];
-    for (let i = 0; i < acts.length; i++) { const a = acts[i]; if (a.kind === "pathOrder") { if (!st.pathFirst) return { i, a }; continue; }
+    for (let i = 0; i < acts.length; i++) { const a = acts[i];
       const needs = (a.code === "P") || (a.code === "K" && a.choices && !a.kind); if (needs && st.answers[api.actKey(i)] == null) return { i, a }; }
     return null;
   };
@@ -48,25 +56,48 @@ export function createFlow(S, tracks, opts = {}) {
     const s = api.stage(); st.toggles.cut = true; st.toggles.scope = false; st.toggles.swap = false; if (s.id === "F1") st.toggles.ir = false;
   };
   api.commit = (i, choice) => {
-    const a = (api.stage().act || [])[i]; if (a && a.kind === "pathOrder") st.pathFirst = choice; else st.answers[api.actKey(i)] = choice;
+    const a = (api.stage().act || [])[i]; st.answers[api.actKey(i)] = choice;
     if (a && a.kind === "massMeter") st.massGuess[api.stage().id] = +choice;
     if (!api.pending()) { st.phase = "play"; st.t = 0; }
   };
   api.tick = (dt) => {
     if (st.screen !== "stage" || st.phase !== "play" || !st.playing) return;
+    dt *= st.speed || 1;
     const s = api.stage(); const h = api.holdT();
     // S7 (1 Sun): dwell about 3 s at today's age of the universe, 13.8 billion years, then keep cooling (Leo's frame 2c)
     if (h != null && !st.held && st.t <= h && st.t + dt / (s.dur || 10) >= h) { st.t = h; st.hold = 3; st.held = true; return; }
     if (st.hold > 0) { st.hold -= dt; return; }
-    st.t = Math.min(1, st.t + dt / (s.dur || 10)); if (st.t >= 1) st.phase = "done";
+    const t1 = st.t + dt / (s.dur || 10);
+    if (t1 < 1) { st.t = t1; return; }
+    // the life flows on into the next stage (same scene, no cut); the last stage ends the run's timeline
+    if (st.si < st.stages.length - 1) { const rest = (t1 - 1) * (s.dur || 10); api.flowInto(st.si + 1); if (st.phase === "play" && rest > 0) api.tick(rest / (st.speed || 1)); }
+    else { st.t = 1; st.phase = "done"; }
   };
+  /** Continue into stage i without stopping: the timeline keeps playing unless that stage asks for a prediction first. */
+  api.flowInto = (i) => { const playing = st.playing; api.enter(i); st.playing = playing || st.phase === "predict"; st.flowed = true; };
+  /** The whole life as one timeline: position T runs from 0 to the number of stages (stage index plus its fraction). */
+  api.span = () => st.stages.length;
+  api.T = () => (st.screen === "stage" ? st.si + (st.phase === "done" && st.si === st.stages.length - 1 ? 1 : st.t) : 0);
+  /** Scrub to T. Moving into a stage whose prediction is not answered yet stops at that stage's start (rule T1). Answers are kept. */
+  api.scrubTo = (T) => {
+    if (st.screen !== "stage") return null; const n = st.stages.length; T = Math.max(0, Math.min(n, T));
+    let i = Math.min(n - 1, Math.floor(T)); let t = T - i; if (T >= n) { i = n - 1; t = 1; }
+    const from = api.view(); const keep = st.playing;
+    if (i !== st.si) api.enter(i); st.playing = keep;
+    if (st.phase === "predict") { st.t = 0; return { skipped: 0 }; }
+    api.setT(t); const to = api.view();
+    return { skipped: from.age != null && to.age != null && i !== flowSi(from) ? to.age - from.age : 0 };
+  };
+  const flowSi = (v) => st.stages.indexOf(v.stage);
+  api.setSpeed = (k) => { if ([0.5, 1, 2, 4].includes(k)) st.speed = k; };
+  api.restart = () => { if (st.screen !== "stage") return; api.enter(0); st.playing = true; };
   /** The stage fraction where the white dwarf reaches stage.holdAge (years since the star formed), or null. */
   api.holdT = () => {
     const s = api.stage(); if (!s || !s.holdAge || st.mass !== "1" || !s.seg || s.seg.type !== "wd") return null; const tr = api.tracks[st.mass]; if (!tr || !tr.wd) return null;
     const W = tr.wd, n = W.length; const a0 = Math.max(W[1].coolAge, 1e4), a1 = W[n - 1].coolAge; const ca = s.holdAge - tr.end.age; if (!(ca > a0 && ca < a1)) return null;
     return (Math.log10(ca) - Math.log10(a0)) / (Math.log10(a1) - Math.log10(a0));
   };
-  api.setT = (t) => { st.t = Math.max(0, Math.min(1, t)); st.held = false; st.hold = 0; if (st.phase === "predict") return; st.phase = st.t >= 1 ? "done" : "play"; };
+  api.setT = (t) => { st.t = Math.max(0, Math.min(1, t)); st.held = false; st.hold = 0; if (st.phase === "predict") return; st.phase = st.t >= 1 && st.si >= st.stages.length - 1 ? "done" : "play"; };   // only the last stage ends the run; a middle stage at its end just waits for play
   api.next = () => {
     if (st.si < st.stages.length - 1) {
       const skipping = st.phase !== "done" ? api.skipYears() : 0;

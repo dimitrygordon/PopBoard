@@ -1,0 +1,62 @@
+{
+ "note": "Leo's painted stroke bakes (LOOK-SPEC v2.4 style B), no limb darkening baked in. means: the average sRGB of each star's bake, so the shader can follow the model's surface temperature. rg is Leo's redgiant bake. Round 4 (final), copied from Leo's tex folder.",
+ "textures": [
+  "protostar_v1_1k.webp",
+  "protostar_v1_2k.webp",
+  "protostar_v2_1k.webp",
+  "protostar_v2_2k.webp",
+  "protostar_v3_1k.webp",
+  "protostar_v3_2k.webp",
+  "rg_v1_1k.webp",
+  "rg_v1_2k.webp",
+  "rg_v2_1k.webp",
+  "rg_v2_2k.webp",
+  "rg_v3_1k.webp",
+  "rg_v3_2k.webp",
+  "rsg_v1_1k.webp",
+  "rsg_v1_2k.webp",
+  "rsg_v2_1k.webp",
+  "rsg_v2_2k.webp",
+  "rsg_v3_1k.webp",
+  "rsg_v3_2k.webp",
+  "sun_v1_1k.webp",
+  "sun_v1_2k.webp",
+  "sun_v2_1k.webp",
+  "sun_v2_2k.webp",
+  "sun_v3_1k.webp",
+  "sun_v3_2k.webp",
+  "zams15_v1_1k.webp",
+  "zams15_v1_2k.webp",
+  "zams15_v2_1k.webp",
+  "zams15_v2_2k.webp",
+  "zams15_v3_1k.webp",
+  "zams15_v3_2k.webp"
+ ],
+ "means": {
+  "protostar": [
+   0.8569,
+   0.7348,
+   0.6021
+  ],
+  "rg": [
+   0.8673,
+   0.6437,
+   0.3986
+  ],
+  "rsg": [
+   0.8735,
+   0.6735,
+   0.4493
+  ],
+  "sun": [
+   0.9475,
+   0.8956,
+   0.8606
+  ],
+  "zams15": [
+   0.5528,
+   0.6322,
+   0.8504
+  ]
+ }
+}

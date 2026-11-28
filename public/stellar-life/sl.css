@@ -35,6 +35,8 @@ body { background: linear-gradient(166deg, #04081A 0%, #0C143A 60%, #2E1E5C 100%
 .sl-masses { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
 .sl-mass .dot { width: 14px; height: 14px; border-radius: 50%; corner-shape: round; --sq: 0; background: var(--c); box-shadow: 0 0 10px var(--c); }
 .sl-mass .done { font-size: 12px; color: var(--sl-text-3); }
+.sl-mass .nm { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+.sl-mass .nm small { font-size: 12px; color: var(--sl-text-3, #A9B0D0); margin-top: 1px; }
 .sl-meter { display: block; font-size: 15px; margin-bottom: 8px; }
 .sl-meter input, .sl-timebar input { width: 100%; }
 .sl-pinprompt { margin: 6px 0 10px; color: #E3DBFF; font-weight: 600; }
@@ -75,7 +77,7 @@ body { background: linear-gradient(166deg, #04081A 0%, #0C143A 60%, #2E1E5C 100%
 @media (max-width: 699px) {
   .sl-top .title { font-size: 15px; flex-basis: 50%; }
   .sl-hbtn { min-height: 40px; padding: 6px 10px; font-size: 13px; }
-  .sl-panel { left: 8px; right: 8px; top: auto; width: auto; bottom: calc(8px + var(--pb-safe-bottom, 0px)); max-height: 54vh; padding: 12px 12px 10px; }
+  .sl-panel { left: 8px; right: 8px; top: auto; width: auto; bottom: calc(8px + var(--pb-safe-bottom, 0px)); max-height: 44vh; padding: 12px 12px 10px; }
   .sl-panel .sl-hrcard { position: static; width: 100%; aspect-ratio: 4 / 2.6; margin: 0 0 10px; }
   .sl-vrnote { flex: 1 1 140px; }
   .sl-title { font-size: 19px; }
@@ -158,3 +160,13 @@ body.sl-has-sheet .sl-hrcard, body.sl-has-sheet .sl-panel, body.sl-has-sheet .sl
 .sl-sheet .cardline { margin: 4px 0 14px; font-size: 16px; }
 .ticket .hrkey { margin: 4px 0 6px; font-weight: 600; }
 @media print { .noprint { display: none !important; } }
+
+/* v2: the life timeline (one scrub bar for the whole life, stage ticks, not to scale in time) and the prediction heading */
+.sl-qhead { margin: 0 0 4px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #FFD27F; }
+.sl-life { flex: 1 1 100%; min-width: 0; margin: 0 0 4px; }
+.sl-life .tl-lab { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; font-size: 14px; font-weight: 600; color: var(--sl-text-2, #C3C9E6); }
+.sl-life .tl-lab span { font-size: 12px; font-weight: 500; color: var(--sl-text-3, #8E95B8); }
+.sl-life .tl-track { position: relative; height: 32px; margin: 2px 0 0; }
+.sl-life .tl-track input { position: absolute; inset: 0; width: 100%; margin: 0; background: transparent; }
+.sl-life .tl-tick { position: absolute; top: 4px; width: 2px; height: 24px; margin-left: -1px; background: rgba(255, 255, 255, 0.28); pointer-events: none; }
+.sl-life .tl-tick.on { background: #7FB2FF; }

@@ -3,9 +3,9 @@
   "noDot": "Not on this H-R diagram. A neutron star is far too small and faint for this chart, and a black hole has no surface to measure.",
   "credit1Sun": "1 Sun track adjusted slightly so today's Sun matches measured values.",
   "hub": [
-    { "id": "H-Pick", "caption": "Pick a starting mass in Suns. Everything else follows from this one choice.", "act": [{ "code": "K", "kind": "mass" }] },
+    { "id": "H-Pick", "caption": "In this model, mass is your only choice. Pick a starting mass in Suns: the mass sets the whole life, and the model plays it out.", "act": [{ "code": "K", "kind": "mass" }] },
     { "id": "H-End", "caption": "What will your star become in the end?", "act": [{ "code": "P", "q": "What will your star become in the end?", "choices": ["white dwarf", "neutron star", "black hole"], "answerBy": { "0.2": "white dwarf", "1": "white dwarf", "3": "white dwarf", "15": "neutron star", "40": "black hole" } }], "mis": [3] },
-    { "id": "H-Path", "caption": "Place three pins on the H-R diagram: where it spends most of its life, where it swells the most, and where it ends.", "act": [{ "code": "P", "kind": "pins", "pins": ["most of its life", "where it swells the most", "where it ends"] }], "mis": [5] }
+    { "id": "H-Path", "caption": "Predict before you watch: place three guess pins on the H-R diagram for where it spends most of its life, where it swells the most, and where it ends. Then the model shows where it really goes.", "act": [{ "code": "P", "kind": "pins", "pins": ["most of its life", "where it swells the most", "where it ends"] }], "mis": [5] }
   ],
   "formation": [
     { "id": "F1", "title": "Cold cloud", "scene": "cloud", "seg": { "type": "none" }, "dur": 9,
@@ -60,7 +60,7 @@
         "act": [{ "code": "C", "kind": "timebar", "from": 604 }], "card2": "triple" },
       { "id": "S5", "title": "Asymptotic giant branch", "scene": "star", "seg": { "type": "mist", "from": { "eep": 707 }, "to": { "eep": 1408 } }, "dur": 14, "winds": true, "orbits": ["Mercury", "Venus", "Earth"],
         "caption": "A second swelling, with strong winds. The Sun loses about half its mass before it becomes a white dwarf. Stars like this make some elements heavier than iron.",
-        "act": [{ "code": "P", "kind": "massMeter", "q": "Drag the mass meter to where you think the Sun will end.", "min": 0.1, "max": 1.0, "answerFrom": "finalMass" }], "mis": [12, 10] },
+        "act": [{ "code": "P", "kind": "massMeter", "q": "Predict: drag the mass meter to where you think the Sun will end.", "min": 0.1, "max": 1.0, "answerFrom": "finalMass" }], "mis": [12, 10] },
       { "id": "S6", "title": "Planetary nebula", "scene": "nebula", "seg": { "type": "mist", "from": { "eep": 1409 }, "to": { "end": true } }, "dur": 14,
         "caption": "The star's outer layers drift away at about 10 to 30 km/s, lit by a hot core of 100,000 K or more. The name is a historical accident: in small telescopes these shells looked round like planets.",
         "act": [{ "code": "K", "kind": "toggle", "toggle": "scope", "labels": ["Close view", "Small telescope"] }], "mis": [7] },
@@ -74,7 +74,7 @@
         "act": [{ "code": "P", "q": "How many times shorter is its life than the Sun's? About 3, 30, or 300?", "choices": ["about 3", "about 30", "about 300"], "answerFrom": "msRatio" }], "mis": [4] },
       { "id": "T2", "title": "Hertzsprung gap", "scene": "star", "seg": { "type": "mist", "from": { "eep": 454 }, "to": { "eep": 598 } }, "dur": 10,
         "caption": "When hydrogen runs out in the core, it cools and grows fast, in a few million years.",
-        "act": [{ "code": "P", "kind": "arrow", "q": "Where does the dot go next?", "choices": ["up and left", "right", "down"], "answer": "right" }] },
+        "act": [{ "code": "P", "kind": "arrow", "q": "Predict: when the hydrogen in its core runs out, which way will its dot move?", "choices": ["up and left", "right", "down"], "answer": "right" }] },
       { "id": "T3", "title": "Red giant, quiet helium ignition", "scene": "cutaway", "cut": "quiet", "seg": { "type": "mist", "from": { "eep": 598 }, "to": { "eep": 625 } }, "dur": 10,
         "caption": "As a red giant, it ignites helium quietly, with no flash.",
         "act": [{ "code": "P", "q": "Which one flashes?", "choices": ["the Sun", "this 3 Sun star", "both"], "answer": "the Sun" }, { "code": "C", "kind": "flashCompare" }] },
@@ -82,7 +82,7 @@
         "caption": "For tens of millions of years, helium fuses in the core.", "act": [{ "code": "O" }], "card2": "triple" },
       { "id": "T5", "title": "Asymptotic giant branch", "scene": "star", "seg": { "type": "mist", "from": { "eep": 707 }, "to": { "eep": 1408 } }, "dur": 12, "winds": true,
         "caption": "A second swelling with strong winds, lasting several million years.",
-        "act": [{ "code": "P", "kind": "massMeter", "q": "Drag the mass meter to where you think the white dwarf will end up.", "min": 0.1, "max": 3.0, "answerFrom": "finalMass" }], "mis": [12] },
+        "act": [{ "code": "P", "kind": "massMeter", "q": "Predict: drag the mass meter to where you think the white dwarf will end up.", "min": 0.1, "max": 3.0, "answerFrom": "finalMass" }], "mis": [12] },
       { "id": "T6", "title": "Planetary nebula and white dwarf", "scene": "nebula", "then": "wd", "seg": { "type": "mist+wd", "from": { "eep": 1409 }, "to": { "end": true } }, "dur": 16,
         "caption": "Planetary nebula, then a carbon-oxygen white dwarf of about 0.7 Suns.",
         "act": [{ "code": "C", "kind": "wdCompare" }, { "code": "K", "kind": "checkEnd" }], "remnant": true }
@@ -117,7 +117,7 @@
         "act": [{ "code": "P", "q": "Will it swell into a red supergiant like the 15 Sun star?", "choices": ["yes", "no", "not sure"], "reveal": "The model swells it to a yellow supergiant by 4.99 million years. After that, models differ." }] },
       { "id": "V2", "title": "Strong winds", "scene": "star", "seg": { "type": "mist", "from": { "eep": 454 }, "to": { "end": true }, "thenFork": true }, "dur": 14, "winds": true,
         "caption": "Strong winds blow off a large part of its mass. It may never become a red supergiant, and may end as a hot Wolf-Rayet star.",
-        "act": [{ "code": "P", "kind": "massMeter", "q": "Drag the mass meter to where you think it ends.", "min": 5, "max": 40, "answerFrom": "mistEndMass", "hatched": true }], "mis": [12] },
+        "act": [{ "code": "P", "kind": "massMeter", "q": "Predict: drag the mass meter to where you think it ends.", "min": 5, "max": 40, "answerFrom": "mistEndMass", "hatched": true }], "mis": [12] },
       { "id": "V3", "title": "Fusion in shells", "scene": "cutaway", "cut": "onionBars", "seg": { "type": "fork" }, "dur": 12,
         "caption": "The same fuel stages as the 15 Sun star, but each one is faster.",
         "bars": "each fuel lasts shorter than the last",
@@ -127,7 +127,7 @@
         "caption": "The core runs out of fuel that releases energy and collapses.", "act": [{ "code": "O" }], "mis": [9] },
       { "id": "V5", "title": "Two paths", "scene": "twopaths", "seg": { "type": "fork" }, "dur": 14,
         "caption": "Scientists are not sure how stars this massive die. Some may explode first. Others may collapse with little or no visible explosion. A few candidates have been seen, such as N6946-BH1, but none is confirmed yet.",
-        "act": [{ "code": "K", "kind": "pathOrder", "choices": ["Explode first", "Collapse quietly"] }] },
+        "chips": ["Both possible endings at once: the faint shell shows an explosion, the star itself shows a quiet collapse. Scientists are still not sure which happens."], "act": [{ "code": "O" }] },
       { "id": "V6", "title": "Black hole", "scene": "bh", "seg": { "type": "gone" }, "dur": 14, "massLabel": "about 10 Suns (example)",
         "caption": "Most stars this massive are expected to leave black holes, but some may leave neutron stars. Far from it, a black hole pulls like any object of the same mass.",
         "labels": ["A black hole, probably 5 to 20 or more times the Sun's mass. Black holes from stars in our galaxy measured so far mostly fall in this range.", "about 3 km of radius for each Sun of mass"],
