@@ -428,7 +428,8 @@ export const PROM_ARCHES = [
 export const FLARE_RIBS = [[-0.065, 0.06], [-0.005, 0.19], [-0.030, 0.31], [0.009, 0.44], [0.042, 0.56], [-0.048, 0.69], [0.028, 0.81], [0.065, 0.94]];   // [x along the polarity line (R), birth]
 export function buildProminence(seed = 101, wk = 1) {   // wk widens the strands (style B frames draw them bolder than Angelo's true widths)
   const R = rng(seed); const core = new Builder(); const glow = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
-  const pink = hex2rgb("#FF7A8E"), rose = hex2rgb("#FF5A6A"), pale = mix(pink, hex2rgb("#FFF4F6"), 0.15);
+  /* Angelo v5 still, sampled: median (197, 90, 101), 10th to 90th percentile (157, 69, 80) to (227, 138, 146): a soft rose at about half saturation, not neon */
+  const pink = hex2rgb("#DB7782"), rose = hex2rgb("#BE4C58"), pale = mix(hex2rgb("#E38A92"), hex2rgb("#F4D9DC"), 0.35);
   for (const A of PROM_ARCHES) {
     const arch = (u, ph, amp) => { const p = [0, 1, 2].map((k) => A.a[k] + (A.b[k] - A.a[k]) * u); const hgt = A.h * Math.sin(Math.PI * u) * (1 + 0.06 * Math.exp(-(((u - A.kink) / 0.06) ** 2))); p[1] += hgt; p[2] += amp * Math.sin(2 * Math.PI * 2.4 * u + ph); p[0] += amp * 0.5 * Math.cos(2 * Math.PI * 2.4 * u + ph); return p; };
     for (let s = 0; s < A.strands; s++) { const ph = s / A.strands * TAU; const pts = []; for (let k = 0; k <= 24; k++) pts.push(arch(k / 24, ph, A.w * 0.9));
@@ -439,7 +440,7 @@ export function buildProminence(seed = 101, wk = 1) {   // wk widens the strands
 }
 export function buildFlare(seed = 111) {
   const R = rng(seed); const core = new Builder(); const glow = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
-  const pink = hex2rgb("#FF7A8E"), white = hex2rgb("#FFF4F6");
+  const pink = hex2rgb("#E38A92"), white = hex2rgb("#F8E6E8");   /* the same soft rose as the prominence (Angelo v5), not neon */
   const ribs = FLARE_RIBS.map(([x, birth], rank) => ({ x, birth, rank, half: 0.020 + 0.012 * birth, h: 0.029 + 0.004 * birth + (R() - 0.5) * 0.001, tilt: (R() < 0.5 ? -1 : 1) * (0.03 + R() * 0.06) }));
   for (const r of ribs) {
     for (const nest of [1, 0.86]) { const pts = []; for (let k = 0; k <= 16; k++) { const u = k / 16; const z = -r.half * nest + 2 * r.half * nest * u; pts.push([r.x + r.tilt * z, r.h * nest * Math.sin(Math.PI * u), z]); }
