@@ -63,9 +63,11 @@ test("lifetimes from MIST at run time (T1 reveal, H1 reveal)", () => {
 
 test("rule T1: a stage with a prediction cannot play until the choice is committed; reveal never marks wrong", () => {
   const f = createFlow(S, T); f.pickMass("1"); f.answerHub("black hole"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.7, logL: i }); f.start();
-  f.enter(f.st.stages.findIndex((s) => s.id === "S1")); assert.equal(f.st.phase, "predict"); f.tick(100); assert.equal(f.st.t, 0);
+  const i0 = f.st.stages.findIndex((s) => s.id === "S1"); f.enter(i0); assert.equal(f.st.phase, "predict"); f.tick(100); assert.equal(f.st.t, 0);
   const p = f.pending(); f.commit(p.i, p.a.choices[0]); while (f.pending()) { const q = f.pending(); f.commit(q.i, q.a.choices[0]); }
-  assert.equal(f.st.phase, "play"); f.tick(1000); assert.equal(f.st.phase, "done");
+  // v2: one continuous timeline. Playing on flows into the next stage and stops at the next prediction, never skipping it.
+  assert.equal(f.st.phase, "play"); f.tick(1000); assert.ok(f.st.si > i0, "flowed on into a later stage");
+  assert.ok(f.st.phase === "predict" ? f.st.t === 0 && !!f.pending() : f.st.phase === "done", "stops at an unanswered prediction or at the end");
   const json = JSON.stringify(S); assert.ok(!/\b(wrong|incorrect)\b/i.test(json), "no wrong or incorrect anywhere in the stage text");
 });
 

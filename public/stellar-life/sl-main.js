@@ -1,6 +1,7 @@
-// Stellar Life Cycle VR: entry point. Renderer, camera, the lesson flow, the scenes, the page UI and WebXR.
+// Stellar Life Cycle VR: entry point. Renderer, camera, the lesson flow, the one continuous life world, the page UI and WebXR.
 // Desktop and phone: drag to look around the scene, wheel or pinch to move closer. Headset: Enter VR (shown only
-// when immersive-vr is supported, like Night Sky), point and pinch or pull the trigger on the panel.
+// when immersive-vr is supported, like Night Sky), point and pinch or pull the trigger on the panel; grab the panel's
+// handle bar (grip, or a pinch or trigger on the handle) to move it out of the way, exactly as in Gravity Force VR.
 import * as THREE from "../vendor/three/three.module.min.js";   // the same vendored r170 build Night Sky imports
 import { XRInput } from "../night-sky/ns-input.js";
 import { prepareTracks, atEEP, fmtYears, about, MASS_LABEL, MASSES } from "./sl-data.js";
@@ -8,10 +9,10 @@ import { createFlow } from "./sl-flow.js";
 import { drawHR, plotRect, fromXY, VIEWS } from "./sl-hr.js";
 import { Scenes, scaleBar, zoomText, KM } from "./sl-scenes.js";
 import { ONION } from "./sl-strokes.js";
-import { bakedSet, bakedMemoryBytes } from "./sl-bake.js";
-import { uiModel, MASS_TEFF } from "./sl-ui.js";
+import { LifeWorld } from "./sl-world.js";
+import { uiModel, MASS_TEFF, SPEEDS } from "./sl-ui.js";
 import { ZONES, cardComplete, FRAME_WORDS, TICKET, logPos, LOGCLOCK, COMPARE_TEXT } from "./sl-compare.js";
-import { XRPanel } from "./sl-xrpanel.js";
+import { XRPanel, XRP, panelInputAt } from "./sl-xrpanel.js";
 import { temperatureToSRGB } from "../night-sky/ns-astro.js";
 
 const $ = (id) => document.getElementById(id);
@@ -38,6 +39,7 @@ const uni = {
 };
 const scenes = new Scenes(THREE, uni);
 const bg = scenes.background(); world.add(bg.root);
+const life = new LifeWorld(THREE, uni, scenes);   // the whole life: one world, never swapped between stages
 
 // help level (teaching spec T6): 0 by default; ?help=1 or ?help=2 (level 2 only from the URL, e.g. a QR code); ?lock=1 locks it
 const helpQ = Math.max(0, Math.min(2, parseInt(q.get("help") || "0", 10) || 0));
@@ -113,7 +115,7 @@ const hrCanvas = $("slHR"); const hrG = hrCanvas ? hrCanvas.getContext("2d") : n
 function sizeHR() { if (!hrCanvas) return; const r = hrCanvas.getBoundingClientRect(); const dpr = Math.min(2, window.devicePixelRatio || 1); const W = Math.max(200, Math.round(r.width * dpr)), H = Math.max(160, Math.round(r.height * dpr)); if (hrCanvas.width !== W || hrCanvas.height !== H) { hrCanvas.width = W; hrCanvas.height = H; } return dpr; }
 function hrModel(v) {
   const st = flow.st; const m = { help: st.help, ghosts: st.ghosts.slice(), pins: st.pins, view: "normal", title: "H-R diagram" };
-  if (st.screen === "hub") { m.title = st.hubStep === "pins" || st.hubStep === "ready" ? "H-R diagram: place your pins" : "H-R diagram"; if (st.tier === 1 && st.hubStep === "pins") m.zones = ZONES; return m; }
+  if (st.screen === "hub") { m.title = st.hubStep === "pins" || st.hubStep === "ready" ? "H-R diagram: your guess pins" : "H-R diagram"; if (st.tier === 1 && st.hubStep === "pins") m.zones = ZONES; return m; }
   if (st.screen === "compare") { const C = flow.cmp; m.title = "H-R diagram: two stars"; if (C.c.step === "run" || C.c.step === "done") { m.trail = []; m.dots = [];
       for (const mm of C.sorted()) { const s = C.starAt(mm); const tr = tracks[mm]; m.trail.push({ pts: tr.rows.filter((r) => r.eep >= tr.zams.eep && r.eep <= s.row.eep).map((r) => ({ logT: r.logT, logL: r.logL })).concat([{ logT: s.row.logT, logL: s.row.logL }]) }); m.dots.push({ logT: s.row.logT, logL: s.row.logL, label: MASS_LABEL[mm] }); } }
     return m; }
@@ -143,8 +145,8 @@ function renderUI(M) {
   if (M.pinChip) qh += `<div class="sl-chip sl-pinchip">${esc(M.pinChip)}</div>`;
   if (M.masses) qh += `<div class="sl-masses">${M.masses.map((m) => `<button type="button" class="sl-mass${m.on ? " on" : ""}" data-act="${m.act || "mass:" + m.id}" aria-pressed="${m.on}"><span class="dot" style="--c:${m.css}"></span>${esc(m.label)}${m.done ? ' <span class="done">run</span>' : ""}</button>`).join("")}</div>`;
   if (M.question) {
-    const Q = M.question; qh += `<div class="sl-q"><p class="sl-qtext">${esc(Q.text)}</p>`;
-    if (Q.kind === "massMeter") qh += `<label class="sl-meter">Your guess: <output id="slMeterOut">${Q.value.toFixed(1)} Suns</output><input type="range" id="slMeter" min="${Q.min}" max="${Q.max}" step="0.1" value="${Q.value}"></label><button type="button" class="sl-btn primary" data-act="meter:${Q.i}">Lock in my guess</button>`;
+    const Q = M.question; qh += `<div class="sl-q">${Q.head ? `<p class="sl-qhead">${esc(Q.head)}</p>` : ""}<p class="sl-qtext">${esc(Q.text)}</p>`;
+    if (Q.kind === "massMeter") qh += `<label class="sl-meter">Your guess: <output id="slMeterOut">${Q.value.toFixed(1)} Suns</output><input type="range" id="slMeter" min="${Q.min}" max="${Q.max}" step="0.1" value="${Q.value}"></label><button type="button" class="sl-btn primary" data-act="meter:${Q.i}">Lock in my prediction</button>`;
     else qh += `<div class="sl-choices">${Q.choices.map((c) => `<button type="button" class="sl-choice${c.picked ? " on" : ""}" data-act="${c.act ? esc(c.act) : (Q.key === "H-End" ? "end:" : "choice:" + Q.i + ":") + esc(c.label)}">${esc(c.label)}</button>`).join("")}</div>`;
     qh += `</div>`;
   }
@@ -156,11 +158,23 @@ function renderUI(M) {
   $("slReadouts").innerHTML = (M.readouts || []).map(([k, v]) => `<div class="sl-ro"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join("");
   $("slChips").innerHTML = (M.chips || []).map((c) => `<div class="sl-chip">${esc(c)}</div>`).join("");
   $("slCredit").textContent = M.credit || ""; $("slCredit").hidden = !M.credit;
-  $("slControls").innerHTML = (M.toggles || []).map((t) => `<button type="button" class="sl-btn toggle${t.on ? " on" : ""}" data-act="${t.id}" aria-pressed="${t.on}">${esc(t.label)}</button>`).join("") +
+  // the controls (with the timeline) are rebuilt only when they change, so a drag on the scrub bar is never interrupted
+  const tlk = M.timeline ? { ...M.timeline, T: 0 } : null; const ck = JSON.stringify([tlk, M.toggles, M.buttons]);
+  if (ck !== ctlKey) { ctlKey = ck; $("slControls").innerHTML = timelineHTML(M.timeline) + (M.toggles || []).map((t) => `<button type="button" class="sl-btn toggle${t.on ? " on" : ""}" data-act="${t.id}" aria-pressed="${t.on}">${esc(t.label)}</button>`).join("") +
     (M.buttons || []).map((b) => `<button type="button" class="sl-btn${b.primary ? " primary" : ""}" data-act="${b.id}" ${b.hold ? 'data-hold="1"' : ""} ${b.disabled ? "disabled" : ""}>${esc(b.label)}</button>`).join("");
+    const lf = $("slLife"); if (lf) { lf.addEventListener("input", () => act("scrub:" + (+lf.value / 1000))); lf.addEventListener("pointerdown", () => { scrubbing = true; }); const up = () => { scrubbing = false; }; lf.addEventListener("pointerup", up); lf.addEventListener("pointercancel", up); lf.addEventListener("change", up); } }
+  { const lf = $("slLife"); if (lf && M.timeline && !scrubbing) lf.value = String(Math.round(1000 * M.timeline.T / M.timeline.span)); }
   const meter = $("slMeter"); if (meter) meter.addEventListener("input", () => { $("slMeterOut").textContent = (+meter.value).toFixed(1) + " Suns"; flow.st.massGuess[flow.stage().id] = +meter.value; });
   const tb = $("slTimebar"); if (tb) tb.addEventListener("input", () => { flow.st.timebar = +tb.value; hrDirty = true; });
   resizeSoon();
+}
+/** The life timeline: one scrub bar for the whole life, stage ticks along it, not to scale in time (teaching spec T10). */
+let scrubbing = false, ctlKey = "";
+function timelineHTML(tl) {
+  if (!tl) return "";
+  const n = tl.span, pos = Math.round(1000 * tl.T / n);
+  const ticks = tl.stages.map((name, i) => `<span class="tl-tick${i === tl.si ? " on" : ""}" style="left:${(100 * i / n).toFixed(2)}%" title="${esc(name)}"></span>`).join("");
+  return `<div class="sl-life"><label for="slLife" class="tl-lab">Life timeline <span>stages, not to scale in time</span></label><div class="tl-track">${ticks}<input type="range" id="slLife" min="0" max="1000" step="1" value="${pos}" aria-label="Scrub through the star's life" ${tl.locked ? "disabled" : ""}></div></div>`;
 }
 function widgetHTML(w) {
   if (w.kind === "logclock") return `<div class="sl-logclock"><div class="sl-wtitle">Age <span class="lc-sub">log clock: each notch is 10 times longer</span></div><div class="lc-track">${Array.from({ length: w.y1 - w.y0 + 1 }, (_, i) => `<span class="lc-notch" style="left:${(100 * i / (w.y1 - w.y0)).toFixed(2)}%"></span>`).join("")}${w.ticks.map((k) => `<span class="lc-tick" style="left:${(100 * k.p).toFixed(2)}%" title="${esc(k.label)}"></span>`).join("")}${w.stars.map((s, i) => `<span class="lc-star" style="left:${(100 * s.p).toFixed(2)}%;--c:${temperatureCss(s.teff)};--row:${i}"></span>${s.life != null ? `<span class="lc-life" style="left:${(100 * s.life).toFixed(2)}%;--row:${i}"></span>` : ""}`).join("")}</div><div class="lc-ends"><span>100,000 years</span><span>10 trillion years</span></div><div class="lc-keys">${w.ticks.map((k) => `<span><i class="lc-tick-key"></i>${esc(k.label)}</span>`).join("")}${w.stars.map((s) => `<span><i class="lc-star-key" style="--c:${temperatureCss(s.teff)}"></i>${esc(s.label)}${s.life != null ? ": main sequence " + esc(s.lifeLabel) + ", fusion ends " + esc(s.endLabel) : ""}</span>`).join("")}</div></div>`;
@@ -248,11 +262,12 @@ function act(id) {
   else if (k === "start") { if (flow.start()) { if (st.skipped && st.stages[0].id !== "F4") { transient.skip = `Skipping about ${fmtYears(atEEP(tracks[st.mass], 202).age)} of formation.`; transient.skipUntil = clock + 4; } onStageChange(); } }
   else if (k === "choice") flow.commit(+a, id.split(":").slice(2).join(":"));
   else if (k === "meter") flow.commit(+a, st.massGuess[flow.stage().id] != null ? st.massGuess[flow.stage().id] : (flow.pending().a.min + flow.pending().a.max) / 2);
+  else if (/^(play|restart|speed|finish|scrub)$/.test(k) && st.screen !== "stage") { /* timeline controls only */ }
   else if (k === "play") { if (st.phase === "play") st.playing = !st.playing; }
-  else if (k === "replay") { st.t = 0; st.phase = "play"; st.playing = true; }
-  else if ((k === "next" || k === "prev" || k === "play" || k === "replay") && st.screen !== "stage") { /* stage controls only */ }
-  else if (k === "next") { const r = flow.next(); if (r && r.skipped > 0) { transient.skip = `Skipped about ${fmtYears(r.skipped)}`; transient.skipUntil = clock + 4; } onStageChange(); }
-  else if (k === "prev") { flow.prev(); onStageChange(); }
+  else if (k === "restart") { flow.restart(); onStageChange(); }
+  else if (k === "speed") { const L = SPEEDS; flow.setSpeed(L[(L.indexOf(st.speed || 1) + 1) % L.length]); }
+  else if (k === "finish") { flow.finishRun(); onStageChange(); }
+  else if (k === "scrub") { const r = flow.scrubTo(+a * flow.span()); if (r && r.skipped > 0) { transient.skip = `Skipped about ${fmtYears(r.skipped)}`; transient.skipUntil = clock + 4; } onStageChange(); }
   else if (k === "hub") { flow.toHub(); onStageChange(); }
   else if (k === "skipForm") st.skipFormation = !st.skipFormation;
   else if (k === "compare") flow.openCompare();
@@ -288,27 +303,28 @@ function compareScene() {
   if (cmpScene) return cmpScene; if (!scenesB) scenesB = new Scenes(THREE, uni);
   const root = new THREE.Group(); root.position.y = 7; const sides = [-1, 1].map((sx) => { const g = new THREE.Group(); g.position.x = sx * 31; root.add(g); const bar = makeBar(); g.add(bar.grp); const name = scenes.label("", { size: 2.8 }); g.add(name); return { g, bar, name }; });
   const divider = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -30, 0), new THREE.Vector3(0, 30, 0)]), new THREE.LineBasicMaterial({ color: 0x8E95B8, transparent: true, opacity: 0.35 })); root.add(divider);
+  const CK = 26;   // each side is its own small life world (own dolly, own scale bar), drawn CK times larger in the compare layout
+  const lives = [new LifeWorld(THREE, uni, scenesB), new LifeWorld(THREE, uni, scenesB)]; lives.forEach((lw, i) => { lw.root.scale.setScalar(CK); sides[i].g.add(lw.root); });
   cmpScene = { root, kind: "compare", camDist: 122, radius: 26, kmPerUnit: () => null, strokes: 0, sides,
     update(c) {
-      const C = flow.cmp; const pair = C.sorted(); let strokes = 0;
-      pair.forEach((m, i) => { const sd = sides[i]; const sc = (i === 0 ? scenes : scenesB).star(); if (sc.root.parent !== sd.g) sd.g.add(sc.root);
-        const s = C.starAt(m); const v = { row: s.row, stage: {}, type: "" }; sc.update({ ...c, v, st: { peek: false, answers: {} }, fitMax: 12 }); strokes += sc.strokes;
-        const r = sc.radius; scenes.setLabel(sd.name, MASS_LABEL[m], `its own clock: ${fmtYears(s.age)}`); sd.name.quaternion.copy(c.camQuatLocal); sd.name.position.copy(new THREE.Vector3(0, r + 6, 0).applyQuaternion(c.camQuatLocal));
-        const bar = scaleBar(sc.kmPerUnit(), Math.max(4, r * 0.8)); if (bar) { sd.bar.body.scale.set(bar.units, 0.9, 1); scenes.setLabel(sd.bar.lab, bar.label); sd.bar.lab.position.set(0, -1.6, 0); sd.bar.grp.quaternion.copy(c.camQuatLocal); sd.bar.grp.position.copy(new THREE.Vector3(0, -(Math.max(r, 6) * 1.25 + 4), 0).applyQuaternion(c.camQuatLocal)); } });
-      cmpScene.strokes = strokes;
+      const C = flow.cmp; const pair = C.sorted();
+      pair.forEach((m, i) => { const sd = sides[i]; const sc = lives[i];
+        const s = C.starAt(m); const v = { row: s.row, stage: { id: "cmp", scene: "star" }, t: 0 }; sc.update({ ...c, v, st: { toggles: {} }, ppu: (c.ppu || 6) * CK });
+        const r = sc.radius * CK; scenes.setLabel(sd.name, MASS_LABEL[m], `its own clock: ${fmtYears(s.age)}`); sd.name.quaternion.copy(c.camQuatLocal); sd.name.position.copy(new THREE.Vector3(0, r + 6, 0).applyQuaternion(c.camQuatLocal));
+        const bar = scaleBar(sc.kmPerUnit() / CK, Math.max(4, r * 0.8)); if (bar) { sd.bar.body.scale.set(bar.units, 0.9, 1); scenes.setLabel(sd.bar.lab, bar.label); sd.bar.lab.position.set(0, -1.6, 0); sd.bar.grp.quaternion.copy(c.camQuatLocal); sd.bar.grp.position.copy(new THREE.Vector3(0, -(Math.max(r, 6) * 1.25 + 4), 0).applyQuaternion(c.camQuatLocal)); } });
     } };
   return cmpScene;
 }
 function sceneFor(v) {
   if (flow && flow.st.screen === "compare") { const s = flow.cmp.c.step; return s === "run" || s === "done" ? compareScene() : null; }
   if (!flow || flow.st.screen !== "stage") return null;
-  const kind = v.sceneKind || v.stage.scene; return scenes.get(kind, flow.st.mass);
+  return life;   // every stage of every mass plays in the same world: stages are chapters, not scenes
 }
 function onStageChange() { uiDirty = true; hrDirty = true; flow && (flow.st.cardIdx = Math.max(0, flow.st.cardIdx)); }
 function showScene(sc) {
-  const key = sc ? sc.kind + (sc.kind === "disk" ? flow.st.mass : "") : "hub";
+  const key = sc ? sc.kind : "hub";
   if (key === curKey) return; if (cur) world.remove(cur.root); cur = sc; curKey = key;
-  hub.visible = !sc; if (sc) { world.add(sc.root); if (sc.kind === "star" && flow) { const v = flow.view(); if (v.row) sc.reset(Math.pow(10, v.row.logR)); } }
+  hub.visible = !sc; if (sc) { world.add(sc.root); if (sc === life) life.reset(); }   // a run starts framed; after that the dolly only eases
 }
 
 // ---------------- WebXR (Night Sky pattern: the button shows only when immersive-vr is supported) ----------------
@@ -321,25 +337,81 @@ async function checkXr() {
 const xrPlace = { pos: new THREE.Vector3(0, 1.45, -2.3) };
 function placeForXr(on) {
   if (!on) { world.scale.setScalar(1); world.position.set(0, 0, 0); world.quaternion.identity(); panel.mesh.visible = false; return; }
-  panel.mesh.visible = true; placed = false;
+  placed = false; panel.reset();
 }
 let placed = false;
 if (vrBtn) vrBtn.addEventListener("click", async () => {
   if (xrSession) { await xrSession.end(); return; }
   try {
     const session = await navigator.xr.requestSession("immersive-vr", { optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking"] });
-    xrSession = session; session.addEventListener("end", () => { xrSession = null; placeForXr(false); vrBtn.querySelector(".lbl").textContent = "Enter VR"; resize(); });
+    xrSession = session; panel.reset(); panelGrab = null; stickWas[0] = stickWas[1] = false; pokePrev[0] = pokePrev[1] = null;
+    session.addEventListener("end", () => { xrSession = null; panelGrab = null; placeForXr(false); vrBtn.querySelector(".lbl").textContent = "Enter VR"; resize(); });
     camera.clearViewOffset(); await renderer.xr.setSession(session); placeForXr(true); vrBtn.querySelector(".lbl").textContent = "In VR";
   } catch (err) { xrSession = null; console.warn(err); fail("Could not start VR: " + (err && err.message ? err.message : err)); }
 });
+// headset input: a trigger or pinch on the handle bar grabs (never clicks), a grip squeeze near the handle grabs, anything else
+// on the panel is a click; a fingertip poke clicks too. Hit-testing follows the moved panel. The panel is WORLD-LOCKED: it never
+// follows the head; it spawns once front and centre, stays where it is let go, and the left thumbstick press brings it here.
+function panelClick(id, r) {
+  if (id === "hr") { const pt = r ? hrPointFromRay(r) : null; if (pt) { flow.addPin(pt); uiDirty = hrDirty = true; } return; }
+  if (id === "peek") { flow.st.peek = true; return; }
+  act(id);
+}
 const xin = new XRInput(THREE, renderer, scene, {
-  onSelectStart: (i, r) => { const id = panel.pick(r.origin, r.dir); if (id && id !== "panel" && id !== "hr") { if (id === "peek") flow.st.peek = true; else act(id); } else if (id === "hr") { const pt = hrPointFromRay(r); if (pt) { flow.addPin(pt); uiDirty = hrDirty = true; } } else if (!id && flow && flow.st.screen === "hub") xrPickOrb(r); },
+  onSelectStart: (i, r) => {
+    if (!flow) return; const ev = panelInputAt(panel, r.origin, r.dir, null, "select");
+    if (ev.grab) { tryPanelGrab(i, r, "pinch"); return; }
+    if (ev.click) { panelClick(ev.click, r); return; } if (ev.id === "panel") return;
+    if (flow.st.screen === "hub") xrPickOrb(r);
+  },
   onSelectEnd: () => { if (flow) flow.st.peek = false; },
   onScrubHours: () => {},
   onTogglePanel: () => { panel.mesh.visible = !panel.mesh.visible; },
-  onHover: (i, r) => { const id = panel.pick(r.origin, r.dir); if (panel.hover !== id) { panel.hover = id; uiDirty = true; } xin.setRayLength(i, id ? 1 : 5); },
+  onHover: (i, r) => { const id = panel.pick(r.origin, r.dir); const hv = id && id !== "panel" ? id.replace(/^scrub:.*/, "scrub") : null; if (i === 1 || id) { if (panel.hover !== hv) { panel.hover = hv; uiDirty = true; } } xin.setRayLength(i, id ? 1 : 5); },
 });
-function hrPointFromRay(r) { panel.ray.set(r.origin, r.dir); const h = panel.ray.intersectObject(panel.mesh, false)[0]; if (!h) return null; const x = h.uv.x * 1024 - 20, y = (1 - h.uv.y) * 1400 - 20; const rect = plotRect(panel.hr.width, panel.hr.height, 2.1); if (x < rect.x || x > rect.x + rect.w || y < rect.y || y > rect.y + rect.h) return null; return fromXY(VIEWS.normal, rect, x, y); }
+let panelGrab = null; const pokePrev = [null, null];
+function pokePanel() {
+  for (let i = 0; i < 2; i++) {
+    const st = xin.ctrl[i]; let id = null;
+    const tip = st && st.handInput && st.hand && st.hand.joints && st.hand.joints["index-finger-tip"];
+    if (tip && !panelGrab && !st.selecting) {
+      const p = tip.getWorldPosition ? tip.getWorldPosition(new THREE.Vector3()) : null;
+      id = p ? panel.poke(p) : null;
+      if (id && id !== "panel" && id !== "hr" && id !== pokePrev[i]) panelClick(id, null);
+    }
+    pokePrev[i] = id && id !== "panel" ? id : null;
+  }
+}
+const stickWas = [false, false];
+function gripWorld(i) { const st = xin.ctrl[i]; if (!st) return null; const obj = st.grip || st.c; obj.updateMatrixWorld(); return obj.getWorldPosition(new THREE.Vector3()); }
+function tryPanelGrab(i, r, why) {
+  const st = xin.ctrl[i]; if (!st || panelGrab) return false;
+  const ev = panelInputAt(panel, r && r.origin, r && r.dir, gripWorld(i), why === "pinch" ? "select" : "grip");
+  if (!ev.grab) return false;
+  const obj = st.c; panel.beginGrab(obj); panelGrab = { i, obj }; return true;
+}
+function updatePanelGrab(hp) {
+  for (let i = 0; i < 2; i++) {
+    const st = xin.ctrl[i]; if (!st) continue;
+    const squeezing = !!st.squeeze; const pinching = !!(st.selecting && st.handInput);
+    if (panelGrab && panelGrab.i === i) {
+      if (!squeezing && !pinching && !st.selecting) { panel.endGrab(hp); panelGrab = null; }
+      else panel.followGrab(panelGrab.obj);
+      return;
+    }
+    if (squeezing && !panelGrab) tryPanelGrab(i, xin.rayOf(i), "grip");
+  }
+}
+function xrPanelFrame(xc) {
+  const hp = new THREE.Vector3(); xc.getWorldPosition(hp); const hq = xc.getWorldQuaternion(new THREE.Quaternion());
+  if (!panel.frame(hp, hq)) return;   // waits a few frames for the real viewer pose, then spawns once; never follows the head
+  // left thumbstick press: bring the panel back front and centre
+  for (let i = 0; i < 2; i++) { const st = xin.ctrl[i]; const src = st && st.source; const gp = src && src.gamepad; const down = !!(src && src.handedness === "left" && gp && gp.buttons[3] && gp.buttons[3].pressed);
+    if (down && !stickWas[i] && !panelGrab) panel.bringHere(hp, hq); stickWas[i] = down; }
+  updatePanelGrab(hp);
+  pokePanel();
+}
+function hrPointFromRay(r) { panel.ray.set(r.origin, r.dir); const h = panel.ray.intersectObject(panel.mesh, false)[0]; if (!h || !h.uv) return null; const hr = panel.hrRect; const x = h.uv.x * XRP.W - hr.x, y = (1 - h.uv.y) * XRP.H - hr.y; const rect = plotRect(panel.hr.width, panel.hr.height, 2.1); if (x < rect.x || x > rect.x + rect.w || y < rect.y || y > rect.y + rect.h) return null; return fromXY(VIEWS.normal, rect, x, y); }
 function xrPickOrb(r) { let best = null, bd = 1e9; for (const [m, o] of Object.entries(hubOrbs)) { const p = o.grp.getWorldPosition(new THREE.Vector3()); const d = new THREE.Ray(r.origin, r.dir).distanceToPoint(p); if (d < o.R * 1.6 * world.scale.x && d < bd) { bd = d; best = m; } } if (best) act("mass:" + best); }
 
 /** Style B hero framing (round 6): a scene's fit() gives its hero (radius r in world units, optional extents left/right/up/down in
@@ -386,6 +458,12 @@ function sceneRegion(sc) {
   if (f && !document.body.classList.contains("sl-has-sheet") && (layout.phone ? layout.free : layout.panel)) { const p = heroPlace(f); region = { cx: p.cx, cy: p.cy, maxR: p.R, hero: p, f }; off = [layout.w / 2 - p.cx, layout.h / 2 - p.cy]; }
   if (want) { const x0 = layout.card.right + 16, x1 = layout.panel.left - 16; const cx = (x0 + x1) / 2; const cy = layout.h * 0.47; region = { cx, cy, maxR: Math.max(80, Math.min((x1 - x0) / 2 - 8, layout.h * 0.40)) }; off = [layout.w / 2 - cx, layout.h / 2 - cy]; }
   if (!sc && !layout.phone && layout.card && layout.panel) off = [off[0], layout.h / 2 - (64 + layout.card.top) / 2];   // hub: the orbs sit above the H-R card
+  // the life world: centred in the free view (right of the H-R card, left of the panel on desktop; the strip above the sheet on
+  // phone). One frame unit is avail / 0.52 px, so a star at the top of its band (with its halo) stays inside the free view.
+  if (sc && sc === life) {
+    if (layout.phone && layout.free) { const top = layout.free.top, bottom = layout.free.bottom, cy = (top + bottom) / 2; const avail = Math.max(40, Math.min(layout.w / 2 - 8, (bottom - top) / 2 - 6)); region = { cx: layout.w / 2, cy, maxR: avail / 0.52, avail }; off = [0, layout.h / 2 - cy]; }
+    else if (!layout.phone && layout.panel && !document.body.classList.contains("sl-has-sheet")) { const x0 = layout.card ? layout.card.right + 12 : 14, x1 = layout.panel.left - 12, cx = (x0 + x1) / 2, cy = (64 + layout.h - 10) / 2; const avail = Math.max(60, Math.min((x1 - x0) / 2, (layout.h - 74) / 2)); region = { cx, cy, maxR: avail / 0.52, avail }; off = [layout.w / 2 - cx, layout.h / 2 - cy]; }
+  }
   const k = off.map((v) => Math.round(v * 2) / 2).join(","); if (k !== layout.offKey) { layout.offKey = k; camera.setViewOffset(layout.w, layout.h, off[0], off[1], layout.w, layout.h); camera.updateProjectionMatrix(); }
   heroRegion = region && region.hero ? region : null;
   return region;
@@ -425,7 +503,7 @@ const sp2 = new THREE.Vector3(), lq = new THREE.Quaternion(), wq2 = new THREE.Qu
 // ---------------- frame loop ----------------
 const tmp = new THREE.Vector3(), camLocal = new THREE.Vector3(), qW = new THREE.Quaternion(), qL = new THREE.Quaternion(), wq = new THREE.Quaternion();
 const MOTION_FPS = 8;   /* the boil cadence (strokeVert: floor(uBoilT * 8)) */
-let prev = 0, clock = 0, flowT = 0, boilT = 0, viewHalfH = 20, viewLam = 1;
+let prev = 0, clock = 0, flowT = 0, boilT = 0, viewHalfH = 20, viewLam = 1, lifePpu = 300;
 const stats = { frames: 0, acc: 0, fps: 0, ms: 0, cpu: 0, cpuAcc: 0, samples: [] };
 function frame(now) {
   const dt = (prev && !manual) ? Math.min(0.1, (now - prev) / 1000) : (manual ? manualDt : 0); prev = now; clock += dt;
@@ -444,14 +522,17 @@ function frame(now) {
   // XR placement: the scene floats about 2.3 m ahead at eye height, sized so the scene fills a comfortable view
   if (presenting) {
     const xc = renderer.xr.getCamera(); xc.getWorldPosition(tmp);
-    if (!placed) { const d = new THREE.Vector3(0, 0, -1).applyQuaternion(xc.getWorldQuaternion(wq)); const yaw = Math.atan2(-d.x, -d.z); xrPlace.pos.set(tmp.x - Math.sin(yaw) * 2.3, Math.max(1.2, tmp.y), tmp.z - Math.cos(yaw) * 2.3); xrPlace.yaw = yaw; panel.place(tmp, yaw); placed = true; }
-    const dist = sc ? sc.camDist : 80; world.scale.setScalar(1.9 / dist); world.position.copy(xrPlace.pos); world.rotation.set(0, xrPlace.yaw || 0, 0);
+    if (!placed) { const d = new THREE.Vector3(0, 0, -1).applyQuaternion(xc.getWorldQuaternion(wq)); const yaw = Math.atan2(-d.x, -d.z); xrPlace.pos.set(tmp.x - Math.sin(yaw) * 2.3, Math.max(1.2, tmp.y), tmp.z - Math.cos(yaw) * 2.3); xrPlace.yaw = yaw; placed = true; }
+    xrPanelFrame(xc);
+    // the life world is a fixed size in the room (0.9 m per frame unit): the dolly scales the star world, so the room, horizon and panel stay still
+    const dist = sc ? sc.camDist : 80; world.scale.setScalar(sc === life ? 0.9 : 1.9 / dist); world.position.copy(xrPlace.pos); world.rotation.set(0, xrPlace.yaw || 0, 0);
   } else {
     const fit = layout.phone ? Math.max(1.15, 0.95 / Math.max(0.3, camera.aspect)) : camera.aspect < 1.2 ? 1.2 : 1;   // portrait: fit the scene across the narrow width
     // style B framing: scenes with a fit (radius in world units and its share of the frame height in Leo's 1080 px frames)
     // are sized to match, centred in the free area right of the H-R card so nothing sits under it (desktop)
     const region = sceneRegion(sc); let dist = (sc ? sc.camDist : 80) * view.zoom * fit;
     if (region && region.hero) { const tanH = Math.tan(camera.fov * Math.PI / 360); dist = region.f.r / (2 * tanH * region.hero.R / layout.h) * view.zoom; }
+    if (sc === life) { const tanH = Math.tan(camera.fov * Math.PI / 360); const maxR = region ? region.maxR : layout.h * 0.4; dist = layout.h / (2 * tanH * maxR) * view.zoom; lifePpu = maxR / view.zoom; }   // one frame unit = the free view's radius
     viewLam = sc && sc.lamRef && region && region.hero ? dist / view.zoom / ((sc.camDist || 80) * fit) : 1;
     viewHalfH = dist * Math.tan(camera.fov * Math.PI / 360) * (region ? Math.min(1, 2 * region.maxR / layout.h + 0.1) : 1);
     const cp = Math.cos(view.pitch);
@@ -463,16 +544,18 @@ function frame(now) {
   uni.uCamLocal.value.copy(camLocal); uni.uCosElev.value = Math.max(0.25, Math.hypot(camLocal.x, camLocal.z) / (camLocal.length() || 1));
   bg.root.position.copy(camLocal);   // the sky stays at infinity
   const extra = {};
-  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt: sdt, flowT: flowS, flowSmooth: flowT, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
+  if (sc) sc.update({ ppu: presenting ? 320 : lifePpu, viewMatrix: cam.matrixWorldInverse, worldScale: world.scale.x, xr: presenting, v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt: sdt, flowT: flowS, flowSmooth: flowT, camLocal, camQuatLocal: qL, extra, phone: layout.phone && !presenting, lam: presenting ? 1 : viewLam, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
   else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); o.l.position.y = layout.phone && !presenting && o.i % 2 ? o.R + 3 : -o.R - 3;  const ph = layout.phone && !presenting; hubTitle.position.y = ph ? 15 : 12; hubNote.position.y = ph ? -15 : -12; }   /* phone: every other key label sits above its orb so the five never overlap */
-  hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? "Place your pins" : "Pick a starting mass");
+  hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? "Predict: place guess pins" : "Pick a starting mass");
   // scale bar and zoom labels (labelled zoom changes, never a fake scale)
   const km = sc && sc.kmPerUnit ? sc.kmPerUnit() : null;
   // lastKm is the scale of the last label (or of the scene's start), so slow drifts add up and small steps never label
   if (km && lastKm) { const t = zoomText(lastKm, km); if (t) { transient.zoom = t; transient.zoomUntil = clock + 4; uiDirty = true; lastKm = km; } }
   if (km && !lastKm) lastKm = km;
   const bar = km ? scaleBar(km, sc.barMax || (sc.radius || 10) * 0.8) : null; sbar.visible = !!bar && !(sc && (sc.kind === "twopaths"));
-  if (bar) { sbarBody.scale.set(bar.units, Math.max(0.6 * viewLam, (sc.radius || 10) * 0.05), 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy((sc.barAt ? new THREE.Vector3(...sc.barAt, 0) : new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4 * viewLam), 0)).applyQuaternion(qL)); sbarLab.position.set(0, -(sbarLab.scale.y * (sbarLab.userData.ph || 0.45) * 0.5 + Math.max(0.6 * viewLam, (sc.radius || 10) * 0.05) * 0.5 + sbarLab.scale.y * 0.06), 0);   /* the label clears the bar at any label size */ }
+  { const want = sc === life ? 0.042 : 1.4; if (sbarLab.userData.size !== want) { sbarLab.userData.size = want; sbarLab.userData.text = null; } }
+  const tick = sc === life ? 0.035 : Math.max(0.6 * viewLam, ((sc && sc.radius) || 10) * 0.05);
+  if (bar) { sbarBody.scale.set(bar.units, tick, 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy((sc.barAt ? new THREE.Vector3(...sc.barAt, 0) : new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4 * viewLam), 0)).applyQuaternion(qL)); sbarLab.position.set(0, -(sbarLab.scale.y * (sbarLab.userData.ph || 0.45) * 0.5 + tick * 0.5 + sbarLab.scale.y * 0.06), 0);   /* the label clears the bar at any label size */ }
   if (bar && heroRegion && !sc.barAt && !presenting) placeBar(bar);
   if (transient.zoom && clock > transient.zoomUntil) { transient.zoom = null; uiDirty = true; }
   sizeLabels(cam, presenting);
@@ -484,7 +567,7 @@ function frame(now) {
     if (!presenting) renderUI(M); else panel.draw(M, hrModel(v || {}), performance.now(), uiDirty);
     uiDirty = false; window.__stellarUI = M;
   }
-  if (!presenting && hrG && (hrDirty || flow.st.phase === "play" || cmpRunning())) { const dpr = sizeHR(); const m = hrModel(v || {}); const k = JSON.stringify([m.dot, m.dots, m.zones && 1, m.trail && m.trail.map((t) => t.pts.length), m.pins, m.view, m.help, hrCanvas.width, hrCanvas.height, m.ghosts.length, m.noDot, m.fork]); if (k !== hrKey || hrDirty) { drawHR(hrG, hrCanvas.width, hrCanvas.height, m, dpr * (layout.phone ? 0.82 : 1)); hrKey = k; } hrDirty = false; }
+  if (!presenting && hrG && (hrDirty || flow.st.phase === "play" || cmpRunning())) { const dpr = sizeHR(); const m = hrModel(v || {}); const k = JSON.stringify([m.dot, m.dots, m.zones && 1, m.trail && m.trail.map((t) => t.pts.length), m.pins, m.view, m.help, hrCanvas.width, hrCanvas.height, m.ghosts.length, m.noDot, m.fork]); if (k !== hrKey || hrDirty) { const hrR = drawHR(hrG, hrCanvas.width, hrCanvas.height, m, dpr * (layout.phone ? 0.82 : 1)); window.__stellarHRLabels = hrR && hrR.labels; hrKey = k; } hrDirty = false; }
   if (presenting) xin.update(dt);
   const t0 = performance.now(); renderer.render(scene, camera); const cpu = performance.now() - t0;
   const dtf = dt * 1000; stats.frames++; stats.acc += dtf; stats.cpuAcc += cpu; if (dtf > 0 && dtf < 1000) stats.samples.push(dtf);
@@ -499,7 +582,7 @@ function temperatureCss(T) { const c = temperatureToSRGB(T).map((x) => Math.roun
 let manualDt = 0;
 async function boot() {
   try {
-    const [tj, sj] = await Promise.all([fetch("stellar-life/data/tracks.json?v=1").then((r) => r.json()), fetch("stellar-life/data/stages.json?v=1").then((r) => r.json())]);
+    const [tj, sj] = await Promise.all([fetch("stellar-life/data/tracks.json?v=1").then((r) => r.json()), fetch("stellar-life/data/stages.json?v=2").then((r) => r.json())]);
     tracks = prepareTracks(tj); flow = createFlow(sj, tracks, { help: 0, lockHelp: q.get("lock") === "1", tier: tierQ });
     if (helpQ) flow.setHelp(helpQ, true); else if (tierQ === 1) flow.setHelp(1, true); syncHelp();
     resize(); if (statusEl) statusEl.hidden = true;
@@ -511,13 +594,13 @@ checkXr(); resize(); boot();
 // ---------------- test hook (headless checks; no effect on students) ----------------
 const stellarHook = {
   THREE_REVISION: THREE.REVISION,
-  get flow() { return flow; }, get camera() { return camera; }, act, setCalm, view, scenes, uni,
+  get flow() { return flow; }, get camera() { return camera; }, act, setCalm, view, scenes, uni, life,
   /** Jump straight to a stage (by id) of a mass at fraction t, answering any predictions with the first choice. */
-  goto(mass, id, t = 1) {
-    flow.toHub(); flow.st.skipFormation = false; flow.pickMass(mass); flow.answerHub("white dwarf"); for (let i = 0; i < 3; i++) flow.addPin({ logT: 3.8, logL: i }); flow.start();
+  goto(mass, id, t = 1, opts = {}) {
+    flow.toHub(); flow.st.skipFormation = false; flow.pickMass(mass); flow.answerHub("white dwarf"); [[3.74, 0.3], [3.56, 2.6], [4.45, -2.2]].forEach(([logT, logL]) => flow.addPin({ logT, logL })); flow.start();
     const i = flow.st.stages.findIndex((s) => s.id === id); if (i < 0) throw new Error("no stage " + id); flow.enter(i);
     let p; let guard = 0; while ((p = flow.pending()) && guard++ < 6) flow.commit(p.i, p.a.kind === "massMeter" ? (p.a.min + p.a.max) / 2 : (p.a.choices || ["Explode first"])[0]);
-    flow.setT(t); uiDirty = hrDirty = true; lastKm = null; transient.zoom = null; return flow.view();
+    flow.setT(t); flow.st.playing = false; uiDirty = hrDirty = true; lastKm = null; transient.zoom = null; if (opts.snap !== false) life.reset(); return flow.view();
   },
   /** COMPARE straight to fraction t for a pair, answering the three picks with the first choice. */
   compare(pair, t = 1) {
@@ -526,9 +609,23 @@ const stellarHook = {
   },
   openCard() { if (!flow.st.runs.length) flow.st.runs.push("1"); flow.openCard(); uiDirty = true; }, openTicket() { flow.openTicket(); uiDirty = true; },
   renderAt(tSec, dt = 1 / 60) { manualDt = dt; flowT = tSec; boilT = calm ? boilT : tSec; frame(tSec * 1000); },
-  info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, scene: cur ? cur.kind : "hub", strokes: (cur ? cur.strokes : 0) + bg.strokes, sceneStrokes: cur ? cur.strokes : 0, skyStrokes: bg.strokes, bakedTexBytes: bakedMemoryBytes(), memTextures: renderer.info.memory.textures }),
+  info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, scene: cur ? cur.kind : "hub", strokes: (cur ? cur.strokes : 0) + bg.strokes, sceneStrokes: cur ? cur.strokes : 0, skyStrokes: bg.strokes, memTextures: renderer.info.memory.textures }),
   frameStats: () => ({ ...stats, samples: stats.samples.length }),
   canvas, renderer, camera, world, get panel() { return panel; },
+  /** Screen boxes (CSS px) of every visible 3D label's plate, for the overlap check. */
+  labelRects() {
+    const out = []; const r = canvas.getBoundingClientRect(); scene.updateMatrixWorld(); camera.updateMatrixWorld();
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion), up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+    scene.traverseVisible((o) => {
+      if (!o.isSprite || !o.userData.label || !o.userData.text || o.userData.text === "|" || o.material.opacity < 0.05) return; const d = o.userData;
+      const p = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld), sc = new THREE.Vector3().setFromMatrixScale(o.matrixWorld);
+      const xs = [(d.x0 ?? 0) - o.center.x, (d.x1 ?? 1) - o.center.x].map((k) => k * sc.x), ys = [0.5 - (d.ph || 1) / 2 - o.center.y, 0.5 + (d.ph || 1) / 2 - o.center.y].map((k) => k * sc.y);
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      for (const ax of xs) for (const ay of ys) { const q = p.clone().addScaledVector(right, ax).addScaledVector(up, ay).project(camera); const X = r.left + (q.x + 1) / 2 * r.width, Y = r.top + (1 - q.y) / 2 * r.height; x0 = Math.min(x0, X); x1 = Math.max(x1, X); y0 = Math.min(y0, Y); y1 = Math.max(y1, Y); }
+      out.push({ text: d.text.replace(/\|$/, ""), x: x0, y: y0, w: x1 - x0, h: y1 - y0 });
+    });
+    return out;
+  },
   /** CSS px per world unit at the scene origin (for the framing check), and the hero placement used this frame. */
   pxPerUnit() { sceneRegion(cur); camera.updateMatrixWorld(); const r = canvas.getBoundingClientRect(); const o = new THREE.Vector3(0, 0, 0); world.localToWorld(o); const q = camera.quaternion; const e = o.clone().add(new THREE.Vector3(1, 0, 0).applyQuaternion(q).multiplyScalar(world.scale.x));
     const a = o.clone().project(camera), b = e.project(camera); return { ppu: Math.hypot((b.x - a.x) / 2 * r.width, (b.y - a.y) / 2 * r.height), x: r.left + (a.x + 1) / 2 * r.width, y: r.top + (1 - a.y) / 2 * r.height }; },
@@ -541,4 +638,4 @@ const stellarHook = {
   },
 };
 /* manual (test) mode: the baked star textures are fetched first, so a headless check never samples a texture that has not arrived; live mode loads them one stage early */
-if (manual) Promise.all(["rsg", "rg"].map((k) => bakedSet(THREE, k).promise)).then(() => { window.__stellar = stellarHook; }); else window.__stellar = stellarHook;
+window.__stellar = stellarHook;

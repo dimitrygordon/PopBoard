@@ -31,6 +31,8 @@ function polyline(g, view, rect, pts, { dashed = false, width = 3, color = null,
 export function drawHR(g, W, H, m, s = 1) {
   const view = VIEWS[m.view || "normal"]; const rect = plotRect(W, H, s);
   g.clearRect(0, 0, W, H);
+  // in-plot text is placed last, around every marker, so no label sits on a pin, a dot, a ring or another label
+  const labels = []; const marks = []; const mark = (x, y, r) => marks.push({ x: x - r, y: y - r, w: 2 * r, h: 2 * r });
   const fs = (px, w = 600) => `${w} ${Math.round(px * s)}px Inter, -apple-system, "SF Pro Text", system-ui, sans-serif`;
   // panel
   g.save(); const r = 22 * s; g.beginPath(); g.roundRect ? g.roundRect(0, 0, W, H, r) : g.rect(0, 0, W, H);
@@ -45,7 +47,7 @@ export function drawHR(g, W, H, m, s = 1) {
   // ghost trails (earlier runs this session): neutral #D6DEF0 at 0.26
   for (const gh of m.ghosts || []) {
     polyline(g, view, rect, gh.pts, { color: "#D6DEF0", alpha: 0.30, width: 2 * s, dashed: !!gh.dashed });
-    if (gh.label && gh.pts.length) { const p = gh.pts[0]; const [x, y] = toXY(view, rect, p.logT, p.logL); g.fillStyle = "rgba(214,222,240,0.75)"; g.font = fs(11, 600); g.fillText(gh.label, x + 6 * s, y - 6 * s); }
+    if (gh.label && gh.pts.length) { const p = gh.pts[0]; const [x, y] = toXY(view, rect, p.logT, p.logL); labels.push({ lines: [[gh.label, fs(11, 600)]], color: "rgba(214,222,240,0.85)", x, y, r: 4 * s }); }
   }
   // Tier 1: highlighted zones the pins snap to (generic regions, the same for every mass)
   for (const z of m.zones || []) {
@@ -60,32 +62,32 @@ export function drawHR(g, W, H, m, s = 1) {
     const [x, y] = toXY(view, rect, p.logT, p.logL);
     g.save(); g.strokeStyle = "#A48CFF"; g.fillStyle = "rgba(164,140,255,0.25)"; g.lineWidth = 2 * s; g.beginPath(); g.arc(x, y, 9 * s, 0, Math.PI * 2); g.fill(); g.stroke();
     g.fillStyle = "#fff"; g.font = fs(11, 700); g.textAlign = "center"; g.fillText(String(p.n), x, y + 4 * s); g.textAlign = "left";
-    g.restore();
+    g.restore(); mark(x, y, 10 * s);
   }
   // live trail
   for (const seg of m.trail || []) polyline(g, view, rect, seg.pts, { dashed: !!seg.dashed, width: 4 * s, glow: 8 * s, color: seg.neutral ? "#D6DEF0" : null, alpha: seg.dashed ? 0.9 : 1 });
-  if (m.predictedLabel) { const p = m.predictedLabel; const [x, y] = toXY(view, rect, p.logT, p.logL); g.fillStyle = "#E6E9F8"; g.font = fs(12, 650); g.fillText("predicted", x - 30 * s, y - 12 * s); }
+  if (m.predictedLabel) { const p = m.predictedLabel; const [x, y] = toXY(view, rect, p.logT, p.logL); labels.push({ lines: [["predicted", fs(12, 650)]], color: "#E6E9F8", x, y, r: 6 * s }); }
   // 40 Suns fork (Tesla ruling): two dashed arms from the MIST end, no direction chosen
   if (m.fork) {
     const [x, y] = toXY(view, rect, m.fork.logT, m.fork.logL); const L = 40 * s;
     g.save(); g.setLineDash([6 * s, 5 * s]); g.lineWidth = 3 * s; g.strokeStyle = "rgba(230,233,248,0.85)";
     g.beginPath(); g.moveTo(x, y); g.lineTo(x - L * 0.8, y - L * 0.42 * 0.8); g.moveTo(x, y); g.lineTo(x + L * 0.8, y - L * 0.42 * 0.8); g.stroke(); g.restore();
-    g.fillStyle = "#E6E9F8"; g.font = fs(12, 650); g.fillText("40 Suns: models differ from here", Math.max(rect.x + 4 * s, x - 150 * s), y - 30 * s);
+    labels.push({ lines: [["40 Suns: models differ from here", fs(12, 650)]], color: "#E6E9F8", x, y: y - 14 * s, r: 18 * s });
   }
   // S1 today marker
-  if (m.today) { const [x, y] = toXY(view, rect, m.today.logT, m.today.logL); g.save(); g.strokeStyle = "#7FB2FF"; g.lineWidth = 2.5 * s; g.beginPath(); g.arc(x, y, 13 * s, 0, Math.PI * 2); g.stroke(); g.fillStyle = "#AACDFF"; g.font = fs(11, 650); g.fillText("Today", x + 16 * s, y - 2 * s); g.font = fs(10.5, 500); g.fillText("4.6 billion years", x + 16 * s, y + 11 * s); g.restore(); }
+  if (m.today) { const [x, y] = toXY(view, rect, m.today.logT, m.today.logL); g.save(); g.strokeStyle = "#7FB2FF"; g.lineWidth = 2.5 * s; g.beginPath(); g.arc(x, y, 13 * s, 0, Math.PI * 2); g.stroke(); g.restore(); mark(x, y, 14 * s); labels.push({ lines: [["Today", fs(11, 650)], ["4.6 billion years", fs(10.5, 500)]], color: "#AACDFF", x, y, r: 15 * s }); }
   // COMPARE: two dots on one panel, each labelled with its mass
   for (const d of m.dots || []) {
     const [x, y] = toXY(view, rect, d.logT, d.logL);
     g.save(); g.shadowColor = tcol(d.logT, 0.9); g.shadowBlur = 18 * s; g.fillStyle = tcol(d.logT); g.beginPath(); g.arc(x, y, 6.5 * s, 0, Math.PI * 2); g.fill(); g.restore();
     g.strokeStyle = "#fff"; g.lineWidth = 2.2 * s; g.beginPath(); g.arc(x, y, 7.5 * s, 0, Math.PI * 2); g.stroke();
-    g.fillStyle = "#FFFFFF"; g.font = fs(11.5, 700); g.fillText(d.label, x + 11 * s, y - 9 * s);
+    mark(x, y, 8 * s); labels.push({ lines: [[d.label, fs(11.5, 700)]], color: "#FFFFFF", x, y, r: 9 * s });
   }
   // dot or the remnant's empty ring
   if (m.dot) {
     const [x, y] = toXY(view, rect, m.dot.logT, m.dot.logL);
     g.save(); g.shadowColor = tcol(m.dot.logT, 0.9); g.shadowBlur = 18 * s; g.fillStyle = tcol(m.dot.logT); g.beginPath(); g.arc(x, y, 6.5 * s, 0, Math.PI * 2); g.fill(); g.restore();
-    g.strokeStyle = "#fff"; g.lineWidth = 2.2 * s; g.beginPath(); g.arc(x, y, 7.5 * s, 0, Math.PI * 2); g.stroke();
+    g.strokeStyle = "#fff"; g.lineWidth = 2.2 * s; g.beginPath(); g.arc(x, y, 7.5 * s, 0, Math.PI * 2); g.stroke(); mark(x, y, 8 * s);
   } else if (m.noDot) {
     const [x, y] = toXY(view, rect, m.noDot.logT, m.noDot.logL); g.save(); g.setLineDash([4 * s, 4 * s]); g.strokeStyle = "rgba(255,255,255,0.7)"; g.lineWidth = 2 * s; g.beginPath(); g.arc(x, y, 9 * s, 0, Math.PI * 2); g.stroke(); g.restore();
     const msg = "Not on this H-R diagram"; g.font = fs(12, 650); const tw = g.measureText(msg).width;
@@ -122,6 +124,28 @@ export function drawHR(g, W, H, m, s = 1) {
   g.fillText("Hotter", rect.x, H - 12 * s); g.textAlign = "right"; g.fillText("Cooler", rect.x + rect.w, H - 12 * s); if (rect.w / s > 250) { g.textAlign = "center"; g.fillText(help >= 1 ? "Surface temperature" : "Temperature", rect.x + rect.w / 2, H - 12 * s); } g.textAlign = "left";
   g.save(); g.translate(18 * s, rect.y + rect.h / 2); g.rotate(-Math.PI / 2); g.textAlign = "center"; g.fillText(help >= 1 ? "Brightness (Sun = 1)" : "Brighter", 0, 0); g.restore();
   // Sun marker (5,772 K, 1 Lsun)
-  const [sx, syy] = toXY(view, rect, Math.log10(5772), 0); g.save(); g.strokeStyle = "rgba(255,241,234,0.8)"; g.lineWidth = 1.5 * s; g.beginPath(); g.arc(sx, syy, 4 * s, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.arc(sx, syy, 1.2 * s, 0, Math.PI * 2); g.fillStyle = "#FFF1EA"; g.fill(); g.fillStyle = "rgba(255,241,234,0.85)"; g.font = fs(10.5, 600); g.fillText("Sun", sx + 6 * s, syy + 14 * s); g.restore();
+  const [sx, syy] = toXY(view, rect, Math.log10(5772), 0); g.save(); g.strokeStyle = "rgba(255,241,234,0.8)"; g.lineWidth = 1.5 * s; g.beginPath(); g.arc(sx, syy, 4 * s, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.arc(sx, syy, 1.2 * s, 0, Math.PI * 2); g.fillStyle = "#FFF1EA"; g.fill(); g.restore(); mark(sx, syy, 5 * s);
+  if (sx > rect.x && sx < rect.x + rect.w && syy > rect.y && syy < rect.y + rect.h) labels.push({ lines: [["Sun", fs(10.5, 600)]], color: "rgba(255,241,234,0.9)", x: sx, y: syy, r: 5 * s });
+  rect.labels = placeLabels(g, labels, marks, rect, s);
   return rect;
+}
+
+const hit = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+/** Places each label at the first spot around its anchor (right, left, above, below, then further out) that stays in the plot and touches no marker
+ * and no label already placed; draws it and returns the boxes { text, x, y, w, h } so tests can check for overlaps. */
+export function placeLabels(g, labels, marks, rect, s = 1) {
+  const placed = [];
+  for (const L of labels) {
+    const lh = 13 * s; let w = 0; for (const [t, f] of L.lines) { g.font = f; w = Math.max(w, g.measureText(t).width); } const h = lh * L.lines.length + 2 * s; const pad = 3 * s; const r = L.r;
+    const spots = [];
+    for (const k of [1, 2.2, 3.6]) { const d = r * k + pad;
+      spots.push([L.x + d, L.y - h / 2], [L.x - d - w, L.y - h / 2], [L.x - w / 2, L.y - d - h], [L.x - w / 2, L.y + d], [L.x + d, L.y - d - h], [L.x + d, L.y + d], [L.x - d - w, L.y - d - h], [L.x - d - w, L.y + d]); }
+    let best = null;
+    for (const [x, y] of spots) { const b = { x, y, w, h }; if (x < rect.x + 2 || y < rect.y + 2 || x + w > rect.x + rect.w - 2 || y + h > rect.y + rect.h - 2) continue; if (marks.some((m) => hit(b, m)) || placed.some((p) => hit(b, p))) continue; best = b; break; }
+    if (!best) continue;   // no room: drop the label rather than draw it on top of something
+    g.save(); g.fillStyle = "rgba(10,13,32,0.72)"; g.fillRect(best.x - 2 * s, best.y, best.w + 4 * s, best.h); g.fillStyle = L.color; g.textBaseline = "top";
+    L.lines.forEach(([t, f], i) => { g.font = f; g.fillText(t, best.x, best.y + 1 * s + i * lh); }); g.restore();
+    placed.push({ text: L.lines.map((l) => l[0]).join(" "), ...best });
+  }
+  return placed;
 }

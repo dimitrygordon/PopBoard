@@ -158,3 +158,13 @@ body.sl-has-sheet .sl-hrcard, body.sl-has-sheet .sl-panel, body.sl-has-sheet .sl
 .sl-sheet .cardline { margin: 4px 0 14px; font-size: 16px; }
 .ticket .hrkey { margin: 4px 0 6px; font-weight: 600; }
 @media print { .noprint { display: none !important; } }
+
+/* v2: the life timeline (one scrub bar for the whole life, stage ticks, not to scale in time) and the prediction heading */
+.sl-qhead { margin: 0 0 4px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #FFD27F; }
+.sl-life { flex: 1 1 100%; min-width: 0; margin: 0 0 4px; }
+.sl-life .tl-lab { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; font-size: 14px; font-weight: 600; color: var(--sl-text-2, #C3C9E6); }
+.sl-life .tl-lab span { font-size: 12px; font-weight: 500; color: var(--sl-text-3, #8E95B8); }
+.sl-life .tl-track { position: relative; height: 32px; margin: 2px 0 0; }
+.sl-life .tl-track input { position: absolute; inset: 0; width: 100%; margin: 0; background: transparent; }
+.sl-life .tl-tick { position: absolute; top: 4px; width: 2px; height: 24px; margin-left: -1px; background: rgba(255, 255, 255, 0.28); pointer-events: none; }
+.sl-life .tl-tick.on { background: #7FB2FF; }

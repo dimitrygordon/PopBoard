@@ -3,7 +3,8 @@ import { MASSES, MASS_LABEL, fmtYears, about, splitCaption } from "./sl-data.js"
 import { COMPARE_TEXT, tierChoices, lifeChoices, COLOR_WORDS, END_WORDS, cardComplete, rowFilled, sentenceText, modelRow, FRAME_TIER1, FRAME_WORDS, logPos, LOGCLOCK, ZONES } from "./sl-compare.js";
 
 export const YOUR_JOB = 'Your job: run 1, 15 and 40 Suns (the Sun, a neutron star maker, a black hole maker). Then run COMPARE with the Sun and one of 0.2 or 3 Suns. Then fill in the Mass Card: for each mass, its lifetime, color and ending, and the sentence "Mass decides ___ because ___."';   // teaching spec section 0, core task, in the student's words
-export const PIN_TITLE = "Place your pins";
+export const ONLY_CHOICE = "Mass is your only choice. After Start, the star's whole path on the H-R diagram follows from its mass.";
+export const PIN_TITLE = "Predict: place guess pins";
 export const MASS_TEFF = { "0.2": 3229, "1": 5772, "3": 12368, "15": 31293, "40": 43704 };   // ZAMS colours for the hub orbs (LOOK-SPEC 2 table)
 
 export function uiModel(flow, x = {}) {
@@ -14,16 +15,17 @@ export function uiModel(flow, x = {}) {
     M.title = "Pick a starting mass";
     M.masses = MASSES.map((m) => ({ id: m, label: MASS_LABEL[m], teff: MASS_TEFF[m], on: st.mass === m, done: st.runs.includes(m) }));
     if (st.hubStep === "pick") M.cards = [S.hub[0].caption];
-    if (st.hubStep === "end") { const a0 = S.hub[1].act[0]; M.cards = [S.hub[1].caption]; M.question = { key: "H-End", text: S.hub[1].caption, choices: tierChoices(a0.choices, a0.answerBy && a0.answerBy[st.mass], st.tier).map((c) => ({ label: c, picked: st.answers["H-End"] === c })) }; }
+    if (st.hubStep === "end") { const a0 = S.hub[1].act[0]; M.cards = [S.hub[1].caption]; M.question = { key: "H-End", head: PREDICT_HEAD, text: S.hub[1].caption, choices: tierChoices(a0.choices, a0.answerBy && a0.answerBy[st.mass], st.tier).map((c) => ({ label: c, picked: st.answers["H-End"] === c })) }; }
     if (st.hubStep === "pins" || st.hubStep === "ready") {
       M.cards = [S.hub[2].caption]; if (st.hubStep === "pins") M.title = PIN_TITLE;
-      const pins = S.hub[2].act[0].pins; M.pinPrompt = st.pins.length < 3 ? `Tap the H-R diagram: pin ${st.pins.length + 1}, ${pins[st.pins.length]}.` : "All three pins placed.";
+      const pins = S.hub[2].act[0].pins; M.pinPrompt = st.pins.length < 3 ? `Tap the H-R diagram to guess pin ${st.pins.length + 1}: ${pins[st.pins.length]}.` : "All three guess pins placed. Start, and the model shows where the star really goes.";
       if (st.pins.length) M.buttons.push({ id: "pinUndo", label: "Undo pin" });
       if (st.tier === 1 && st.pins.length < 3) M.pinChip = "Tap inside a highlighted zone. Your pin snaps to the nearest one.";
     }
     if (st.hubStep === "ready") M.buttons.push({ id: "start", label: `Start: ${MASS_LABEL[st.mass]}`, primary: true });
     if (flow.canSkip()) M.toggles.push({ id: "skipForm", label: "Skip formation", on: st.skipFormation });
     if (st.hubStep === "pick") M.chips.push(YOUR_JOB);
+    if (st.hubStep !== "pick") M.chips.push(ONLY_CHOICE);
     if (flow.canCompare() && st.hubStep === "pick") { M.buttons.push({ id: "compare", label: "Compare two masses" }); M.buttons.push({ id: "card", label: cardComplete(st.card) ? "Mass Card (complete)" : "Mass Card" }); M.buttons.push({ id: "ticket", label: "Exit ticket" }); }
     return M;
   }
@@ -33,26 +35,28 @@ export function uiModel(flow, x = {}) {
     M.chips.push("The exit ticket is a printed page. Open it on the desktop or phone view to print it.");
     M.buttons.push({ id: "print", label: "Print" }, { id: "card", label: "Mass Card" }, { id: "hub", label: "Masses" }); return M; }
   const s = flow.stage(); const v = x.view || flow.view();
-  M.kicker = `${MASS_LABEL[st.mass]}  |  ${s.id}  |  stage ${st.si + 1} of ${st.stages.length}`;
+  M.kicker = `${MASS_LABEL[st.mass]}  |  stage ${st.si + 1} of ${st.stages.length}`;
   M.title = s.id === "H2" && !v.rsg ? "Supergiant" : s.title;
   const pend = flow.pending();
   if (pend) {
-    const a = pend.a; M.question = { key: `${s.id}:${pend.i}`, i: pend.i, text: a.kind === "pathOrder" ? "Pick which path to watch first. Then you watch the other." : (a.q || ""), kind: a.kind || "choice", choices: (a.kind === "pathOrder" ? (a.choices || []) : tierChoices(a.choices, a.answer, st.tier) || []).map((c) => ({ label: c })), min: a.min, max: a.max };
+    // a prediction pauses the timeline: the student predicts what happens, then the model plays it (rule T1). Never a choice of path.
+    const a = pend.a; M.question = { key: `${s.id}:${pend.i}`, i: pend.i, head: PREDICT_HEAD, text: a.q || "", kind: a.kind || "choice", choices: (tierChoices(a.choices, a.answer, st.tier) || []).map((c) => ({ label: c })), min: a.min, max: a.max };
     if (a.kind === "massMeter") M.question.value = st.massGuess[s.id] != null ? st.massGuess[s.id] : (a.min + a.max) / 2;
-    M.cards = a.kind === "pathOrder" ? splitCaption(s.caption) : [];
+    M.cards = [];
   } else {
     M.cards = splitCaption(s.caption);
   }
   M.cardIdx = Math.min(st.cardIdx, Math.max(0, M.cards.length - 1));
   if (st.tier === 1) M.readAloud = true;   // section 8: Tier 1 captions can be read aloud
   if (st.mass === "1") M.credit = S.credit1Sun;   // the 1 Sun track credit appears only on 1 Sun frames
-  // reveal: the student's choice next to the model, never marked wrong (shown once the stage has played)
-  if (!pend && st.phase === "done") (s.act || []).forEach((a, i) => {
-    const k = `${s.id}:${i}`; const picked = st.answers[k]; if (picked == null) return;
-    const model = flow.modelAnswer(a); const extra = flow.revealText(a);
-    M.reveal.push({ q: a.q, picked: a.kind === "massMeter" ? `about ${about(+picked, 2)} Suns` : picked, model, extra, optional: a.optionalReveal && st.optionalShown[k] ? a.optionalReveal : null, optionalKey: a.optionalReveal ? k : null });
-  });
-  if (s.act && s.act.some((a) => a.kind === "checkEnd") && st.phase === "done") M.reveal.push({ q: "What will your star become in the end?", picked: st.answers["H-End"] || "(no guess)", model: endName(st.mass) });
+  // reveal: the student's prediction next to the model, never marked wrong. It shows once most of the stage has played and stays
+  // into the first part of the next stage, since the timeline flows on without stopping.
+  const revealOf = (stg) => { (stg.act || []).forEach((a, i) => {
+      const k = `${stg.id}:${i}`; const picked = st.answers[k]; if (picked == null) return; const model = flow.modelAnswer(a); const extra = flow.revealText(a);
+      M.reveal.push({ q: a.q, picked: a.kind === "massMeter" ? `about ${about(+picked, 2)} Suns` : picked, model, extra, optional: a.optionalReveal && st.optionalShown[k] ? a.optionalReveal : null, optionalKey: a.optionalReveal ? k : null }); });
+    if (stg.act && stg.act.some((a) => a.kind === "checkEnd")) M.reveal.push({ q: "What will your star become in the end?", picked: st.answers["H-End"] || "(no guess)", model: endName(st.mass) }); };
+  if (!pend && (st.phase === "done" || st.t >= REVEAL_AT)) revealOf(s);
+  else if (!pend && st.si > 0 && st.t < REVEAL_KEEP) revealOf(st.stages[st.si - 1]);
   // chips
   for (const c of s.chips || []) M.chips.push(c);
   if (s.notes && st.t > 0.5) for (const n of s.notes) M.chips.push(n);
@@ -94,14 +98,18 @@ export function uiModel(flow, x = {}) {
   }
   if (st.help >= 2 && row && row.logTc) M.readouts.push(["Core", `${about(Math.pow(10, row.logTc), 2)} K`]);
   if (st.help >= 2 && x.stageSpan) M.readouts.push(["Stage lasts", x.stageSpan]);
-  // controls
-  const playing = st.phase === "play" && st.playing;
-  if (!pend) M.buttons.push({ id: st.phase === "done" ? "replay" : "play", label: st.phase === "done" ? "Replay" : playing ? "Pause" : "Play" });
-  if (st.si > 0) M.buttons.push({ id: "prev", label: "Back" });
-  M.buttons.push({ id: "next", label: st.si < st.stages.length - 1 ? "Next stage" : "Finish run", primary: st.phase === "done", disabled: !!pend });
+  // controls: one timeline for the whole life (play, pause, scrub, speed). No Next button: the scene never cuts.
+  const playing = st.phase === "play" && st.playing; const done = st.phase === "done";
+  M.timeline = { T: flow.T(), span: flow.span(), si: st.si, stages: st.stages.map((x) => x.title), locked: !!pend, playing, speed: st.speed || 1 };
+  if (!pend) M.buttons.push({ id: done ? "restart" : "play", label: done ? "Watch again" : playing ? "Pause" : "Play", primary: !playing && !done });
+  M.buttons.push({ id: "speed", label: `Speed ${st.speed || 1}x` });
+  if (done) M.buttons.push({ id: "finish", label: "Finish run", primary: true });
   M.buttons.push({ id: "hub", label: "Masses" });
   return M;
 }
+export const PREDICT_HEAD = "Predict what happens next";
+export const REVEAL_AT = 0.75, REVEAL_KEEP = 0.3;
+export const SPEEDS = [0.5, 1, 2, 4];
 export function endName(m) { return m === "15" ? "neutron star" : m === "40" ? "black hole" : "white dwarf"; }
 
 // ---------------- COMPARE (teaching spec 3.9) ----------------
@@ -117,7 +125,7 @@ function compareModel(flow, M, x) {
   const [a, b] = C.sorted();
   if (c.step === "predict") {
     const q = C.pending(); M.cards = [COMPARE_TEXT.predict];
-    if (q) M.question = { key: "cmp:" + q.id, text: q.q, kind: "choice", choices: tierChoices(q.choices, q.answer, st.tier, q.tier1).map((l) => ({ label: l, act: `cmp:pick:${q.id}:${l}` })) };
+    if (q) M.question = { key: "cmp:" + q.id, head: PREDICT_HEAD, text: q.q, kind: "choice", choices: tierChoices(q.choices, q.answer, st.tier, q.tier1).map((l) => ({ label: l, act: `cmp:pick:${q.id}:${l}` })) };
     for (const p of C.questions()) if (c.picks[p.id] != null) M.chips.push(`${p.q} You picked: ${c.picks[p.id]}`);
     M.buttons.push({ id: "cmp:reset", label: "Pick other masses" }, { id: "hub", label: "Masses" });
     return M;

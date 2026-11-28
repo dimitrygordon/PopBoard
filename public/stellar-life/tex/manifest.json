@@ -1,0 +1,37 @@
+{
+ "note": "Leo's painted stroke bakes (LOOK-SPEC v2.4 style B), no limb darkening baked in. means: the average sRGB of each star's bake, so the shader can follow the model's surface temperature. rg is Leo's redgiant bake.",
+ "textures": [
+  "rg_v1_2k.webp",
+  "rg_v2_2k.webp",
+  "rg_v3_2k.webp",
+  "rsg_v1_1k.webp",
+  "rsg_v1_2k.webp",
+  "rsg_v2_1k.webp",
+  "rsg_v2_2k.webp",
+  "rsg_v3_1k.webp",
+  "rsg_v3_2k.webp",
+  "sun_v1_1k.webp",
+  "sun_v1_2k.webp",
+  "sun_v2_1k.webp",
+  "sun_v2_2k.webp",
+  "sun_v3_1k.webp",
+  "sun_v3_2k.webp"
+ ],
+ "means": {
+  "rg": [
+   0.898,
+   0.6392,
+   0.3529
+  ],
+  "rsg": [
+   0.9098,
+   0.6784,
+   0.4196
+  ],
+  "sun": [
+   0.9333,
+   0.8863,
+   0.8627
+  ]
+ }
+}
