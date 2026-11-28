@@ -196,8 +196,8 @@ void main(){
   vec4 vp = modelViewMatrix * vec4(p, 1.0); float sc = length(modelViewMatrix[0].xyz);
   vec3 nrm = normalize(mat3(modelViewMatrix) * p); float mu = dot(nrm, -normalize(vp.xyz)); float mu1 = clamp(mu, 0.0, 1.0);
   // colour: temperatureToSRGB(Teff + dT) x brightness, equal bleed. dT: cell heat (frame: +/-500 K) and a cooler limb (-600 K)
-  float jit = aColor.g - 0.5; float dT = 900.0 * (heat - 0.3) + 180.0 + (li > 1.5 ? 40.0 : 0.0) - 400.0 * (1.0 - pow(mu1, 0.8)) + 160.0 * jit;
-  float br = (0.8 + 0.2 * pow(mu1, 0.7)) * (1.0 + 0.1 * mu1 * mu1) * (0.88 + 0.28 * jit) * (0.66 + 0.46 * max(heat, 0.55 * smoothstep(0.5, 0.1, mu1))) * (li < 0.5 ? 0.94 : 1.0);
+  float jit = aColor.g - 0.5; float dT = 520.0 * (heat - 0.3) + 120.0 + (li > 1.5 ? 40.0 : 0.0) - 400.0 * (1.0 - pow(mu1, 0.8)) + 60.0 * jit;
+  float br = (0.8 + 0.2 * pow(mu1, 0.7)) * (1.0 + 0.1 * mu1 * mu1) * (0.95 + 0.10 * jit) * (0.86 + 0.24 * max(heat, 0.55 * smoothstep(0.5, 0.1, mu1))) * (li < 0.5 ? 0.94 : 1.0);
   vec3 cg = bleed(tlin(uTeff + dT) * br * uExposure);
   float al = min(1.0, aColor.a * 1.25) * fade * uAlpha * smoothstep(-0.03, 0.1, mu) * (li > 1.5 ? 1.0 : mix(0.10, 1.0, max(lane, smoothstep(0.5, 0.12, mu1))));   /* thinner paint in the lanes: dark intergranular lanes */
   vec3 tv = normalize(mat3(modelViewMatrix) * tn); vec3 sd = cross(tv, normalize(vp.xyz)); float sl = length(sd); sd = sl > 1e-4 ? sd / sl : vec3(1.0, 0.0, 0.0);
@@ -233,7 +233,7 @@ void main(){
     a *= streak * split * trim;
 #endif
 #ifdef CLIPR
-    col *= 0.92 + 0.16 * hb;   /* soft mottle, matching frame 3a (not a smooth wash) */
+    col *= 0.97 + 0.06 * hb;   /* soft mottle, matching frame 3a (not a smooth wash) */
     a *= mix(0.85, 1.04, hb);
 #else
 #ifndef STAR
@@ -241,6 +241,9 @@ void main(){
 #endif
 #endif
   }
+#ifdef CLIPR
+  edge = smoothstep(0.0, 0.5, u) * smoothstep(0.0, 0.5, 1.0 - u) * smoothstep(0.0, 0.3, min(v, 1.0 - v) * 2.0 + 0.05);   /* soft round dabs, not flakes */
+#endif
   a *= edge;
 #ifdef CLIPR
   { float lm = 0.99 + 0.05 * (fract(seed * 7.31) - 0.35); a *= 1.0 - smoothstep(lm - 0.07, lm + 0.02, vRho); }   /* round 9: a soft, ragged limb: each stroke ends at its own radius */
@@ -346,6 +349,6 @@ void main(){
   float lane = 1.0 - smoothstep(0.0 - fw, 0.30 * rag + fw, gap);
   lane *= smoothstep(0.985, 0.82, rho);
   float a = lane * lane * 0.62 * uAlpha; if (a < 0.004) discard;
-  vec3 col = vec3(0.10, 0.042, 0.016);
+  vec3 col = vec3(0.36, 0.17, 0.06);
   gl_FragColor = vec4(enc(col) * a, a);
 }`;
