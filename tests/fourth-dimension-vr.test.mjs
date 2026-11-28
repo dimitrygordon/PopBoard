@@ -208,3 +208,21 @@ test("the flat module links into the storybook and the storybook does not replac
     assert.doesNotMatch(read("public/fourth-dimension/vr/" + f), /https?:\/\/(cdn|unpkg|esm\.sh)/);
   }
 });
+
+test("phones see a Quest note; the Enter VR button shows only when immersive-vr is supported", () => {
+  const html = read("public/study-fourth-dimension.html");
+  assert.match(html, /id="vrStoryBtn"[^>]*hidden|hidden[^>]*id="vrStoryBtn"/);
+  assert.match(html, /id="vrStoryNote"[^>]*>VR storybook available on Meta Quest</);
+  assert.match(html, /id="vrStoryNote"[^>]*href="study-fourth-dimension-vr\.html"/);
+  const css = read("public/fourth-dimension/fourth-dimension-theme.css");
+  assert.match(css, /\.vr-entry-note/);
+  assert.match(css, /--r-16/);
+  const ui = read("public/fourth-dimension/fd-ui.js");
+  assert.match(ui, /isSessionSupported\("immersive-vr"\)/);
+  assert.match(ui, /vrStoryBtn\.hidden = !ok/);
+  assert.match(ui, /vrStoryNote\.hidden = !!ok/);
+  // The VR page itself still has a non-headset fallback, so the note is a live link, not a dead button.
+  const vr = read("public/study-fourth-dimension-vr.html");
+  assert.match(vr, /id="startScreen"/);
+  assert.match(vr, /Start on this screen/);
+});

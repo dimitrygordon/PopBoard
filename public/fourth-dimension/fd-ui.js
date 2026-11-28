@@ -50,22 +50,29 @@ $("contrastBtn").addEventListener("click", () => {
 });
 syncThemeButtons();
 const vrStoryBtn = $("vrStoryBtn");
-if (vrStoryBtn) {
-  vrStoryBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    const q = new URLSearchParams(location.search);
-    q.delete("page");
-    const s = q.toString();
-    location.href = "study-fourth-dimension-vr.html" + (s ? "?" + s : "");
-  });
-  // The storybook always opens. The headset button inside it is the VR option, and only when immersive-vr exists.
-  vrStoryBtn.dataset.xr = "no";
-  if (navigator.xr && navigator.xr.isSessionSupported) {
-    navigator.xr.isSessionSupported("immersive-vr").then((ok) => {
-      vrStoryBtn.dataset.xr = ok ? "yes" : "no";
-      if (ok) vrStoryBtn.title = "This browser can open the storybook in a VR headset";
-    }).catch(() => { vrStoryBtn.dataset.xr = "no"; });
+const vrStoryNote = $("vrStoryNote");
+function goToVrStory(e) {
+  e.preventDefault();
+  const q = new URLSearchParams(location.search);
+  q.delete("page");
+  const s = q.toString();
+  location.href = "study-fourth-dimension-vr.html" + (s ? "?" + s : "");
+}
+if (vrStoryBtn) vrStoryBtn.addEventListener("click", goToVrStory);
+if (vrStoryNote) vrStoryNote.addEventListener("click", goToVrStory);
+// Phones and computers see a small Quest note (the storybook still opens on this screen).
+// Quest keeps the Enter VR storybook button, shown only when immersive-vr is supported.
+function setVrEntry(ok) {
+  if (vrStoryBtn) {
+    vrStoryBtn.hidden = !ok;
+    vrStoryBtn.dataset.xr = ok ? "yes" : "no";
+    if (ok) vrStoryBtn.title = "This browser can open the storybook in a VR headset";
   }
+  if (vrStoryNote) vrStoryNote.hidden = !!ok;
+}
+setVrEntry(false);
+if (navigator.xr && navigator.xr.isSessionSupported) {
+  navigator.xr.isSessionSupported("immersive-vr").then(setVrEntry).catch(() => setVrEntry(false));
 }
 $("studyBackBtn").addEventListener("click", (e) => {
   e.preventDefault();
