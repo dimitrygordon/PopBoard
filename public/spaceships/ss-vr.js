@@ -16,6 +16,7 @@ import {
   depthRange,
   distanceLimits,
   easeDistance,
+  aimFrame,
   grabTurn,
   initialPlacement,
   panelButtons,
@@ -183,23 +184,27 @@ function createViewer(canvas) {
   // Just below the view center, close enough that both eyes can read every button. Local -Z is forward.
   panelMesh.position.set(-0.04, -0.46, -0.95);
   stage.add(panelMesh);
-  // A mesh ray and dot, not a Line: logarithmic depth hides LineBasic rays on Quest.
-  const cursor = new THREE.Mesh(
-    new THREE.SphereGeometry(0.012, 12, 8),
-    new THREE.MeshBasicMaterial({ color: 0x4caf50, depthTest: false, toneMapped: false })
-  );
-  cursor.renderOrder = 100;
-  cursor.visible = false;
-  cursor.frustumCulled = false;
-  scene.add(cursor);
-  const aimRay = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.003, 0.003, 1, 6),
-    new THREE.MeshBasicMaterial({ color: 0xcfe8ff, transparent: true, opacity: 0.9, depthTest: false, toneMapped: false })
-  );
-  aimRay.renderOrder = 99;
-  aimRay.visible = false;
-  aimRay.frustumCulled = false;
-  scene.add(aimRay);
+  // One ray and one dot per hand. A shared pair flickers because both controllers call showAim every frame.
+  function makeAim() {
+    const dot = new THREE.Mesh(
+      new THREE.SphereGeometry(0.012, 12, 8),
+      new THREE.MeshBasicMaterial({ color: 0x4caf50, depthTest: false, toneMapped: false })
+    );
+    dot.renderOrder = 100;
+    dot.visible = false;
+    dot.frustumCulled = false;
+    const ray = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.003, 0.003, 1, 6),
+      new THREE.MeshBasicMaterial({ color: 0xcfe8ff, transparent: true, opacity: 0.9, depthTest: false, toneMapped: false })
+    );
+    ray.renderOrder = 99;
+    ray.visible = false;
+    ray.frustumCulled = false;
+    scene.add(dot, ray);
+    return { dot, ray };
+  }
+  const aims = [makeAim(), makeAim()];
+  let aimState = [{ ray: false, cursor: false }, { ray: false, cursor: false }];
   const _rayO = new THREE.Vector3();
   const _rayD = new THREE.Vector3();
   const _upRay = new THREE.Vector3(0, 1, 0);
@@ -363,7 +368,8 @@ function createViewer(canvas) {
     _rayO.setFromMatrixPosition(st.c.matrixWorld);
     _rayD.set(0, 0, -1).transformDirection(st.c.matrixWorld);
     if (_rayD.lengthSq() < 1e-8) return null;
-    return { origin: _rayO, dir: _rayD };
+    // Clones so the next controller cannot overwrite this ray before showAim reads it.
+    return { origin: _rayO.clone(), dir: _rayD.clone() };
   }
   function hitAt(ray) {
     if (!ray || !ray.origin || !ray.dir) return { button: null, panel: false, point: null, distance: 0 };
@@ -378,17 +384,22 @@ function createViewer(canvas) {
     const button = buttonAt(px, py, hits);
     return { button, panel: true, point: hit.point, distance: hit.distance };
   }
-  function showAim(ray, hit) {
-    if (!ray) { aimRay.visible = false; cursor.visible = false; return; }
+  function showAim(i, ray, hit) {
+    const pair = aims[i];
+    if (!pair) return;
+    const tracked = !!(ray && ray.origin && ray.dir);
+    aimState = aimFrame(aimState, i, { tracked, panel: !!(hit && hit.panel) });
+    const vis = aimState[i];
+    pair.ray.visible = vis.ray;
+    pair.dot.visible = vis.cursor;
+    if (!vis.ray) return;
+    const dir = ray.dir;
+    const origin = ray.origin;
     const len = hit && hit.panel ? Math.max(0.05, hit.distance) : 2;
-    aimRay.visible = true;
-    aimRay.quaternion.setFromUnitVectors(_upRay, _rayD);
-    aimRay.position.copy(_rayO).addScaledVector(_rayD, len / 2);
-    aimRay.scale.set(1, len, 1);
-    if (hit && hit.panel && hit.point) {
-      cursor.visible = true;
-      cursor.position.copy(hit.point);
-    } else cursor.visible = false;
+    pair.ray.quaternion.setFromUnitVectors(_upRay, dir);
+    pair.ray.position.copy(origin).addScaledVector(dir, len / 2);
+    pair.ray.scale.set(1, len, 1);
+    if (vis.cursor && hit.point) pair.dot.position.copy(hit.point);
   }
 
   function measure(root, groundUp) {
@@ -576,6 +587,7 @@ function createViewer(canvas) {
       sawButton = false;
       for (const st of input.ctrl) if (st.c) st.c.updateMatrixWorld(true);
       input.update(dt);
+      input.ctrl.forEach((st, i) => { if (!st.source) showAim(i, null, null); });
       if (!sawButton && hover) { hover = null; dirty = true; }
     }
     const stick = readStick();
@@ -628,7 +640,7 @@ function createViewer(canvas) {
       onHover(i) {
         const ray = freshRay(i);
         const hit = hitAt(ray);
-        showAim(ray, hit);
+        showAim(i, ray, hit);
         if (hit.panel) pointingAtPanel = true;
         if (hit.button) {
           sawButton = true;
@@ -639,7 +651,7 @@ function createViewer(canvas) {
       onSelectStart(i) {
         const ray = freshRay(i);
         const hit = hitAt(ray);
-        showAim(ray, hit);
+        showAim(i, ray, hit);
         pointingAtPanel = !!hit.panel;
         const decision = resolveSelect(hit);
         if (decision.rotate) return;

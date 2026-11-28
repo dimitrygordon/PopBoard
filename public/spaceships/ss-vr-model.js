@@ -228,6 +228,16 @@ export function buttonAt(px, py, rects) {
   return null;
 }
 
+// Each controller owns its ray and cursor. Updating one index never changes the other.
+// Untracked hands hide both. A tracked miss keeps the ray and hides only that cursor.
+export function aimFrame(states, index, spec) {
+  const next = (states || []).map((s) => ({ ray: !!s.ray, cursor: !!s.cursor }));
+  while (next.length <= index) next.push({ ray: false, cursor: false });
+  const tracked = !!(spec && spec.tracked);
+  next[index] = tracked ? { ray: true, cursor: !!(spec && spec.panel) } : { ray: false, cursor: false };
+  return next;
+}
+
 // A trigger on the panel never rotates the model. A trigger that misses the panel resets.
 export function resolveSelect(hit) {
   if (hit && hit.button) return { action: hit.button, rotate: false };

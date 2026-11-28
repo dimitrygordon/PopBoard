@@ -127,6 +127,21 @@ test("thumbstick deadzone holds still, up grows, and the fleet wraps", () => {
   assert.equal(neighborCraft(fleet, "missing", 1).id, "c");
 });
 
+test("a miss on controller 1 does not hide controller 0's cursor", () => {
+  const shown = [{ ray: true, cursor: true }, { ray: true, cursor: true }];
+  const miss = V.aimFrame(shown, 1, { tracked: true, panel: false });
+  assert.equal(miss[0].cursor, true);
+  assert.equal(miss[0].ray, true);
+  assert.equal(miss[1].cursor, false);
+  assert.equal(miss[1].ray, true);
+  assert.equal(shown[1].cursor, true, "the previous frame is not mutated");
+  const dropped = V.aimFrame(miss, 0, { tracked: false });
+  assert.equal(dropped[0].ray, false);
+  assert.equal(dropped[0].cursor, false);
+  assert.equal(dropped[1].ray, true);
+  assert.equal(dropped[1].cursor, false);
+});
+
 test("panel buttons are raycast targets and a trigger on them does not rotate", () => {
   const rects = V.panelButtons(true);
   for (const id of ["closer", "farther", "prev", "next", "real", "reset", "exit"]) {
@@ -223,6 +238,9 @@ test("pages wire VR beside AR and 3D, and the session does not drive the camera"
   assert.match(vr, /grabTurn/);
   assert.match(vr, /DoubleSide/);
   assert.match(vr, /pointingAtPanel/);
+  assert.match(vr, /showAim\(i,/);
+  assert.match(vr, /aimFrame/);
+  assert.match(vr, /_rayO\.clone\(\)/);
   assert.doesNotMatch(vr, /REAL_CAP|capped at/);
   assert.match(vr, /new XRInput/);
   assert.doesNotMatch(vr, /USDZLoader/);
