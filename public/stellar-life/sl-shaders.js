@@ -228,7 +228,7 @@ void main(){
     float s0 = h21(vec2(bi + 3.0, seed)) * 0.12, e0 = 1.0 - h21(vec2(bi + 9.0, seed)) * 0.15;
     float trim = smoothstep(s0, s0 + 0.05, v) * smoothstep(e0, e0 - 0.05, v);
 #ifdef CLIPR
-    a *= mix(1.0, streak * split * trim, 0.4);   /* round 9: softer bubbly dabs, less bristle crunch */
+    a *= mix(1.0, streak * split * trim, 0.12);   /* round 9: softer bubbly dabs, less bristle crunch */
 #else
     a *= streak * split * trim;
 #endif
