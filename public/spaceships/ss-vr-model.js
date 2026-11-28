@@ -69,7 +69,8 @@ export function stickDelta(stickX, stickY, dt, opt = {}) {
   if (step === 0) return { yaw: 0, scale: 1 };
   let yaw = 0;
   let scale = 1;
-  if (Math.abs(x) > dead) yaw = -x * yawRate * step;
+  // Positive yaw spins the near face to the student's right, the same way a hand yaw to the right does.
+  if (Math.abs(x) > dead) yaw = x * yawRate * step;
   if (Math.abs(y) > dead) scale = Math.exp(-y * scaleRate * step);
   return { yaw, scale };
 }
@@ -196,6 +197,73 @@ export function placementNote(kind) {
   if (kind === "horizon") return "True size. The curve ahead is this body's horizon.";
   if (kind === "ground") return "True size. It stands on the floor beside you.";
   return "";
+}
+
+// Button rectangles in the 1024x768 panel texture. drawPanel uses this same list.
+export const PANEL_W = 1024;
+export const PANEL_H = 768;
+export function panelButtons(real) {
+  const rows = [
+    { y: 572, h: 80, labels: [["closer", "Closer"], ["farther", "Farther"]] },
+    { y: 664, h: 80, labels: [["prev", "Previous"], ["next", "Next"], ["real", real ? "Classroom" : "Real size"], ["reset", "Reset"], ["exit", "Exit VR"]] },
+  ];
+  const rects = [];
+  for (const row of rows) {
+    const gap = 12;
+    const x0 = 28;
+    const bw = (PANEL_W - x0 * 2 - gap * (row.labels.length - 1)) / row.labels.length;
+    row.labels.forEach(([id, label], i) => {
+      rects.push({ id, label, x: x0 + i * (bw + gap), y: row.y, w: bw, h: row.h });
+    });
+  }
+  return rects;
+}
+
+export function buttonAt(px, py, rects) {
+  if (!rects) return null;
+  for (let i = rects.length - 1; i >= 0; i--) {
+    const r = rects[i];
+    if (px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h) return r.id;
+  }
+  return null;
+}
+
+// Each controller owns its ray and cursor. Updating one index never changes the other.
+// Untracked hands hide both. A tracked miss keeps the ray and hides only that cursor.
+export function aimFrame(states, index, spec) {
+  const next = (states || []).map((s) => ({ ray: !!s.ray, cursor: !!s.cursor }));
+  while (next.length <= index) next.push({ ray: false, cursor: false });
+  const tracked = !!(spec && spec.tracked);
+  next[index] = tracked ? { ray: true, cursor: !!(spec && spec.panel) } : { ray: false, cursor: false };
+  return next;
+}
+
+// A trigger on the panel never rotates the model. A trigger that misses the panel resets.
+export function resolveSelect(hit) {
+  if (hit && hit.button) return { action: hit.button, rotate: false };
+  if (hit && hit.panel) return { action: null, rotate: false };
+  return { action: "reset", rotate: false };
+}
+
+function qMul(a, b) {
+  return {
+    x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+    y: a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+    z: a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+    w: a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
+  };
+}
+function qInv(q) {
+  const n = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w || 1;
+  return { x: -q.x / n, y: -q.y / n, z: -q.z / n, w: q.w / n };
+}
+
+// Controller forward is local -Z. Tipping that forward down is a negative rotation about X,
+// which would lift the object's near face (+Z, the side toward the student) if applied directly.
+// Return the inverse so the near face follows the hand.
+export function grabTurn(prev, next) {
+  const delta = qMul(next, qInv(prev));
+  return qInv(delta);
 }
 
 export function shortFact(craft, max = 180) {
