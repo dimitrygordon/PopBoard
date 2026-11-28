@@ -50,7 +50,7 @@ MASSES.forEach((m, i) => {
   const R = { "0.2": 1.3, "1": 2.0, "3": 2.6, "15": 3.4, "40": 4.0 }[m];
   const o = scenes.glow([[R * 2.4, 0.12], [R * 1.5, 0.3], [R, 1.0], [R * 0.6, 1.0]], { useTeff: true, order: 3 }); o.material.uniforms.uTeff.value = MASS_TEFF[m];
   const l = scenes.label(MASS_LABEL[m], { size: 2.2 }); const grp = new THREE.Group(); grp.add(o, l); l.position.set(0, -R - 3, 0);
-  grp.position.set((i - 2) * 13, 0, 0); hub.add(grp); hubOrbs[m] = { grp, o, l, R };
+  grp.position.set((i - 2) * 13, 0, 0); hub.add(grp); hubOrbs[m] = { grp, o, l, R, i };
 });
 const hubTitle = scenes.label("Pick a starting mass", { size: 3.2 }); hubTitle.position.set(0, 12, 0); hub.add(hubTitle);
 const hubNote = scenes.label("Sizes and colors here are a key, not to scale", { size: 1.6, color: "#C3C9E6", plate: false }); hubNote.position.set(0, -12, 0); hub.add(hubNote);
@@ -363,7 +363,7 @@ function sizeLabels(cam, xr) {
   const xMax = !xr && !layout.phone && layout.panel ? layout.panel.left - 10 : layout.w - 8, yMin = layout.phone && layout.free ? layout.free.top + 4 : 62, yMax = layout.phone && layout.free ? layout.free.bottom - 4 : layout.h - 8, card = !xr ? layout.card : null;
   scene.traverseVisible((o) => { const d = o.userData; if (!o.isSprite || !d.label || !d.base) return;
     o.getWorldPosition(lp); o.parent.getWorldScale(ps); const dist = Math.max(1e-6, lp.distanceTo(cp));
-    const ppw = vpH / (2 * dist * tanH); const px = d.base[1] * ps.y * LABEL_EM * ppw; const k = px > 0 ? Math.max(1, minPx / px) : 1;
+    const ppw = vpH / (2 * dist * tanH); const px = d.base[1] * ps.y * LABEL_EM * ppw; const mp = !xr && d.minPx != null ? d.minPx : minPx; const k = px > 0 ? Math.max(1, mp / px) : 1;
     d.k = k; o.scale.set(d.base[0] * k, d.base[1] * k, 1);
     if (xr || !d.clamp) return;
     sp2.copy(lp).project(camera); const sx = (sp2.x + 1) / 2 * layout.w, sy = (1 - sp2.y) / 2 * layout.h; if (sp2.z > 1) return;
@@ -413,7 +413,7 @@ function frame(now) {
   bg.root.position.copy(camLocal);   // the sky stays at infinity
   const extra = {};
   if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt, camLocal, camQuatLocal: qL, extra, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
-  else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); }
+  else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); o.l.position.y = layout.phone && !presenting && o.i % 2 ? o.R + 3 : -o.R - 3;  const ph = layout.phone && !presenting; hubTitle.position.y = ph ? 15 : 12; hubNote.position.y = ph ? -15 : -12; }   /* phone: every other key label sits above its orb so the five never overlap */
   hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? "Place your pins" : "Pick a starting mass");
   // scale bar and zoom labels (labelled zoom changes, never a fake scale)
   const km = sc && sc.kmPerUnit ? sc.kmPerUnit() : null;

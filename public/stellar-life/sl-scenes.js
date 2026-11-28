@@ -231,7 +231,7 @@ export class Scenes {
     const flash = this.glow([[0.5, 1.0, [255, 255, 255]], [0.25, 1.0, [255, 255, 255]]], { useTeff: false, order: 9 }); face.add(flash);
     const lab = this.label("Core, enlarged (not to scale)", { size: 1.4 }); g.add(lab);
     const key = this.label("Colors are a key to the fuels, not real colors", { size: 1.0, color: "#C3C9E6", plate: false }); g.add(key);
-    const layLabs = ONION.map(([n]) => { const l = this.label(n, { size: 0.9, color: "#FFFFFF", plate: false }); face.add(l); return l; });
+    const layLabs = ONION.map(([n]) => { const l = this.label(n, { size: 0.9, color: "#FFFFFF", plate: false }); l.userData.minPx = 10; face.add(l); return l; });
     const sc = { root: g, kind: "cutaway", camDist: 46, radius: 10, strokes: b.n + st.strokes, meshes: 2 + st.meshes, star: st,
       kmPerUnit: () => st.kmPerUnit(),
       update: (c) => {
@@ -250,7 +250,7 @@ export class Scenes {
         flash.visible = fl > 0.01 && showCut; flash.material.uniforms.uAlpha.value = fl;
         const radii = [1.0, 0.72, 0.52, 0.38, 0.28, 0.19, 0.11];
         layLabs.forEach((l, i) => { l.visible = showCut && A[i] > 0.4 && (cut === "onion" || cut === "onionBars" || i <= 1 || (cut === "collapse" && i === 6)); l.position.set(0, (radii[i] + (radii[i + 1] || 0)) / 2, 0.02); l.userData.base = [0.9 * 4 / R0 * 1.2, 0.9 / R0 * 1.2]; });
-        lab.position.copy(new T.Vector3(0, -R0 - 1.8, 0).applyQuaternion(c.camQuatLocal)); key.position.copy(new T.Vector3(0, -R0 - 3.2, 0).applyQuaternion(c.camQuatLocal));
+        lab.position.copy(new T.Vector3(0, -R0 - 1.8, 0).applyQuaternion(c.camQuatLocal)); const gap = lab.scale.y * 0.2 + key.scale.y * 0.2; key.position.copy(new T.Vector3(0, -R0 - 1.8 - gap, 0).applyQuaternion(c.camQuatLocal));   /* the key sits under the title at any label size */
       } };
     this.cache.cut = sc; return sc;
   }
