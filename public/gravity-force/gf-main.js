@@ -7,7 +7,7 @@ import { parseState, serializeState, canSetHelp } from "./gf-state.js";
 import { renderPanel, helpButtons } from "./gf-panel.js";
 import { createLab, sceneModel, controlsFor, act, SCENE_ORDER, S1, clampDist, SORT_CARDS, tabsFor, TAB_ORDER, VIEWS_OF, pretty } from "./gf-scenes.js";
 import { LabView, VIEWS, S3_X } from "./gf-view.js";
-import { XRPanel, readPads, panelInputAt } from "./gf-xr.js";
+import { XRPanel, readPads, panelInputAt, panelPoseReady } from "./gf-xr.js";
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -158,18 +158,18 @@ addEventListener("keydown", (e) => {
 
 // ---------------- WebXR ----------------
 let xrSession = null; const vrBtn = $("gfVR"), vrNote = $("gfVRNote");
-const panel = new XRPanel(THREE); scene.add(panel.mesh); window.__gf.panel = panel;
+const panel = new XRPanel(THREE); scene.add(panel.mesh); window.__gf.panel = panel;   // scene child, world-locked; never parented to the camera
 window.__gf.drawPanel = () => { const M = sceneModel(lab); M.whyOpen = lab.whyCard; M.wrongOpen = lab.wrongCard; panel.draw(M, controlsFor(lab), tabsOf(), helpsOf(), true); };
 async function checkXr() {
   let ok = false; if (navigator.xr && navigator.xr.isSessionSupported) { try { ok = await navigator.xr.isSessionSupported("immersive-vr"); } catch { ok = false; } }
   if (vrBtn) vrBtn.hidden = !ok; if (vrNote) vrNote.hidden = ok;
 }
-let placed = false;
+let placed = false; let xrPoseFrames = 0; let lastSceneKey = "";
 if (vrBtn) vrBtn.addEventListener("click", async () => {
   if (xrSession) { await xrSession.end(); return; }
   try {
     const session = await navigator.xr.requestSession("immersive-vr", { optionalFeatures: ["local-floor", "bounded-floor", "hand-tracking"] });
-    xrSession = session; placed = false; panel.resetOffset(); panelGrab = null; pokePrev[0] = pokePrev[1] = null;
+    xrSession = session; placed = false; xrPoseFrames = 0; lastSceneKey = ""; panel.userMoved = false; panelGrab = null; pokePrev[0] = pokePrev[1] = null;
     session.addEventListener("end", () => { xrSession = null; panel.mesh.visible = false; vrBtn.querySelector(".lbl").textContent = "Enter VR"; resize(); });
     camera.clearViewOffset(); await renderer.xr.setSession(session); vrBtn.querySelector(".lbl").textContent = "In VR";
   } catch (err) { xrSession = null; console.warn(err); fail("Could not start VR: " + (err && err.message ? err.message : err)); }
@@ -222,25 +222,33 @@ function updatePanelGrab(hp, yaw) {
     const st = xin.ctrl[i]; if (!st) continue;
     const squeezing = !!st.squeeze; const pinching = !!(st.selecting && st.handInput);
     if (panelGrab && panelGrab.i === i) {
-      if (!squeezing && !pinching) { panel.captureOffset(hp, yaw); panelGrab = null; }
+      if (!squeezing && !pinching) { panel.pinInWorld(hp); panelGrab = null; }
       else panel.followGrab(panelGrab.obj);
       return;
     }
     if (squeezing && !panelGrab) tryPanelGrab(i, xin.rayOf(i), "grip");
   }
 }
+function headQuatOf(xc) { return xc.getWorldQuaternion(new THREE.Quaternion()); }
+function sceneKeyOf() { return (lab.url.scene || "") + ":" + (lab.view || ""); }
+function spawnPanel(hp, hq) { panel.spawnInView(hp, hq); panel.mesh.visible = true; placed = true; }
 function xrFrame() {
   const xc = renderer.xr.getCamera(); const hp = new THREE.Vector3(); xc.getWorldPosition(hp);
-  const yaw = headYawOf(xc);
-  if (!placed) { panel.resetOffset(); panel.place(hp, yaw); panel.mesh.visible = true; placed = true; }
-  updatePanelGrab(hp, yaw);
-  if (!panelGrab) panel.place(hp, yaw);
+  const hq = headQuatOf(xc);
+  xrPoseFrames++;
+  if (!placed && panelPoseReady(hp, xrPoseFrames)) spawnPanel(hp, hq);
+  updatePanelGrab(hp, headYawOf(xc));
+  // World-locked: do not move the panel with the head. Only spawn, grab, or "bring panel here" may change it.
   pokePanel();
   const ev = readPads(xrSession ? [...xrSession.inputSources] : [], padPrev);
   paused = ev.pause; view.paused = paused;
   if (ev.fire && lab.url.scene === "well" && lab.view !== "sort") doAct("flick");
   if (ev.nextScene) doAct("next");
+  if (ev.bringPanel) spawnPanel(hp, hq);
   if (ev.chip) { const ctr = controlsFor(lab).filter((c) => /^(obj|world|alt|speed):/.test(c.id) && !c.disabled); if (ctr.length) { const cur = ctr.findIndex((c) => c.on); const n = ctr[(Math.max(0, cur) + ev.chip + ctr.length) % ctr.length]; doAct(n.id); } }
+  const key = sceneKeyOf();
+  if (placed && key !== lastSceneKey && !panel.userMoved) spawnPanel(hp, hq);
+  lastSceneKey = key;
   const M = sceneModel(lab); M.whyOpen = lab.whyCard; M.wrongOpen = lab.wrongCard;
   panel.draw(M, controlsFor(lab), tabsOf(), helpsOf());
   return hp;

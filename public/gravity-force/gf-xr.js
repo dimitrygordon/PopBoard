@@ -5,6 +5,15 @@ import { INK, CREAM } from "./gf-props.js";
 import { pretty } from "./gf-scenes.js";
 
 export const XRP = { W: 1024, H: 1536, M: 0.8 };   // texture px and panel width in metres (1280 px per metre)
+/** World-locked spawn: metres in front of the head, and how far below the eyes. */
+export const PANEL_SPAWN = { dist: 1.05, below: 0.1, minHeadY: 0.4, waitFrames: 8, maxWaitFrames: 45 };
+/** True once the XR viewer pose has settled (not the 0,0,0 origin or a local-floor height guess). */
+export function panelPoseReady(headPos, frames) {
+  if (frames < PANEL_SPAWN.waitFrames) return false;
+  const y = headPos && headPos.y, len2 = headPos && headPos.lengthSq ? headPos.lengthSq() : 0;
+  if (frames < PANEL_SPAWN.maxWaitFrames && (len2 < 0.01 || y < PANEL_SPAWN.minHeadY)) return false;
+  return true;
+}
 const FONT = (px, w = 600) => `${w} ${px}px Inter, -apple-system, system-ui, sans-serif`;
 /** Readout sizes: main value 96 px on a 1280 px/m panel is 7.5 cm tall, about 3.6 degrees at 1.2 m (over 56 headset px). */
 export const READOUT = { mainPx: 96, subScale: 0.6, subAlpha: 0.7, ink: INK, dial: CREAM };
@@ -28,31 +37,25 @@ export class XRPanel {
     // handle bar above the panel: grip or a hand pinch here moves the panel (Dimitry, from Stellar Life)
     const handle = new THREE.Mesh(new THREE.BoxGeometry(XRP.M * 0.92, 0.04, 0.035), new THREE.MeshBasicMaterial({ color: 0xF3E9D2, toneMapped: false }));
     handle.position.set(0, h / 2 + 0.03, 0.01); handle.renderOrder = 62; handle.userData.handle = true; this.mesh.add(handle); this.handle = handle;
-    this.offset = { pos: new THREE.Vector3(), quat: new THREE.Quaternion() }; this.hasOffset = false;
+    this.userMoved = false;
     this._grabLocal = new THREE.Matrix4(); this.hits = []; this.hover = null; this.key = ""; this.ray = new THREE.Raycaster();
   }
-  defaultPose(headPos, headYaw) {
-    const d = 1.2, side = -0.62; const fx = -Math.sin(headYaw), fz = -Math.cos(headYaw), rx = Math.cos(headYaw), rz = -Math.sin(headYaw);
-    const pos = new this.T.Vector3(headPos.x + fx * d + rx * side, Math.max(0.95, headPos.y - 0.12), headPos.z + fz * d + rz * side);
-    const quat = new this.T.Quaternion().setFromEuler(new this.T.Euler(-0.12, headYaw + 0.42, 0, "YXZ"));
-    return { pos, quat };
-  }
-  /** 1.2 m in front of the student, to the left, tilted up. Applies the session offset if the student has moved the panel.
-   *  After a move the position is kept (so it can sit off to the side or low, out of the way) and the panel turns to face the student. */
-  place(headPos, headYaw) {
-    const def = this.defaultPose(headPos, headYaw);
-    this.mesh.position.copy(def.pos);
-    if (this.hasOffset) {
-      this.mesh.position.add(this.offset.pos.clone().applyQuaternion(def.quat));
-      this.mesh.lookAt(headPos.x, headPos.y, headPos.z);
-    } else this.mesh.quaternion.copy(def.quat);
+  /** Comfortable reading pose, world-locked: 1.05 m in front of the head's yaw, slightly below eye level, facing the student, no side offset. */
+  spawnInView(headPos, headQuat) {
+    const T = this.T;
+    const fwd = new T.Vector3(0, 0, -1).applyQuaternion(headQuat); fwd.y = 0;
+    if (fwd.lengthSq() < 1e-8) fwd.set(0, 0, -1); else fwd.normalize();
+    const pos = new T.Vector3(headPos.x + fwd.x * PANEL_SPAWN.dist, headPos.y - PANEL_SPAWN.below, headPos.z + fwd.z * PANEL_SPAWN.dist);
+    this.mesh.position.copy(pos);
+    this.mesh.lookAt(headPos.x, headPos.y, headPos.z);
     this.mesh.updateMatrixWorld();
+    this.userMoved = false;
   }
-  resetOffset() { this.hasOffset = false; this.offset.pos.set(0, 0, 0); this.offset.quat.identity(); }
-  captureOffset(headPos, headYaw) {
-    const def = this.defaultPose(headPos, headYaw); const inv = def.quat.clone().invert();
-    this.offset.pos.copy(this.mesh.position).sub(def.pos).applyQuaternion(inv);
-    this.offset.quat.identity(); this.hasOffset = true;
+  /** After a grab, stay exactly here in world space and face the student once. Later head motion must not move it. */
+  pinInWorld(headPos) {
+    this.mesh.lookAt(headPos.x, headPos.y, headPos.z);
+    this.mesh.updateMatrixWorld();
+    this.userMoved = true;
   }
   beginGrab(obj) { obj.updateMatrixWorld(); this.mesh.updateMatrixWorld(); this._grabLocal.copy(obj.matrixWorld).invert().multiply(this.mesh.matrixWorld); }
   followGrab(obj) { obj.updateMatrixWorld(); const w = obj.matrixWorld.clone().multiply(this._grabLocal); w.decompose(this.mesh.position, this.mesh.quaternion, new this.T.Vector3()); }
@@ -211,16 +214,16 @@ export function panelInputAt(panel, origin, dir, gripPoint, mode = "select") {
   return { id: null };
 }
 
-/** Gamepad mapping (xr-standard): right A fires a marble, right thumbstick press next scene, left thumbstick picks a chip,
- *  left X held pauses motion, grip or a hand pinch on the panel handle moves the panel (offset kept for the session; the
- *  panel then turns to face the student), B or Y shows or hides the panel (handled in ns-input). Returns edge events for this frame. */
+/** Gamepad mapping (xr-standard): right A fires a marble, right thumbstick press next scene, left thumbstick X steps a chip,
+ *  left thumbstick press brings the panel in front, left X held pauses motion, grip or a hand pinch on the panel handle
+ *  moves the panel and pins it in world space, B or Y shows or hides the panel (handled in ns-input). Returns edge events for this frame. */
 export function readPads(sources, prev) {
-  const ev = { fire: false, nextScene: false, chip: 0, pause: false, stickX: 0 };
+  const ev = { fire: false, nextScene: false, chip: 0, pause: false, stickX: 0, bringPanel: false };
   for (const src of sources || []) {
     const gp = src && src.gamepad; if (!gp) continue; const hand = src.handedness; const p = prev[hand] || (prev[hand] = { a: false, stick: false, chip: 0 });
     const pressed = (i) => !!(gp.buttons[i] && gp.buttons[i].pressed);
     if (hand === "right") { const a = pressed(4); if (a && !p.a) ev.fire = true; p.a = a; const st = pressed(3); if (st && !p.stick) ev.nextScene = true; p.stick = st; ev.stickX = gp.axes.length >= 4 ? gp.axes[2] : 0; }
-    if (hand === "left") { ev.pause = pressed(4); const x = gp.axes.length >= 4 ? gp.axes[2] : 0; const d = x > 0.7 ? 1 : x < -0.7 ? -1 : 0; if (d && d !== p.chip) ev.chip = d; p.chip = d; }
+    if (hand === "left") { ev.pause = pressed(4); const st = pressed(3); if (st && !p.stick) ev.bringPanel = true; p.stick = st; const x = gp.axes.length >= 4 ? gp.axes[2] : 0; const d = x > 0.7 ? 1 : x < -0.7 ? -1 : 0; if (d && d !== p.chip) ev.chip = d; p.chip = d; }
   }
   return ev;
 }
