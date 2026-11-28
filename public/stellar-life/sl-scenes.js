@@ -1,7 +1,7 @@
 // Stellar Life Cycle VR: the painted 3D scenes. Each scene is a few merged stroke meshes (a handful of draw calls)
 // plus a glow billboard, built lazily on first use and cached. Every size is to scale inside its scene; the
 // scene's kmPerUnit drives the scale bar and the "Zoomed in / out N times" labels (never a fake scale).
-import { buildSky, buildCloud, buildDisk, buildStar, buildShells, buildOnion, ONION, buildNebula, buildRemnant, buildEarth, buildEarth2, buildCity, buildPhotonRing, buildLensedStars, buildProminence, buildFlare, buildRSG, rsgCells, spriteGeometry, lutData, tRGB255, hex2rgb, rng } from "./sl-strokes.js";
+import { buildSky, buildCloud, buildDisk, buildStar, buildShells, buildOnion, ONION, buildNebula, buildRemnant, buildEarth, buildEarth2, buildCity, buildPhotonRing, buildProminence, buildFlare, buildRSG, rsgCells, buildLensSources, spriteGeometry, lutData, tRGB255, hex2rgb, rng } from "./sl-strokes.js";
 import { about } from "./sl-data.js";
 import { paintGranulation, paintCity, GRAN_KM, CITY_M, CITY_ASPECT } from "./sl-loupes.js";
 import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag, glowVert, glowFrag, rsgVert, EVO, HASH } from "./sl-shaders.js";
@@ -502,16 +502,16 @@ void main(){
     const RH = 15, RS = RH * 2.6;   // drawn at 30 km of horizon radius (3 km per Sun of mass, 10 Sun example); shadow 2.6 x horizon
     const ring = new T.Mesh(new T.PlaneGeometry(2, 2), photonRingMat(T, this.lut)); ring.scale.setScalar(RS * 1.35); ring.renderOrder = 3; face.add(ring);
     const pr = buildPhotonRing(91); const mp = this.mesh(pr, { additive: true }, 4); mp.scale.setScalar(RS); mp.material.uniforms.uAlpha.value = 0.55; face.add(mp);
-    const ls = buildLensedStars(41, 420, 0.92); const ml = this.mesh(ls, { additive: true }, 2); ml.scale.setScalar(RS); face.add(ml);
+    const ls = buildLensSources(41, 420); const ml = this.mesh(ls, { additive: true }, 2); ml.scale.setScalar(RS); face.add(ml);   /* round 7: a real point-lens map (strokeVert LENS), Einstein radius 1.5 shadow radii */
     const hor = this.dashedRing(RH, { color: 0xAACDFF, opacity: 0.85 }); hor.rotation.x = Math.PI / 2; hor.renderOrder = 5; face.add(hor);
     const swapStar = this.glow([[RH * 2.2, 0.25], [RH * 1.2, 0.5], [RH * 0.8, 1.0]], { useTeff: true, order: 4 }); swapStar.material.uniforms.uTeff.value = 30000; g.add(swapStar);
-    let drift = 0;
+    const ringA0 = 0.55;
     const coR = this.callout("Bent light ring", { sub: "stars behind are bent too", side: 1 }), coH = this.callout("Horizon of a 10 Sun example", { sub: "about 30 km radius", side: 1 }); g.add(coR.grp, coH.grp);
     const sc = { root: g, kind: "bh", camDist: 125, radius: RS * 1.15, strokes: pr.n + ls.n, meshes: 5, kmPerUnit: () => 2,
       fit: () => ({ r: RS, frac: 230 / 1080, pfrac: 230 * 390 / 860 / 844 }),
       update: (c) => {
         face.quaternion.copy(c.camQuatLocal); const swap = !!c.st.toggles.swap;
-        if (!c.calm) { drift += c.dt; ml.rotation.z = drift * 0.11; mp.rotation.z = -drift * 0.05; }   /* round 6: the stars behind drift, so their bent images slide along the ring; the ring's bright side turns slowly */ ring.visible = mp.visible = ml.visible = hor.visible = !swap; swapStar.visible = swap;
+        mp.material.uniforms.uAlpha.value = ringA0 * (1 + 0.08 * Math.sin(2 * Math.PI * (c.flowT || 0) / 6));   /* round 7: nothing spins; the thin ring only breathes in brightness (8%, 6 s) */ ring.visible = mp.visible = ml.visible = hor.visible = !swap; swapStar.visible = swap;
         const q = c.camQuatLocal; const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q);
         coR.set(swap ? "A star with the same mass" : "Bent light ring", swap ? "size not to scale" : "stars behind are bent too");
         coR.place(new T.Vector3().addScaledVector(rt, RS * 0.62).addScaledVector(up, RS * 0.8), RS * 0.45, RS * 0.25, q, 0.6);

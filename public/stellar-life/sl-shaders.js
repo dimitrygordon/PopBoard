@@ -88,6 +88,20 @@ void main(){
   bool snK = kind > 10.5 && kind < 11.5;
   if (snK) { float hs1 = h11(seed * 0.61); float rr0 = length(p.xy); float ang = uExp * 0.6 * (rr0 - 0.9) * (hs1 > 0.5 ? 1.0 : 0.6);
     float ca = cos(ang), sa = sin(ang); p.xy = mat2(ca, sa, -sa, ca) * p.xy * (1.0 + uExp * (0.55 + 0.9 * hs1)); tn.xy = mat2(ca, sa, -sa, ca) * tn.xy; }
+  // point lens (LENS, unit = shadow radius, Einstein radius TE): the source drifts in a straight line (wrapping in a +/-B box, faded at
+  // the box edge); its images sit at theta = (beta +/- sqrt(beta^2 + 4 TE^2)) / 2 along the source direction (the minus image on the
+  // far side), stretched tangentially by |theta|/beta and radially by theta^2/(theta^2 + TE^2). Surface brightness is kept, so the
+  // flux follows the magnification; images inside the shadow are captured (hidden).
+  bool lensK = kind > 11.5 && kind < 12.5;
+  if (lensK) { const float TE = 1.5, BX = 5.0; vec2 b0 = position.xy; float sgn = position.z;
+    vec2 vel = aParam.x * normalize(aTan.xy + vec2(1e-6, 0.0));
+    vec2 bt = mod(b0 + vel * uFlowT + BX, 2.0 * BX) - BX; float bl = max(length(bt), 1e-3); vec2 bh = bt / bl;
+    float ath = abs(0.5 * (bl + sgn * sqrt(bl * bl + 4.0 * TE * TE))); float mr = ath * ath / (ath * ath + TE * TE);
+    float S0 = aA.z; float span = min(S0 / bl, 2.4);
+    float phi = atan(bh.y, bh.x) + (sgn < 0.0 ? 3.14159265 : 0.0) + (aUvK.y - 0.5) * span;
+    p = vec3(ath * cos(phi), ath * sin(phi), 0.0); tn = vec3(-sin(phi), cos(phi), 0.0);
+    float wr = max(mr, 0.45); width *= wr;
+    fade = (mr / wr) * smoothstep(1.0, 1.1, ath) * smoothstep(BX, BX - 0.8, max(abs(bt.x), abs(bt.y))); }
   // jet knots (JETK): each knot rides out along the jet and fades, then a new one is launched at the base
   bool jetK = kind > 7.5 && kind < 8.5, jetS = kind > 8.5 && kind < 9.5;
   if (jetK) { float su = fract(uFlowT * 0.08 + aParam.x); p.y += sign(position.y) * 8.2 * (su - aParam.x); fade = smoothstep(0.0, 0.12, su) * (1.0 - smoothstep(0.65, 1.0, su)); }

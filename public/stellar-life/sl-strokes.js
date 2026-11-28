@@ -421,6 +421,19 @@ export function buildLensedStars(seed = 41, n = 520, thetaE = 0.92) {
   return b;
 }
 
+// round 7: background stars for the point lens (unit = shadow radius). Each source is a dot at beta0 in a box of +/-B; strokeVert
+// drifts it in a straight line (speed in omega, direction in the tangent) and draws its two images (sign +1 primary, -1 secondary) from the lens map. Both images share a seed.
+export const LENS = { TE: 1.5, B: 5.0 };
+export function buildLensSources(seed = 41, n = 420) {
+  const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
+  for (let i = 0; i < n; i++) { const Tk = Math.pow(10, 3.6 + R() * 0.6); const col = mix(tRGB255(Tk), [255, 255, 255], 0.4); const ang = R() * TAU, dir = [Math.cos(ang), Math.sin(ang)];
+    let speed = 0.04 + 0.08 * R(), bx = (R() * 2 - 1) * LENS.B, by = (R() * 2 - 1) * LENS.B, sz = R() < 0.05 ? 0.02 : 0.008 + R() * 0.007, al = 0.45 + R() * 0.5;
+    if (i < 8) { /* a few brighter stars pass close behind the hole early on (closest approach at 4 to 14 s), so a short clip shows arcs and secondary images */
+      const tc = 4.5 + 1.3 * i, bmin = 0.015 + 0.016 * i; speed = 0.1; bx = -dir[1] * bmin - dir[0] * speed * tc; by = dir[0] * bmin - dir[1] * speed * tc; sz = 0.02; al = 0.95; }
+    const sd = S();
+    for (const sgn of [1, -1]) b.add([[bx, by, sgn], [bx + dir[0] * 1e-4, by + dir[1] * 1e-4, sgn]], { width: sz, rgb: col, alpha: al, kind: KIND.LENS, omega: speed, bristles: 1, seed: sd, dab: true }); }
+  return b;
+}
 /** A supernova remnant shell: torn and lopsided, uneven brightness, one blown-out sector, knots, and jets on one side only (LOOK-SPEC v2.3).
  * Unit sphere (R0). Emission-line colours (labelled as such): H-alpha pinks, [O III] teal, white-hot knots, synchrotron violet-blue. */
 export function buildRemnant(seed = 63, n = 1100) {   // face-on, to Leo's frame 3c: long wobbling strands along a torn, lopsided loop
