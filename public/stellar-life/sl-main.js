@@ -376,6 +376,12 @@ function sizeLabels(cam, xr) {
     if (!dx && !dy) return;
     const shift = new THREE.Vector3(dx / ppw, -dy / ppw, 0).applyQuaternion(lq); o.parent.getWorldQuaternion(wq2).invert(); shift.applyQuaternion(wq2).divide(ps);
     o.position.add(shift); if (d.line) { d.line.setXYZ(1, o.position.x, o.position.y, o.position.z); d.line.needsUpdate = true; } });
+  // the scale bar keeps the same margin from the bottom edge in every scene (desktop: 7 percent of the height; phone: just above the sheet)
+  if (!xr && sbar.visible) {
+    const o = sbarLab, d = o.userData; o.getWorldPosition(lp); o.parent.getWorldScale(ps); const dist = Math.max(1e-6, lp.distanceTo(cp)), ppw = vpH / (2 * dist * tanH);
+    sp2.copy(lp).project(camera); const sy = (1 - sp2.y) / 2 * layout.h, hh = o.scale.y * ps.y * ppw * (d.ph || 0.45) / 2, bot = sy + hh, yMax = layout.phone && layout.free ? layout.free.bottom - 6 : layout.h * 0.93;
+    if (bot > yMax && sp2.z < 1) { const shift = new THREE.Vector3(0, (bot - yMax) / ppw, 0).applyQuaternion(lq); sbar.parent.getWorldQuaternion(wq2).invert(); sbar.parent.getWorldScale(ps); shift.applyQuaternion(wq2).divide(ps); sbar.position.add(shift); }
+  }
 }
 const sp2 = new THREE.Vector3(), lq = new THREE.Quaternion(), wq2 = new THREE.Quaternion();
 
