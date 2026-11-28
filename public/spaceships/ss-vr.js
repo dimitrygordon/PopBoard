@@ -10,15 +10,19 @@ import { assetUrl, assetExists, neighborCraft } from "./ss-data.js";
 import {
   CLOSE_MIN_M,
   VR_HINT,
+  buttonAt,
   classroomPlacement,
   clampScale,
   depthRange,
   distanceLimits,
   easeDistance,
+  grabTurn,
   initialPlacement,
+  panelButtons,
   placementKind,
   placementNote,
   realSizeLine,
+  resolveSelect,
   shortFact,
   stepDistance,
   stickDelta,
@@ -173,11 +177,32 @@ function createViewer(canvas) {
   panelTex.colorSpace = THREE.SRGBColorSpace;
   const panelMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(PANEL_M_W, PANEL_M_H),
-    new THREE.MeshBasicMaterial({ map: panelTex, transparent: true, toneMapped: false, depthTest: true })
+    new THREE.MeshBasicMaterial({ map: panelTex, transparent: true, toneMapped: false, depthTest: true, side: THREE.DoubleSide })
   );
+  panelMesh.frustumCulled = false;
   // Just below the view center, close enough that both eyes can read every button. Local -Z is forward.
   panelMesh.position.set(-0.04, -0.46, -0.95);
   stage.add(panelMesh);
+  // A mesh ray and dot, not a Line: logarithmic depth hides LineBasic rays on Quest.
+  const cursor = new THREE.Mesh(
+    new THREE.SphereGeometry(0.012, 12, 8),
+    new THREE.MeshBasicMaterial({ color: 0x4caf50, depthTest: false, toneMapped: false })
+  );
+  cursor.renderOrder = 100;
+  cursor.visible = false;
+  cursor.frustumCulled = false;
+  scene.add(cursor);
+  const aimRay = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.003, 0.003, 1, 6),
+    new THREE.MeshBasicMaterial({ color: 0xcfe8ff, transparent: true, opacity: 0.9, depthTest: false, toneMapped: false })
+  );
+  aimRay.renderOrder = 99;
+  aimRay.visible = false;
+  aimRay.frustumCulled = false;
+  scene.add(aimRay);
+  const _rayO = new THREE.Vector3();
+  const _rayD = new THREE.Vector3();
+  const _upRay = new THREE.Vector3(0, 1, 0);
 
   const hits = [];
   let model = null;
@@ -194,6 +219,8 @@ function createViewer(canvas) {
   let placeFrames = 0;
   let dirty = true;
   let hover = null;
+  let pointingAtPanel = false;
+  let sawButton = false;
   let input = null;
   let session = null;
   let running = null;
@@ -308,46 +335,60 @@ function createViewer(canvas) {
     wrapText(g, note, g.font, PANEL_W - 72).slice(0, 2).forEach((line, i) => g.fillText(line, 36, 436 + i * 30));
     wrapText(g, VR_HINT, g.font, PANEL_W - 72).slice(0, 2).forEach((line, i) => g.fillText(line, 36, 508 + i * 28));
 
-    const paintRow = (labels, y, h) => {
-      const gap = 12;
-      const x0 = 28;
-      const bw = (PANEL_W - x0 * 2 - gap * (labels.length - 1)) / labels.length;
-      labels.forEach(([id, label], i) => {
-        const x = x0 + i * (bw + gap);
-        const hot = hover === id;
-        g.fillStyle = hot ? "#1a1a1a" : "#111111";
-        g.fillRect(x, y, bw, h);
-        g.strokeStyle = hot ? "#4caf50" : "#333333";
-        g.strokeRect(x + 1, y + 1, bw - 2, h - 2);
-        g.fillStyle = "#cccccc";
-        g.font = "600 24px Jost, system-ui, sans-serif";
-        const tw = g.measureText(label).width;
-        g.fillText(label, x + (bw - tw) / 2, y + h * 0.62);
-        hits.push({ id, x, y, w: bw, h });
-      });
-    };
-    paintRow([["closer", "Closer"], ["farther", "Farther"]], 572, 80);
-    paintRow([
-      ["prev", "Previous"],
-      ["next", "Next"],
-      ["real", real ? "Classroom" : "Real size"],
-      ["reset", "Reset"],
-      ["exit", "Exit VR"],
-    ], 664, 80);
+    for (const r of panelButtons(real)) {
+      const hot = hover === r.id;
+      g.fillStyle = hot ? "#16331a" : "#111111";
+      g.fillRect(r.x, r.y, r.w, r.h);
+      g.strokeStyle = hot ? "#4caf50" : "#333333";
+      g.lineWidth = hot ? 6 : 4;
+      g.strokeRect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+      g.fillStyle = hot ? "#4caf50" : "#cccccc";
+      g.font = "600 24px Jost, system-ui, sans-serif";
+      const tw = g.measureText(r.label).width;
+      g.fillText(r.label, r.x + (r.w - tw) / 2, r.y + r.h * 0.62);
+      hits.push(r);
+    }
     panelTex.needsUpdate = true;
     dirty = false;
   }
 
+  // three.js writes the Quest pose into controller.matrix and only flags matrixWorld.
+  // selectstart fires before the scene rebuilds matrixWorld, so a ray read from matrixWorld
+  // is still at the origin and misses the panel. Rebuild both before the test.
+  function freshRay(i) {
+    const st = input && input.ctrl[i];
+    if (!st || !st.c) return null;
+    st.c.updateMatrixWorld(true);
+    panelMesh.updateWorldMatrix(true, false);
+    _rayO.setFromMatrixPosition(st.c.matrixWorld);
+    _rayD.set(0, 0, -1).transformDirection(st.c.matrixWorld);
+    if (_rayD.lengthSq() < 1e-8) return null;
+    return { origin: _rayO, dir: _rayD };
+  }
   function hitAt(ray) {
-    if (!ray) return { button: null, panel: false };
+    if (!ray || !ray.origin || !ray.dir) return { button: null, panel: false, point: null, distance: 0 };
+    panelMesh.updateWorldMatrix(true, false);
     _raycaster.set(ray.origin, ray.dir);
+    _raycaster.near = 0;
     _raycaster.far = 8;
     const hit = _raycaster.intersectObject(panelMesh, false)[0];
-    if (!hit || !hit.uv) return { button: null, panel: false };
+    if (!hit || !hit.uv) return { button: null, panel: false, point: null, distance: 0 };
     const px = hit.uv.x * PANEL_W;
     const py = (1 - hit.uv.y) * PANEL_H;
-    const button = hits.find((r) => px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h);
-    return { button: button ? button.id : null, panel: true };
+    const button = buttonAt(px, py, hits);
+    return { button, panel: true, point: hit.point, distance: hit.distance };
+  }
+  function showAim(ray, hit) {
+    if (!ray) { aimRay.visible = false; cursor.visible = false; return; }
+    const len = hit && hit.panel ? Math.max(0.05, hit.distance) : 2;
+    aimRay.visible = true;
+    aimRay.quaternion.setFromUnitVectors(_upRay, _rayD);
+    aimRay.position.copy(_rayO).addScaledVector(_rayD, len / 2);
+    aimRay.scale.set(1, len, 1);
+    if (hit && hit.panel && hit.point) {
+      cursor.visible = true;
+      cursor.position.copy(hit.point);
+    } else cursor.visible = false;
   }
 
   function measure(root, groundUp) {
@@ -482,7 +523,11 @@ function createViewer(canvas) {
   }
 
   function applyGrab() {
-    if (!input) return;
+    if (!input || pointingAtPanel) {
+      grabQ[0] = grabQ[1] = null;
+      pinch = 0;
+      return;
+    }
     const hands = input.ctrl.filter((st) => st.squeeze && st.grip);
     if (hands.length >= 2) {
       hands[0].grip.getWorldPosition(_a);
@@ -501,8 +546,9 @@ function createViewer(canvas) {
       if (!st.squeeze || !st.grip) { grabQ[i] = null; return; }
       const q = st.grip.quaternion;
       if (!grabQ[i]) { grabQ[i] = q.clone(); return; }
-      _dq.copy(q).multiply(grabQ[i].clone().invert());
+      const turn = grabTurn(grabQ[i], q);
       grabQ[i].copy(q);
+      _dq.set(turn.x, turn.y, turn.z, turn.w);
       const ang = 2 * Math.acos(Math.min(1, Math.abs(_dq.w)));
       if (ang < 0.004) return;
       pivot.quaternion.premultiply(_dq);
@@ -525,7 +571,13 @@ function createViewer(canvas) {
         dirty = true;
       }
     }
-    if (input) input.update(dt);
+    if (input) {
+      pointingAtPanel = false;
+      sawButton = false;
+      for (const st of input.ctrl) if (st.c) st.c.updateMatrixWorld(true);
+      input.update(dt);
+      if (!sawButton && hover) { hover = null; dirty = true; }
+    }
     const stick = readStick();
     const d = stickDelta(stick.x, stick.y, dt);
     if (d.yaw) {
@@ -573,18 +625,26 @@ function createViewer(canvas) {
   function bindInput() {
     if (input) return;
     input = new XRInput(THREE, renderer, scene, {
-      onHover(i, ray) {
+      onHover(i) {
+        const ray = freshRay(i);
         const hit = hitAt(ray);
-        const id = hit.button;
-        if (i === 0 && id !== hover) { hover = id; dirty = true; }
-        if (input) input.setRayLength(i, hit.panel ? 2.2 : 3);
+        showAim(ray, hit);
+        if (hit.panel) pointingAtPanel = true;
+        if (hit.button) {
+          sawButton = true;
+          if (hit.button !== hover) { hover = hit.button; dirty = true; }
+        }
+        if (input) input.setRayLength(i, hit.panel ? Math.max(0.15, hit.distance) : 2.2);
       },
-      onSelectStart(i, ray) {
+      onSelectStart(i) {
+        const ray = freshRay(i);
         const hit = hitAt(ray);
-        if (hit.button) { press(hit.button); return; }
-        if (hit.panel) return;
-        resetTransform();
-        drawPanel();
+        showAim(ray, hit);
+        pointingAtPanel = !!hit.panel;
+        const decision = resolveSelect(hit);
+        if (decision.rotate) return;
+        if (decision.action && decision.action !== "reset") { press(decision.action); drawPanel(); return; }
+        if (decision.action === "reset") { resetTransform(); drawPanel(); }
       },
       onSelectEnd() {},
       onScrubHours() {},
