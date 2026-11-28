@@ -1,24 +1,31 @@
-// Beyond 3D VR storybook narration in Grok's "Altair" voice (xAI text-to-speech, POST /v1/tts).
+// Beyond 3D VR storybook narration in a Grok voice (xAI text-to-speech, POST /v1/tts).
 // Placeholder until Dimitry records his own read. Speaks each caption in vr4d-book.js exactly as written
 // and writes public/fourth-dimension/audio/vr4d/s<N>.mp3 plus s<N>.json word times (from the API's
 // character timestamps), then audio/manifest.json. Needs XAI_API_KEY in the environment.
-// Usage: node tools/fourth-dimension/render-vr-narration-altair.mjs [--only 1,2,3]
-// Recordings replace the same filenames. See public/fourth-dimension/audio/vr4d/README.md.
+// Usage: node tools/fourth-dimension/render-vr-narration-grok.mjs [--voice leo] [--only 1,2,3]
+// Default voice is leo. Recordings replace the same filenames. See public/fourth-dimension/audio/vr4d/README.md.
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PAGES } from "../../public/fourth-dimension/vr/vr4d-book.js";
 import { wordsFromChars } from "./narration-words.mjs";
 
-export const VOICE = "altair";
+const DEFAULT_VOICE = "leo";
 const root = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const outDir = join(root, "public/fourth-dimension/audio/vr4d");
 const key = process.env.XAI_API_KEY;
 if (!key) throw new Error("XAI_API_KEY is not set");
 mkdirSync(outDir, { recursive: true });
 
-const onlyArg = process.argv.indexOf("--only");
-const only = onlyArg > 0 ? new Set(process.argv[onlyArg + 1].split(",").map(Number)) : null;
+function arg(flag, fallback) {
+  const i = process.argv.indexOf(flag);
+  return i > 0 ? process.argv[i + 1] : fallback;
+}
+const voice = (arg("--voice", DEFAULT_VOICE) || DEFAULT_VOICE).toLowerCase();
+const onlyRaw = arg("--only", null);
+const only = onlyRaw ? new Set(onlyRaw.split(",").map(Number)) : null;
+
+export const DEFAULT_VOICE_ID = DEFAULT_VOICE;
 
 async function speak(text) {
   for (let attempt = 1; attempt <= 4; attempt++) {
@@ -26,7 +33,7 @@ async function speak(text) {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        text, voice_id: VOICE, language: "en", with_timestamps: true,
+        text, voice_id: voice, language: "en", with_timestamps: true,
         output_format: { codec: "mp3", sample_rate: 24000, bit_rate: 64000 },
       }),
     });
@@ -37,6 +44,7 @@ async function speak(text) {
   throw new Error("TTS failed after retries");
 }
 
+console.log("voice", voice);
 for (const page of PAGES) {
   if (only && !only.has(page.n)) continue;
   const data = await speak(page.text);

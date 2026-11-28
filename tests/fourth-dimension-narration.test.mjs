@@ -57,8 +57,11 @@ test("wordsFromChars pairs timestamps with the caption's own words", () => {
   assert.ok(words.every((w, i) => i === 0 || w.start >= words[i - 1].start));
 });
 
-test("README documents the Altair voice and the drop-in rule", () => {
+test("README documents the Leo voice, the grok renderer, and the drop-in rule", () => {
   const readme = read(`${audioDir}README.md`);
-  assert.match(readme, /Altair/);
+  assert.match(readme, /Leo/);
+  assert.match(readme, /render-vr-narration-grok\.mjs/);
   assert.match(readme, /Replace the files by the same filename/);
+  const script = read("tools/fourth-dimension/render-vr-narration-grok.mjs");
+  assert.match(script, /DEFAULT_VOICE = \"leo\"/);
 });
