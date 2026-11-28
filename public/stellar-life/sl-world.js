@@ -403,7 +403,7 @@ export class LifeWorld {
     const ans = this.ease("ns", look.ns.a, dt, 0.5); this.pulsar.g.visible = ans > 0.01 && look.ns.beams > 0; const nsR = Math.max(u(SIZES.ns), FRAME.minX);
     this.pulsar.g.scale.setScalar(nsR); this.pulsar.axis.rotation.y = (c.time || 0) * (c.calm ? 0.6 : 2.4); this.pulsar.beamMat.uniforms.uAlpha.value = ans; this.pulsar.beamMat.uniforms.uT.value = c.time || 0;
     if (ans > 0.01 && aStar < 0.05) { this.star.visible = true; this.star.scale.setScalar(nsR); sm.uBase.value.setRGB(...hex("#95B1FF")); sm.uLimb.value.set(1, 1, 1); sm.uLimbK.value = 1; sm.uCoreOn.value = 1; sm.uAlpha.value = ans; this.starMat.transparent = ans < 0.99; sm.uAmp.value = 0.2; sm.uCut.value = 0;
-      sm.uPxR.value = nsR * ppu; sm.uInk.value = 1; this.qG.visible = true; this.qG.scale.setScalar(nsR); const nsC = hex("#95B1FF"); const radN = nsR * (c.worldScale || 1);
+      sm.uPxR.value = nsR * ppu; sm.uInk.value = 1; sm.uBright.value = 1.35; this.qG.visible = true; this.qG.scale.setScalar(nsR); const nsC = hex("#95B1FF"); const radN = nsR * (c.worldScale || 1);
       for (const [m, a, len] of [[this.qHalo, ans * 0.8, 0.35], [this.qRim, ans, null], [this.qSurf, ans * 0.4, null]]) { const uq = m.material.uniforms; uq.uAlpha.value = a; uq.uCtr.value.copy(ctr); uq.uRadV.value = radN; uq.uBase.value.setRGB(...nsC); if (len != null) uq.uLen.value = len; m.visible = true; } }
     if (ans > 0.01 && u(SIZES.ns) < FRAME.minX / 3) chips.push("The neutron star is drawn bigger than scale here. It is only about 24 km across.");
     // black hole lens
@@ -430,6 +430,7 @@ export class LifeWorld {
     // pieces far outside the view (or far too small to see) are hidden, so nothing huge sits past the far plane
     for (const o of [this.proto.shell, this.proto.disk, this.neb.g, this.rem.g]) { const k = o.scale.x; if (k > 400 || k < 1e-4) o.visible = false; }
     for (const j of this.proto.jets) if (j.scale.y > 400 || j.scale.y < 1e-4) j.visible = false;
-    this.radius = Math.max(drawn, 0.2); this.barAt = [0, -Math.min(Math.max(drawn * 1.15, look.band === "wide" ? 0.45 : 0) + 0.06, 0.44)];   // always inside the scene region, so it never sits under a card this.barMax = 0.3; this.chips = chips; this.strokes = 0; this.fresh = false;
+    this.radius = clamp(u(look.hero), 0.2, 1); this.barAt = [0, -Math.min(Math.max(drawn * 1.15, look.band === "wide" ? 0.45 : 0) + 0.06, 0.44)]; this.barMax = 0.3;   // the bar always sits inside the scene region, so it never goes under a card
+    this.chips = chips; this.strokes = 0; this.fresh = false;
   }
 }

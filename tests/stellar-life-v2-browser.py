@@ -47,6 +47,7 @@ def check_page(pg, label):
         for c in d["cards"]:
             if ov(a, c, 4): fails.append(f"{label}: 3D label '{a['text']}' sits under {c['t']}")
     if os.environ.get("SL_DEBUG"): print(label, len(T), "texts", len(L), "labels", [l["text"] for l in L], len(d["cards"]), "cards")
+    if pg.evaluate("__stellar.life.fresh") and pg.evaluate("__stellar.flow.st.screen") == "stage": fails.append(f"{label}: the dolly never left its first frame (fresh stayed true)")
     hr = pg.evaluate("window.__stellarHRLabels || []")
     for i in range(len(hr)):
         for j in range(i + 1, len(hr)):
