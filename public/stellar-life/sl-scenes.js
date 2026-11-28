@@ -23,7 +23,7 @@ export class Scenes {
   }
   mat({ additive = false, star = false, own = {}, crisp = 0, grow = false } = {}) {
     const T = this.T;
-    const u = { ...this.uni, uCrisp: { value: crisp }, uGrow: { value: 1 }, uAlpha: { value: 1 }, uLut: { value: this.lut }, uTeff: { value: 5772 }, uExposure: { value: 1 }, uPeek: { value: new T.Vector3(1, 1, 1) }, uPeekOn: { value: 0 }, uChroma: { value: 0 }, uRise: { value: 1 }, uWind: { value: 0 }, uWindLen: { value: 0.6 }, uPull: { value: 1 }, uLayerA: { value: [1, 1, 1, 1, 1, 1, 1] }, ...own };
+    const u = { ...this.uni, uCrisp: { value: crisp }, uGrow: { value: 1 }, uAlpha: { value: 1 }, uLut: { value: this.lut }, uTeff: { value: 5772 }, uExposure: { value: 1 }, uPeek: { value: new T.Vector3(1, 1, 1) }, uPeekOn: { value: 0 }, uChroma: { value: 0 }, uRise: { value: 1 }, uExp: { value: 0 }, uWind: { value: 0 }, uWindLen: { value: 0.6 }, uPull: { value: 1 }, uLayerA: { value: [1, 1, 1, 1, 1, 1, 1] }, ...own };
     const defines = {}; if (additive) defines.ADDITIVE = 1; if (star) defines.STAR = 1; if (grow) defines.GROW = 1;
     return new T.ShaderMaterial({ vertexShader: strokeVert, fragmentShader: strokeFrag, uniforms: u, defines, transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide,
       ...(additive ? { blending: T.CustomBlending, blendEquation: T.AddEquation, blendSrc: T.OneFactor, blendDst: T.OneFactor, blendSrcAlpha: T.OneFactor, blendDstAlpha: T.OneFactor } : { blending: T.NormalBlending, premultipliedAlpha: true }) });
@@ -443,6 +443,10 @@ void main(){
       fit: () => ({ r: S_END, frac: 290 / 1080, pfrac: 290 * 390 / 760 / 844, cover: true, pover: 1.25 }),
       update: (c) => {
         const t = c.v.t; const yrs = Math.pow(10, Math.log10(Y0) + (Math.log10(Y1) - Math.log10(Y0)) * t); const rkm = V * YR * yrs;
+        /* round 7: once the stage ends the debris keeps coasting: strands drift out at their own speeds in strokeVert (about 2.3% in the
+           first 12 s, easing off), the frame and the 250-year scale stay put, so the label anchor never moves */
+        sc.hold = t >= 0.999 ? (sc.hold || 0) + (c.dt || 0) : 0; const ex = 0.06 * (1 - Math.exp(-sc.hold / 25));
+        md.material.uniforms.uExp.value = ex; bloom.scale.setScalar(1 + ex * 1.0);
         sc.k = levels.slice().reverse().find((L) => rkm / L <= S_END * 1.05) || levels[0]; const S = rkm / sc.k; shell.scale.setScalar(S); sc.radius = Math.max(S, 3); shell.quaternion.copy(c.camQuatLocal);
         const early = 1 - smooth(0.05, 0.35, t);
         const peak = this.reduced ? 0.6 * smooth(0, 0.08, t) * early : smooth(0, 0.02, t) * (0.15 + 0.85 * early);

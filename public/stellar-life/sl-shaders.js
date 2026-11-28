@@ -50,7 +50,7 @@ float evoCells(vec2 g, float t, out float bright){
 export const strokeVert = /* glsl */`
 attribute vec3 aTan; attribute vec3 aUvK; attribute vec4 aA; attribute vec4 aColor; attribute vec4 aParam;
 uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform vec3 uCamLocal; uniform float uCosElev;
-uniform float uAlpha; uniform float uWind; uniform float uWindLen; uniform float uPull; uniform float uLayerA[7]; uniform float uCrisp; uniform float uGrow; uniform float uRise;
+uniform float uAlpha; uniform float uWind; uniform float uWindLen; uniform float uPull; uniform float uLayerA[7]; uniform float uCrisp; uniform float uGrow; uniform float uRise; uniform float uExp;
 #ifdef STAR
 uniform float uTeff; uniform float uExposure; uniform vec3 uPeek; uniform float uPeekOn; uniform float uChroma;
 #endif
@@ -83,6 +83,11 @@ void main(){
   // the feet stay put) and twists a little about the radial axis, more with height; a slow sway runs up the legs. A deformation, not a scale.
   bool promK = kind > 9.5 && kind < 10.5;
   if (promK) { vec3 q0 = promDef(p); tn = promDef(p + tn * 0.01) - q0; p = q0; }   // the tangent follows the deformation, so ribbons keep their width
+  // remnant (SNK, face-on, radius 1 = the shell): after the stage ends the debris keeps coasting. Each strand moves out at its own
+  // speed (uExp x 0.55 to 1.45), the outer parts lag a little (slow shear); no uniform image scale
+  bool snK = kind > 10.5 && kind < 11.5;
+  if (snK) { float hs1 = h11(seed * 0.61); float rr0 = length(p.xy); float ang = uExp * 0.6 * (rr0 - 0.9) * (hs1 > 0.5 ? 1.0 : 0.6);
+    float ca = cos(ang), sa = sin(ang); p.xy = mat2(ca, sa, -sa, ca) * p.xy * (1.0 + uExp * (0.55 + 0.9 * hs1)); tn.xy = mat2(ca, sa, -sa, ca) * tn.xy; }
   // jet knots (JETK): each knot rides out along the jet and fades, then a new one is launched at the base
   bool jetK = kind > 7.5 && kind < 8.5, jetS = kind > 8.5 && kind < 9.5;
   if (jetK) { float su = fract(uFlowT * 0.08 + aParam.x); p.y += sign(position.y) * 8.2 * (su - aParam.x); fade = smoothstep(0.0, 0.12, su) * (1.0 - smoothstep(0.65, 1.0, su)); }
@@ -103,6 +108,7 @@ void main(){
   vec4 vp = modelViewMatrix * vec4(p, 1.0);
   float sc = length(modelViewMatrix[0].xyz);
   if (promK && aParam.z > 1.5) al *= 0.5 + 0.5 * smoothstep(-0.3, 0.9, sin(TAU * (aUvK.y * 3.0 - uFlowT * 0.22) + seed));   // plasma knots flow up one leg and down the other
+  if (snK && aParam.x > 0.5) al *= 0.72 + 0.28 * sin(TAU * uFlowT * (0.25 + 0.45 * h11(seed * 1.7)) + seed);   // knots flicker (stepped with the boil)
   if (jetS) al *= 0.6 + 0.4 * smoothstep(0.2, 1.0, sin(TAU * (aUvK.y * 2.5 - uFlowT * 0.35)));   // jet strands: brighter pulses travel outward
 #ifdef GROW
   al *= min(1.0, gr * 3.0);
