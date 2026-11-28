@@ -20,7 +20,7 @@ export class Scenes {
   }
   mat({ additive = false, star = false, own = {}, crisp = 0, grow = false } = {}) {
     const T = this.T;
-    const u = { ...this.uni, uCrisp: { value: crisp }, uGrow: { value: 1 }, uAlpha: { value: 1 }, uLut: { value: this.lut }, uTeff: { value: 5772 }, uExposure: { value: 1 }, uPeek: { value: new T.Vector3(1, 1, 1) }, uPeekOn: { value: 0 }, uWind: { value: 0 }, uWindLen: { value: 0.6 }, uPull: { value: 1 }, uLayerA: { value: [1, 1, 1, 1, 1, 1, 1] }, ...own };
+    const u = { ...this.uni, uCrisp: { value: crisp }, uGrow: { value: 1 }, uAlpha: { value: 1 }, uLut: { value: this.lut }, uTeff: { value: 5772 }, uExposure: { value: 1 }, uPeek: { value: new T.Vector3(1, 1, 1) }, uPeekOn: { value: 0 }, uChroma: { value: 0 }, uWind: { value: 0 }, uWindLen: { value: 0.6 }, uPull: { value: 1 }, uLayerA: { value: [1, 1, 1, 1, 1, 1, 1] }, ...own };
     const defines = {}; if (additive) defines.ADDITIVE = 1; if (star) defines.STAR = 1; if (grow) defines.GROW = 1;
     return new T.ShaderMaterial({ vertexShader: strokeVert, fragmentShader: strokeFrag, uniforms: u, defines, transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide,
       ...(additive ? { blending: T.CustomBlending, blendEquation: T.AddEquation, blendSrc: T.OneFactor, blendDst: T.OneFactor, blendSrcAlpha: T.OneFactor, blendDstAlpha: T.OneFactor } : { blending: T.NormalBlending, premultipliedAlpha: true }) });
@@ -30,7 +30,7 @@ export class Scenes {
     const T = this.T; const maxR = Math.max(...layers.map((l) => l[0]), disc * 1.02);
     const lay = []; const rad = []; for (let i = 0; i < 5; i++) { const l = layers[i] || [1e-3, 0, [0, 0, 0]]; const c = l[2] || [255, 255, 255]; lay.push(new T.Vector4(c[0] / 255, c[1] / 255, c[2] / 255, l[1])); rad.push(l[0]); }
     const m = new T.Mesh(new T.PlaneGeometry(2, 2), new T.ShaderMaterial({ vertexShader: glowVert, fragmentShader: glowFrag,
-      uniforms: { ...this.uni, uMaxR: { value: maxR }, uLay: { value: lay }, uRad: { value: rad }, uLut: { value: this.lut }, uTeff: { value: 5772 }, uDisc: { value: disc }, uExposure: { value: 1 }, uAlpha: { value: 1 }, uPeek: { value: new T.Vector3(1, 1, 1) }, uPeekOn: { value: 0 }, uUseTeff: { value: useTeff ? 1 : 0 } },
+      uniforms: { ...this.uni, uMaxR: { value: maxR }, uLay: { value: lay }, uRad: { value: rad }, uLut: { value: this.lut }, uTeff: { value: 5772 }, uDisc: { value: disc }, uExposure: { value: 1 }, uAlpha: { value: 1 }, uPeek: { value: new T.Vector3(1, 1, 1) }, uPeekOn: { value: 0 }, uChroma: { value: 0 }, uUseTeff: { value: useTeff ? 1 : 0 } },
       transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide, blending: T.NormalBlending, premultipliedAlpha: true }));
     m.frustumCulled = false; m.renderOrder = order; return m;
   }
@@ -258,6 +258,8 @@ export class Scenes {
         const giant = clamp((row.logR - 0.9) / 1.0, 0, 1); const crisp = 1 - smooth(0.0, 0.5, giant);
         ms.material.uniforms.uCrisp.value = crisp; ms.material.uniforms.uMixG.value = giant; ms.scale.setScalar(1 - 0.045 * crisp);   // compact stars: strokes sit inside the crisp disc   // giant-cell look switches in smoothly as the star swells
         for (const h of [halo, tight, giantGlow]) { h.material.uniforms.uTeff.value = Teff; }
+        { const chroma = crisp * smooth(7600, 6600, Teff) * smooth(4000, 4900, Teff);   /* the Sun-like main sequence: warm limb, granulation, warm glow */
+          ms.material.uniforms.uChroma.value = chroma; halo.material.uniforms.uChroma.value = chroma; }
         halo.material.uniforms.uExposure.value = 1.08; tight.material.uniforms.uExposure.value = 1.08;
         halo.visible = true; tight.visible = false;   // stars keep the equal-bleed glow; only the remnants get tight glows
         giantGlow.visible = giant > 0.05; giantGlow.material.uniforms.uAlpha.value = 0.9 * smooth(0.2, 1, giant);

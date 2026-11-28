@@ -14,6 +14,11 @@ vec3 dec(vec3 c){ return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), ste
 vec3 enc(vec3 c){ c = max(c, 0.0); return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, c)); }
 // Tesla's rule: if the brightest channel passes 1, bleed the overflow equally into all channels, then renormalise.
 vec3 bleed(vec3 c){ float m = max(c.r, max(c.g, c.b)); if (m > 1.0) { float w = 0.9 * (m - 1.0); c = (c / m + vec3(w)) / (1.0 + w); } return c; }
+// round 6, the Sun (Leo frame 2 styleB): the centre is the tint bled toward white (FBF8F1), and the limb darkens faster in blue
+// than in red, as the real Sun's does (ECD1B6 at r = 0.95, E5C6A6 in the limb band). Scalar exposure plus per-channel linear
+// factors below 1: never a channel clamp.
+vec3 sunBase(vec3 lin){ return bleed(lin * 2.33) * 0.975; }
+vec3 ldChroma(float mu){ float x = 1.0 - clamp(mu, 0.0, 1.0); float x2 = x * x; return max(vec3(1.0) - vec3(0.283, 0.907, 1.352) * x2 + vec3(0.013, 0.477, 0.767) * x2 * x2, 0.0); }
 `;
 // temperatureToSRGB lookup: 512 texels over log10(T) = 3.0 to 6.0, stored sRGB encoded (brightest channel 1)
 const LUT = /* glsl */`
@@ -25,7 +30,7 @@ attribute vec3 aTan; attribute vec3 aUvK; attribute vec4 aA; attribute vec4 aCol
 uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform vec3 uCamLocal; uniform float uCosElev;
 uniform float uAlpha; uniform float uWind; uniform float uWindLen; uniform float uPull; uniform float uLayerA[7]; uniform float uCrisp; uniform float uGrow;
 #ifdef STAR
-uniform float uTeff; uniform float uExposure; uniform vec3 uPeek; uniform float uPeekOn;
+uniform float uTeff; uniform float uExposure; uniform vec3 uPeek; uniform float uPeekOn; uniform float uChroma;
 #endif
 varying vec4 vColor; varying vec4 vUV;
 ${HASH}
@@ -71,7 +76,9 @@ void main(){
   vec3 lin = tlin(uTeff + aColor.g * 1000.0 - 500.0);
   lin = mix(lin, dec(uPeek), uPeekOn);
   float mu1 = clamp(mu, 0.0, 1.0); float ld = 1.0 - 0.47 * (1.0 - mu1) - 0.13 * (1.0 - mu1) * (1.0 - mu1);
-  col = enc(bleed(lin * aColor.r * ld * uExposure));
+  vec3 cg = bleed(lin * aColor.r * ld * uExposure);
+  if (uChroma > 0.0) { cg = mix(cg, sunBase(lin) * ldChroma(mu) * (0.95 + (aColor.r - 0.86) * 0.8), uChroma); al *= mix(1.0, 0.4, uChroma); }   /* the Sun: faint painted texture over the granulated disc */
+  col = enc(cg);
   al *= (kind > 3.5 && kind < 4.5) ? smoothstep(-0.7, -0.05, mu) : smoothstep(-0.02, 0.12, mu);   // outflow shells show at the limb
 #endif
   vec3 tv = normalize(mat3(modelViewMatrix) * tn);
@@ -152,16 +159,28 @@ void main(){
 export const glowFrag = /* glsl */`
 precision highp float; varying vec2 vC; varying float vBr;
 uniform vec4 uLay[5]; uniform float uRad[5]; uniform float uMaxR; uniform float uTeff; uniform float uDisc; uniform float uExposure; uniform float uAlpha;
-uniform vec3 uPeek; uniform float uPeekOn; uniform float uUseTeff;
+uniform vec3 uPeek; uniform float uPeekOn; uniform float uUseTeff; uniform float uChroma; uniform float uBoilT; uniform float uBoil;
 ${SRGB}
 ${LUT}
+${HASH}
+// faint granulation on the Sun's disc: 2D Worley cells on the disc, foreshortened toward the limb (radius mapped to arc angle),
+// lanes from F2 - F1; the cell points boil in 8 steps per second like the strokes
+vec2 h22(vec2 p){ return vec2(h21(p), h21(p + 17.31)); }
+float granul(vec2 q, out float cellV){
+  float rho = length(q); vec2 g = rho > 1e-4 ? q / rho * asin(min(rho, 0.9999)) : q; g *= 15.0;
+  float ts = floor(uBoilT * 8.0) / 8.0 * uBoil; vec2 i0 = floor(g); float f1 = 9.0, f2 = 9.0; cellV = 0.0;
+  for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) { vec2 c = i0 + vec2(float(i), float(j)); vec2 h = h22(c);
+    vec2 pt = c + 0.5 + 0.38 * sin(6.2831853 * (h + ts * 0.03 * (0.5 + h.yx))); float dd = length(g - pt);
+    if (dd < f1) { f2 = f1; f1 = dd; cellV = h.x; } else if (dd < f2) f2 = dd; }
+  return smoothstep(0.0, 0.16, f2 - f1);
+}
 void main(){
   float d = length(vC) * uMaxR / (1.0 + 0.03 * vBr); vec3 c = vec3(0.0);
   vec3 tint = mix(tlin(uTeff), dec(uPeek), uPeekOn);
   for (int i = 0; i < 5; i++) {
     float u = clamp(1.0 - d / uRad[i], 0.0, 1.0); float f = pow(u, 0.7);
-    vec3 lc = uUseTeff > 0.5 ? tint : dec(uLay[i].rgb);
-    c += lc * uLay[i].a * (1.0 + 0.06 * vBr) * f;
+    vec3 lc = uUseTeff > 0.5 ? mix(tint, tlin(uTeff * 0.68), uChroma) : dec(uLay[i].rgb);   /* the Sun's glow is warm and soft */
+    c += lc * uLay[i].a * (1.0 + 0.06 * vBr) * (1.0 + 1.3 * uChroma) * f;
   }
   float a = 0.0;
   if (uDisc > 0.0 && d < uDisc) {
@@ -169,8 +188,11 @@ void main(){
     // grey limb darkening (G coefficients of LOOK-SPEC 3.2) so every disc pixel is temperatureToSRGB(Teff) x a scalar: the hue never moves
     float ld = 1.0 - 0.47 * om - 0.13 * om * om;
     vec3 disc = tint * ld * uExposure;
+    if (uChroma > 0.0) { float cv; float ln = granul(vC * uMaxR / (1.0 + 0.03 * vBr) / uDisc, cv);
+      vec3 sun = sunBase(tint) * ldChroma(mu) * mix(vec3(0.93, 0.89, 0.84), vec3(1.0), ln) * (0.985 + 0.03 * cv);
+      disc = mix(disc, sun, uChroma); }
     float edge = smoothstep(uDisc, uDisc * 0.985, d);
-    c = mix(c, disc + c * 0.15, edge); a = edge;
+    c = mix(c, disc + c * 0.15 * (1.0 - uChroma), edge); a = edge;
   }
   c = bleed(c);
   float m = max(c.r, max(c.g, c.b)); if (m < 1e-4 && a < 0.01) discard;
