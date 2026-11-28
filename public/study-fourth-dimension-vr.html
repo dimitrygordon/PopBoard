@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#121823">
+<title>Beyond 3D storybook // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="stylesheet" href="fourth-dimension/fourth-dimension-theme.css">
+<link rel="stylesheet" href="fourth-dimension/vr/vr4d.css">
+</head>
+<body>
+<h1 class="sr-only">Beyond 3D storybook</h1>
+<p class="sr-only">A seated VR storybook about the fourth dimension. On a phone or a computer, drag to look. In a headset, stay seated. Captions stay on when the sound is off.</p>
+
+<header class="top">
+  <a href="study-fourth-dimension.html">Back to the book</a>
+  <p class="title">Beyond 3D</p>
+  <button id="muteBtn" type="button" aria-pressed="false">Sound</button>
+</header>
+
+<canvas id="scene" tabindex="0" aria-label="Beyond 3D storybook scene"></canvas>
+<div id="blackout"></div>
+<div id="curl" hidden></div>
+
+<section id="cap" class="cap" aria-live="polite">
+  <p id="capKicker" class="kicker"></p>
+  <p id="capText"></p>
+  <p id="capHint" class="hint"></p>
+</section>
+
+<div class="dock" id="dock">
+  <div id="actions" class="dock-actions"></div>
+  <div class="dock-bar">
+    <button id="prevBtn" type="button">Back</button>
+    <div id="narr"></div>
+    <button id="settingsBtn" type="button" aria-expanded="false" aria-controls="settings">Settings</button>
+    <button id="nextBtn" type="button">Next</button>
+  </div>
+  <div id="settings" class="settings-sheet" hidden>
+    <div id="rateSlot"></div>
+    <div id="settingsBody"></div>
+  </div>
+</div>
+
+<div id="splash">
+  <div class="sheet">
+    <p class="kicker">Beyond 3D</p>
+    <h2>Storybook</h2>
+    <p>Stay seated. You do not walk. A scene moves only when your hand moves it, or when you turn the page.</p>
+    <button id="startScreen" type="button">Start on this screen</button>
+    <button id="startVR" type="button" hidden>Enter headset</button>
+    <p class="fine">Sound starts when you press start. Captions stay on if you mute. The voice is a placeholder until Mr. Dimitry's recording is dropped in.</p>
+  </div>
+</div>
+
+<script type="module" src="fourth-dimension/vr/vr4d-main.js"></script>
+</body>
+</html>

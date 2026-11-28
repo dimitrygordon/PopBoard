@@ -49,6 +49,24 @@ $("contrastBtn").addEventListener("click", () => {
   syncThemeButtons(); rebuild();
 });
 syncThemeButtons();
+const vrStoryBtn = $("vrStoryBtn");
+if (vrStoryBtn) {
+  vrStoryBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const q = new URLSearchParams(location.search);
+    q.delete("page");
+    const s = q.toString();
+    location.href = "study-fourth-dimension-vr.html" + (s ? "?" + s : "");
+  });
+  // The storybook always opens. The headset button inside it is the VR option, and only when immersive-vr exists.
+  vrStoryBtn.dataset.xr = "no";
+  if (navigator.xr && navigator.xr.isSessionSupported) {
+    navigator.xr.isSessionSupported("immersive-vr").then((ok) => {
+      vrStoryBtn.dataset.xr = ok ? "yes" : "no";
+      if (ok) vrStoryBtn.title = "This browser can open the storybook in a VR headset";
+    }).catch(() => { vrStoryBtn.dataset.xr = "no"; });
+  }
+}
 $("studyBackBtn").addEventListener("click", (e) => {
   e.preventDefault();
   const qs = forwardStudyQuery(location.search).toString();

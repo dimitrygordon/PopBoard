@@ -11,7 +11,9 @@ const ICON = {
 const fold = (s) => String(s).toLowerCase().normalize("NFD").replace(/[^a-z0-9]/g, "");
 
 const SKIP = 5; // seconds per skip back/forward
-export function createNarrator(host, base) {
+// hooks (optional, third argument): { onWord(i), onPlay(), onPause(), onEnded(), autoplay: bool|fn }
+// autoplay runs only after load, and only if the caller asks. Existing callers pass no hooks.
+export function createNarrator(host, base, hooks = {}) {
   host.innerHTML = `<div class="narr sketch" role="group" aria-label="Listen to this page">
     <button type="button" data-k="back" aria-label="Back 5 seconds">${ICON.back}</button>
     <button type="button" data-k="play" aria-label="Play narration">${ICON.play}</button>
@@ -41,9 +43,9 @@ export function createNarrator(host, base) {
   q("fwd").addEventListener("click", () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + SKIP); });
   q("rate").addEventListener("change", (e) => { rate = +e.target.value; audio.playbackRate = rate; });
   seek.addEventListener("input", () => { if (audio.duration) audio.currentTime = seek.value / 1000 * audio.duration; });
-  audio.addEventListener("play", () => setPlay(true));
-  audio.addEventListener("pause", () => setPlay(false));
-  audio.addEventListener("ended", () => { setPlay(false); mark(-1); });
+  audio.addEventListener("play", () => { setPlay(true); hooks.onPlay?.(); });
+  audio.addEventListener("pause", () => { setPlay(false); hooks.onPause?.(); });
+  audio.addEventListener("ended", () => { setPlay(false); mark(-1); hooks.onEnded?.(); });
   audio.addEventListener("error", () => { host.hidden = true; });
   audio.addEventListener("timeupdate", () => {
     if (audio.duration) seek.value = Math.round(audio.currentTime / audio.duration * 1000);
@@ -56,6 +58,7 @@ export function createNarrator(host, base) {
     if (cur >= 0 && map[cur] != null) spans[map[cur]].classList.remove("hl");
     cur = i;
     if (i >= 0 && map[i] != null) spans[map[i]].classList.add("hl");
+    hooks.onWord?.(i);
   }
   // Wrap each word of the page text in a span, then pair spoken words with page words in order
   // (a short look-ahead tolerates spoken forms like "10 to the 9").
@@ -85,8 +88,12 @@ export function createNarrator(host, base) {
         audio.src = `${base}audio/${deck}/s${n}.mp3`; audio.playbackRate = rate;
         if (textRoot) wrap(textRoot);
         host.hidden = false;
+        const go = typeof hooks.autoplay === "function" ? hooks.autoplay() : hooks.autoplay;
+        if (go) audio.play().catch(() => {});
       } catch (e) { host.hidden = true; }
     },
-    stop() { token++; audio.pause(); host.hidden = true; }
+    stop() { token++; audio.pause(); host.hidden = true; },
+    play() { return audio.play().catch(() => {}); },
+    setMuted(m) { audio.muted = !!m; },
   };
 }
