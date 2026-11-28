@@ -279,7 +279,7 @@ void main(){
     const ORB = { Mercury: [0.387, 200], Venus: [0.723, -25], Earth: [1.0, 155], Jupiter: [5.2, -35] };
     const orbits = {}; for (const [n, [a, ph]] of Object.entries(ORB)) { const o = this.dashedRing(1, { color: 0xC3C9E6, opacity: 0.75 }); const co = this.callout(n, { size: 1.3, side: Math.cos(ph * Math.PI / 180) >= 0 ? 1 : -1 }); g.add(o, co.grp); orbits[n] = { o, co, a, ph }; }
     // Sun activity on S1, placed to match Angelo's v5 layouts (glow strokes additive; the arcade grows by birth order)
-    const prom = buildProminence(101, 2.6), fl = buildFlare(111);
+    const prom = buildProminence(101, 5.6), fl = buildFlare(111);
     const promG = new T.Group(); const promM = [this.mesh(prom.glow, { additive: true }, 5), this.mesh(prom.core, {}, 6)]; promG.add(...promM, this.sprites(prom.feet, 5)); g.add(promG);
     const flG = new T.Group(); const flCore = this.mesh(fl.core, { grow: true }, 6), flGlow = this.mesh(fl.glow, { additive: true, grow: true }, 5); flG.add(flGlow, flCore); g.add(flG);
     const coP = this.callout("Prominence", { sub: "gas held up by magnetic fields", size: 1.3, side: -1 }), coL = this.callout("Limb darkening", { sub: "cooler, dimmer edge", size: 1.3, side: 1 }); g.add(coP.grp, coL.grp);
@@ -352,12 +352,12 @@ void main(){
         const s1 = st.id === "S1"; promG.visible = flG.visible = coP.grp.visible = coL.grp.visible = s1;
         { const on = s1 && c.st.mass === "1" && !c.phone; const kpu = sc.s * KM.RSUN, MAG = 50, W = GRAN_KM * MAG / kpu;
           lg.update(q, new T.Vector3().addScaledVector(rt, -r * 1.58).addScaledVector(up, r * 0.34), W, new T.Vector3().addScaledVector(rt, -r * 0.62).addScaledVector(up, r * 0.62), on); }
-        if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.99)); promG.scale.setScalar(r * 1.5);
+        if (s1) { promG.quaternion.copy(basis(q, new T.Vector3(0.42, 0.91, 0), new T.Vector3(0, 0, 1))); promG.position.copy(new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 0.87)); promG.scale.setScalar(r * 2.2);   /* round 9: sized to the disc as in frame 2 (loop span about 0.6 R, rope about 0.1 R) */
           { const PERIOD = 10; const ph = ((c.flowT || 0) / PERIOD + 0.4) % 1; const rise = 0.5 - 0.5 * Math.cos(2 * Math.PI * ph);   /* ping-pong lift: smooth cosine, no snap back; starts high so the stills show the loop */
-            for (const m of promM) m.material.uniforms.uRise.value = 0.22 + 0.50 * rise; }   /* cap the peak so the arc stays in frame */
+            for (const m of promM) m.material.uniforms.uRise.value = 0.55 + 0.30 * rise; }   /* the loop never drops below a clear arch (round 9); the peak stays in frame */
           const fd = new T.Vector3(0.52, -0.42, 0.74).normalize(); flG.quaternion.copy(basis(q, fd, new T.Vector3(0, 0, 1))); flG.position.copy(fd.clone().applyQuaternion(q).multiplyScalar(r)); flG.scale.setScalar(r);
           const gr = smooth(0.05, 0.9, c.v.t); flCore.material.uniforms.uGrow.value = gr; flGlow.material.uniforms.uGrow.value = gr;
-          const ap = new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 1.2); coP.place(ap, -Math.max(2 * L, r * 0.45), capUp(ap.dot(up), Math.max(1.2 * L, r * 0.1)), q, 0.15 * L);
+          const ap = new T.Vector3(0.42, 0.91, 0).applyQuaternion(q).multiplyScalar(r * 1.2); coP.place(ap, -Math.max(2 * L, r * 0.95), capUp(ap.dot(up), Math.max(1.2 * L, r * 0.4)), q, 0.15 * L);
           const al = new T.Vector3().addScaledVector(rt, r * 0.83).addScaledVector(up, -r * 0.56); coL.place(al, r * 0.04, -Math.max(1.5 * L, r * 0.36), q, 0.15 * L); }
       } };
     ms.material.uniforms.uMixG = { value: 0 };

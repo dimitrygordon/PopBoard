@@ -486,14 +486,14 @@ export const FLARE_RIBS = [[-0.065, 0.06], [-0.005, 0.19], [-0.030, 0.31], [0.00
 export function buildProminence(seed = 101, wk = 1) {   // wk widens the strands (style B frames draw them bolder than Angelo's true widths)
   const R = rng(seed); const core = new Builder(32); const glow = new Builder(32); const feet = []; let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
   /* Angelo v5 still, sampled: median (197, 90, 101), 10th to 90th percentile (157, 69, 80) to (227, 138, 146): a soft rose at about half saturation, not neon */
-  const pink = hex2rgb("#DC5C70"), rose = hex2rgb("#C44858"), pale = mix(hex2rgb("#E87888"), hex2rgb("#F2C8D0"), 0.22);   /* clearer red-pink at a glance, still the rose family (frame 2) */
+  const pink = hex2rgb("#E8606F"), rose = hex2rgb("#D84E67"), pale = mix(hex2rgb("#E87888"), hex2rgb("#F2C8D0"), 0.22);   /* clearer red-pink at a glance, still the rose family (frame 2) */
   for (const A of PROM_ARCHES) {
     const arch = (u, ph, amp) => { const p = [0, 1, 2].map((k) => A.a[k] + (A.b[k] - A.a[k]) * u); const hgt = A.h * Math.sin(Math.PI * u) * (1 + 0.04 * Math.exp(-(((u - A.kink) / 0.10) ** 2))); p[1] += hgt; p[2] += amp * Math.sin(2 * Math.PI * 2.4 * u + ph); p[0] += amp * 0.5 * Math.cos(2 * Math.PI * 2.4 * u + ph); return p; };
     const samp = 48;   /* a dense sine/spline sample, then Builder(32), so the loop stays smooth like frame 2, not a polyline */
     for (let s = 0; s < A.strands; s++) { const ph = s / A.strands * TAU; const pts = []; for (let k = 0; k <= samp; k++) pts.push(arch(k / samp, ph, A.w * 0.9));
       const heavy = s === 2 ? 1.6 : 1; core.add(pts, { width: A.w * wk * heavy * (1 + A.thick * 0.5), rgb: jitter(mix(rose, pink, R()), R, 0.01, 0.04, 0.04), alpha: 0.82 + R() * 0.16, kind: KIND.PROM, bristles: 3, boil: 0.004, seed: S() }); }
     /* round 9: a few narrower glow layers that taper to nothing at the feet (the shader), so no wide ribbon ends fan out sideways */
-    for (let L = 0; L < 7; L++) { const pts = []; for (let k = 0; k <= samp; k++) pts.push(arch(k / samp, 0, 0)); glow.add(pts, { width: A.w * wk * (2.0 + L * 0.5), rgb: pale, alpha: 0.008 + 0.022 * (1 - L / 7), kind: KIND.PROM, bristles: 1, seed: S() }); }
+    for (let L = 0; L < 7; L++) { const pts = []; for (let k = 0; k <= samp; k++) pts.push(arch(k / samp, 0, 0)); glow.add(pts, { width: A.w * wk * (1.3 + L * 0.2), rgb: [224, 87, 107], alpha: 0.03 + 0.05 * (1 - L / 7), kind: KIND.PROM, bristles: 1, seed: S() }); }
     for (const e of [A.a, A.b]) feet.push({ p: [e[0], e[1] + 0.004, e[2]], r: 0.05 + 0.9 * A.w * 2.4, rgb: [255, 120, 140], a: 0.16, breath: 0 });   /* a soft radial glow where each foot meets the limb */
   }
   return { core, glow, feet };
