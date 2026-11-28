@@ -88,3 +88,24 @@ export const bgFrag = /* glsl */`precision highp float; varying vec3 vP;
 void main(){ vec3 d = normalize(vP); float t = clamp(0.75 * (0.5 - 0.5 * d.y) + 0.25 * (atan(d.z, d.x) / 3.14159265 * 0.5 + 0.5), 0.0, 1.0);
   vec3 a = vec3(0.0157, 0.0314, 0.1020), b = vec3(0.0471, 0.0784, 0.2275), c = vec3(0.1804, 0.1176, 0.3608);
   vec3 col = t < 0.6 ? mix(a, b, t / 0.6) : mix(b, c, (t - 0.6) / 0.4); gl_FragColor = vec4(col, 1.0); }`;
+
+// Protostar core: all glow layers summed here, overflow bled equally to all channels, drawn with premultiplied "over"
+// (alpha = brightest channel) so the saturated core replaces what is under it instead of clipping per channel in the blend unit.
+export const coreVert = /* glsl */`
+uniform float uBreathT; uniform float uBreath; uniform float uMaxR; varying vec2 vC; varying float vBr;
+void main(){
+  float ph = sin(6.2831853 * uBreathT / 4.0); vBr = ph * uBreath;
+  vec4 vp = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0); float sc = length(modelViewMatrix[0].xyz);
+  vec2 cn = position.xy; vp.xy += cn * uMaxR * (1.0 + 0.03 * vBr) * sc; gl_Position = projectionMatrix * vp; vC = cn;
+}`;
+export const coreFrag = /* glsl */`
+precision highp float; varying vec2 vC; varying float vBr;
+uniform vec4 uLay[5]; uniform float uRad[5]; uniform float uMaxR;
+void main(){
+  float d = length(vC) * uMaxR / (1.0 + 0.03 * vBr); vec3 c = vec3(0.0);
+  for (int i = 0; i < 5; i++) { float f = clamp(1.0 - d / uRad[i], 0.0, 1.0); c += uLay[i].rgb * uLay[i].a * (1.0 + 0.06 * vBr) * f; }
+  float m = max(c.r, max(c.g, c.b)); if (m < 1e-4) discard;
+  if (m > 1.0) { float w = 0.9 * (m - 1.0); c = (c / m + vec3(w)) / (1.0 + w); }   // overflow bled equally into R, G and B, then renormalised: no per-channel clamp, hue angle unchanged, only whiter
+  float a = clamp(max(c.r, max(c.g, c.b)), 0.0, 1.0);
+  gl_FragColor = vec4(c, a);
+}`;

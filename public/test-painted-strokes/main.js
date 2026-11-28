@@ -1,7 +1,7 @@
 // THROWAWAY tech test (branch test/painted-strokes, not for merge): Quill-style painted strokes live in the browser and in Quest WebXR.
 import * as THREE from "../vendor/three/three.module.min.js";   // same vendored r170 build Night Sky imports
 import { buildScene, spriteGeometry, SEG } from "./strokes.js";
-import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag } from "./shaders.js";
+import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag, coreVert, coreFrag } from "./shaders.js";
 
 const $ = (id) => document.getElementById(id);
 const q = new URLSearchParams(location.search);
@@ -33,10 +33,15 @@ const diskMesh = new THREE.Mesh(built.disk, mk(false)); diskMesh.frustumCulled =
 const addMesh = new THREE.Mesh(built.add, mk(true)); addMesh.frustumCulled = false; addMesh.renderOrder = 2;
 const bloomMat = new THREE.ShaderMaterial({ vertexShader: spriteVert, fragmentShader: spriteFrag, uniforms: uni, transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide,
   blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor });
-const bloomMesh = new THREE.Mesh(spriteGeometry(THREE, built.sprites), bloomMat); bloomMesh.frustumCulled = false; bloomMesh.renderOrder = 3;
+const bloomMesh = new THREE.Mesh(spriteGeometry(THREE, built.sprites), bloomMat); bloomMesh.frustumCulled = false; bloomMesh.renderOrder = 4;
 const bgMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(900, 3), new THREE.ShaderMaterial({ vertexShader: bgVert, fragmentShader: bgFrag, side: THREE.BackSide, depthTest: false, depthWrite: false }));
 bgMesh.frustumCulled = false; bgMesh.renderOrder = -1;
-world.add(bgMesh, skyMesh, diskMesh, addMesh, bloomMesh);
+const maxR = Math.max(...built.core.map((l) => l[0]));
+const coreMat = new THREE.ShaderMaterial({ vertexShader: coreVert, fragmentShader: coreFrag, uniforms: { ...uni, uMaxR: { value: maxR },
+  uLay: { value: built.core.map((l) => new THREE.Vector4(l[2][0] / 255, l[2][1] / 255, l[2][2] / 255, l[1])) }, uRad: { value: built.core.map((l) => l[0]) } },
+  transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide, blending: THREE.NormalBlending, premultipliedAlpha: true });
+const coreMesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), coreMat); coreMesh.frustumCulled = false; coreMesh.renderOrder = 3;
+world.add(bgMesh, skyMesh, diskMesh, addMesh, coreMesh, bloomMesh);
 const strokeTotal = built.counts.sky + built.counts.disk + built.counts.add;
 
 // ---- painter's sort of the disk strokes (back to front), cheap: re-sorted at most ~8 times a second ----

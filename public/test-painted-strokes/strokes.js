@@ -155,10 +155,11 @@ export function buildScene(THREE, opts = {}) {
       { width: lerp(1.5, 4.5, R()) * PX, rgb: mix(starRGB, [255, 255, 255], R() * 0.6), alpha: 0.35 + R() * 0.4, bristles: 2, boil: A_RAY, seed: S() });
   }
   // core glow: large soft additive sprites (fake bloom that also works in XR). breath = pulses with the flow clock
-  const glow = (r, a, rgb, breath = 1) => sprites.push({ p: [0, 0, 0], r, rgb, a, breath });
-  glow(260 * PX, 0.22, starRGB); glow(150 * PX, 0.40, starRGB); glow(52 * PX, 0.80, starRGB); glow(30 * PX, 0.35, [255, 255, 255]); glow(14 * PX, 1.0, [255, 255, 255]);   // v2 glow dabs
+  // Core glow layers (v2 dab sizes). Summed in ONE fragment shader with Tesla's overflow rule: scale so the brightest channel is 1,
+  // then bleed the overflow equally into all channels (white-ward). Never a per-channel clamp, so the core stays on the star's hue line.
+  const core = [[260 * PX, 0.22, starRGB], [150 * PX, 0.40, starRGB], [52 * PX, 0.80, starRGB], [30 * PX, 0.35, [255, 255, 255]], [14 * PX, 1.0, [255, 255, 255]]];
 
-  return { sky: sky.geometry(THREE), disk: disk.geometry(THREE), add: add.geometry(THREE), sprites, starRGB, counts: { sky: sky.n, disk: disk.n, add: add.n, sprites: sprites.length }, ROUT };
+  return { sky: sky.geometry(THREE), disk: disk.geometry(THREE), add: add.geometry(THREE), sprites, core, starRGB, counts: { sky: sky.n, disk: disk.n, add: add.n, sprites: sprites.length }, ROUT };
 }
 
 export function spriteGeometry(THREE, sprites) {
