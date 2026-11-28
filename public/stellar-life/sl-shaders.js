@@ -338,7 +338,7 @@ void main(){
 export const rsgLaneFrag = /* glsl */`
 precision highp float; varying vec2 vC; varying float vBr;
 uniform vec4 uCell[26]; uniform vec2 uCellH[26]; uniform vec3 uCamO; uniform vec3 uCamX; uniform vec3 uCamY;
-uniform float uMaxR; uniform float uAlpha; uniform float uTeff; uniform float uExposure; uniform float uFlowT;
+uniform float uMaxR; uniform float uAlpha; uniform float uTeff; uniform float uExposure; uniform float uFlowT; uniform float uSurf;
 ${SRGB}
 ${LUT}
 ${HASH}
@@ -352,6 +352,20 @@ void main(){
   vec3 z = normalize(uCamO); vec3 ex = normalize(uCamX - z * dot(uCamX, z)); vec3 ey = cross(z, ex);
   vec3 c0 = normalize(q.x * ex + q.y * ey + mu * z);
   vec3 c = normalize(c0 + 0.07 * vec3(vn(c0.yz * 1.6 + 2.1) - 0.5, vn(c0.zx * 1.6 + 4.3) - 0.5, vn(c0.xy * 1.6 + 6.7) - 0.5));
+  if (uSurf < 0.5) {   /* S2 red giant: the round 9 dark-lane overlay over the painted strokes, not the smooth cell-field disc */
+    if (rho > 0.985) discard;
+    float bestL = 99.0, secondL = 99.0;
+    for (int i = 0; i < 26; i++) { float rad = uCell[i].w; if (rad < 0.02) continue;
+      float a = sqrt(2.0 * max(1.0 - dot(uCell[i].xyz, c0), 0.0)); float wd = a / (rad * (0.72 + 0.28 * uCellH[i].x));
+      if (wd < bestL) { secondL = bestL; bestL = wd; } else if (wd < secondL) secondL = wd; }
+    float gap = (secondL - bestL) / (secondL + bestL + 1e-3) * 1.6; float fw = fwidth(gap);
+    float rag = 0.55 + 0.9 * vn(c0.xy * 19.0 + c0.z * 13.0) * (0.6 + 0.4 * vn(c0.yz * 41.0));
+    float lane = 1.0 - smoothstep(0.0 - fw, 0.30 * rag + fw, gap);
+    lane *= smoothstep(0.985, 0.82, rho);
+    float aL = lane * lane * 0.62 * uAlpha; if (aL < 0.004) discard;
+    vec3 colL = vec3(0.36, 0.17, 0.06);
+    gl_FragColor = vec4(enc(colL) * aL, aL); return;
+  }
   float best = 99.0, second = 99.0, chh = 0.35, a1 = 0.0, a2 = 1.0;
   for (int i = 0; i < 26; i++) {
     float rad = uCell[i].w; if (rad < 0.02) continue;

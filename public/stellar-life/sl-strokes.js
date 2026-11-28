@@ -231,8 +231,9 @@ export function buildRSG(seed = 15) {
 }
 // the giant cells as a closed-form function of time (so a clip frame is the same however you reach it): each cell lives
 // 24 to 38 s, swells in, slowly drifts, and late in life slides into its neighbour while fading (the two merge), then is reborn elsewhere
-export function rsgCells(t, seed = 15) {
-  const N = RSG.cells.count, fr = (x) => x - Math.floor(x), hsh = (i, k, c = 0) => fr(Math.sin((i * 12.9898 + k * 78.233 + c * 3.17 + seed) * 43758.5453));
+export function rsgCells(t, seed = 15, opt = {}) {
+  const N = opt.count != null ? opt.count : RSG.cells.count, radA = (opt.rad || RSG.cells.rad);
+  const fr = (x) => x - Math.floor(x), hsh = (i, k, c = 0) => fr(Math.sin((i * 12.9898 + k * 78.233 + c * 3.17 + seed) * 43758.5453));
   // home spots spread evenly over the sphere (Fibonacci), like the frame's minimum separation; each cell is reborn near its home
   const home = (i) => { const z = 1 - 2 * (i + 0.5) / N, r = Math.sqrt(1 - z * z), a = i * 2.39996 + seed; return [r * Math.cos(a), z, r * Math.sin(a)]; };
   const near = (i) => { let bj = 0, bd = -2; for (let j = 0; j < N; j++) { if (j === i) continue; const d = home(j).reduce((s2, v, k) => s2 + v * home(i)[k], 0); if (d > bd) { bd = d; bj = j; } } return bj; };
@@ -245,7 +246,7 @@ export function rsgCells(t, seed = 15) {
     const j = near(i), Lj = 28 + 12 * hsh(j, 1), dj = spot(j, Math.floor(t / Lj + hsh(j, 2)));
     const m = 0.5 * Math.max(0, Math.min(1, (age - 0.72) / 0.28)) ** 2; d = norm(d.map((v, k) => v * (1 - m) + dj[k] * m));   // late in life it slides into its neighbour (they merge)
     const env = Math.min(1, age / 0.20) * Math.min(1, (1 - age) / 0.30); const sm = env * env * (3 - 2 * env);   /* fade in ~6 s, fade out ~9 s: nothing pops */
-    out.push({ d, rad: (RSG.cells.rad[0] + (RSG.cells.rad[1] - RSG.cells.rad[0]) * hsh(i, 4)) * (0.50 + 0.50 * sm), h: (0.55 + 0.45 * hsh(i, 7)) * sm, sgn: hsh(i, 8) < 0.5 ? -1 : 1 }); }
+    out.push({ d, rad: (radA[0] + (radA[1] - radA[0]) * hsh(i, 4)) * (0.50 + 0.50 * sm), h: (0.55 + 0.45 * hsh(i, 7)) * sm, sgn: hsh(i, 8) < 0.5 ? -1 : 1 }); }
   while (out.length < 26) out.push({ d: [0, -1, 0], rad: 0.001, h: 0, sgn: 1 });
   return out;
 }
