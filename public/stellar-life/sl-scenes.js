@@ -117,8 +117,17 @@ export class Scenes {
     const sp = D.sprites.length ? this.sprites(D.sprites, 4) : null;
     g.add(md, ma, core); if (sp) g.add(sp); if (mw) g.add(mw);
     const frost = D.frost ? new T.Group() : null; if (frost) g.add(frost);   // the frost line is painted into the disk (v4); this group only carries the label
-    const lab = this.label("", { size: 1.6 }); const flab = planets === "solar" ? this.label("Frost line, about 3 AU", { size: 1.1, color: "#AACDFF" }) : null;
-    g.add(lab); if (flab) { flab.position.set(3.5, 1.1, 0); g.add(flab); }
+    /* style B (frame 1): the names sit beside the disk on side callouts with thin leader lines, not on top of it */
+    const coT = this.callout("Protostar", { sub: "glows from squeezing, not fusion", size: 1.1, side: 1 });
+    const coJ = this.callout("Jet along the spin axis", { size: 1.1, side: -1 });
+    const rocky = D.bodies.filter((b) => b.kind === "rocky"), giant = D.bodies.filter((b) => b.kind === "giant");
+    const pick = (arr, r) => arr.reduce((m, b) => (m == null || Math.abs(b.r - r) < Math.abs(m.r - r) ? b : m), null);
+    const bR = pick(rocky, planets === "solar" ? 1.75 : 1.1), bG = giant.length ? pick(giant, 5.2) : null;
+    const coR = bR ? this.callout("Rocky bodies", { sub: planets === "solar" ? "inside the frost line" : "close to the star", size: 1.1, side: -1 }) : null;
+    const coG = bG ? this.callout("Gas giant cores", { sub: "outside the frost line", size: 1.1, side: 1 }) : null;
+    const coF = D.frost ? this.callout("Frost line, about 3 AU", { sub: "ices freeze beyond it", size: 1.1, side: 1 }) : null;
+    for (const co of [coT, coJ, coR, coG, coF]) if (co) g.add(co.grp);
+    const vA = new T.Vector3(), frostA = new T.Vector3(D.frost ? D.frost * Math.cos(-0.9) : 0, 0, D.frost ? D.frost * Math.sin(-0.9) * -1 : 0);
     const coreHot = this.glow([[1.6, 0.9, [255, 255, 255]], [0.7, 1.0, [255, 255, 255]]], { useTeff: false, order: 7 }); coreHot.visible = false; g.add(coreHot);
     // painter's sort of the disk strokes, back to front (from the tech test)
     const dg = md.geometry, meta = dg.userData, nS = meta.count, per = meta.per;
@@ -144,9 +153,14 @@ export class Scenes {
         if (mw) mw.material.uniforms.uAlpha.value = id === "F3" ? 0.6 : wrapA;
         core.material.uniforms.uAlpha.value = coreExp > 1 ? 1 : 1;
         coreHot.visible = id === "F5"; if (coreHot.visible) { coreHot.material.uniforms.uAlpha.value = smooth(0.05, 0.9, t); }
-        if (frost) frost.visible = id === "F3" || id === "F4"; if (flab) flab.visible = !!frost && frost.visible;
-        this.setLabel(lab, id === "F3" ? "Protostar" : id === "F4" ? (mass === "1" ? "Young star (T Tauri)" : "Young star") : "Fusion starts in the core", id === "F5" ? "about 10 million K" : "");
-        lab.position.set(0, 4.2, 0);
+        if (frost) frost.visible = id === "F3" || id === "F4";
+        coT.set(id === "F3" ? "Protostar" : id === "F4" ? (mass === "1" ? "Young star (T Tauri)" : "Young star") : "Fusion starts in the core", id === "F3" ? "glows from squeezing, not fusion" : id === "F5" ? "about 10 million K" : "");
+        const q = c.camQuatLocal, dotR = 0.14, tw = id !== "F5";
+        coT.place(vA.set(0, 0.25, 0), 3.5, 10.5, q, dotR);
+        coJ.lab.visible = !c.phone && jetA > 0.25 && (id === "F3" || id === "F4"); coJ.place(vA.set(0.1, 5.5, 0), -4, 3.5, q, dotR);
+        if (coR) { coR.lab.visible = tw; coR.place(vA.set(bR.px, 0, bR.pz), -9, 1.5, q, dotR); }
+        if (coG) { coG.lab.visible = tw && !c.phone; coG.place(vA.set(bG.px, 0, bG.pz), 7, 3.2, q, dotR); }
+        if (coF) { coF.lab.visible = !!frost && frost.visible; coF.place(vA.copy(frostA), 7, -6, q, dotR); }
         if (c.now - lastSort > 120) { resort(c.camLocal); lastSort = c.now; }
       } };
     this.cache[key] = sc; return sc;

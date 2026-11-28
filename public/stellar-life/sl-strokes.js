@@ -158,6 +158,7 @@ export function buildDisk(opts = {}) {
   }
   for (const b of bodies) {
     const ph = R() * TAU, cx = b.r * Math.cos(ph), cz = -b.r * Math.sin(ph);
+    b.px = cx; b.pz = cz;   /* kept so the scene can point a callout at the body */
     b.cols.forEach((c, k) => { const L = b.kind === "giant" ? jit(0.85, 0.4) : 0.23; const a = R() * TAU, off = b.rad * 0.25 * k / b.cols.length;
       const p0 = [cx + Math.cos(a) * (off - L / 2), 0, cz + Math.sin(a) * (off - L / 2)], p1 = [cx + Math.cos(a) * (off + L / 2), 0, cz + Math.sin(a) * (off + L / 2)];
       disk.add([p0, [(p0[0] + p1[0]) / 2, 0, (p0[2] + p1[2]) / 2], p1], { width: b.rad * (b.kind === "giant" ? jit(1.0, 0.2) : 1), rgb: hex2rgb(c), alpha: 1, bristles: 2, boil: A_OTHER, seed: S(), dab: true }); });
