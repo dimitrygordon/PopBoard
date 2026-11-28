@@ -313,7 +313,7 @@ void main(){
   /* slow brightness breathing on four big patches through a soft low-frequency mask, 23 to 38 s each; a scalar, so the hue never moves */
   float br = 0.0;
   for (int p = 0; p < 4; p++) { vec2 d = qs - uPatch[p].xy; float g = exp(-dot(d, d) / (2.0 * uPatch[p].z * uPatch[p].z));
-    float per = 23.0 + 5.0 * float(p); br += g * 0.14 * sin(6.2831853 * uSlowT / per + 1.7 * float(p)); }
+    float per = 23.0 + 5.0 * float(p); br += g * 0.10 * sin(6.2831853 * uSlowT / per + 1.7 * float(p)); }
   a *= 1.0 + br * smoothstep(1.0, 0.8, rho);
   float cov = 1.0 - smoothstep(0.9985, 1.0006, rho);                       /* opaque disc inside the limb; outside it the halo and flares only add light */
   vec3 b = dec(texture2D(uTexB, uvB).rgb) * (1.0 - cov) * mix(1.0, 0.6, uTint);
