@@ -26,7 +26,7 @@ uniform sampler2D uLut;
 vec3 tlin(float T){ float u = clamp((log(max(T, 1000.0)) / 2.302585 - 3.0) / 3.0, 0.0, 1.0); return dec(texture2D(uLut, vec2(u * (511.0 / 512.0) + 0.5 / 512.0, 0.5)).rgb); }
 `;
 // round 7: evolving granulation (Sun disc and the granulation loupe). Each grid cell owns one convective cell with its own life
-// (LIFE 8 to 10 s, the real 8 to 10 minutes scaled for the demo). A cell is born small at a fresh spot, swells, brightens,
+// (LIFE 8 to 10 s, the real about 8 to 20 minutes scaled for the demo). A cell is born small at a fresh spot, swells, brightens,
 // splits in two late in life, then shrinks away while its neighbours fill in. Multiplicatively weighted Voronoi (distance / size),
 // so cells grow and fade in place; nothing scrolls. Returns the gap to the nearest lane (0 on a lane) and the cell's brightness.
 export const EVO = /* glsl */`

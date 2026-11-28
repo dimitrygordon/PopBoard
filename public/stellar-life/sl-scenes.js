@@ -53,11 +53,12 @@ export class Scenes {
   setLabel(sp, text, sub = "") {
     const d = sp.userData; const key = text + "|" + sub; if (d.text === key) return; d.text = key;
     const g = d.c.getContext("2d"); g.clearRect(0, 0, 1024, 256); if (!text) { sp.visible = false; d.tex.needsUpdate = true; return; } sp.visible = true;
-    g.font = "650 76px Inter, -apple-system, system-ui, sans-serif"; const w1 = g.measureText(text).width; g.font = "500 58px Inter, -apple-system, system-ui, sans-serif"; const w2 = sub ? g.measureText(sub).width : 0;
-    const w = Math.min(1000, Math.max(w1, w2) + 60), h = sub ? 190 : 116, x0 = (1024 - w) / 2, y0 = (256 - h) / 2; d.ph = h / 256;
+    const lines = sub ? sub.split("\n") : [];   /* a long sub may be two lines (Tesla captions) so the words stay at their natural size */
+    g.font = "650 76px Inter, -apple-system, system-ui, sans-serif"; const w1 = g.measureText(text).width; g.font = "500 58px Inter, -apple-system, system-ui, sans-serif"; const w2 = lines.reduce((m, t) => Math.max(m, g.measureText(t).width), 0);
+    const w = Math.min(1000, Math.max(w1, w2) + 60), h = lines.length > 1 ? 248 : (sub ? 190 : 116), x0 = (1024 - w) / 2, y0 = (256 - h) / 2; d.ph = h / 256;
     if (d.plate) { g.fillStyle = "rgba(8,10,24,0.62)"; g.beginPath(); g.roundRect ? g.roundRect(x0, y0, w, h, 40) : g.rect(x0, y0, w, h); g.fill(); }
-    g.textAlign = "center"; g.fillStyle = d.color; g.font = "650 76px Inter, -apple-system, system-ui, sans-serif"; g.fillText(text, 512, y0 + 84, 980);
-    if (sub) { g.fillStyle = "#C3C9E6"; g.font = "500 58px Inter, -apple-system, system-ui, sans-serif"; g.fillText(sub, 512, y0 + 156, 980); }
+    g.textAlign = "center"; g.fillStyle = d.color; g.font = "650 76px Inter, -apple-system, system-ui, sans-serif"; g.fillText(text, 512, y0 + (lines.length > 1 ? 76 : 84), 980);
+    if (lines.length) { g.fillStyle = "#C3C9E6"; g.font = "500 58px Inter, -apple-system, system-ui, sans-serif"; lines.forEach((t, i) => g.fillText(t, 512, y0 + (lines.length > 1 ? 140 : 156) + i * 64, 980)); }
     d.tex.needsUpdate = true; sp.scale.set(d.size * 4 * LABEL_K, d.size * LABEL_K, 1); d.base = [sp.scale.x, sp.scale.y]; d.k = 1;
     // left or right aligned labels hang off a leader line: the plate's near edge sits at the sprite position
     d.x0 = x0 / 1024; d.x1 = (x0 + w) / 1024; sp.center.set(d.align === "left" ? d.x0 : d.align === "right" ? d.x1 : 0.5, 0.5);
@@ -280,7 +281,7 @@ void main(){
     const flG = new T.Group(); const flCore = this.mesh(fl.core, { grow: true }, 6), flGlow = this.mesh(fl.glow, { additive: true, grow: true }, 5); flG.add(flGlow, flCore); g.add(flG);
     const coP = this.callout("Prominence", { sub: "gas held up by magnetic fields", size: 1.3, side: -1 }), coL = this.callout("Limb darkening", { sub: "cooler, dimmer edge", size: 1.3, side: 1 }); g.add(coP.grp, coL.grp);
     // Leo frame 2: a granulation close-up, 50 times closer than the Sun's disc, on the main-sequence stage of the 1 Sun path (not on phone)
-    const lg = this.loupe({ title: "Close-up, 50 times closer", note: "Granulation", noteSub: "hot gas rising in cells", note2: "contrast boosted for visibility", aspect: 1, paint: (cv) => paintGranulation(cv), live: true, barLabel: "5,000 km", barFrac: 5000 / GRAN_KM, side: 1 }); g.add(lg.grp); lg.grp.visible = false;
+    const lg = this.loupe({ title: "Close-up, 50 times closer", note: "Granulation", noteSub: "hot gas rising in cells", note2: "contrast boosted, sped up for viewing", aspect: 1, paint: (cv) => paintGranulation(cv), live: true, barLabel: "5,000 km", barFrac: 5000 / GRAN_KM, side: 1 }); g.add(lg.grp); lg.grp.visible = false;
     const levels = [0.001, 0.01, 0.1, 1, 10, 100, 1000];
     const HERO = { ms: [321 / 1080, 321 * 390 / 760 / 844], giant: [328 / 1080, 328 * 390 / 920 / 844], super: [417 / 1080, 417 * 390 / 900 / 844] };
     const heroClass = (id) => (/^(S2|S4|S5|T2|T4|T5)$/.test(id) ? "giant" : /^(H2|V2)$/.test(id) ? "super" : "ms");
@@ -481,7 +482,8 @@ void main(){
     const wisps = []; const Rw = rng(31); for (let i = 0; i < 26; i++) { const a = Rw() * Math.PI * 2, rr = 120 + Rw() * 170; wisps.push({ p: [-300 + Math.cos(a) * rr * 1.2, 20 + Math.sin(a) * rr * 0.8, -700], r: 70 + Rw() * 90, rgb: i % 3 ? [255, 90, 106] : [79, 216, 192], a: 0.04 + Rw() * 0.04, breath: 1 });   /* the far remnant's wisps breathe */ }
     const rem = this.sprites(wisps, 0); g.add(rem);
     const coN = this.callout("Neutron star", { sub: "about 12 km radius", side: 1 }), coC = this.callout("A city about 20 km wide", { sub: "at the same scale", side: -1 }), coR = this.callout("Supernova remnant", { sub: "far behind, not to scale", side: -1 });
-    g.add(coN.grp, coC.grp, coR.grp);
+    const coS = this.callout("Hot spots", { sub: "spin slowed way down;\na young one spins many times per second", side: 1 });   /* Tesla: the demo spin is slowed; a real young pulsar spins many times a second */
+    g.add(coN.grp, coC.grp, coR.grp, coS.grp);
     // Leo frame 3b: the city 80 times closer (a 840 m wide skyline, 200 m bar), joined to the city on the horizon
     const lc = this.loupe({ title: "80 times closer", aspect: CITY_ASPECT, paint: (cv) => paintCity(cv), barLabel: "200 m", barFrac: 200 / CITY_M, side: -1 }); g.add(lc.grp);
     const sc = { root: g, kind: "ns", camDist: 62, radius: 14, barAt: [58, -67], reach: 98, strokes: sb.n + cb.n, meshes: 8, kmPerUnit: () => 1,
@@ -495,6 +497,9 @@ void main(){
         ms.material.uniforms.uTeff.value = 1e6; ms.material.uniforms.uExposure.value = 2.2; ms.material.uniforms.uAlpha.value = 0.5; halo.material.uniforms.uTeff.value = 1e6; halo.material.uniforms.uExposure.value = 2.0;   /* low-contrast surface; the pulse is the beamed spot itself (no size change) */
         const q = c.camQuatLocal; const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q);
         coN.place(new T.Vector3().addScaledVector(rt, 12 * 0.7).addScaledVector(up, 12 * 0.7), 9, 7, q, 0.4);
+        /* Tesla spin caption: desktop hangs left of the star (clear of the city loupe); phone hangs below-right (clear of the star and the city label) */
+        if (c.phone) { coS.lab.center.set(coS.lab.userData.x0, 0.5); coS.place(new T.Vector3().addScaledVector(rt, 12 * 0.85).addScaledVector(up, -12 * 1.05), 14, -15, q, 0.4); }
+        else { coS.lab.center.set(coS.lab.userData.x1, 0.5); coS.place(new T.Vector3().addScaledVector(rt, -12 * 0.75).addScaledVector(up, 12 * 0.65), -15, 8, q, 0.4); }
         coC.place(new T.Vector3().addScaledVector(up, GY + 0.3), -50, 9, q, 0.35);
         const ra = new T.Vector3(-300, 60, -700); coR.place(ra, -30, 40, q, 1.5);
         { const MAG = 80, W = CITY_M / 1000 * MAG;   /* 1 unit = 1 km */
@@ -513,14 +518,14 @@ void main(){
     const hor = this.dashedRing(RH, { color: 0xAACDFF, opacity: 0.85 }); hor.rotation.x = Math.PI / 2; hor.renderOrder = 5; face.add(hor);
     const swapStar = this.glow([[RH * 2.2, 0.25], [RH * 1.2, 0.5], [RH * 0.8, 1.0]], { useTeff: true, order: 4 }); swapStar.material.uniforms.uTeff.value = 30000; g.add(swapStar);
     const ringA0 = 0.55;
-    const coR = this.callout("Bent light ring", { sub: "stars behind are bent too", side: 1 }), coH = this.callout("Horizon of a 10 Sun example", { sub: "about 30 km radius", side: 1 }); g.add(coR.grp, coH.grp);
+    const coR = this.callout("Bent light ring", { sub: "stars behind bend into arcs,\ndrawn much closer than real", side: 1 }), coH = this.callout("Horizon of a 10 Sun example", { sub: "about 30 km radius", side: 1 }); g.add(coR.grp, coH.grp);
     const sc = { root: g, kind: "bh", camDist: 125, radius: RS * 1.15, strokes: pr.n + ls.n, meshes: 5, kmPerUnit: () => 2,
       fit: () => ({ r: RS, frac: 230 / 1080, pfrac: 230 * 390 / 860 / 844 }),
       update: (c) => {
         face.quaternion.copy(c.camQuatLocal); const swap = !!c.st.toggles.swap;
         mp.material.uniforms.uAlpha.value = ringA0 * (1 + 0.08 * Math.sin(2 * Math.PI * (c.flowT || 0) / 6));   /* round 7: nothing spins; the thin ring only breathes in brightness (8%, 6 s) */ ring.visible = mp.visible = ml.visible = hor.visible = !swap; swapStar.visible = swap;
         const q = c.camQuatLocal; const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q);
-        coR.set(swap ? "A star with the same mass" : "Bent light ring", swap ? "size not to scale" : "stars behind are bent too");
+        coR.set(swap ? "A star with the same mass" : "Bent light ring", swap ? "size not to scale" : "stars behind bend into arcs,\ndrawn much closer than real");
         coR.place(new T.Vector3().addScaledVector(rt, RS * 0.62).addScaledVector(up, RS * 0.8), RS * 0.45, RS * 0.25, q, 0.6);
         coH.grp.visible = !swap; coH.place(new T.Vector3().addScaledVector(rt, RH * 0.6).addScaledVector(up, -RH * 0.8), RS * 0.75, -RS * 0.25, q, 0.6);
       } };
