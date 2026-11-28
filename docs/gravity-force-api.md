@@ -147,7 +147,9 @@ Worked answers are computed from `gf-sim`, then rounded to the printed section 6
 | File | Role |
 |---|---|
 | `public/study-gravity-force.html` | The page. Study library entry `gravity-force` in `public/study.html`. |
-| `public/gravity-force/gf-scenes.js` | S1 to S5 as pure models: `sceneModel(lab)`, `controlsFor(lab)`, `act(lab, id, canSetHelp)`. No DOM. The page and the headset panel both draw from it. |
+| `public/gravity-force/gf-scenes.js` | S1 to S5 as pure models: `sceneModel(lab)`, `controlsFor(lab)`, `act(lab, id, canSetHelp)`. No DOM. The page and the headset panel both draw from it. Two views sit on top of the URL scenes: S5c "Real or model?" (`view:sort`, inside S5) and S6 "The Equation" (`view:eq`, inside S1). `?view=sort` or `?view=eq` opens them. |
+| `public/gravity-force/gf-paint.js` | Leo's painted style B: banded painted tone with warm cream highlights, ink outlines in screen pixels, line boil at 8 fps, and screen-space fat lines (marble paths, the orbit). Calm lines holds the boil still. |
+| `public/gravity-force/models/` | Angelo's four meshopt GLBs (spring scale v4.2, balance v2.2, robot v3.2, step platform). Dimitry's exception to the no-GLB rule; nothing else of Angelo's goes in the repo. |
 | `public/gravity-force/gf-view.js` | three.js scenes in real metres (student at the origin, floor at y = 0, local-floor). |
 | `public/gravity-force/gf-props.js` | S3 props built in code at Angelo's real sizes. |
 | `public/gravity-force/gf-xr.js` | Headset panel (one canvas texture, Leo's readout dial) and the Quest 3 button map. |
@@ -155,8 +157,10 @@ Worked answers are computed from `gf-sim`, then rounded to the printed section 6
 
 Run `node --test tests/gravity-force-vr.test.mjs`. It covers T13 to T19 that can run without a headset.
 
-**Props.** Angelo's GLBs are not in the repo. `gf-props.js` builds the spring scale, step platform, balance, traveler and robot in code at real size. Set `MODEL_BASE` in that file to an https folder holding `<name>_meshopt.glb` and the scale and robot swap to Angelo's models when they load. It is empty by default.
+**Props.** `MODEL_BASE` in `gf-props.js` is `models/`, relative to the module, so popboard.us and every branch preview load the same four GLBs (about 1.1 MB in total) with GLTFLoader and the meshopt decoder. The code-built props draw first and stay as the fallback if a load fails. The S3 traveler is the robot on every world, standing at scale-local (0, 0.0485, -0.086). The scale needle turns about the hub (angle_Y = -45 deg - 270 deg x f) and the numbers are drawn on the blank readout node. The balance beam pivots at (0, 0.300, 0) with the pans counter-rotated. Angelo's unlit paint is kept; the painted treatment only adds the ink outline shell. The code-built traveler (legs half its height) rides the S4 elevator cab.
+
+**Labels.** One style: a cream pill with warm ink Inter semibold, upright and facing the camera, sized every frame from distance (16 CSS px, 15 on phones, and 56 panel px at 1.2 m in the headset), with a small declutter pass on flat screens.
 
 **Headset controls.** Ray plus trigger (or a hand pinch) presses panel buttons, drags the S1 Moon and flicks from the S5 start ball. Right A flicks a marble. Right thumbstick press goes to the next scene. Left thumbstick steps through the scene's chips. Right thumbstick left and right nudges the Moon. Grip held pauses motion. B or Y shows or hides the panel. The rail gives a haptic tick at each whole number.
 
-**Flat keys.** 1 to 5 pick a scene, arrow keys move the Moon, Space pins (S1) or flicks (S5), E shows or hides the equation (help 1 and 2).
+**Flat keys.** 1 to 5 pick a scene, 6 opens S5c and 7 opens S6, arrow keys move the Moon, Space pins (S1, S6) or flicks (S5), C toggles Calm lines, E shows or hides the equation (help 1 and 2).

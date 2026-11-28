@@ -77,6 +77,24 @@ button:disabled { opacity: 0.45; cursor: default; }
 .gf-status { position: fixed; left: 50%; top: 45%; transform: translate(-50%, -50%); margin: 0; color: var(--gf-text-2); z-index: 6; }
 body.gf-noui .gf-side { display: none; }
 /* portrait phones: stage on top, panel below */
-body.gf-phone #gfCanvas { height: 46vh; }
-body.gf-phone .gf-side { left: 8px; right: 8px; top: calc(46vh + 6px); bottom: calc(8px + var(--pb-safe-bottom, 0px)); width: auto; }
+body.gf-phone #gfCanvas { height: 50vh; }
+body.gf-phone .gf-side { left: 8px; right: 8px; top: calc(50vh + 6px); bottom: calc(8px + var(--pb-safe-bottom, 0px)); width: auto; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+/* S6 The Equation: live tiles on cream, the r^2 tile lit when r changes, and the Pin it graph (Leo, round 8) */
+.gf-eqlive { margin: 10px 0; display: grid; gap: 8px; }
+.gf-erow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.gf-ef { font-size: 22px; font-weight: 650; }
+.gf-eop { font-size: 18px; color: var(--gf-text-2); }
+.gf-efrac { display: grid; gap: 6px; flex: 1 1 100%; }
+.gf-eresult { margin: 0; font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.gf-enum { display: flex; align-items: center; gap: 6px; padding-bottom: 6px; border-bottom: 2px solid var(--gf-text-2); }
+.gf-eden { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.gf-erow > .gf-etile { flex: 0 1 auto; }
+.gf-etile { display: flex; flex-direction: column; min-width: 0; flex: 1 1 0; padding: 6px 9px; border-radius: calc(var(--r-10, 10px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--gf-cream); color: var(--gf-ink); font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+.gf-etile.glow { background: #F7E2B8; }
+.gf-esym { font-size: 18px; font-weight: 700; }
+.gf-eval { font-size: 14px; font-weight: 600; white-space: nowrap; }
+.gf-eunit { font-size: 12px; opacity: 0.7; }
+.gf-pin { padding: 8px 10px; border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: var(--gf-cream); color: var(--gf-ink); }
+.gf-pin .gf-cardtitle { color: var(--gf-ink); display: flex; justify-content: space-between; }
+.gf-pin svg { width: 100%; height: auto; display: block; font: 600 11px Inter, system-ui, sans-serif; fill: #2A2420; }

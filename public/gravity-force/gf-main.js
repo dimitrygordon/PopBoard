@@ -5,7 +5,7 @@ import * as THREE from "../vendor/three/three.module.min.js";
 import { XRInput } from "../night-sky/ns-input.js";
 import { parseState, serializeState, canSetHelp } from "./gf-state.js";
 import { renderPanel, helpButtons } from "./gf-panel.js";
-import { createLab, sceneModel, controlsFor, act, SCENE_ORDER, SCENE_SHORT, S1, clampDist, SORT_CARDS } from "./gf-scenes.js";
+import { createLab, sceneModel, controlsFor, act, SCENE_ORDER, S1, clampDist, SORT_CARDS, tabsFor, TAB_ORDER, VIEWS_OF, pretty } from "./gf-scenes.js";
 import { LabView, VIEWS, S3_X } from "./gf-view.js";
 import { XRPanel, readPads } from "./gf-xr.js";
 
@@ -16,6 +16,8 @@ const fail = (msg) => { if (statusEl) { statusEl.hidden = false; statusEl.textCo
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const lab = createLab(parseState(location.search));
+{ const v = q.get("view"); if (v && VIEWS_OF[v] === lab.url.scene) lab.view = v; }
+lab.calm = q.get("calm") === "1" || (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
 const canvas = $("gfCanvas");
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", preserveDrawingBuffer: q.has("shot") }); }
@@ -23,40 +25,41 @@ catch (e) { fail("This device could not start 3D graphics (WebGL). The panel sti
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(46, 1, 0.02, 200);
 const view = new LabView(THREE); scene.add(view.root);
-view.calm = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+view.calm = lab.calm;
 if (renderer) { renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); renderer.xr.enabled = true; renderer.xr.setReferenceSpaceType("local-floor"); renderer.setClearColor(0x050a1e, 1); }
 
 // ---------------- state, URL and actions ----------------
-function syncUrl() { const s = serializeState(lab.url); history.replaceState(null, "", location.pathname + (s ? "?" + s : "")); }
+function syncUrl() { const s = serializeState(lab.url) + (lab.view ? (serializeState(lab.url) ? "&" : "") + "view=" + lab.view : ""); history.replaceState(null, "", location.pathname + (s ? "?" + s : "")); }
 function doAct(id) {
-  if (!id) return; const before = lab.url.scene;
-  if (act(lab, id, canSetHelp)) { if (lab.url.scene !== before) { viewOff.yaw = 0; viewOff.pitch = 0; } syncUrl(); renderPanelDom(); }
+  if (!id) return; const before = lab.url.scene + lab.view;
+  if (act(lab, id, canSetHelp)) { if (lab.url.scene + lab.view !== before) { viewOff.yaw = 0; viewOff.pitch = 0; } syncUrl(); renderPanelDom(); }
 }
-window.__gf = { lab, act: doAct, model: () => sceneModel(lab), frames: 0 };
+window.__gf = { lab, act: doAct, model: () => sceneModel(lab), frames: 0, models: null, view };
+addEventListener("gf-models", (e) => { window.__gf.models = e.detail; });
 
 // ---------------- page panel ----------------
 const panelEl = $("gfPanel"); let domKey = "";
-function tabsOf() { return SCENE_ORDER.map((s) => ({ id: "scene:" + s, label: SCENE_SHORT[s], on: lab.url.scene === s, disabled: lab.url.lock.includes("scene") && lab.url.scene !== s })); }
+function tabsOf() { return tabsFor(lab); }
 function helpsOf() { return helpButtons(lab.url).map((h) => ({ id: "help:" + h.level, label: h.label, on: h.selected, disabled: !h.enabled })); }
 function dialHtml(r) {
   if (!r) return "";
-  const one = (label, main, sub, unit) => `<div class="gf-dial"><p class="gf-dial-label">${esc(label)}</p><p class="gf-dial-main${String(main).length > 9 ? " long" : ""}">${esc(main)}</p>${sub ? `<p class="gf-dial-sub">${esc(sub)}</p>` : unit ? `<p class="gf-dial-unit">${esc(unit)}</p>` : ""}</div>`;
+  const one = (label, main, sub, unit) => `<div class="gf-dial"><p class="gf-dial-label">${esc(label)}</p><p class="gf-dial-main${String(main).length > 9 ? " long" : ""}">${esc(pretty(main))}</p>${sub ? `<p class="gf-dial-sub">${esc(sub)}</p>` : unit ? `<p class="gf-dial-unit">${esc(unit)}</p>` : ""}</div>`;
   return `<div class="gf-dials">${one(r.label, r.main, r.sub, r.unit)}${r.second ? one(r.second.label, r.second.main) : ""}</div>`;
 }
 function renderPanelDom(force = false) {
   const M = sceneModel(lab); const ctr = controlsFor(lab);
-  const key = JSON.stringify([M.title, M.lines, M.cards, M.predict, M.reveal, M.result, M.readout, ctr, lab.url.help, lab.url.lock, M.sort, M.sortReveal, lab.whyCard, lab.wrongCard, M.link, M.tryLink, lab.massMode]);
+  const key = JSON.stringify([M.title, M.lines, M.cards, M.predict, M.reveal, M.result, M.readout, ctr, lab.url.help, lab.url.lock, M.sort, M.sortReveal, lab.whyCard, lab.wrongCard, M.link, M.tryLink, lab.massMode, M.tiles, M.pins]);
   if (!force && key === domKey) return; domKey = key;
-  const P = M.predict;
+  const P = M.predict || { ids: [], chips: [] };
   const chips = P.ids.map((id, i) => { const lab_ = P.chips[i]; const on = P.order ? (P.progress || []).includes(lab_) : P.picked === lab_; const n = P.order && on ? `${P.progress.indexOf(lab_) + 1}. ` : "";
     return `<button type="button" class="gf-chip${on ? " on" : ""}" data-act="predict:${esc(id)}" aria-pressed="${on}"${P.order && P.picked != null ? " disabled" : ""}>${esc(n + lab_)}</button>`; }).join("");
   const reveal = M.reveal ? `<div class="gf-reveal"><p><span>You picked</span>${esc(M.reveal.picked)}</p><p><span>The model</span>${esc(M.reveal.model)}</p>${M.result ? `<p class="gf-result">${esc(M.result)}</p>` : ""}${M.followUp ? `<p class="gf-follow">${esc(M.followUp)}</p>` : ""}</div>` : "";
-  const groups = {}; for (const c of ctr) { const g = c.group || (c.id === "reset" || c.id === "next" ? "nav" : "main"); (groups[g] = groups[g] || []).push(c); }
+  const groups = {}; for (const c of ctr.filter((c) => !/^sort:/.test(c.id))) { const g = c.group || (c.id === "reset" || c.id === "next" ? "nav" : "main"); (groups[g] = groups[g] || []).push(c); }
   const btns = (list) => list.map((c) => `<button type="button" class="gf-btn${c.on ? " on" : ""}${c.primary ? " primary" : ""}" data-act="${esc(c.id)}"${c.disabled ? " disabled" : ""} aria-pressed="${!!c.on}">${esc(c.label)}</button>`).join("");
   const ctrHtml = ["a", "b", "main", "nav"].filter((g) => groups[g]).map((g) => `<div class="gf-controls" data-group="${g}">${g === "a" || g === "b" ? `<span class="gf-glabel">${g.toUpperCase()}</span>` : ""}${btns(groups[g])}</div>`).join("");
   const why = lab.whyCard && M.why ? `<div class="gf-card"><p>${esc(M.why.text)}</p><p class="gf-foot">${esc(M.why.foot)}</p></div>` : "";
-  const wrong = lab.wrongCard && M.wrong ? `<div class="gf-card"><p class="gf-cardtitle">What the picture gets wrong</p><ol>${M.wrong.map((w) => `<li>${esc(w)}</li>`).join("")}</ol></div>` : "";
-  const sort = M.scene === "well" ? `<div class="gf-sort"><p class="gf-cardtitle">Real or model? Six cards, two bins</p>${M.sort.map((c) => { const r = M.sortReveal.find((x) => x.id === c.id);
+  const wrong = (lab.wrongCard || M.view === "sort") && M.wrong ? `<div class="gf-card"><p class="gf-cardtitle">What the picture gets wrong</p><ol>${M.wrong.map((w) => `<li>${esc(w)}</li>`).join("")}</ol></div>` : "";
+  const sort = M.view === "sort" ? `<div class="gf-sort"><p class="gf-cardtitle">${esc(M.sub)}</p>${M.sort.map((c) => { const r = M.sortReveal.find((x) => x.id === c.id);
     return `<div class="gf-sortrow"><p>${esc(c.text)}</p><div class="gf-bins"><button type="button" class="gf-chip${c.picked === "real" ? " on" : ""}" data-act="sort:${c.id}:real">Real</button><button type="button" class="gf-chip${c.picked === "model" ? " on" : ""}" data-act="sort:${c.id}:model">Model</button></div>${r ? `<p class="gf-why">You picked ${esc(r.picked)}. ${esc(r.why)}</p>` : ""}</div>`; }).join("")}</div>` : "";
   const notes = (M.notes || []).length ? `<details class="gf-notes"><summary>Honest notes</summary>${M.notes.map((n) => `<p>${esc(n)}</p>`).join("")}</details>` : "";
   const link = M.link ? `<p><a class="gf-link" href="${esc(M.link.href)}">${esc(M.link.label)}</a></p>` : "";
@@ -65,13 +68,26 @@ function renderPanelDom(force = false) {
   panelEl.innerHTML = `<nav class="gf-tabs" aria-label="Scenes">${tabs}</nav>
     <p class="gf-kicker">${esc(M.kicker)}</p><h2 class="gf-title">${esc(M.title)}</h2>
     ${(M.cards || []).map((c) => `<p class="gf-cardline">${esc(c)}</p>`).join("")}
-    <div class="gf-q"><p class="gf-qtext">Predict: ${esc(P.text)}</p><div class="gf-chips">${chips}</div></div>${reveal}
-    ${dialHtml(M.readout)}
-    <div class="gf-lines">${(M.lines || []).map((l) => `<p>${esc(l)}</p>`).join("")}</div>${why}${wrong}${link}${tryL}
-    ${ctrHtml}${sort}
-    <div class="gf-eqwrap${lab.eqHidden ? " hidden" : ""}"><p class="gf-cardtitle">${lab.url.help >= 1 ? "Equation" : "Help level"}</p>${M.eqNote && lab.url.help >= 2 ? `<p class="gf-foot">${esc(M.eqNote)}</p>` : ""}<div id="gfEq"></div></div>${notes}`;
+    ${M.predict ? `<div class="gf-q"><p class="gf-qtext">Predict: ${esc(P.text)}</p><div class="gf-chips">${chips}</div></div>` : ""}${reveal}${M.view === "sort" && M.result ? `<p class="gf-result">${esc(M.result)}</p>` : ""}
+    ${dialHtml(M.readout)}${eqHtml(M)}
+    <div class="gf-lines">${(M.lines || []).map((l) => `<p>${esc(l)}</p>`).join("")}</div>${why}${M.view === "sort" ? "" : wrong}${link}${tryL}
+    ${M.view === "sort" ? sort + wrong + ctrHtml : ctrHtml + sort}
+    <div class="gf-eqwrap${lab.eqHidden || M.view ? " hidden" : ""}"><p class="gf-cardtitle">${lab.url.help >= 1 ? "Equation" : "Help level"}</p>${M.eqNote && lab.url.help >= 2 ? `<p class="gf-foot">${esc(M.eqNote)}</p>` : ""}<div id="gfEq"></div></div>${notes}`;
   renderPanel($("gfEq"), { ...M.eq, help: lab.url.help, lock: lab.url.lock, previous: lab.prevEq && lab.prevEq.scene === M.scene ? lab.prevEq : undefined });
   lab.prevEq = { ...M.eq, scene: M.scene };
+}
+/** S6: the live equation tiles and the Pin it graph (Leo's round 8 frame). */
+function eqHtml(M) {
+  if (!M.tiles) return "";
+  const tile = (t) => `<div class="gf-etile${t.glow ? " glow" : ""}"><span class="gf-esym">${esc(pretty(t.sym))}</span><span class="gf-eval">${esc(pretty(t.val))}</span><span class="gf-eunit">${esc(pretty(t.unit))}</span></div>`;
+  const [G, m1, m2, r] = M.tiles;
+  const pins = M.pins.map((p, i) => { const x = 34 + 236 * p.dist / 4, y = 150 - 130 * Math.min(1.2, p.pull) / 1.2; return `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="#E8A85A"/><text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="700" fill="#2A2420">${i + 1}</text></g>`; }).join("");
+  const ticks = [1, 2, 3, 4].map((d) => `<text x="${34 + 236 * d / 4}" y="168" text-anchor="middle">${d}</text>`).join("") + [[1, "1"], [0.5, "1/2"], [0.25, "1/4"]].map(([v, l]) => `<text x="28" y="${(150 - 130 * v / 1.2 + 4).toFixed(1)}" text-anchor="end">${l}</text>`).join("");
+  return `<div class="gf-eqlive"><p class="gf-cardtitle">The equation</p>
+    <div class="gf-erow"><span class="gf-ef">F =</span>${tile(G)}<span class="gf-eop">\u00D7</span><div class="gf-efrac"><div class="gf-enum">${tile(m1)}<span class="gf-eop">\u00D7</span>${tile(m2)}</div><div class="gf-eden">${tile(r)}${r.bubble ? `<span class="gf-bubble">${esc(pretty(r.bubble))}</span>` : ""}</div></div></div>
+    <p class="gf-eresult">F = ${esc(pretty(M.force))}, ${esc(M.forceSub)}</p>
+    <div class="gf-pin"><p class="gf-cardtitle">${esc(M.pinTitle)} <span>${M.pins.length} ${M.pins.length === 1 ? "pin" : "pins"}</span></p>
+    <svg viewBox="0 0 290 196" role="img" aria-label="${esc(M.pinY)} against ${esc(M.pinX)}"><path d="M34 20 V150 H274" fill="none" stroke="#6B6158" stroke-width="2"/>${ticks}<text x="154" y="190" text-anchor="middle">${esc(M.pinX)}</text>${pins}</svg></div></div>`;
 }
 panelEl.addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b || b.disabled) return;
@@ -92,11 +108,11 @@ function resize() {
 }
 addEventListener("resize", resize);
 function flatCamera() {
-  const sc = lab.url.scene; let V = VIEWS[sc]; if (sc === "iss" && lab.issStep === "station") V = VIEWS.issStation;
+  const sc = lab.url.scene; let V = VIEWS[sc]; if (sc === "iss" && lab.issStep === "station") V = VIEWS.issStation; if (lab.view === "sort" && sc === "well") V = VIEWS.sort;
   const tgt = new THREE.Vector3(...V.target), pos = new THREE.Vector3(...V.pos);
   if (sc === "weigh") { const x = S3_X(["earth", "moon", "mars", "jupiter", "ns"].indexOf(lab.url.world)); tgt.x += x; pos.x += x * 0.85; }
   const fov = V.fov; const pr = !layout.phone ? panelEl.getBoundingClientRect() : null;
-  const effAspect = (pr && pr.width ? pr.left : layout.w) / layout.h; const pull = Math.min(2.1, Math.max(1, 1.6 / Math.max(0.3, effAspect)));
+  const effAspect = (pr && pr.width ? pr.left : layout.w) / layout.h; const pull = Math.min(2.1, Math.max(1, (layout.phone ? 1.4 : 1.6) / Math.max(0.3, effAspect)));
   const off = pos.clone().sub(tgt).multiplyScalar(pull); const sph = new THREE.Spherical().setFromVector3(off); sph.theta += viewOff.yaw; sph.phi = Math.min(Math.PI * 0.49, Math.max(0.2, sph.phi + viewOff.pitch));
   camera.position.copy(tgt).add(new THREE.Vector3().setFromSpherical(sph)); camera.fov = fov; camera.lookAt(tgt); camera.updateProjectionMatrix();
 }
@@ -113,7 +129,7 @@ canvas.addEventListener("pointermove", (e) => {
   if (drag.what === "moon") { ray.setFromCamera(ndc(e), camera); const p = new THREE.Vector3(); if (ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 0, 1), -view.s1.z), p)) moveMoon(p.x); }
   else if (drag.what === "look" && drag.moved) { viewOff.yaw = Math.max(-0.5, Math.min(0.5, drag.yaw - dx * 0.004)); viewOff.pitch = Math.max(-0.3, Math.min(0.3, drag.pitch - dy * 0.004)); }
 });
-const endDrag = (e) => { if (!drag || e.pointerId !== drag.id) return; if (drag.what === "moon") syncUrl(); if (drag.what === "start" || (!drag.moved && lab.url.scene === "well")) doAct("flick"); drag = null; renderPanelDom(); };
+const endDrag = (e) => { if (!drag || e.pointerId !== drag.id) return; if (drag.what === "moon") syncUrl(); if (lab.view !== "sort" && (drag.what === "start" || (!drag.moved && lab.url.scene === "well"))) doAct("flick"); drag = null; renderPanelDom(); };
 canvas.addEventListener("pointerup", endDrag); canvas.addEventListener("pointercancel", endDrag);
 let lastTick = Math.round(lab.url.dist);
 function moveMoon(x) {
@@ -123,9 +139,10 @@ function moveMoon(x) {
 addEventListener("keydown", (e) => {
   if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return; if (e.target && e.target.closest && e.target.closest("button") && (e.key === " " || e.key === "Enter")) return;
   const sc = lab.url.scene;
-  if (/^[1-5]$/.test(e.key)) doAct("scene:" + SCENE_ORDER[+e.key - 1]);
+  if (/^[1-7]$/.test(e.key)) { const [s2, v2] = TAB_ORDER[+e.key - 1]; doAct(v2 ? "view:" + v2 : "scene:" + s2); }
   else if (sc === "pull" && (e.key === "ArrowRight" || e.key === "ArrowLeft")) { doAct(e.key === "ArrowRight" ? "dist:farther" : "dist:closer"); e.preventDefault(); }
-  else if (e.key === " ") { doAct(sc === "pull" ? "pin" : sc === "well" ? "flick" : ""); e.preventDefault(); }
+  else if (e.key === " ") { doAct(sc === "pull" ? "pin" : sc === "well" && lab.view !== "sort" ? "flick" : ""); e.preventDefault(); }
+  else if (e.key === "c" || e.key === "C") doAct("calm");
   else if ((e.key === "e" || e.key === "E") && lab.url.help >= 1) { lab.eqHidden = !lab.eqHidden; renderPanelDom(true); }
 });
 
@@ -153,7 +170,7 @@ const xin = renderer ? new XRInput(THREE, renderer, scene, {
     const id = panel.pick(r.origin, r.dir); if (id && id !== "panel") { doAct(id); return; } if (id === "panel") return;
     const hit = new THREE.Raycaster(r.origin, r.dir).intersectObjects(view.pickables(lab.url.scene), false)[0];
     if (hit) xdrag[i] = lab.url.scene === "pull" ? "moon" : "start";
-    else if (lab.url.scene === "well") xdrag[i] = "start";
+    else if (lab.url.scene === "well" && lab.view !== "sort") xdrag[i] = "start";
   },
   onSelectEnd: (i) => { if (xdrag[i] === "start") doAct("flick"); if (xdrag[i] === "moon") syncUrl(); xdrag[i] = null; },
   onScrubHours: (dh) => { if (paused || lab.url.scene !== "pull") return; lab.url.dist = clampDist(lab.url.dist + dh * 2); renderPanelDom(); },
@@ -169,7 +186,7 @@ function xrFrame() {
   if (!placed) { const d = new THREE.Vector3(0, 0, -1).applyQuaternion(xc.getWorldQuaternion(new THREE.Quaternion())); panel.place(hp, Math.atan2(-d.x, -d.z)); panel.mesh.visible = true; placed = true; }
   const ev = readPads(xrSession ? [...xrSession.inputSources] : [], padPrev);
   paused = ev.grip; view.paused = paused;
-  if (ev.fire && lab.url.scene === "well") doAct("flick");
+  if (ev.fire && lab.url.scene === "well" && lab.view !== "sort") doAct("flick");
   if (ev.nextScene) doAct("next");
   if (ev.chip) { const ctr = controlsFor(lab).filter((c) => /^(obj|world|alt|speed):/.test(c.id) && !c.disabled); if (ctr.length) { const cur = ctr.findIndex((c) => c.on); const n = ctr[(Math.max(0, cur) + ev.chip + ctr.length) % ctr.length]; doAct(n.id); } }
   const M = sceneModel(lab); M.whyOpen = lab.whyCard; M.wrongOpen = lab.wrongCard;
@@ -184,8 +201,11 @@ function frame(now) {
   const presenting = renderer.xr.isPresenting; let camPos;
   if (presenting) camPos = xrFrame(); else { flatCamera(); camPos = camera.position; }
   if (xin) xin.update(dt);
-  const M = sceneModel(lab); view.update(M, lab, dt, camPos);
-  if (!presenting && lab.url.scene === "well" && lab.marbles.some((m) => !m.done)) renderPanelDom();
+  let cam;
+  if (presenting) { const xc = renderer.xr.getCamera(); cam = { pos: camPos, quat: xc.getWorldQuaternion(new THREE.Quaternion()), fov: 90, xr: true }; view.U.uRes.value.set(1700, 1700); }
+  else { cam = { pos: camera.position, quat: camera.quaternion, fov: camera.fov, hCss: layout.h, phone: layout.phone, camera }; view.U.uRes.value.set(layout.w, layout.h); }
+  const M = sceneModel(lab); view.update(M, lab, dt, cam);
+  if (!presenting && lab.url.scene === "well" && !lab.view && lab.marbles.some((m) => !m.done)) renderPanelDom();
   renderer.render(scene, camera); window.__gf.frames++;
 }
 if (statusEl) statusEl.hidden = true;

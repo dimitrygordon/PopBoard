@@ -2,6 +2,7 @@
 // as the page: title, the prediction chips, the reveal, the readout dial (Leo's spec), the lines, the controls, the
 // scene tabs and the help levels. Pointed at with a controller ray or a hand pinch (three's WebXR controllers).
 import { INK, CREAM } from "./gf-props.js";
+import { pretty } from "./gf-scenes.js";
 
 export const XRP = { W: 1024, H: 1536, M: 0.8 };   // texture px and panel width in metres (1280 px per metre)
 const FONT = (px, w = 600) => `${w} ${px}px Inter, -apple-system, system-ui, sans-serif`;
@@ -40,7 +41,7 @@ export class XRPanel {
     g.strokeStyle = "rgba(255,255,255,0.18)"; g.lineWidth = 3; g.stroke();
     let y = 24;
     // scene tabs
-    let x = 32; for (const t of tabs) { const w = 182; this.btn(t.id, t.label, x, y, w, 64, t.on, t.disabled); x += w + 8; } y += 84;
+    let x = 32; const tw = (W - 64 - (tabs.length - 1) * 6) / tabs.length; for (const t of tabs) { this.btn(t.id, t.label, x, y, tw, 64, t.on, t.disabled); x += tw + 6; } y += 84;
     g.fillStyle = "#A9B0D0"; g.font = FONT(30, 600); g.fillText(M.kicker || "", 40, y + 30); y += 46;
     g.fillStyle = "#FFFFFF"; g.font = FONT(50, 700); g.fillText(M.title || "", 40, y + 48, W - 80); y += 70;
     const wrap = (text, px, col, maxLines = 4, wgt = 550) => { g.font = FONT(px, wgt); g.fillStyle = col; const words = String(text).split(" "); let line = ""; let n = 0;
@@ -61,24 +62,33 @@ export class XRPanel {
       if (second) this.dial(40 + dw + 20, y, W - 100 - dw, dh, second.label, second.main, null);
       y += dh + 16;
     }
+    // S6: the live equation tiles (Leo's round 8 frame), drawn on cream like the dial
+    if (M.tiles) {
+      const tw = (W - 80 - 30) / 4, th = 150; M.tiles.forEach((t, i) => {
+        const tx = 40 + i * (tw + 10); g.fillStyle = t.glow ? "#F7E2B8" : CREAM; g.beginPath(); g.roundRect ? g.roundRect(tx, y, tw, th, 20) : g.rect(tx, y, tw, th); g.fill();
+        g.fillStyle = INK; g.font = FONT(40, 700); g.fillText(pretty(t.sym), tx + 14, y + 46); g.font = FONT(24, 600); if ("fontVariantNumeric" in g) g.fontVariantNumeric = "tabular-nums"; g.fillText(pretty(t.val), tx + 14, y + 86, tw - 24);
+        g.globalAlpha = 0.7; g.font = FONT(19, 400); g.fillText(pretty(t.unit), tx + 14, y + 118, tw - 24); g.globalAlpha = 1; });
+      y += th + 14; g.fillStyle = "#FFFFFF"; g.font = FONT(34, 650); g.fillText(`F = G m\u2081 m\u2082 / r\u00B2 = ${pretty(M.force)}`, 40, y + 34, W - 80); y += 48;
+      const rt = M.tiles.find((t) => t.id === "r"); if (rt && rt.bubble) { g.fillStyle = "#E8A85A"; g.font = FONT(26, 650); g.fillText(pretty(rt.bubble), 40, y + 28); y += 40; }
+    }
     for (const c of (M.cards || []).slice(0, 1)) wrap(c, 30, "#E6E9F8", 4);
-    for (const l of (M.lines || []).slice(0, 5)) wrap(l, 29, "#C3C9E6", 3);
+    for (const l of (M.lines || []).slice(0, M.view === "sort" ? 0 : 5)) wrap(l, 29, "#C3C9E6", 3);
     if (M.whyOpen && M.why) { wrap(M.why.text, 28, "#E3DBFF", 3); wrap(M.why.foot, 24, "#A9B0D0", 1); }
-    if (M.wrongOpen && M.wrong) M.wrong.forEach((w, i) => wrap(`${i + 1}. ${w}`, 24, "#E3DBFF", 2));
+    if ((M.wrongOpen || M.view === "sort") && M.wrong && M.view !== "sort") M.wrong.forEach((w, i) => wrap(`${i + 1}. ${w}`, 24, "#E3DBFF", 2));
     // S5 sort (two bins): Real / Model buttons per card
-    if (M.sort && M.scene === "well") {
+    if (M.sort && M.view === "sort") {
       y += 4; g.fillStyle = "#F2F4FF"; g.font = FONT(30, 700); g.fillText("Real or model?", 40, y + 30); y += 42;
-      for (const c of M.sort) { if (y > H - 420) break; g.font = FONT(24, 550); g.fillStyle = "#E6E9F8"; g.fillText(c.text, 40, y + 24, W - 330); this.btn(`sort:${c.id}:real`, "Real", W - 280, y - 6, 116, 46, c.picked === "real"); this.btn(`sort:${c.id}:model`, "Model", W - 156, y - 6, 116, 46, c.picked === "model"); y += 54; }
+      for (const c of M.sort) { if (y > H - 360) break; g.font = FONT(24, 550); g.fillStyle = "#E6E9F8"; g.fillText(c.text, 40, y + 24, W - 330); this.btn(`sort:${c.id}:real`, "Real", W - 280, y - 6, 116, 46, c.picked === "real"); this.btn(`sort:${c.id}:model`, "Model", W - 156, y - 6, 116, 46, c.picked === "model"); y += 54; }
     }
     // controls and help at the bottom
     let by = H - 290; x = 40;
-    for (const b of controls) { g.font = FONT(28, 650); const w = Math.max(130, Math.min(420, g.measureText(b.label).width + 44)); if (x + w > W - 30) { x = 40; by += 64; } if (by > H - 110) break; this.btn(b.id, b.label, x, by, w, 56, !!b.on || !!b.primary, b.disabled); x += w + 8; }
+    for (const b of controls.filter((c) => !/^sort:/.test(c.id))) { g.font = FONT(28, 650); const w = Math.max(130, Math.min(420, g.measureText(b.label).width + 44)); if (x + w > W - 30) { x = 40; by += 64; } if (by > H - 110) break; this.btn(b.id, b.label, x, by, w, 56, !!b.on || !!b.primary, b.disabled); x += w + 8; }
     x = 40; const hy = H - 92; g.fillStyle = "#A9B0D0"; g.font = FONT(26, 600); g.fillText("Help", x, hy + 40); x += 80;
     for (const h of helps) { this.btn(h.id, h.label, x, hy, 200, 62, h.on, h.disabled); x += 210; }
     this.tex.needsUpdate = true;
   }
   dial(x, y, w, h, label, main, sub, subIsUnit) {
-    const g = this.g; g.fillStyle = READOUT.dial; g.beginPath(); g.roundRect ? g.roundRect(x, y, w, h, 28) : g.rect(x, y, w, h); g.fill();
+    const g = this.g; main = pretty(main); g.fillStyle = READOUT.dial; g.beginPath(); g.roundRect ? g.roundRect(x, y, w, h, 28) : g.rect(x, y, w, h); g.fill();
     const sh = g.createLinearGradient(0, y, 0, y + h * 0.2); sh.addColorStop(0, "rgba(42,36,32,0.02)"); sh.addColorStop(1, "rgba(42,36,32,0)"); g.fillStyle = sh; g.fill();
     if ("fontVariantNumeric" in g) g.fontVariantNumeric = "tabular-nums";
     g.fillStyle = READOUT.ink; g.globalAlpha = 0.7; g.font = FONT(26, 600); g.fillText(label || "", x + 24, y + 38, w - 48); g.globalAlpha = 1;

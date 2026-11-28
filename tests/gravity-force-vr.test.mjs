@@ -2,17 +2,20 @@
 //   node --test tests/gravity-force-vr.test.mjs
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import * as S from "../public/gravity-force/gf-scenes.js";
 import { parseState, canSetHelp, flags } from "../public/gravity-force/gf-state.js";
 import { GF, stepMarble, bhHorizonText } from "../public/gravity-force/gf-sim.js";
-import { MODEL_BASE, PROP_SIZE, INK, CREAM, dialClockDeg } from "../public/gravity-force/gf-props.js";
+import { MODEL_BASE, MODEL_FILES, PROP_SIZE, INK, CREAM, dialClockDeg, ROBOT } from "../public/gravity-force/gf-props.js";
 import { READOUT, readPads, XRP } from "../public/gravity-force/gf-xr.js";
 
 const pub = new URL("../public/", import.meta.url);
 const read = (n) => readFileSync(new URL(n, pub), "utf8");
 const lab = (qs = "") => S.createLab(parseState(qs));
-const NEW_FILES = ["study-gravity-force.html", ...readdirSync(new URL("gravity-force/", pub)).map((f) => "gravity-force/" + f)];
+const walk = (d) => readdirSync(new URL(d, pub)).flatMap((f) => statSync(new URL(d + f, pub)).isDirectory() ? walk(d + f + "/") : [d + f]);
+const ALL_FILES = ["study-gravity-force.html", ...walk("gravity-force/")];
+const GLBS = ALL_FILES.filter((f) => /\.(glb|gltf|blend|usdz|png|jpg)$/i.test(f) || /NOTES/i.test(f));
+const NEW_FILES = ALL_FILES.filter((f) => !GLBS.includes(f));
 
 test("page loads the lab modules with one cache-bust version, and the Study library lists it", () => {
   const page = read("study-gravity-force.html");
@@ -27,13 +30,16 @@ test("page loads the lab modules with one cache-bust version, and the Study libr
   for (const m of main.matchAll(/from "\.\/([\w-]+\.js)"/g)) assert.ok(existsSync(new URL("gravity-force/" + m[1], pub)), m[1]);
 });
 
-test("no em or en dashes, no GLBs, no secrets in the new files", () => {
+test("no em or en dashes, only the four approved GLBs, no secrets in the new files", () => {
   for (const f of [...NEW_FILES, "../tests/gravity-force-vr.test.mjs"]) {
     const t = read(f); assert.ok(!/[\u2013\u2014]/.test(t), `dash in ${f}`);
     if (!f.startsWith("..")) assert.ok(!/(SWOLE_OWNER_PASSWORD|FIREBASE_LOGIN_CODE|XAI_API_KEY|sk-[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{30,})/.test(t), `secret-like text in ${f}`);
   }
-  assert.ok(!NEW_FILES.some((f) => /\.(glb|gltf|blend|usdz)$/i.test(f)), "Angelo's model files stay out of the repo");
-  assert.equal(MODEL_BASE, "", "props are built in code unless an external model host is set");
+  // Dimitry's exception (via Angelo, 2026-11-28): exactly the four meshopt GLBs, nothing else of Angelo's
+  assert.deepEqual(GLBS.sort(), Object.values(MODEL_FILES).map((f) => "gravity-force/models/" + f).sort());
+  assert.equal(MODEL_BASE, "models/", "relative to gf-props.js, so previews load the same files");
+  const total = GLBS.reduce((a, f) => a + statSync(new URL(f, pub)).size, 0); assert.ok(total < 1.2e6, `GLBs total ${total} bytes`);
+  for (const f of GLBS) { const b = readFileSync(new URL(f, pub)); assert.equal(b.toString("latin1", 0, 4), "glTF"); assert.match(b.toString("latin1", 20, 20 + b.readUInt32LE(12)), /EXT_meshopt_compression/); }
 });
 
 test("T18: a result shows only after a commit, and the reveal never says wrong", () => {
@@ -91,7 +97,7 @@ test("T19: the S3 spring scale shows newtons and pounds; the balance shows 50 kg
     const L = lab("scene=weigh&world=" + w); const m = S.s3Model(L);
     assert.equal(m.spring.main, n); assert.equal(m.spring.sub, lb); assert.equal(m.balance.main, "50 kg"); assert.equal(m.readout.second.main, "50 kg");
   }
-  assert.equal(S.s3Model(lab("scene=weigh&world=ns")).figure, "robot");
+  for (const w of S.SCENE_WORLDS) assert.equal(S.s3Model(lab("scene=weigh&world=" + w)).figure, "robot", "the same robot on every world (Leo)");
   assert.ok(S.s3Model(lab("scene=weigh&world=jupiter&help=1")).lines[0].startsWith("Near Jupiter's cloud tops: 1,240 N (about 279 lb)"));
   for (const sc of ["pull", "mass", "iss", "well"]) for (const h of [0, 1, 2]) assert.ok(!/\blb\b|pound/i.test(JSON.stringify(S.sceneModel(lab(`scene=${sc}&help=${h}`)))), `${sc} help ${h}`);
   assert.equal(S.needleAngleDeg(0), -45); assert.equal(S.needleAngleDeg(1e9), -315); assert.equal(dialClockDeg(-45), -135);
@@ -150,4 +156,48 @@ test("headset: Leo's readout spec and the Quest 3 button map", () => {
   assert.ok(ev.fire); assert.ok(ev.grip); assert.equal(ev.chip, 1);
   ev = readPads([pad("right", [0, 0, 0, 1, 1]), pad("left", [0, 0, 0, 0, 0], [0, 0, 0.9, 0])], prev);
   assert.ok(!ev.fire, "A fires once per press"); assert.ok(ev.nextScene); assert.equal(ev.chip, 0, "one chip step per flick");
+});
+
+test("S4 Moon stop: 384,400 km centre to centre, the same distance as S1 (Tesla's ruling)", () => {
+  const r4 = S.s4Model(lab("scene=iss&alt=384400")).eq.r; const r1 = S.s1Model(lab("scene=pull")).eq.r;
+  assert.equal(r4, r1); assert.equal(r4, GF.earthMoonM); assert.equal(S.s4AltKm(384400), 378029);
+  const m = S.s4Model(lab("scene=iss&alt=384400&help=2")); assert.equal(m.readout.main, "0.027");
+  assert.ok(m.lines.includes("0.00270 m/s^2. 0.135 N on the traveler.")); assert.ok(m.lines[0].includes("about 1/3,600"));
+  assert.ok(S.controlsFor(lab("scene=iss")).some((c) => c.id === "alt:384400" && c.label === "Moon's distance"));
+});
+
+test("S5 sheet: no on-screen text gives the fast bend as a number of degrees", () => {
+  for (const o of ["earth", "wd", "sun", "bh"]) for (const h of [0, 1, 2]) {
+    const L = lab(`scene=well&obj=${o}&help=${h}`); for (const sp of ["slow", "medium", "fast"]) { S.act(L, "speed:" + sp); S.act(L, "flick"); }
+    for (let i = 0; i < 400; i++) S.stepSheet(L, 1 / 60, stepMarble);
+    const txt = JSON.stringify([S.sceneModel(L), S.controlsFor(L)]); assert.ok(!/\b41\b|degree|\u00B0/.test(txt), `${o} ${h}`);
+  }
+});
+
+test("S5c Real or model? and S6 The Equation: views on top of the S5 and S1 scenes (Leo's round 8 sheet)", () => {
+  const L = lab(""); const tabs = S.tabsFor(L); assert.deepEqual(tabs.map((t) => t.label), ["S1 Pull", "S2 Mass", "S3 Weigh", "S4 Station", "S5 Sheet", "S5c Sort", "S6 Equation"]);
+  assert.ok(S.act(L, "view:sort")); assert.equal(L.url.scene, "well"); let m = S.sceneModel(L);
+  assert.equal(m.title, "Real or model?"); assert.equal(m.kicker, "Gravity Lab | S5c"); assert.equal(m.predict, null); assert.equal(m.sort.length, 6); assert.equal(m.wrong.length, 5);
+  for (const c of S.SORT_CARDS) S.act(L, `sort:${c.id}:model`); m = S.sceneModel(L); assert.equal(m.sortReveal.length, 6); assert.ok(m.result); assert.ok(!/wrong|incorrect/i.test(JSON.stringify(m.sortReveal)));
+  assert.ok(S.act(L, "sortclear")); assert.equal(S.sceneModel(L).sortReveal.length, 0);
+  assert.ok(S.act(L, "next")); assert.equal(L.view, "eq"); assert.equal(L.url.scene, "pull");
+  m = S.sceneModel(L); assert.equal(m.title, "The Equation"); assert.equal(m.kicker, "Gravity Lab | S6"); assert.equal(m.force, "1.98 x 10^20 N"); assert.equal(m.result, undefined);
+  S.act(L, "dist:x2"); m = S.sceneModel(L);
+  assert.equal(m.force, "4.95 x 10^19 N"); assert.equal(m.forceSub, "1/4 of the start"); assert.equal(m.readout.second.main, "768,800 km");
+  assert.deepEqual(m.tiles.map((t) => t.val), ["6.674 x 10^-11", "5.97 x 10^24 kg", "7.35 x 10^22 kg", "(7.69 x 10^8 m)^2"]);
+  assert.equal(m.tiles[3].unit, "Twice the Earth to Moon distance (768,800 km)"); assert.equal(m.tiles[3].bubble, "r x2 so r^2 x4");
+  assert.equal(S.pretty(m.force), "4.95 \u00D7 10\u00B9\u2079 N");
+  S.act(L, "pin"); assert.equal(S.sceneModel(L).pins.length, 1);
+  S.act(L, "predict:x1/4"); m = S.sceneModel(L); assert.equal(m.reveal.model, "x1/4"); assert.ok(m.result);
+  assert.ok(S.act(L, "next")); assert.equal(L.url.scene, "pull"); assert.equal(L.view, null, "S6 wraps round to S1");
+  assert.ok(S.act(L, "scene:mass")); assert.equal(L.view, null);
+  const C = lab(""); assert.ok(S.act(C, "calm")); assert.equal(C.calm, true);
+});
+
+test("painted style: one cream label style sized on screen, ink outlines with 8 fps boil, robot v3.2 proportions", () => {
+  const view = read("gravity-force/gf-view.js"), paint = read("gravity-force/gf-paint.js");
+  assert.match(view, /phonePx: 15, deskPx: 16, xrPerM: 56 \/ 1280 \/ 1\.2/); assert.ok(15 >= 14);
+  assert.match(paint, /ink: 0x2A2420/); assert.match(paint, /boilFps: 8/);
+  assert.equal(ROBOT.h, 1.267); assert.deepEqual(ROBOT.onScale, [0, 0.0485, -0.086]);
+  assert.equal(PROP_SIZE.traveler.legs / PROP_SIZE.traveler.h, 0.5, "Angelo: traveler legs about half the height");
 });
