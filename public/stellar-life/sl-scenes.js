@@ -406,7 +406,7 @@ void main(){
     if (this.cache.wd) return this.cache.wd; const T = this.T; const g = new T.Group(); const body = new T.Group(); g.add(body);
     const sb = buildStar(23, { broad: 200, medium: 520, hi: 0 }); const ms = this.mesh(sb, { star: true, crisp: 1 }, 2);
     ms.material.uniforms.uMixG = { value: 0 }; ms.material.vertexShader = ms.material.vertexShader.replace("uniform float uTeff;", "uniform float uTeff; uniform float uMixG;").replace("lin * aColor.r * ld", "lin * mix(aColor.r, aColor.b, uMixG) * ld").replace("tlin(uTeff + aColor.g * 1000.0 - 500.0)", "tlin(uTeff)");
-    const halo = this.glow([[1.55, 0.10], [1.18, 0.20], [1.04, 0.22]], { disc: 1.0, useTeff: true, order: 1 }); ms.scale.setScalar(0.955); body.add(halo, ms);   // the disc gives the crisp limb, strokes stay inside it
+    const halo = this.glow([[1.55, 0.10], [1.18, 0.20], [1.04, 0.22]], { disc: 1.0, useTeff: true, order: 1 }); ms.scale.setScalar(0.955); body.add(halo, ms);
     const earth = new T.Group(); const eb = buildEarth2(71); const em = this.mesh(eb, {}, 3); em.scale.setScalar(0.95);
     const ocean = new T.Mesh(new T.CircleGeometry(0.996, 64), new T.MeshBasicMaterial({ color: 0x123F78, depthTest: false, depthWrite: false })); ocean.renderOrder = 2;
     const atmo = this.glow([[1.09, 0.30, [120, 170, 255]], [1.035, 0.45, [160, 196, 255]]], { useTeff: false, order: 1 });
@@ -470,6 +470,10 @@ void main(){
     ms.material.vertexShader = ms.material.vertexShader.replace("tlin(uTeff + aColor.g * 1000.0 - 500.0)", "tlin(uTeff)");
     // LOOK-SPEC 3.4: surface 1,000,000 K (#95B1FF at the edge), white-hot core by the equal bleed, crisp edge, thin ring, tight glow
     const halo = this.glow([[2.1, 0.13], [1.4, 0.6], [1.03, 0.5]], { disc: 1.0, useTeff: true, order: 2 }); ms.scale.setScalar(0.955); body.add(halo, ms);
+    // round 7: no surface spin (it aliased). Two faint hot spots at the magnetic poles sweep round every 4 s (the pulsar beam, tilted 35 deg
+    // from the spin axis); a spot brightens when its pole points at us (a slight beamed pulse)
+    const spots = [0, 1].map(() => { const s2 = this.glow([[0.42, 0.22], [0.2, 0.5], [0.09, 0.7]], { useTeff: true, order: 4 }); s2.material.uniforms.uTeff.value = 2e6; s2.material.uniforms.uExposure.value = 1.6; s2.material.uniforms.uBreath = { value: 0 };
+      Object.assign(s2.material, { blending: T.CustomBlending, blendEquation: T.AddEquation, blendSrc: T.OneFactor, blendDst: T.OneFactor, blendSrcAlpha: T.OneFactor, blendDstAlpha: T.OneFactor }); body.add(s2); return s2; });   /* additive: a spot only adds light */
     // the ground is drawn in elevation (a camera-facing band whose top edge sits 58 km below the star), as in Leo's frame
     const GY = -58; const land = new T.Group(); g.add(land); const cb = buildCity(81, 0); const city = this.mesh(cb, {}, 5);
     const gq = new T.PlaneGeometry(4000, 2000); gq.translate(0, -1000, 0); const ground = new T.Mesh(gq, new T.MeshBasicMaterial({ color: 0x070B22, depthTest: false, depthWrite: false })); ground.renderOrder = 4;
@@ -480,12 +484,15 @@ void main(){
     g.add(coN.grp, coC.grp, coR.grp);
     // Leo frame 3b: the city 80 times closer (a 840 m wide skyline, 200 m bar), joined to the city on the horizon
     const lc = this.loupe({ title: "80 times closer", aspect: CITY_ASPECT, paint: (cv) => paintCity(cv), barLabel: "200 m", barFrac: 200 / CITY_M, side: -1 }); g.add(lc.grp);
-    const sc = { root: g, kind: "ns", camDist: 62, radius: 14, barAt: [58, -67], reach: 98, strokes: sb.n + cb.n, meshes: 6, kmPerUnit: () => 1,
+    const sc = { root: g, kind: "ns", camDist: 62, radius: 14, barAt: [58, -67], reach: 98, strokes: sb.n + cb.n, meshes: 8, kmPerUnit: () => 1,
       fit: () => ({ r: 12, right: 98, down: 64, up: 20, pdown: 64, frac: 72 / 1080, pfrac: 72 * 390 / 860 / 844, ar: 1 }),
       update: (c) => {
-        body.scale.setScalar(12); body.position.set(0, 0, 0); if (!c.calm) body.rotation.y += c.dt * 0.7;   /* round 6: the neutron star spins (its strokes sweep across the disc) */
+        body.scale.setScalar(12); body.position.set(0, 0, 0);
+        { const ph = 2 * Math.PI * (c.flowT || 0) / 4, tilt = 35 * Math.PI / 180; const view = c.camLocal.clone().normalize();
+          spots.forEach((s2, k) => { const sg = k ? -1 : 1; const d = new T.Vector3(Math.sin(tilt) * Math.cos(ph), Math.cos(tilt), Math.sin(tilt) * Math.sin(ph)).multiplyScalar(sg);
+            s2.position.copy(d.clone().multiplyScalar(0.97)); const f = d.dot(view); s2.material.uniforms.uAlpha.value = (0.25 + 0.35 * Math.pow(Math.max(f, 0), 6)) * smooth(0.0, 0.35, f);   /* beamed: brightest when the pole points at us */ }); }
         land.quaternion.copy(c.camQuatLocal); land.position.copy(new T.Vector3(0, GY, 0).applyQuaternion(c.camQuatLocal));
-        ms.material.uniforms.uTeff.value = 1e6; ms.material.uniforms.uExposure.value = 2.2; halo.material.uniforms.uTeff.value = 1e6; halo.material.uniforms.uExposure.value = 2.0;
+        ms.material.uniforms.uTeff.value = 1e6; ms.material.uniforms.uExposure.value = 2.2; ms.material.uniforms.uAlpha.value = 0.5; halo.material.uniforms.uTeff.value = 1e6; halo.material.uniforms.uExposure.value = 2.0;   /* low-contrast surface; the pulse is the beamed spot itself (no size change) */
         const q = c.camQuatLocal; const rt = new T.Vector3(1, 0, 0).applyQuaternion(q), up = new T.Vector3(0, 1, 0).applyQuaternion(q);
         coN.place(new T.Vector3().addScaledVector(rt, 12 * 0.7).addScaledVector(up, 12 * 0.7), 9, 7, q, 0.4);
         coC.place(new T.Vector3().addScaledVector(up, GY + 0.3), -50, 9, q, 0.35);
