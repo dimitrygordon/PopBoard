@@ -20,14 +20,14 @@ const tap = (t) => Math.pow(Math.min(1, t / 0.25, (1 - t) / 0.45), 0.7);
 const TAU = Math.PI * 2;
 
 export const SEG = 8;
-export const KIND = { PLAIN: 0, DISK: 1, LANE: 2, STREAK: 3, WIND: 4, PULL: 5, FLAT: 6 };   // FLAT: a disk stroke lying in the disk plane
+export const KIND = { PLAIN: 0, DISK: 1, LANE: 2, STREAK: 3, WIND: 4, PULL: 5, FLAT: 6, ORBIT: 7, JETK: 8, JET: 9, PROM: 10, SNK: 11, LENS: 12 };   // round 7 kinds: see strokeVert   // FLAT: a disk stroke lying in the disk plane
 
 export class Builder {
   constructor(seg = SEG) { this.seg = seg; this.pos = []; this.tan = []; this.uvk = []; this.a = []; this.col = []; this.par = []; this.starts = []; this.cent = []; this.omega = []; this.kinds = []; this.nv = 0; this.n = 0; }
   add(pts, { width, rgb, alpha, kind = 0, bristles = 5, boil = 0, omega = 0, layer = 0, seed, dab = false, raw = null }) {
     const P = []; const SG = this.seg; for (let i = 0; i <= SG; i++) { const f = i / SG * (pts.length - 1), j = Math.min(pts.length - 2, Math.floor(f)), t = f - j; P.push([0, 1, 2].map((k) => pts[j][k] + (pts[j + 1][k] - pts[j][k]) * t)); }
     let cx = 0, cy = 0, cz = 0; for (const p of P) { cx += p[0]; cy += p[1]; cz += p[2]; }
-    this.cent.push(cx / P.length, cy / P.length, cz / P.length); this.omega.push(omega); this.kinds.push(kind);
+    this.cent.push(cx / P.length, cy / P.length, cz / P.length); this.omega.push(omega); this.kinds.push(kind); (this.seeds || (this.seeds = [])).push(seed);
     this.starts.push(this.nv);
     const c4 = raw || [rgb[0] / 255, rgb[1] / 255, rgb[2] / 255];
     for (let i = 0; i <= SG; i++) {
@@ -47,7 +47,7 @@ export class Builder {
     const SG = this.seg, per = 6 * SG, idx = new Uint32Array(this.n * per);
     for (let s = 0; s < this.n; s++) { const v0 = this.starts[s]; let o = s * per; for (let i = 0; i < SG; i++) { const a = v0 + 2 * i, b = a + 1, c = a + 2, d = a + 3; idx.set([a, b, c, b, d, c], o); o += 6; } }
     g.setIndex(new THREE.BufferAttribute(idx, 1)); g.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1e5);
-    g.userData = { count: this.n, per, cent: new Float32Array(this.cent), omega: new Float32Array(this.omega), kinds: new Uint8Array(this.kinds), baseIndex: idx.slice() };
+    g.userData = { count: this.n, per, cent: new Float32Array(this.cent), omega: new Float32Array(this.omega), kinds: new Uint8Array(this.kinds), seeds: new Float32Array(this.seeds || []), baseIndex: idx.slice() };
     return g;
   }
 }
@@ -142,11 +142,11 @@ export function buildDisk(opts = {}) {
   } };
   band(V4_WASH, "wash"); band(V4_MARK, "mark");
   for (const [r, a0, sp, w, op, y] of V42_PIECES) { const col = (V4_MARK.find((B) => r >= B[0] && r < B[1]) || V4_MARK[V4_MARK.length - 1])[7]; const D = Math.PI / 180;
-    disk.add(arc(r, r, (a0 + sp / 2) * D, sp * D, y, 12), { width: w * COVER, rgb: jitter(hex2rgb(col), R, 0.015, 0.05, 0.05), alpha: op, kind: KIND.FLAT, bristles: 2, boil: A_DISK, seed: S() }); }
+    disk.add(arc(r, r, (a0 + sp / 2) * D, sp * D, y, 12), { width: w * COVER, rgb: jitter(hex2rgb(col), R, 0.015, 0.05, 0.05), alpha: op, kind: KIND.ORBIT, bristles: 2, boil: A_DISK, seed: S() }); }
   // inner rim (14 bright cream arcs at 0.64 to 0.81 AU, opacity 1) and the frost line (7 arcs near 3.1 AU, opacity 0.9)
-  for (let i = 0; i < 14; i++) { const r = 0.64 + R() * 0.17; disk.add(arc(r, r, R() * TAU, jit(2.3, 0.25), (R() - 0.5) * 0.14), { width: jit(0.19, 0.25), rgb: jitter(hex2rgb("#F5C896"), R, 0.01, 0.04, 0.04), alpha: 1, kind: KIND.FLAT, bristles: 3, boil: A_OTHER, seed: S() }); }
+  for (let i = 0; i < 14; i++) { const r = 0.64 + R() * 0.17; disk.add(arc(r, r, R() * TAU, jit(2.3, 0.25), (R() - 0.5) * 0.14), { width: jit(0.19, 0.25), rgb: jitter(hex2rgb("#F5C896"), R, 0.01, 0.04, 0.04), alpha: 1, kind: KIND.ORBIT, bristles: 3, boil: A_OTHER, seed: S() }); }
   const frost = opts.planets === "solar";
-  if (frost) for (let i = 0; i < 7; i++) { const r = 3.02 + R() * 0.18; disk.add(arc(r - 0.1, r + 0.1, (i / 7) * TAU + R() * 0.5, jit(1.45, 0.3), (R() - 0.5) * 0.06), { width: jit(0.2, 0.15), rgb: jitter(hex2rgb("#EBBE84"), R, 0.01, 0.04, 0.04), alpha: 0.9, kind: KIND.FLAT, bristles: 2, boil: A_OTHER, seed: S() }); }
+  if (frost) for (let i = 0; i < 7; i++) { const r = 3.02 + R() * 0.18; disk.add(arc(r - 0.1, r + 0.1, (i / 7) * TAU + R() * 0.5, jit(1.45, 0.3), (R() - 0.5) * 0.06), { width: jit(0.2, 0.15), rgb: jitter(hex2rgb("#EBBE84"), R, 0.01, 0.04, 0.04), alpha: 0.9, kind: KIND.ORBIT, bristles: 2, boil: A_OTHER, seed: S() }); }
   // ---- young planets (Leo build note 3): v4 places 3 giant-planet cores (5.2, 9.5 and 13.4 AU, four dabs each) and
   // 5 rocky pairs (0.9 to 2.4 AU). Drawn far larger than real; a chip says so.
   const bodies = [];
@@ -161,7 +161,7 @@ export function buildDisk(opts = {}) {
     b.px = cx; b.pz = cz;   /* kept so the scene can point a callout at the body */
     b.cols.forEach((c, k) => { const L = b.kind === "giant" ? jit(0.85, 0.4) : 0.23; const a = R() * TAU, off = b.rad * 0.25 * k / b.cols.length;
       const p0 = [cx + Math.cos(a) * (off - L / 2), 0, cz + Math.sin(a) * (off - L / 2)], p1 = [cx + Math.cos(a) * (off + L / 2), 0, cz + Math.sin(a) * (off + L / 2)];
-      disk.add([p0, [(p0[0] + p1[0]) / 2, 0, (p0[2] + p1[2]) / 2], p1], { width: b.rad * (b.kind === "giant" ? jit(1.0, 0.2) : 1), rgb: hex2rgb(c), alpha: 1, bristles: 2, boil: A_OTHER, seed: S(), dab: true }); });
+      disk.add([p0, [(p0[0] + p1[0]) / 2, 0, (p0[2] + p1[2]) / 2], p1], { width: b.rad * (b.kind === "giant" ? jit(1.0, 0.2) : 1), rgb: hex2rgb(c), alpha: 1, kind: KIND.ORBIT, bristles: 2, boil: A_OTHER, seed: S(), dab: true }); });
     sprites.push({ p: [cx, 0, cz], r: b.rad * (b.kind === "giant" ? 2.6 : 2.2), rgb: [255, 196, 130], a: b.kind === "giant" ? 0.22 : 0.14, breath: 0 });
   }
   // ---- jets: 4 up and 4 down, about 8 AU long from about 1 AU out, opacity 0.26 to 0.35 (v4), H-alpha pink
@@ -171,11 +171,11 @@ export function buildDisk(opts = {}) {
     for (let k = 0; k < 4; k++) {
       const a = R() * TAU, rr = 0.08 + R() * 0.3, y0 = dir * (1.0 + R() * 0.4), L = jit(8.2, 0.12); const x = Math.cos(a) * rr, z = Math.sin(a) * rr, sw = (R() - 0.5) * 0.5;
       const pts = []; for (let q = 0; q <= 6; q++) { const u = q / 6; pts.push([x * (1 + u) + sw * Math.sin(u * 3) * 0.3, y0 + dir * L * u, z * (1 + u) + sw * Math.cos(u * 3) * 0.3]); }
-      add.add(pts, { width: jit(0.5, 0.15), rgb: hex2rgb(jetCols[k]), alpha: lerp(0.26, 0.35, R()), bristles: 3, boil: A_JET, seed: S() });
+      add.add(pts, { width: jit(0.5, 0.15), rgb: hex2rgb(jetCols[k]), alpha: lerp(0.26, 0.35, R()), kind: KIND.JET, bristles: 3, boil: A_JET, seed: S() });
     }
     // knots: soft stretched blobs at 37, 67 and 90 percent of the jet, 16 nested layers each (length 1.0 to 0.1), opacity 0.034 each
     for (const f of [0.37, 0.67, 0.9]) { const yc = dir * (1.2 + 8.2 * f); const knot = hex2rgb("#E08391");
-      for (let l = 0; l < 16; l++) { const k = 1 - l * 0.06, L = 1.44 * k; add.add([[0, yc - L / 2, 0], [0, yc, 0], [0, yc + L / 2, 0]], { width: 0.55 * k, rgb: knot, alpha: 0.034, bristles: 1, boil: A_JET * 0.5, seed: S() + l * 0.01, dab: true }); } }
+      for (let l = 0; l < 16; l++) { const k = 1 - l * 0.06, L = 1.44 * k; add.add([[0, yc - L / 2, 0], [0, yc, 0], [0, yc + L / 2, 0]], { width: 0.55 * k, rgb: knot, alpha: 0.034, kind: KIND.JETK, omega: f, bristles: 1, boil: A_JET * 0.5, seed: S() + l * 0.01, dab: true }); } }
   }
   // ---- massive stars: still wrapped in their cloud (F4), blown clear at F5
   if (opts.wrap) for (let i = 0; i < 420; i++) {

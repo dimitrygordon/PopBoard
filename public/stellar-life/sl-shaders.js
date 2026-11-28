@@ -46,7 +46,18 @@ void main(){
   vec3 p = position; vec3 tn = aTan;
   float r = length(position.xz) + 1e-3; float dth = 0.0, fade = 1.0;
   bool flatK = kind > 5.5 && kind < 6.5;   // FLAT: lies in the disk plane (Angelo's v4 ribbons face the disk normal)
-  if ((kind > 0.5 && kind < 2.5) || flatK) dth = (7.0 / 32.0) / r * sin(TAU * tl - 1.05 * r);
+  bool orbK = kind > 6.5 && kind < 7.5;    // ORBIT: disk arcs at one radius and the young planets, on circular Kepler orbits
+  if (kind > 0.5 && kind < 2.5) dth = (7.0 / 32.0) / r * sin(TAU * tl - 1.05 * r);
+  // round 7, Kepler shear: every vertex turns at omega = KEPLER_W r^-1.5 (r in AU), so the inner disk laps the outer disk.
+  // Band strokes (FLAT) span a little radius, so they shear; each lives LIFE s and is re-dealt at a fresh angle with a
+  // crossfade, so the pattern never winds up. Arcs at one radius (ORBIT) just orbit.
+  float omK = 1.0 * pow(max(r, 0.3), -1.5);
+  if (orbK) dth = omK * uFlowT;
+  if (flatK) { const float LIFE = 6.0; float ag = uFlowT / LIFE + h11(seed * 0.173); float cyc = floor(ag), age = fract(ag);
+    dth = omK * age * LIFE + h11(seed + cyc * 7.31) * TAU; fade = smoothstep(0.0, 0.15, age) * smoothstep(1.0, 0.85, age) / 0.87; }
+  // jet knots (JETK): each knot rides out along the jet and fades, then a new one is launched at the base
+  bool jetK = kind > 7.5 && kind < 8.5, jetS = kind > 8.5 && kind < 9.5;
+  if (jetK) { float su = fract(uFlowT * 0.08 + aParam.x); p.y += sign(position.y) * 8.2 * (su - aParam.x); fade = smoothstep(0.0, 0.12, su) * (1.0 - smoothstep(0.65, 1.0, su)); }
   if (kind > 2.5 && kind < 3.5) { float su = fract(tl + aParam.x); dth = (44.0 / 32.0) / r * su; fade = 0.55 * pow(max(sin(3.14159265 * su), 0.0), 1.5); }
   p = rotY(p, dth); tn = rotY(tn, dth);
 #ifdef GROW
@@ -63,6 +74,7 @@ void main(){
   if (kind > 2.5 && kind < 3.5) { al *= mix(1.0, 0.5, nearK); }
   vec4 vp = modelViewMatrix * vec4(p, 1.0);
   float sc = length(modelViewMatrix[0].xyz);
+  if (jetS) al *= 0.6 + 0.4 * smoothstep(0.2, 1.0, sin(TAU * (aUvK.y * 2.5 - uFlowT * 0.35)));   // jet strands: brighter pulses travel outward
 #ifdef GROW
   al *= min(1.0, gr * 3.0);
 #endif
@@ -92,6 +104,7 @@ void main(){
   vec4 hv = vec4(h21(vec2(cp, 5.0)), h21(vec2(cp, 6.0)), h21(vec2(cp, 7.0)), h21(vec2(cp, 8.0)));
   off += 0.5 * A * vec2(sin(TAU * (u * (1.0 + floor(hv.x * 3.0)) + hv.z)), sin(TAU * (u * (1.0 + floor(hv.y * 3.0)) + hv.w)));
   if (A > 0.0) width *= 1.0 + 0.07 * sin(TAU * (u * (1.0 + floor(hs.z * 3.0)) + hs.x));
+  if (jetS || jetK) { vec2 ax = (mat3(modelViewMatrix) * vec3(0.0, 1.0, 0.0)).xy; float axl = length(ax); if (axl > 1e-4) { ax /= axl; off = dot(off, ax) * ax; } }   // jet boil runs along the jet axis
   vp.xy += off * uBoilGain * sc;
   vp.xyz += sd * side * width * 0.5 * sc;
   gl_Position = projectionMatrix * vp;
@@ -126,12 +139,13 @@ void main(){
   #endif
 }`;
 export const spriteVert = /* glsl */`
-attribute vec2 aCorner; attribute vec4 aColor; attribute vec2 aSz; uniform float uBreathT; uniform float uBreath; uniform float uAlpha;
+attribute vec2 aCorner; attribute vec4 aColor; attribute vec2 aSz; uniform float uBreathT; uniform float uBreath; uniform float uAlpha; uniform float uFlowT; uniform float uKepler;
 varying vec2 vC; varying vec4 vColor;
 void main(){
   float ph = sin(6.2831853 * uBreathT / 4.0);
   float br = 1.0 + aSz.y * uBreath * 0.03 * ph;
-  vec4 vp = modelViewMatrix * vec4(position, 1.0); float sc = length(modelViewMatrix[0].xyz);
+  vec3 pp = position; if (uKepler > 0.0) { float rr = length(pp.xz); float a = uKepler * pow(max(rr, 0.3), -1.5) * uFlowT; float c = cos(a), sn = sin(a); pp = vec3(c * pp.x + sn * pp.z, pp.y, -sn * pp.x + c * pp.z); }   // disk planets' glows orbit with them
+  vec4 vp = modelViewMatrix * vec4(pp, 1.0); float sc = length(modelViewMatrix[0].xyz);
   vp.xy += aCorner * aSz.x * br * sc; gl_Position = projectionMatrix * vp; vC = aCorner;
   vColor = vec4(aColor.rgb, aColor.a * uAlpha * (1.0 + aSz.y * uBreath * 0.06 * ph));
 }`;

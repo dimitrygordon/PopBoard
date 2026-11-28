@@ -9,6 +9,9 @@ import { strokeVert, strokeFrag, spriteVert, spriteFrag, bgVert, bgFrag, glowVer
 export const KM = { RSUN: 695700, AU: 1.495978707e8, LY: 9.4607e12, REARTH: 6371 };
 const LABEL_K = 1.9;   // labels read at about 2 to 3 percent of the view height on desktop and in the headset
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+/* Kepler angular speed used by the disk shader (rad per s of motion time, r in AU) and the GLSL h11 hash, mirrored for the painter's sort and callouts */
+const kep = (r) => 1.0 * Math.pow(Math.max(r, 0.3), -1.5);
+const fr = (x) => x - Math.floor(x); const h11 = (p) => { p = fr(p * 0.1031); p *= p + 33.33; p *= p + p; return fr(p); };
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 
 export class Scenes {
@@ -35,7 +38,7 @@ export class Scenes {
     m.frustumCulled = false; m.renderOrder = order; return m;
   }
   sprites(list, order = 6) {
-    const T = this.T; const m = new T.Mesh(spriteGeometry(T, list), new T.ShaderMaterial({ vertexShader: spriteVert, fragmentShader: spriteFrag, uniforms: { ...this.uni, uAlpha: { value: 1 } }, transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide,
+    const T = this.T; const m = new T.Mesh(spriteGeometry(T, list), new T.ShaderMaterial({ vertexShader: spriteVert, fragmentShader: spriteFrag, uniforms: { ...this.uni, uAlpha: { value: 1 }, uKepler: { value: 0 } }, transparent: true, depthTest: false, depthWrite: false, side: T.DoubleSide,
       blending: T.CustomBlending, blendEquation: T.AddEquation, blendSrc: T.OneFactor, blendDst: T.OneFactor, blendSrcAlpha: T.OneFactor, blendDstAlpha: T.OneFactor }));
     m.frustumCulled = false; m.renderOrder = order; return m;
   }
@@ -170,7 +173,7 @@ export class Scenes {
     const D = buildDisk({ teff: 4410, seed: 7, planets, wrap: massive });
     const md = this.mesh(D.disk, {}, 1), ma = this.mesh(D.add, {}, 2), mw = massive ? this.mesh(D.wrap, {}, 5) : null;   // jets and knots blend with alpha (v4)
     const core = this.glow(D.core.map((l) => [l[0], l[1]]), { useTeff: true, order: 3 });
-    const sp = D.sprites.length ? this.sprites(D.sprites, 4) : null;
+    const sp = D.sprites.length ? this.sprites(D.sprites, 4) : null; if (sp) sp.material.uniforms.uKepler.value = 1;   /* the planets' glows orbit with the planets */
     g.add(md, ma, core); if (sp) g.add(sp); if (mw) g.add(mw);
     const frost = D.frost ? new T.Group() : null; if (frost) g.add(frost);   // the frost line is painted into the disk (v4); this group only carries the label
     /* style B (frame 1): the names sit beside the disk on side callouts with thin leader lines, not on top of it */
@@ -193,7 +196,8 @@ export class Scenes {
     let lastSort = -1e9;
     const resort = (camLocal) => {
       const ft = this.uni.uFlowT.value, cc = meta.cent, om = meta.omega, kd = meta.kinds, tl = ft / 4;
-      for (let i = 0; i < nS; i++) { const r = cr[i]; let a = 0; if (kd[i] === 3) a = (44 / 32) / r * (((tl + om[i]) % 1 + 1) % 1); else a = (7 / 32) / r * Math.sin(2 * Math.PI * tl - 1.05 * r);
+      for (let i = 0; i < nS; i++) { const r = cr[i]; let a = 0; if (kd[i] === 3) a = (44 / 32) / r * (((tl + om[i]) % 1 + 1) % 1); else if (kd[i] === 7) a = kep(r) * ft;
+        else if (kd[i] === 6) { const ag = ft / 6 + h11(meta.seeds[i] * 0.173), cyc = Math.floor(ag); a = kep(r) * (ag - cyc) * 6 + h11(meta.seeds[i] + cyc * 7.31) * 2 * Math.PI; } else a = (7 / 32) / r * Math.sin(2 * Math.PI * tl - 1.05 * r);
         const ca = Math.cos(a), sa = Math.sin(a), x = cc[3 * i] * ca + cc[3 * i + 2] * sa, z = -cc[3 * i] * sa + cc[3 * i + 2] * ca, y = cc[3 * i + 1]; const dx = x - camLocal.x, dy = y - camLocal.y, dz = z - camLocal.z; keys[i] = dx * dx + dy * dy + dz * dz; }
       order.sort((a, b) => keys[b] - keys[a]); for (let k = 0; k < nS; k++) { const s = order[k]; idxArr.set(baseIdx.subarray(s * per, s * per + per), k * per); } idxAttr.needsUpdate = true;
     };
@@ -215,8 +219,9 @@ export class Scenes {
         const q = c.camQuatLocal, dotR = 0.14, tw = id !== "F5";
         cset.begin(); coT.place(vA.set(0, 0.25, 0), 3.5, 10.5, q, dotR);
         coJ.lab.visible = !c.phone && jetA > 0.25 && (id === "F3" || id === "F4"); coJ.place(vA.set(0.1, 5.5, 0), -4, 3.5, q, dotR);
-        if (coR) { coR.lab.visible = tw; coR.place(vA.set(bR.px, 0, bR.pz), -9, 1.5, q, dotR); }
-        if (coG) { coG.lab.visible = tw && !c.phone; coG.place(vA.set(bG.px, 0, bG.pz), 7, 3.2, q, dotR); }
+        const orb = (b) => { const a = kep(b.r) * (c.flowT || 0), ca = Math.cos(a), sa = Math.sin(a); return vA.set(ca * b.px + sa * b.pz, 0, -sa * b.px + ca * b.pz); };   /* the callouts follow the orbiting planets */
+        if (coR) { coR.lab.visible = tw; coR.place(orb(bR), -9, 1.5, q, dotR); }
+        if (coG) { coG.lab.visible = tw && !c.phone; coG.place(orb(bG), 7, 3.2, q, dotR); }
         if (coF) { coF.lab.visible = !!frost && frost.visible; coF.place(vA.copy(frostA), 7, -6, q, dotR); }
         cset.flush();
         if (c.now - lastSort > 120) { resort(c.camLocal); lastSort = c.now; }
