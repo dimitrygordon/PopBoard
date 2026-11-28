@@ -45,7 +45,8 @@ export class CaptionPanel {
     const fill = paper ? "#fffdf7" : "rgba(22,30,44,0.88)";
     const ink = paper ? "#18202c" : "#eef3fa";
     const dim = paper ? "#4a5566" : "#a9b6c8";
-    const gold = paper ? "#d99a00" : "#ffc43c";
+    const goldText = paper ? "#8a5d00" : "#ffc43c";
+    const goldFill = paper ? "#d99a00" : "#ffc43c";
     const border = paper ? "#a39d8c" : "#3c4b62";
     g.clearRect(0, 0, W, H);
     round(g, 16, 8, W - 32, H - 16, 40);
@@ -65,7 +66,7 @@ export class CaptionPanel {
       if (y > 300) return;
       const spoken = word >= 0 && i < word;
       const now = i === word;
-      g.fillStyle = now ? gold : word >= 0 && !spoken ? dim : ink;
+      g.fillStyle = now ? goldText : word >= 0 && !spoken ? dim : ink;
       g.fillText(w, x, y);
       x += wide;
     });
@@ -77,11 +78,11 @@ export class CaptionPanel {
       this.buttons.forEach((b, i) => {
         const bx = 64 + i * (bw + gap);
         round(g, bx, by, bw, bh, 28);
-        g.fillStyle = b.gold ? gold : (paper ? "#f4f1e8" : "rgba(30,40,58,0.9)");
+        g.fillStyle = b.gold ? goldFill : (paper ? "#f4f1e8" : "rgba(30,40,58,0.9)");
         g.fill();
-        g.strokeStyle = b.gold ? gold : border; g.stroke();
+        g.strokeStyle = b.gold ? goldFill : border; g.stroke();
         g.fillStyle = b.gold ? "#1c1c1c" : ink;
-        g.font = "600 48px Inter, system-ui, sans-serif";
+        g.font = "600 56px Inter, system-ui, sans-serif";
         g.textAlign = "center"; g.textBaseline = "middle";
         g.fillText(b.label, bx + bw / 2, by + bh / 2);
         g.textAlign = "left"; g.textBaseline = "top";

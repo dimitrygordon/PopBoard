@@ -180,7 +180,7 @@ export function createWorld() {
   const ballRing = ring(BALL_R * 0.98, PAL.edge, 0.35);
   ball.add(ballRing);
   const flick1 = makeFlick(0.35);
-  flick1.position.set(-0.42, EYE_Y, -1.35);
+  flick1.position.set(-0.18, EYE_Y, -1.25);
   const seg = rod(PAL.gold, 1);
   const ruler = paper(900, 220, (g, w, h) => {
     g.strokeStyle = "#10151d"; g.lineWidth = 4;
@@ -233,7 +233,7 @@ export function createWorld() {
   const column = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.28, 8, 1, true), basic(PAL.gold, 0.22, { depthWrite: false }));
   house.add(block, column);
   const flick2 = makeFlick(0.25);
-  flick2.position.set(0, 0, 0); house.add(flick2);
+  flick2.position.set(-0.12, 0, -0.12); house.add(flick2);
   const viewCard = paper(520, 400, () => {});
   viewCard.mesh.position.set(-0.55, 1.15, -0.95);
   viewCard.mesh.rotation.y = 0.5;
@@ -279,11 +279,14 @@ export function createWorld() {
   const cutCard = paper(520, 400, () => {});
   cutCard.mesh.position.set(1.15, 1.35, -2.05);
   cutCard.mesh.visible = false;
+  const shadowNote = textPlane("approximately a hexagon", true);
+  shadowNote.mesh.position.set(-0.15, 2.2, -2.32);
+  shadowNote.mesh.visible = false;
   plane.visible = false;
   handle.visible = false;
   tiles.forEach((t) => { t.mesh.visible = false; });
   rings.forEach((r) => { r.visible = false; });
-  shG.add(screen, lamp, goldFace, cubeHit, plane, handle, cutCard.mesh, ...cubeRods, ...shadowRods, ...cutRods, ...tiles.map((t) => t.mesh), ...rings);
+  shG.add(screen, lamp, goldFace, cubeHit, plane, handle, cutCard.mesh, shadowNote.mesh, ...cubeRods, ...shadowRods, ...cutRods, ...tiles.map((t) => t.mesh), ...rings);
   root.add(shG);
 
   // ----- scene 4 -----
@@ -299,7 +302,7 @@ export function createWorld() {
   const bNest = Array.from({ length: 32 }, () => rod(PAL.edge));
   const bCorners = Array.from({ length: 16 }, () => new THREE.Mesh(new THREE.SphereGeometry(0.02, 8, 6), basic(PAL.gold)));
   const shelf = new THREE.Group();
-  shelf.position.set(0, 1.7, -1.35);
+  shelf.position.set(0, 1.42, -1.45);
   const minis = [0, 1, 2, 3].map((i) => {
     const m = new THREE.Group();
     m.position.x = (i - 1.5) * 0.28;
@@ -478,7 +481,8 @@ export function createWorld() {
       });
     }
     block.scale.setScalar(1 + 0.05 * Math.sin(t * 2.4));
-    lookYaw(flick2, 0, 2);
+    lookYaw(flick2, 0, 0);
+    flick2.rotation.x = -0.25 - above * 0.5;
     const eye = flick2.userData.eye;
     eye.scale.setScalar(above > 0.03 ? 1.6 : 1);
     box.visible = page === "s7" || page === "s8" || model.card?.scene === "flatland";
@@ -528,6 +532,9 @@ export function createWorld() {
       rings[i].position.copy(card.mesh.position);
       rings[i].position.z += 0.02;
     });
+    const shadowPts = [];
+    worldV.forEach((v) => { const s = shadowArray([v.x, v.y, v.z]); if (s) shadowPts.push([s[0], s[1]]); });
+    shadowNote.mesh.visible = M.hull2(shadowPts).length === 6;
     cutCard.mesh.visible = showPlane && n >= 3;
     if (cutCard.mesh.visible) {
       const name = n === 3 ? "triangle" : n === 4 ? "four sides" : n === 5 ? "pentagon" : n === 6 ? "hexagon" : n + " sides";
@@ -546,7 +553,7 @@ export function createWorld() {
 
   function updateBuild(model, t, dt, page) {
     const p = model.pull;
-    const o = new THREE.Vector3(0, 1.32, -0.95);
+    const o = new THREE.Vector3(0, 1.12, -1.15);
     point.position.copy(o);
     point.visible = p[0] < 0.98 || page === "s13";
     point.scale.setScalar(1 + (page === "s13" || page === "s14" ? 0.1 * Math.sin(t * 3) : 0));
@@ -661,7 +668,7 @@ export function createWorld() {
       attr.needsUpdate = true;
       mesh.geometry.computeBoundingSphere();
       const fade = wireFade(near, HEAD_FADE_M);
-      mesh.material.opacity = (ci === gold ? 0.16 : 0.04) * fade;
+      mesh.material.opacity = (ci === gold ? 0.28 : 0.04) * fade;
       mesh.material.color.setHex(ci === gold ? PAL.gold : PAL.glass);
       mesh.renderOrder = 1;
     });
@@ -757,17 +764,18 @@ function sparkles(n) {
   g.setAttribute("position", new THREE.BufferAttribute(p, 3));
   return new THREE.Points(g, new THREE.PointsMaterial({ color: PAL.grid, size: 0.015, transparent: true, opacity: 0.7, depthWrite: false }));
 }
-function textPlane(label) {
-  const c = document.createElement("canvas"); c.width = 512; c.height = 128;
+function textPlane(label, wide = false) {
+  const W = wide ? 1280 : 512, H = 160;
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
   const ctx = c.getContext("2d");
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.09), basic(0xffffff, 0.001));
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(wide ? 0.96 : 0.36, 0.12), basic(0xffffff, 0.001));
   mesh.material.map = tex; mesh.material.transparent = true; mesh.material.opacity = 1; mesh.material.depthWrite = false;
   function set(text) {
-    ctx.clearRect(0, 0, 512, 128);
-    ctx.fillStyle = "#f4f1e8"; roundRect(ctx, 8, 16, 496, 96, 24); ctx.fill();
-    ctx.fillStyle = "#10151d"; ctx.font = "700 54px Inter, sans-serif"; ctx.textBaseline = "middle";
-    ctx.fillText(text, 28, 64);
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = "#f4f1e8"; roundRect(ctx, 8, 20, W - 16, H - 40, 28); ctx.fill();
+    ctx.fillStyle = "#10151d"; ctx.font = "700 56px Inter, sans-serif"; ctx.textBaseline = "middle";
+    ctx.fillText(text, 28, H / 2);
     tex.needsUpdate = true;
   }
   set(label);

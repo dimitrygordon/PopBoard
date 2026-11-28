@@ -194,7 +194,7 @@ function showStep(snap) {
     const look = LOOK[model.scene] || LOOK.cover;
     yaw = look.yaw;
     // On a phone the dock covers the lower half, so look slightly down and the subject sits above it.
-    pitch = look.pitch + (camera.aspect < 0.85 ? -0.22 : 0);
+    pitch = look.pitch + (camera.aspect < 0.85 ? -0.04 : 0);
   }
   if (started) audio.setCue(model.scene);
   $("prevBtn").disabled = step === 0;
@@ -336,7 +336,7 @@ function renderTools() {
   });
   helpSel.addEventListener("change", () => setHelp(+helpSel.value));
   settings.appendChild(helpSel);
-  if (help < 2) setBtn("Teacher QR", () => setHelp(2));
+  if (help < 2) setBtn("Mr. Dimitry's QR", () => setHelp(2));
   setBtn(model.reduced ? "Motion: low" : "Motion", () => { model.reduced = !model.reduced; renderTools(); }, model.reduced);
   setBtn(model.paper ? "Paper captions" : "Captions", () => {
     model.paper = !model.paper;
