@@ -313,3 +313,6 @@ ISS and Chandra use `cameraOrbit` `45deg 70deg auto`. Juno's GLB, USDZ, and stil
 - `ios-src` is set only when the USDZ file is present.
 - Custom AR button label: `View in your space`.
 - Credit line plus the per-model `sourceUrl`.
+- VR (Meta Quest, WebXR `immersive-vr`) loads the same `glb` the 3D viewer uses, through the vendored three.js `GLTFLoader` and meshopt decoder. USDZ stays the iOS Quick Look file only. Quest's browser cannot render USDZ, and the vendored three.js build has no USDZLoader. The GLBs are already in meters.
+- The VR button is shown only when `navigator.xr.isSessionSupported("immersive-vr")` is true. Otherwise it stays hidden and a short note says a Meta Quest is required. AR and 3D are unchanged.
+- In the headset the student does not move. The craft floats about 1.45 m in front. Classroom scale fits the longest side to 0.85 m. Real size uses the GLB meters and caps the longest side at 2.5 m so a rocket or the station stays in the room. Grip or the thumbstick turns it, the thumbstick scales it, and the trigger resets.

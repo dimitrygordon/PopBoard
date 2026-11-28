@@ -50,7 +50,7 @@
     "shots:friction": "node friction-lesson-shots.mjs",
     "test:geometry": "node --test geometry-course.test.mjs study-courses-band.test.mjs",
     "test:gravityorbits": "node --test gravity-orbits-scaffold.test.mjs",
-    "test:spaceships": "node --test spaceships-scaffold.test.mjs",
+    "test:spaceships": "node --test spaceships-scaffold.test.mjs spaceships-vr.test.mjs",
     "test:spaceships:browser": "python3 spaceships-browser.py",
     "test:relvel": "node --test relative-velocity.test.mjs tryit-cards.test.mjs",
     "test:relvel:browser": "python3 relative-velocity-browser.py",

@@ -1,5 +1,6 @@
 import { forwardStudyQuery } from "../board-return.js?v=20261022a";
 import { loadFleet, listedCraft, assetUrl, galleryQuery, matchesQuery } from "./ss-data.js";
+import { MODE_LINE } from "./ss-vr-model.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -26,6 +27,9 @@ const TAG_LABELS = {
   "planets-moons": "Planets and moons",
   "small-bodies": "Asteroids"
 };
+const modes = document.getElementById("modes");
+if (modes) modes.textContent = MODE_LINE;
+
 const fleet = await loadFleet();
 const all = listedCraft(fleet);
 const tags = TAG_ORDER.filter((t) => all.some((c) => (c.tags || []).includes(t)));

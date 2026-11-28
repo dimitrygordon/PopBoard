@@ -71,8 +71,14 @@ body.ss-viewer .hud > * { pointer-events: auto; }
 .facts div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 8px; font-size: 0.9rem; }
 .facts dt { margin: 0; color: var(--ss-muted); }
 .facts dd { margin: 0; min-width: 0; }
+.modes { flex: 1 1 100%; margin: 0; font-size: 0.82rem; color: var(--ss-muted); line-height: 1.35; }
+.dock .modes { margin: 0 0 8px; }
 .ar-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
-#arBtn { min-height: var(--ss-hit); }
+.mode-chip { display: inline-flex; align-items: center; justify-content: center; min-height: var(--ss-hit); padding: 0 12px; border: 1px solid var(--ss-accent); border-radius: calc(var(--r-12, 12px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; color: var(--ss-accent); font-weight: 600; }
+#arBtn, #vrBtn { min-height: var(--ss-hit); }
+.vr-note { margin: 0 0 8px; font-size: 0.8rem; color: var(--ss-muted); }
+.ss-vr-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 40; display: none; background: #000; }
+.ss-vr-canvas.is-on { display: block; }
 .credit { margin: 0; font-size: 0.75rem; color: var(--ss-muted); line-height: 1.35; }
 .status { margin: 0 0 8px; font-size: 0.85rem; }
 
