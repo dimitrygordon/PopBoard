@@ -2,6 +2,8 @@
 import { MASSES, MASS_LABEL, fmtYears, about, splitCaption } from "./sl-data.js";
 import { COMPARE_TEXT, tierChoices, lifeChoices, COLOR_WORDS, END_WORDS, cardComplete, rowFilled, sentenceText, modelRow, FRAME_TIER1, FRAME_WORDS, logPos, LOGCLOCK, ZONES } from "./sl-compare.js";
 
+export const YOUR_JOB = 'Your job: run 1, 15 and 40 Suns (the Sun, a neutron star maker, a black hole maker). Then run COMPARE with the Sun and one of 0.2 or 3 Suns. Then fill in the Mass Card: for each mass, its lifetime, color and ending, and the sentence "Mass decides ___ because ___."';   // teaching spec section 0, core task, in the student's words
+export const PIN_TITLE = "Place your pins";
 export const MASS_TEFF = { "0.2": 3229, "1": 5772, "3": 12368, "15": 31293, "40": 43704 };   // ZAMS colours for the hub orbs (LOOK-SPEC 2 table)
 
 export function uiModel(flow, x = {}) {
@@ -14,14 +16,14 @@ export function uiModel(flow, x = {}) {
     if (st.hubStep === "pick") M.cards = [S.hub[0].caption];
     if (st.hubStep === "end") { const a0 = S.hub[1].act[0]; M.cards = [S.hub[1].caption]; M.question = { key: "H-End", text: S.hub[1].caption, choices: tierChoices(a0.choices, a0.answerBy && a0.answerBy[st.mass], st.tier).map((c) => ({ label: c, picked: st.answers["H-End"] === c })) }; }
     if (st.hubStep === "pins" || st.hubStep === "ready") {
-      M.cards = [S.hub[2].caption];
+      M.cards = [S.hub[2].caption]; if (st.hubStep === "pins") M.title = PIN_TITLE;
       const pins = S.hub[2].act[0].pins; M.pinPrompt = st.pins.length < 3 ? `Tap the H-R diagram: pin ${st.pins.length + 1}, ${pins[st.pins.length]}.` : "All three pins placed.";
       if (st.pins.length) M.buttons.push({ id: "pinUndo", label: "Undo pin" });
-      if (st.tier === 1 && st.pins.length < 3) M.chips.push("Tap inside a highlighted zone. Your pin snaps to the nearest one.");
+      if (st.tier === 1 && st.pins.length < 3) M.pinChip = "Tap inside a highlighted zone. Your pin snaps to the nearest one.";
     }
     if (st.hubStep === "ready") M.buttons.push({ id: "start", label: `Start: ${MASS_LABEL[st.mass]}`, primary: true });
     if (flow.canSkip()) M.toggles.push({ id: "skipForm", label: "Skip formation", on: st.skipFormation });
-    M.chips.push("Mr. Dimitry's core task: run 1, 15 and 40 Suns, then COMPARE the Sun with 0.2 or 3 Suns, then fill in the Mass Card.");
+    if (st.hubStep === "pick") M.chips.push(YOUR_JOB);
     if (flow.canCompare() && st.hubStep === "pick") { M.buttons.push({ id: "compare", label: "Compare two masses" }); M.buttons.push({ id: "card", label: cardComplete(st.card) ? "Mass Card (complete)" : "Mass Card" }); M.buttons.push({ id: "ticket", label: "Exit ticket" }); }
     return M;
   }
@@ -42,6 +44,7 @@ export function uiModel(flow, x = {}) {
     M.cards = splitCaption(s.caption);
   }
   M.cardIdx = Math.min(st.cardIdx, Math.max(0, M.cards.length - 1));
+  if (st.tier === 1) M.readAloud = true;   // section 8: Tier 1 captions can be read aloud
   if (st.mass === "1") M.credit = S.credit1Sun;   // the 1 Sun track credit appears only on 1 Sun frames
   // reveal: the student's choice next to the model, never marked wrong (shown once the stage has played)
   if (!pend && st.phase === "done") (s.act || []).forEach((a, i) => {
@@ -73,6 +76,7 @@ export function uiModel(flow, x = {}) {
     if (a.peek && st.answers[`${s.id}:0`]) M.buttons.push({ id: "peek", label: `Hold to see it ${st.answers[`${s.id}:0`]}`, hold: true });
   }
   if (s.onion && v.onion != null) M.widgets.push({ kind: "onion", layers: s.onion.layers, progress: v.onion, source: s.onion.source });
+  { const h = flow.holdT ? flow.holdT() : null; if (h != null && v.cooling && Math.abs(st.t - h) < 0.003) M.chips.push(`Today: the universe is 13.8 billion years old. This white dwarf has cooled to about ${about(Math.pow(10, v.cooling.logT), 2)} K, yellow-white.`); }
   if (v.cooling && st.mass) { const tr = flow.tracks[st.mass]; const W = tr.wd; const max = tr.end.age + W[W.length - 1].coolAge; M.widgets.push({ kind: "coolclock", age: v.cooling.age, max, predicted: st.mass === "0.2" }); }
   if (s.card2 && st.help >= 2) M.widgets.push({ kind: "card2", ...S.cards2[s.card2] });
   // readouts (help gating, teaching spec 5 and T6)
@@ -85,7 +89,7 @@ export function uiModel(flow, x = {}) {
   if (st.help >= 1 && row) {
     if (!v.hideTeff) M.readouts.push(["Surface", `${Math.round(Math.pow(10, row.logT)).toLocaleString("en-US")} K`]);
     M.readouts.push(["Brightness", `${about(Math.pow(10, row.logL), 2)} Suns`]);
-    M.readouts.push(["Radius", `${about(Math.pow(10, row.logR), 2)} Suns`]);
+    M.readouts.push(["Radius", v.cooling ? `${about(Math.pow(10, row.logR), 3)} Suns (${about(Math.pow(10, row.logR) * 695700, 3)} km)` : `${about(Math.pow(10, row.logR), 2)} Suns`]);
     if (v.type) M.readouts.push(["Type", v.type]);
   }
   if (st.help >= 2 && row && row.logTc) M.readouts.push(["Core", `${about(Math.pow(10, row.logTc), 2)} K`]);
@@ -102,18 +106,18 @@ export function endName(m) { return m === "15" ? "neutron star" : m === "40" ? "
 
 // ---------------- COMPARE (teaching spec 3.9) ----------------
 function compareModel(flow, M, x) {
-  const st = flow.st; const C = flow.cmp; const c = C.c; M.kicker = "Compare"; M.title = "Two stars, one difference: mass";
+  const st = flow.st; const C = flow.cmp; const c = C.c; M.kicker = "Compare"; M.title = "Two stars, one difference: mass"; M.sceneTitle = c.step === "setup" ? "Pick two masses" : "";
   if (c.step === "setup") {
     M.cards = [COMPARE_TEXT.setup];
     M.masses = MASSES.map((m) => ({ id: m, label: MASS_LABEL[m], teff: MASS_TEFF[m], on: c.pair.includes(m), done: st.runs.includes(m), act: "cmp:mass:" + m }));
-    M.chips.push(C.coreOk() ? "Core task pair: the Sun and one of 0.2 or 3 Suns." : "Mr. Dimitry's core task: pick the Sun and one of 0.2 or 3 Suns.");
+    M.chips.push(C.coreOk() ? "Your job pair: the Sun and one of 0.2 or 3 Suns." : "Your job: pick the Sun and one of 0.2 or 3 Suns.");
     M.buttons.push({ id: "cmp:begin", label: "Run them together", primary: true, disabled: c.pair.length !== 2 }, { id: "hub", label: "Masses" });
     return M;
   }
   const [a, b] = C.sorted();
   if (c.step === "predict") {
     const q = C.pending(); M.cards = [COMPARE_TEXT.predict];
-    if (q) M.question = { key: "cmp:" + q.id, text: q.q, kind: "choice", choices: tierChoices(q.choices, q.answer, st.tier).map((l) => ({ label: l, act: `cmp:pick:${q.id}:${l}` })) };
+    if (q) M.question = { key: "cmp:" + q.id, text: q.q, kind: "choice", choices: tierChoices(q.choices, q.answer, st.tier, q.tier1).map((l) => ({ label: l, act: `cmp:pick:${q.id}:${l}` })) };
     for (const p of C.questions()) if (c.picks[p.id] != null) M.chips.push(`${p.q} You picked: ${c.picks[p.id]}`);
     M.buttons.push({ id: "cmp:reset", label: "Pick other masses" }, { id: "hub", label: "Masses" });
     return M;
@@ -121,8 +125,8 @@ function compareModel(flow, M, x) {
   M.cards = [COMPARE_TEXT.run];
   const stars = [a, b].map((m) => C.starAt(m)); const ro = C.readOff();
   M.widgets.push({ kind: "logclock", y0: LOGCLOCK.y0, y1: LOGCLOCK.y1, ticks: LOGCLOCK.ticks.map((k) => ({ ...k, p: logPos(k.y) })),
-    stars: stars.map((s, i) => ({ label: MASS_LABEL[s.m], teff: Math.round(Math.pow(10, s.row.logT)), p: logPos(s.age), life: c.step === "done" ? logPos(s.life) : null, lifeLabel: ro[i].life })) });
-  for (const s of stars) M.readouts.push([MASS_LABEL[s.m], fmtYears(s.age)]);
+    stars: stars.map((s, i) => ({ label: MASS_LABEL[s.m], teff: Math.round(Math.pow(10, s.row.logT)), p: logPos(s.age), life: c.step === "done" ? logPos(s.life) : null, lifeLabel: ro[i].life, endLabel: ro[i].fusionEnd })) });
+  for (const s of stars) M.readouts.push([`${MASS_LABEL[s.m]}, age`, fmtYears(s.age)]);
   if (c.step === "done") {
     for (const q of C.questions()) M.reveal.push({ q: q.q, picked: c.picks[q.id] || "(no guess)", model: q.answer });
     M.widgets.push({ kind: "readoff", rows: ro });

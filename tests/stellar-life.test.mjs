@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { prepareTracks, atEEP, eepAtAge, wdAt, typeLabel, isRSG, shellsStart, splitCaption, stagesFor, msRatio, about, MASSES } from "../public/stellar-life/sl-data.js";
+import { prepareTracks, atEEP, eepAtAge, wdAt, typeLabel, isRSG, shellsStart, splitCaption, stagesFor, msRatio, about, fmtYears, MASSES } from "../public/stellar-life/sl-data.js";
 import { createFlow } from "../public/stellar-life/sl-flow.js";
 import { scaleBar, zoomText } from "../public/stellar-life/sl-scenes.js";
 import { lutData, tRGB255, buildDisk, KIND } from "../public/stellar-life/sl-strokes.js";
@@ -162,7 +162,7 @@ test("Tesla fixes: remnant masses, V5 and T5 wording, no 'Suns wide', no solar s
   const st = (m, id) => stagesFor(S, m).find((x) => x.id === id);
   assert.equal(st("40", "V6").massLabel, "about 10 Suns (example)");
   assert.equal(st("15", "H6").massLabel, "about 1.4 Suns");
-  assert.ok(st("40", "V5").caption.endsWith("A few candidates have been seen, such as N6946-BH1."));
+  assert.ok(st("40", "V5").caption.endsWith("A few candidates have been seen, such as N6946-BH1, but none is confirmed yet."));
   assert.equal(st("3", "T5").caption, "A second swelling with strong winds, lasting several million years.");
   const all = [read("study-stellar-life.html"), read("stellar-life/data/stages.json"), ...readdirSync(new URL("stellar-life/", pub)).filter((f) => /\.js$/.test(f)).map((f) => read("stellar-life/" + f))].join("\n");
   assert.ok(!/suns wide/i.test(all), "no 'Suns wide' anywhere");
@@ -209,7 +209,11 @@ test("COMPARE: verbatim captions, two clocks, one shared log clock, lifetimes eq
   assert.equal(f.cmp.c.step, "predict"); for (const q of qs) C.pick(q.id, q.choices[0]); assert.equal(C.c.step, "run", "the run waits for all three picks");
   C.tick(100); assert.equal(C.c.step, "done");
   const ro = C.readOff(); assert.deepEqual(ro.map((r) => r.end), ["white dwarf", "white dwarf"]);
-  assert.match(ro[0].life, /9\.84 billion years/); assert.match(ro[1].life, /360 million years/);
+  // spec v1.4: two rows per star, both from MIST; the Sun reads about 10 and about 11.5 billion years
+  assert.equal(ro[0].life, "about 10 billion years"); assert.equal(ro[0].fusionEnd, "about 11.5 billion years");
+  assert.equal(ro[1].life, "about 400 million years"); assert.equal(ro[1].fusionEnd, "about 470 million years");
+  // the clock and the table agree: at the end of the run each star's clock reads its fusion end
+  for (const [i, m] of ["1", "3"].entries()) assert.equal("about " + fmtYears(C.starAt(m, 1).age), ro[i].fusionEnd);
   assert.deepEqual(ro.map((r) => r.color), ["white", "blue-white"]);
   const M = uiModel(f); const lc = M.widgets.find((w) => w.kind === "logclock"); assert.ok(lc && lc.stars.length === 2 && lc.y1 - lc.y0 === 8);
   assert.equal(M.readouts.length, 2, "each star shows its own clock");
@@ -235,6 +239,9 @@ test("Tier 1 supports: two choices that keep the answer, highlighted zones pins 
   assert.deepEqual(tierChoices(["fusion", "gravity squeezing the gas", "a chemical fire"], "gravity squeezing the gas", 1), ["fusion", "gravity squeezing the gas"]);
   assert.deepEqual(tierChoices(["white dwarf", "neutron star", "black hole"], "black hole", 1), ["white dwarf", "black hole"]);
   assert.equal(tierChoices(["a", "b", "c"], "c", 2).length, 3, "tier 2 keeps three");
+  // COMPARE white dwarf question: Tier 1 gets both and neither (the answer always stays)
+  assert.deepEqual(tierChoices(["1 Sun", "3 Suns", "both", "neither"], "both", 1, ["both", "neither"]), ["both", "neither"]);
+  assert.deepEqual(tierChoices(["1 Sun", "15 Suns", "both", "neither"], "1 Sun", 1, ["both", "neither"]), ["1 Sun", "both", "neither"]);
   const f = createFlow(S, T, { tier: 1 }); f.pickMass("40"); const M = uiModel(f); assert.deepEqual(M.question.choices.map((c) => c.label), ["white dwarf", "black hole"]);
   for (const p of [{ logT: 4.3, logL: 0 }, { logT: 3.3, logL: 5.5 }, { logT: 4.7, logL: -2.8 }, { logT: 3.65, logL: 2.5 }]) { const q = snapToZone(p); assert.ok(ZONES.some((z) => inZone(z, q)), JSON.stringify(q)); }
   f.answerHub("black hole"); f.addPin({ logT: 4.3, logL: 0 }); assert.ok(f.st.pins[0].zone, "tier 1 pin snapped"); 
@@ -246,4 +253,15 @@ test("exit ticket wording is verbatim from teaching spec section 7", () => {
   assert.equal(TICKET.hr, "Mark where each star spends most of its life."); assert.equal(TICKET.ends, "Draw a line from each star to its ending.");
   assert.equal(TICKET.line, "Mass decides ____"); assert.equal(TICKET.last, "What's confusing?");
   assert.deepEqual(TICKET.stars.map((s) => s.mass), ["0.2", "1", "15"]);
+});
+
+test("S7 (1 Sun) pauses at 13.8 billion years: Bedard radius 0.0132 Suns (9,180 km), about 5,800 K (Tesla B, Leo frame 2c)", () => {
+  const f = createFlow(S, T); f.pickMass("1"); f.answerHub("white dwarf"); for (let i = 0; i < 3; i++) f.addPin({ logT: 3.8, logL: i }); f.start();
+  f.enter(f.st.stages.findIndex((s) => s.id === "S7")); const h = f.holdT(); assert.ok(h > 0 && h < 1);
+  const r = wdAt(T["1"], h); assert.equal(fmtYears(r.age), "13.8 billion years");
+  assert.equal(about(Math.pow(10, r.logR), 3), "0.0132"); assert.equal(about(Math.pow(10, r.logR) * 695700, 3), "9,180"); assert.equal(about(Math.pow(10, r.logT), 2), "5,800");
+  // the clock dwells at the hold, then keeps cooling
+  f.setT(h - 1e-4); f.st.playing = true; f.st.phase = "play"; f.tick(0.1); assert.equal(f.st.t, h); f.tick(1); assert.equal(f.st.t, h); f.tick(2.5); f.tick(0.1); assert.ok(f.st.t > h);
+  // other masses never hold
+  const g = createFlow(S, T); g.pickMass("3"); g.answerHub("white dwarf"); for (let i = 0; i < 3; i++) g.addPin({ logT: 3.8, logL: i }); g.start(); g.enter(g.st.stages.length - 1); assert.equal(g.holdT(), null);
 });

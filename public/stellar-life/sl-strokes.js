@@ -285,17 +285,15 @@ export function buildCity(seed = 81, groundY = -15) {
 }
 
 // photon ring around a black hole (unit = horizon radius); bright thin ring of bent light, additive
-export function buildPhotonRing(seed = 91) {
+export function buildPhotonRing(seed = 91) {   // unit = shadow radius (2.6 horizon radii); thin warm arcs on the ring, brighter on one side
   const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
-  for (let i = 0; i < 520; i++) {
-    const r = 1.5 * 1.732 * (1 + (R() - 0.5) * 0.06 + (R() < 0.3 ? R() * 0.25 : 0)); const ph = R() * TAU, dph = 0.15 + R() * 0.35;
-    const pts = []; for (let k = 0; k <= 6; k++) { const a = ph + dph * k / 6; pts.push([r * Math.cos(a), r * Math.sin(a), 0]); }
-    const warm = 0.5 + 0.5 * Math.sin(ph);
-    b.add(pts, { width: 0.04 + R() * 0.1, rgb: jitter(mix(hex2rgb("#C8D8FF"), hex2rgb("#FFE6C8"), warm), R, 0.01, 0.05, 0.04), alpha: 0.18 + R() * 0.35, bristles: 3, boil: 0.006, seed: S() });
+  for (let i = 0; i < 90; i++) {
+    const a0 = R() * TAU, sw = (30 + R() * 110) / 230, rr = 1 + (2 + (R() - 0.5) * 12) / 230; const pts = []; for (let k = 0; k <= 8; k++) { const a = a0 + sw * k / 8; pts.push([rr * Math.cos(a), rr * Math.sin(a), 0]); }
+    const asym = 0.55 + 0.45 * Math.cos(a0 - 2.4);
+    b.add(pts, { width: (2.5 + R() * 4) / 230, rgb: mix(tRGB255(4200 + R() * 1800), [255, 255, 255], 0.3), alpha: (0.08 + 0.1 * R()) * asym, bristles: 2, boil: 0.004, seed: S() });
   }
   return b;
 }
-
 export function spriteGeometry(THREE, sprites) {
   const n = sprites.length, pos = new Float32Array(n * 12), corner = new Float32Array(n * 8), col = new Float32Array(n * 16), sz = new Float32Array(n * 8), idx = new Uint16Array(n * 6);
   sprites.forEach((s, i) => {
@@ -310,4 +308,136 @@ export function lutData() {
   const N = 512, data = new Uint8Array(N * 4);
   for (let i = 0; i < N; i++) { const T = Math.pow(10, 3 + 3 * i / (N - 1)); const c = temperatureToSRGB(T); data.set([Math.round(clamp01(c[0]) * 255), Math.round(clamp01(c[1]) * 255), Math.round(clamp01(c[2]) * 255), 255], i * 4); }
   return { data, N };
+}
+
+// ================= round 4: style B v2.3/v2.4 remnants, Earth, outflow shells, lensed stars, Sun activity =================
+// Earth land mask, 96 x 96 bits, orthographic view centred on 20 E, 15 N, from the Natural Earth 110m land polygons
+// (public domain), downsampled from Leo's style-B mask. Row-major from the top; bit i = row * 96 + column.
+const EARTH_N = 96; const EARTH_B64 = "AAAAAAAAAAAAAAAAAAAAAIADAAAAAAAAAAAAAOADAGAAAAAAAAAAwPEPAPgDAAAAAAAAwPyDAPAfAAAAAAAAOP6AgPA/AAAAAAAAwD8AAPj/AAAAAACA4A8AAPD/AwAAAADgeAAABvj/BwAAAAB4CAyAv///HwAAAAA8AAzgn///PwAAAAAeAADg/v//fwAAAAAPAAB8/////wAAAIAFAAB8/v///wEAAMACAAB8/P///wMAAGADADAw/P///wcAABAAACgU/////w8AAAAAADTE/////x8AAAAAAHD//////z8AAAAAAMD//////38AAAAAAPD//////38AAAAAAPj////9//8AAAAAAPD///38//8BAAAAAPD/P/38//8BAAAAgP/tH/D4//8DAAAAgD/MH+Dz//8DAAAAwA8Yn/fz//8HAAAAwAci8//j//8HAAAAwAcA8//n//8PAAAAgAEY4v////8PAAAAwP8DAPj///8fAAAA4P8DAPj///8fAAAA8P8DAPz///8fAAAA+P8PA/z///8fAAAA+P8fv//v//8/AAAA/P/////P//85AAAA//////8fHP8xAACA//////N/AvxxAADA//////d/B/xhAADA/////+f/D/BBAADg/////8//D/AAAQDg/////5//D+AAAQDg/////5//B+AAAQDg/////x//B8BBAQDg/////z/+A8ABAQDw/////3/8AIABAwDw/////398AIAAAwDw//////88AABCBwDw//////8PAACCBwDg///////DAACABwDA///////3AAAABwDA////////AAAABwDA////////AAAADwCA//////9/AAAADwAA//////9/AAAAHgAAAPD///8/AAAAPgAAAPD///8/AAAAfgAAAID///8fAAAA/gAAAID///8HAAAA/gEAAID///8HAAAA/AEAAID///8DAAAA/AEAAID///8BAAAA/AEAAAD///8AAAAA+AEAAAD+//8AAAAA+AAAAAD+/38AAAAA+AAAAAD8//8AAAAA8AAAAAD8//8AAAAA8AEAAAD8//8AAAAA8AEAAAD4//8AAAAA4AEAAAD4//9AAAAAwAEAAAD8//9gAAAAwAAAAAD8//9wAAAAgAAAAAD+/384AAAAgAAAAAD+/x84AAAAAAEAAAD8/w8YAAAAAAAAAAD8/w8cAAAAAAAAAAD4/w8MAAAAAAAAAADw/w8MAAAAAAAAAADw/wMAAAAAAAAAAADw/wEAAAAAAAAAAADg/wEAAAAAAAAAAADA/wAAAAAAAAAAAADAfwAAAAAAAAAAAACAPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+let earthBits = null;
+function earthLand(X, Y) {
+  if (!earthBits) { const s = typeof atob === "function" ? atob(EARTH_B64) : Buffer.from(EARTH_B64, "base64").toString("binary"); earthBits = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) earthBits[i] = s.charCodeAt(i); }
+  const px = Math.floor((X + 1) / 2 * EARTH_N), py = Math.floor((1 - Y) / 2 * EARTH_N); if (px < 0 || py < 0 || px >= EARTH_N || py >= EARTH_N) return false;
+  const i = py * EARTH_N + px; return ((earthBits[i >> 3] >> (i & 7)) & 1) === 1;
+}
+/** Earth, unit sphere, local +z toward the viewer (the mask's view centre). Ocean blue, land by region, swirling white clouds.
+ * Lit from the -x side (the white dwarf sits to its left). Strokes stay inside the limb (CRISP in the shader). */
+export function buildEarth2(seed = 71, light = [-0.52, 0.10, 0.85]) {
+  const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
+  const lat0 = 15 * Math.PI / 180, lon0 = 20;
+  const geo = (X, Y, z) => { const lat = Math.asin(clamp01((z * Math.sin(lat0) + Y * Math.cos(lat0) + 1) / 2) * 2 - 1); const lon = lon0 + Math.atan2(X, z * Math.cos(lat0) - Y * Math.sin(lat0)) * 180 / Math.PI; return { lat: lat * 180 / Math.PI, lon }; };
+  const Ln = norm(light);
+  const shade = (rgb, d) => { const lam = Math.max(0, d[0] * Ln[0] + d[1] * Ln[1] + d[2] * Ln[2]); const f = 0.16 + 0.84 * Math.pow(lam, 0.6); return rgb.map((v, i) => Math.round(Math.min(255, v * f + [3, 7, 20][i] * (1 - lam)))); };
+  const landCol = (g, r) => { const la = g.lat, lo = g.lon;
+    if (la > 60 && lo < -15) return mix(hex2rgb("#E9EFF8"), hex2rgb("#FFFFFF"), r);
+    if ((la > 15 && la < 32 && lo > -17 && lo < 36) || (la > 12 && la < 33 && lo >= 36 && lo < 60)) return mix(hex2rgb("#D2B574"), hex2rgb("#B98F55"), r);
+    if (la > 8 && la <= 15 && lo > -17 && lo < 42) return mix(hex2rgb("#B8AA62"), hex2rgb("#8C9A52"), r);
+    if (la > -6 && la <= 8 && lo > -17 && lo < 32) return mix(hex2rgb("#2D6E3E"), hex2rgb("#3F8A4A"), r);
+    if (la <= -6 && la > -36 && lo > 8 && lo < 40) return mix(hex2rgb("#8E9E52"), hex2rgb("#B7A55E"), r);
+    return mix(hex2rgb("#4F8A48"), hex2rgb("#6E9A55"), r); };
+  const front = () => { for (;;) { const d = randDir(R); if (d[2] > -0.05) return d; } };
+  // ocean and land dabs, short strokes running east-west; land is sampled on the mask so the continents read as solid shapes
+  for (let i = 0; i < 1000; i++) {
+    const d = front(); const base = mix(hex2rgb("#164F8E"), hex2rgb("#2570BA"), R());
+    const pts = spherePath(d, 1.0, 0.12 + R() * 0.12, () => (R() - 0.5) * 0.2, 4);
+    b.add(pts, { width: 0.08 + R() * 0.06, rgb: jitter(shade(base, d), R, 0.01, 0.03, 0.04), alpha: 0.9, bristles: 4, boil: 0.004, seed: S() });
+  }
+  for (let i = 0, k = 0; i < 1500 && k < 40000; k++) {
+    const d = front(); if (!(d[2] > 0 && earthLand(d[0], d[1]))) continue; i++; const g = geo(d[0], d[1], d[2]);
+    const pts = spherePath(d, 1.001, 0.05 + R() * 0.08, () => (R() - 0.5) * 0.3, 4);
+    b.add(pts, { width: 0.04 + R() * 0.04, rgb: jitter(shade(landCol(g, R()), d), R, 0.01, 0.03, 0.04), alpha: 0.95, bristles: 4, boil: 0.004, seed: S() });
+  }
+  // clouds: swirls (low-pressure spirals at mid latitudes) and a broken band near the equator
+  const swirls = [[0.42, 0.66, 1], [-0.62, 0.42, -1], [0.66, -0.38, -1], [-0.5, -0.62, 1], [0.1, 0.9, 1]];
+  for (const [sx, sy, sg] of swirls) { const sz = Math.sqrt(Math.max(0, 1 - sx * sx - sy * sy)); const c = norm([sx, sy, sz]);
+    const head = (u, dd) => { const v = dd.map((x, j) => x - c[j]); const t = cross(dd, v).map((x, j) => x * sg - v[j] * 0.45); let e1 = cross([0, 1, 0], dd); e1 = norm(e1); const e2 = cross(dd, e1); return Math.atan2(t[0] * e2[0] + t[1] * e2[1] + t[2] * e2[2], t[0] * e1[0] + t[1] * e1[1] + t[2] * e1[2]); };
+    for (let k = 0; k < 22; k++) { const a = R() * TAU, rr = 0.04 + R() * 0.2; const e1 = norm(cross([0, 1, 0], c)), e2 = cross(c, e1);
+      const p0 = norm([0, 1, 2].map((j) => c[j] + (e1[j] * Math.cos(a) + e2[j] * Math.sin(a)) * rr));
+      b.add(spherePath(p0, 1.006, 0.1 + R() * 0.16, head, 6), { width: 0.025 + R() * 0.035, rgb: shade(hex2rgb("#F2F4F8"), p0), alpha: 0.5 + R() * 0.35, bristles: 3, boil: 0.004, seed: S() }); } }
+  for (let i = 0; i < 60; i++) { const lon = (R() - 0.5) * 2.6, lat = 0.04 + (R() - 0.5) * 0.12; const d = norm([Math.sin(lon), lat, Math.cos(lon)]);
+    b.add(spherePath(d, 1.006, 0.08 + R() * 0.12, () => (R() - 0.5) * 0.3, 4), { width: 0.02 + R() * 0.03, rgb: shade(hex2rgb("#F2F4F8"), d), alpha: 0.45 + R() * 0.3, bristles: 3, boil: 0.004, seed: S() }); }
+  return b;
+}
+
+/** AGB and strong-wind outflow: soft expanding shell fragments (tangential arcs on spheres just outside the star), never radial hairs. */
+export function buildShells(seed = 31, n = 260) {
+  const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
+  for (let i = 0; i < n; i++) { const d = randDir(R); const r0 = 1.06 + R() * 0.12; const e1 = norm(cross(d, [0.3, 1, 0.2])); const e2 = cross(d, e1); const sw = 0.25 + R() * 0.5, ph = R() * TAU;
+    const pts = []; for (let k = 0; k <= 6; k++) { const a = ph + sw * (k / 6 - 0.5); const v = norm([0, 1, 2].map((j) => d[j] + (e1[j] * Math.cos(a) + e2[j] * Math.sin(a)) * 0.35)); pts.push(v.map((x) => x * r0)); }
+    b.add(pts, { width: 0.07 + R() * 0.12, raw: [0.5 + R() * 0.25, 0.5, 0.55 + R() * 0.25], alpha: 0.10 + R() * 0.14, kind: KIND.WIND, bristles: 5, boil: 0.006, omega: R(), seed: S() }); }
+  return b;
+}
+
+/** Starlight bent around a black hole (point-lens mapping, Leo's bh params: theta_E = 0.92 of the shadow radius).
+ * Stars behind are pushed outward and stretched along the ring; anything mapped inside the shadow is hidden. Unit = shadow radius, z = 0 plane. */
+export function buildLensedStars(seed = 41, n = 520, thetaE = 0.92) {
+  const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
+  for (let i = 0; i < n; i++) { const a = R() * TAU; const bb = i < 160 ? thetaE * (0.35 + 2.6 * R()) : 0.2 + R() * 6.5;
+    const th = 0.5 * (bb + Math.sqrt(bb * bb + 4 * thetaE * thetaE)); if (th < 1.02) continue;
+    const st = Math.min(2.6, 1 + Math.max(0, th / bb - 1) * 1.6); const Tk = Math.pow(10, 3.6 + R() * 0.6); const col = mix(tRGB255(Tk), [255, 255, 255], 0.4);
+    const s = (R() < 0.03 ? 0.014 : 0.005 + R() * 0.005); const L = s * (0.35 + 0.9 * (st - 1)) / th; const pts = [-1, 0, 1].map((k) => [Math.cos(a + k * L) * th, Math.sin(a + k * L) * th, 0]);
+    b.add(pts, { width: s, rgb: col, alpha: 0.35 + R() * 0.5, bristles: 1, seed: S(), dab: true }); }
+  return b;
+}
+
+/** A supernova remnant shell: torn and lopsided, uneven brightness, one blown-out sector, knots, and jets on one side only (LOOK-SPEC v2.3).
+ * Unit sphere (R0). Emission-line colours (labelled as such): H-alpha pinks, [O III] teal, white-hot knots, synchrotron violet-blue. */
+export function buildRemnant(seed = 63, n = 1500) {   // drawn facing the viewer (+z): limb-brightened, lopsided, torn, with a blown-out sector
+  const R = rng(seed); const b = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
+  const pink = hex2rgb("#FF7A8E"), rose = hex2rgb("#FF5A6A"), white = hex2rgb("#FFF4F6"), teal = hex2rgb("#4FD8C0"), syn = hex2rgb("#8FA8FF"), mag = hex2rgb("#D27AE0");
+  const blow = norm([0.62, -0.72, 0.15]), jet = norm([-0.72, 0.62, 0.1]);
+  const lumps = Array.from({ length: 7 }, () => ({ d: randDir(R), k: (R() - 0.4) * 0.22 }));
+  const shape = (d) => { let r = 1 + 0.1 * d[0] - 0.05 * d[1]; for (const l of lumps) r += l.k * Math.exp(-3 * (1 - (l.d[0] * d[0] + l.d[1] * d[1] + l.d[2] * d[2]))); const bo = blow[0] * d[0] + blow[1] * d[1] + blow[2] * d[2]; return r + 0.22 * Math.max(0, bo - 0.55) / 0.45; };
+  const bright = (d) => 0.45 + 0.55 * clamp01(0.5 + 0.5 * (0.8 * d[0] + 0.4 * d[1]) + 0.25 * Math.sin(d[0] * 5 + d[2] * 3));
+  const rim = (d) => Math.pow(1 - Math.abs(d[2]), 2.2);   // seen face on, the shell is brightest where we look along it
+  for (let i = 0; i < n; i++) {
+    const d = randDir(R); const bo = blow[0] * d[0] + blow[1] * d[1] + blow[2] * d[2]; if (bo > 0.7 && R() < 0.85) continue;
+    const rm = rim(d); if (R() > 0.25 + 0.75 * rm) continue;
+    const r = shape(d) * (0.9 + R() * 0.12); const tg = norm(cross(d, [0, 0, 1])); const rn = norm(cross(d, [R() - 0.5, 1, R() - 0.5])); const e1 = norm(tg.map((v, k) => v * rm + rn[k] * (1 - rm) * 0.8 + (R() - 0.5) * 0.5));
+    const L = 0.08 + R() * 0.3; const c = d.map((v) => v * r);
+    const curl = (R() - 0.5) * 0.12; const pts = [0, 0.25, 0.5, 0.75, 1].map((f) => c.map((v, k) => v + e1[k] * (f - 0.5) * L + d[k] * Math.sin(f * Math.PI) * curl));
+    const pick = R(); const col = pick < 0.4 ? mix(pink, rose, R()) : pick < 0.66 ? mix(pink, white, 0.6 + 0.4 * R()) : pick < 0.82 ? mag : pick < 0.93 ? syn : teal;
+    b.add(pts, { width: 0.014 + R() * 0.036, rgb: jitter(col, R, 0.01, 0.05, 0.05), alpha: Math.min(0.85, (0.2 + R() * 0.45) * bright(d) * (0.3 + 1.1 * rm)), bristles: 3, boil: 0.004, seed: S() });
+  }
+  for (let i = 0; i < 28; i++) { const d = randDir(R); if (Math.abs(d[2]) > 0.5) d[2] *= 0.4; const dn = norm(d); const r = shape(dn) * (0.97 + R() * 0.06); const c = dn.map((v) => v * r); const e1 = norm(cross(dn, [0, 0, 1])); b.add([-1, 0, 1].map((f) => c.map((v, k) => v + e1[k] * f * 0.018)), { width: 0.04 + R() * 0.05, rgb: mix(white, pink, R() * 0.5), alpha: 0.18 + R() * 0.25, bristles: 3, seed: S(), dab: true }); }   // bright knots
+  for (let i = 0; i < 160; i++) { const toJet = i < 50; const base = toJet ? jet : norm([R() - 0.5, R() - 0.5, (R() - 0.5) * 0.3]); const sp = norm(base.map((v) => v + (R() - 0.5) * (toJet ? 0.35 : 0.1)));
+    const r0 = shape(sp) * (0.95 + R() * 0.1), r1 = r0 + (toJet ? 0.25 + R() * 0.4 : 0.08 + R() * 0.25); const bend = norm(cross(sp, [0, 0, 1])).map((v) => v * (R() - 0.5) * 0.12);
+    b.add([0, 0.5, 1].map((f) => sp.map((v, k) => v * (r0 + (r1 - r0) * f) + bend[k] * Math.sin(f * Math.PI))), { width: 0.006 + R() * 0.012, rgb: jitter(mix(pink, white, R() * 0.7), R, 0.01, 0.05, 0.05), alpha: 0.08 + R() * 0.14, bristles: 2, seed: S() }); }   // outward wisps, more on one side
+  for (let i = 0; i < 220; i++) { const d = randDir(R); const r = 0.3 + R() * 0.6; const c = d.map((v) => v * r); const e1 = norm(cross(d, [0, 1, 0.01])); const L = 0.1 + R() * 0.2; b.add([0, 0.5, 1].map((f) => c.map((v, k) => v + e1[k] * (f - 0.5) * L)), { width: 0.02 + R() * 0.04, rgb: jitter(mix(syn, mag, R()), R, 0.01, 0.05, 0.05), alpha: 0.025 + R() * 0.04, bristles: 3, seed: S() }); }   // faint inner haze
+  return b;
+}
+
+/** Sun surface activity, placed in code to match Angelo's Leo-approved v5 layouts (reference only; his files are not used).
+ * Local frame: unit = 1 solar radius, origin at the footpoint centre on the photosphere, +y radially out.
+ * Prominence: 3 braided arches, apex heights 0.200, 0.105 and 0.062 R (the tall one is 139,000 km), feet as in v5, glow nested and faint.
+ * Flare arcade: 8 ribs along 0.13 R; rib with birth b has half-span 0.020 + 0.012 b R and apex 0.029 to 0.033 R; newer ribs are higher and wider. */
+export const PROM_ARCHES = [
+  { a: [-0.134, -0.009, 0.0], b: [0.135, -0.009, 0.0], h: 0.200, strands: 8, w: 0.012, thick: 0.30, kink: 0.62 },
+  { a: [0.222, -0.025, -0.012], b: [0.376, -0.078, -0.087], h: 0.105, strands: 6, w: 0.009, thick: -0.22, kink: 0.35 },
+  { a: [-0.316, -0.052, 0.029], b: [-0.204, -0.024, 0.07], h: 0.062, strands: 5, w: 0.0075, thick: 0.15, kink: 0.70 },
+];
+export const FLARE_RIBS = [[-0.065, 0.06], [-0.005, 0.19], [-0.030, 0.31], [0.009, 0.44], [0.042, 0.56], [-0.048, 0.69], [0.028, 0.81], [0.065, 0.94]];   // [x along the polarity line (R), birth]
+export function buildProminence(seed = 101, wk = 1) {   // wk widens the strands (style B frames draw them bolder than Angelo's true widths)
+  const R = rng(seed); const core = new Builder(); const glow = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
+  const pink = hex2rgb("#FF7A8E"), rose = hex2rgb("#FF5A6A"), pale = mix(pink, hex2rgb("#FFF4F6"), 0.15);
+  for (const A of PROM_ARCHES) {
+    const arch = (u, ph, amp) => { const p = [0, 1, 2].map((k) => A.a[k] + (A.b[k] - A.a[k]) * u); const hgt = A.h * Math.sin(Math.PI * u) * (1 + 0.06 * Math.exp(-(((u - A.kink) / 0.06) ** 2))); p[1] += hgt; p[2] += amp * Math.sin(2 * Math.PI * 2.4 * u + ph); p[0] += amp * 0.5 * Math.cos(2 * Math.PI * 2.4 * u + ph); return p; };
+    for (let s = 0; s < A.strands; s++) { const ph = s / A.strands * TAU; const pts = []; for (let k = 0; k <= 24; k++) pts.push(arch(k / 24, ph, A.w * 0.9));
+      const heavy = s === 2 ? 1.6 : 1; core.add(pts, { width: A.w * wk * heavy * (1 + A.thick * 0.5), rgb: jitter(mix(rose, pink, R()), R, 0.01, 0.04, 0.04), alpha: 0.6 + R() * 0.25, bristles: 3, boil: 0.004, seed: S() }); }
+    for (let L = 0; L < 14; L++) { const pts = []; for (let k = 0; k <= 24; k++) pts.push(arch(k / 24, 0, 0)); glow.add(pts, { width: A.w * wk * (3 + L * 1.6), rgb: pale, alpha: 0.004 + 0.016 * (1 - L / 14), bristles: 1, seed: S() }); }
+  }
+  return { core, glow };
+}
+export function buildFlare(seed = 111) {
+  const R = rng(seed); const core = new Builder(); const glow = new Builder(); let sid = 0; const S = () => R() * 1000 + (sid++) * 0.37;
+  const pink = hex2rgb("#FF7A8E"), white = hex2rgb("#FFF4F6");
+  const ribs = FLARE_RIBS.map(([x, birth], rank) => ({ x, birth, rank, half: 0.020 + 0.012 * birth, h: 0.029 + 0.004 * birth + (R() - 0.5) * 0.001, tilt: (R() < 0.5 ? -1 : 1) * (0.03 + R() * 0.06) }));
+  for (const r of ribs) {
+    for (const nest of [1, 0.86]) { const pts = []; for (let k = 0; k <= 16; k++) { const u = k / 16; const z = -r.half * nest + 2 * r.half * nest * u; pts.push([r.x + r.tilt * z, r.h * nest * Math.sin(Math.PI * u), z]); }
+      // layer carries the rib's birth (0..1) so the shader can grow ribs in order
+      core.add(pts, { width: 0.004 * nest, rgb: mix(pink, white, 0.5), alpha: nest === 1 ? 0.95 : 0.75, bristles: 2, boil: 0.003, seed: S(), layer: 0, omega: r.birth });
+      for (let L = 0; L < 4; L++) glow.add(pts, { width: 0.008 + L * 0.006, rgb: pink, alpha: 0.03 - L * 0.005, bristles: 1, seed: S(), omega: r.birth }); }
+    for (const side of [-1, 1]) for (let k = 0; k < 2; k++) { const z = side * r.half; const c = [r.x + r.tilt * z + (R() - 0.5) * 0.004, 0.001, z]; glow.add([[c[0] - 0.006, c[1], c[2]], c, [c[0] + 0.006, c[1], c[2]]], { width: 0.006, rgb: mix(pink, white, 0.4 + 0.4 * r.birth), alpha: 0.25 + 0.3 * r.birth, bristles: 1, seed: S(), dab: true, omega: r.birth }); }
+  }
+  return { core, glow, ribs };
 }

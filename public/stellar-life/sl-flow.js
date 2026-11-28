@@ -42,7 +42,7 @@ export function createFlow(S, tracks, opts = {}) {
       const needs = (a.code === "P") || (a.code === "K" && a.choices && !a.kind); if (needs && st.answers[api.actKey(i)] == null) return { i, a }; }
     return null;
   };
-  api.enter = (i) => {
+  api.enter = (i) => { st.hold = 0; st.held = false;
     st.si = Math.max(0, Math.min(st.stages.length - 1, i)); st.t = 0; st.cardIdx = 0; st.playing = true; st.timebar = null; st.peek = false;
     st.phase = api.pending() ? "predict" : "play";
     const s = api.stage(); st.toggles.cut = true; st.toggles.scope = false; st.toggles.swap = false; if (s.id === "F1") st.toggles.ir = false;
@@ -54,9 +54,19 @@ export function createFlow(S, tracks, opts = {}) {
   };
   api.tick = (dt) => {
     if (st.screen !== "stage" || st.phase !== "play" || !st.playing) return;
-    const s = api.stage(); st.t = Math.min(1, st.t + dt / (s.dur || 10)); if (st.t >= 1) st.phase = "done";
+    const s = api.stage(); const h = api.holdT();
+    // S7 (1 Sun): dwell about 3 s at today's age of the universe, 13.8 billion years, then keep cooling (Leo's frame 2c)
+    if (h != null && !st.held && st.t <= h && st.t + dt / (s.dur || 10) >= h) { st.t = h; st.hold = 3; st.held = true; return; }
+    if (st.hold > 0) { st.hold -= dt; return; }
+    st.t = Math.min(1, st.t + dt / (s.dur || 10)); if (st.t >= 1) st.phase = "done";
   };
-  api.setT = (t) => { st.t = Math.max(0, Math.min(1, t)); if (st.phase === "predict") return; st.phase = st.t >= 1 ? "done" : "play"; };
+  /** The stage fraction where the white dwarf reaches stage.holdAge (years since the star formed), or null. */
+  api.holdT = () => {
+    const s = api.stage(); if (!s || !s.holdAge || st.mass !== "1" || !s.seg || s.seg.type !== "wd") return null; const tr = api.tracks[st.mass]; if (!tr || !tr.wd) return null;
+    const W = tr.wd, n = W.length; const a0 = Math.max(W[1].coolAge, 1e4), a1 = W[n - 1].coolAge; const ca = s.holdAge - tr.end.age; if (!(ca > a0 && ca < a1)) return null;
+    return (Math.log10(ca) - Math.log10(a0)) / (Math.log10(a1) - Math.log10(a0));
+  };
+  api.setT = (t) => { st.t = Math.max(0, Math.min(1, t)); st.held = false; st.hold = 0; if (st.phase === "predict") return; st.phase = st.t >= 1 ? "done" : "play"; };
   api.next = () => {
     if (st.si < st.stages.length - 1) {
       const skipping = st.phase !== "done" ? api.skipYears() : 0;

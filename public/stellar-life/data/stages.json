@@ -5,7 +5,7 @@
   "hub": [
     { "id": "H-Pick", "caption": "Pick a starting mass in Suns. Everything else follows from this one choice.", "act": [{ "code": "K", "kind": "mass" }] },
     { "id": "H-End", "caption": "What will your star become in the end?", "act": [{ "code": "P", "q": "What will your star become in the end?", "choices": ["white dwarf", "neutron star", "black hole"], "answerBy": { "0.2": "white dwarf", "1": "white dwarf", "3": "white dwarf", "15": "neutron star", "40": "black hole" } }], "mis": [3] },
-    { "id": "H-Path", "caption": "Place three pins on the H-R diagram: where it spends most of its life, where it swells the most, and where it ends.", "act": [{ "code": "P", "kind": "pins", "pins": ["most of its life", "biggest swell", "last stop"] }], "mis": [5] }
+    { "id": "H-Path", "caption": "Place three pins on the H-R diagram: where it spends most of its life, where it swells the most, and where it ends.", "act": [{ "code": "P", "kind": "pins", "pins": ["most of its life", "where it swells the most", "where it ends"] }], "mis": [5] }
   ],
   "formation": [
     { "id": "F1", "title": "Cold cloud", "scene": "cloud", "seg": { "type": "none" }, "dur": 9,
@@ -64,7 +64,7 @@
       { "id": "S6", "title": "Planetary nebula", "scene": "nebula", "seg": { "type": "mist", "from": { "eep": 1409 }, "to": { "end": true } }, "dur": 14,
         "caption": "The star's outer layers drift away at about 10 to 30 km/s, lit by a hot core of 100,000 K or more. The name is a historical accident: in small telescopes these shells looked round like planets.",
         "act": [{ "code": "K", "kind": "toggle", "toggle": "scope", "labels": ["Close view", "Small telescope"] }], "mis": [7] },
-      { "id": "S7", "title": "White dwarf", "scene": "wd", "seg": { "type": "wd" }, "dur": 16,
+      { "id": "S7", "title": "White dwarf", "scene": "wd", "seg": { "type": "wd" }, "dur": 16, "holdAge": 13800000000,
         "caption": "A white dwarf is about Earth-size, with about half the Sun's mass. It shines from stored heat, not fusion, and slowly cools. No black dwarfs exist yet: cooling takes far longer than the age of the universe.",
         "act": [{ "code": "P", "q": "What makes it glow?", "choices": ["fusion", "stored heat", "chemical fire"], "answer": "stored heat" }, { "code": "K", "kind": "checkEnd" }], "mis": [8], "remnant": true }
     ],
@@ -126,7 +126,7 @@
       { "id": "V4", "title": "Core collapse", "scene": "cutaway", "cut": "collapse", "seg": { "type": "fork" }, "dur": 8,
         "caption": "The core runs out of fuel that releases energy and collapses.", "act": [{ "code": "O" }], "mis": [9] },
       { "id": "V5", "title": "Two paths", "scene": "twopaths", "seg": { "type": "fork" }, "dur": 14,
-        "caption": "Scientists are not sure how stars this massive die. Some may explode first. Others may collapse with little or no visible explosion. A few candidates have been seen, such as N6946-BH1.",
+        "caption": "Scientists are not sure how stars this massive die. Some may explode first. Others may collapse with little or no visible explosion. A few candidates have been seen, such as N6946-BH1, but none is confirmed yet.",
         "act": [{ "code": "K", "kind": "pathOrder", "choices": ["Explode first", "Collapse quietly"] }] },
       { "id": "V6", "title": "Black hole", "scene": "bh", "seg": { "type": "gone" }, "dur": 14, "massLabel": "about 10 Suns (example)",
         "caption": "Most stars this massive are expected to leave black holes, but some may leave neutron stars. Far from it, a black hole pulls like any object of the same mass.",

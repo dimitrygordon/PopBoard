@@ -23,7 +23,7 @@ vec3 tlin(float T){ float u = clamp((log(max(T, 1000.0)) / 2.302585 - 3.0) / 3.0
 export const strokeVert = /* glsl */`
 attribute vec3 aTan; attribute vec3 aUvK; attribute vec4 aA; attribute vec4 aColor; attribute vec4 aParam;
 uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform vec3 uCamLocal; uniform float uCosElev;
-uniform float uAlpha; uniform float uWind; uniform float uWindLen; uniform float uPull; uniform float uLayerA[7];
+uniform float uAlpha; uniform float uWind; uniform float uWindLen; uniform float uPull; uniform float uLayerA[7]; uniform float uCrisp; uniform float uGrow;
 #ifdef STAR
 uniform float uTeff; uniform float uExposure; uniform vec3 uPeek; uniform float uPeekOn;
 #endif
@@ -44,6 +44,10 @@ void main(){
   if ((kind > 0.5 && kind < 2.5) || flatK) dth = (7.0 / 32.0) / r * sin(TAU * tl - 1.05 * r);
   if (kind > 2.5 && kind < 3.5) { float su = fract(tl + aParam.x); dth = (44.0 / 32.0) / r * su; fade = 0.55 * pow(max(sin(3.14159265 * su), 0.0), 1.5); }
   p = rotY(p, dth); tn = rotY(tn, dth);
+#ifdef GROW
+  // flare arcade: a rib with birth b (aParam.x) appears at uGrow = 0.85 b and rises from its feet (ease-out)
+  float gr = clamp((uGrow - aParam.x * 0.85) / 0.15, 0.0, 1.0); p.y *= 1.0 - (1.0 - gr) * (1.0 - gr);
+#endif
   if (kind > 3.5 && kind < 4.5) { float su = fract(tl * 0.5 + aParam.x); p += normalize(position) * su * uWindLen; fade = uWind * pow(max(sin(3.14159265 * su), 0.0), 1.2); }   // wind: gas streams off
   if (kind > 4.5 && kind < 5.5) { float su = fract(tl * 0.5 + aParam.x); p *= 1.0 - 0.75 * su * uPull; fade = pow(max(sin(3.14159265 * su), 0.0), 1.2); }       // collapse: filaments stream inward
   vec2 dxz = normalize(p.xz + vec2(1e-4)); vec2 cxz = normalize(uCamLocal.xz + vec2(1e-4));
@@ -54,6 +58,13 @@ void main(){
   if (kind > 2.5 && kind < 3.5) { al *= mix(1.0, 0.5, nearK); }
   vec4 vp = modelViewMatrix * vec4(p, 1.0);
   float sc = length(modelViewMatrix[0].xyz);
+#ifdef GROW
+  al *= min(1.0, gr * 3.0);
+#endif
+  // crisp limb (style B v2.3: no feather or fringe strokes on compact stars): strokes fade before the limb and thin toward it,
+  // so the painted surface sits inside the glow shader's crisp disc edge
+  vec3 nrmC = normalize(mat3(modelViewMatrix) * normalize(position)); float muC = dot(nrmC, -normalize(vp.xyz));
+  al *= mix(1.0, smoothstep(0.28, 0.55, muC), uCrisp); width *= mix(1.0, mix(0.25, 1.0, smoothstep(0.1, 0.7, muC)), uCrisp);
 #ifdef STAR
   // colour = temperatureToSRGB(Teff + dT) in linear light x brightness k x limb darkening, then the equal bleed. Never a channel clamp.
   vec3 nrm = normalize(mat3(modelViewMatrix) * normalize(position)); float mu = dot(nrm, -normalize(vp.xyz));
@@ -123,9 +134,10 @@ void main(){ float d = length(vC); if (d >= 1.0) discard; gl_FragColor = vec4(vC
 
 export const bgVert = /* glsl */`varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 export const bgFrag = /* glsl */`precision highp float; varying vec3 vP;
-void main(){ vec3 d = normalize(vP); float t = clamp(0.75 * (0.5 - 0.5 * d.y) + 0.25 * (atan(d.z, d.x) / 3.14159265 * 0.5 + 0.5), 0.0, 1.0);
+void main(){ vec3 d = normalize(vP); float az = atan(d.z, d.x);   // style B: navy above, a violet wash below the eye line
+  float t = clamp(0.42 - 1.05 * d.y + 0.12 * sin(az + 0.6), 0.0, 1.0);
   vec3 a = vec3(0.0157, 0.0314, 0.1020), b = vec3(0.0471, 0.0784, 0.2275), c = vec3(0.1804, 0.1176, 0.3608);
-  vec3 col = t < 0.6 ? mix(a, b, t / 0.6) : mix(b, c, (t - 0.6) / 0.4); gl_FragColor = vec4(col, 1.0); }`;
+  vec3 col = t < 0.5 ? mix(a, b, t / 0.5) : mix(b, c, (t - 0.5) / 0.5); gl_FragColor = vec4(col, 1.0); }`;
 
 // Billboard glow / star disc. One fragment shader sums every layer, bleeds the overflow equally and draws premultiplied "over"
 // (alpha = brightest channel), so a saturated core replaces what is under it instead of clipping per channel in the blend unit.

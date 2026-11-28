@@ -134,7 +134,7 @@ body { background: linear-gradient(166deg, #04081A 0%, #0C143A 60%, #2E1E5C 100%
 .ticket .bank span { display: inline-block; margin: 0 6px 0 0; padding: 2px 8px; border: 1px solid #555; border-radius: calc(var(--r-6, 6px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; }
 .ticket .confusing .box { height: 90px; border: 1.5px solid #333; border-radius: calc(var(--r-8, 8px) * var(--sq-fit, 1)); corner-shape: squircle; --sq: 1; background: #fff; }
 .ticket .nameline { margin: 10px 0 0; }
-body.sl-has-sheet .sl-hrcard { visibility: hidden; }
+body.sl-has-sheet .sl-hrcard, body.sl-has-sheet .sl-panel, body.sl-has-sheet .sl-dock { visibility: hidden; }
 @media (max-width: 699px) { .sl-sheet { padding: calc(96px + var(--pb-safe-top, 0px)) 8px 12px; } .sl-sheet-in { padding: 12px; } .mc, .mc thead { font-size: 13px; } .mc thead { display: none; } .mc tr:not(.model) { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); } .mc tr:not(.model) th { grid-column: 1 / -1; border: none; } .mc tr:not(.model) td { border: none; padding: 0; display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 8px; } .mc td::before { content: attr(data-l); font-size: 12px; color: var(--sl-text-3); } }
 @media print {
   body { overflow: visible; background: #fff; color: #000; height: auto; }
@@ -144,3 +144,17 @@ body.sl-has-sheet .sl-hrcard { visibility: hidden; }
   .mc select { border: 1px solid #999; background: #fff; color: #000; -webkit-appearance: none; appearance: none; }
   .fill { display: none; } .printline { display: block; font-size: 16px; } .mc tr.model td, .sl-sheet .note, .mc .norun { color: #333; }
 }
+
+/* round 4: the COMPARE clock docked at the bottom of the view (desktop: between the H-R card and the panel; phone: top of the sheet) */
+.sl-dock { position: fixed; z-index: 4; bottom: calc(14px + var(--pb-safe-bottom, 0px)); left: calc(min(400px, 34vw) + 28px); right: calc(min(400px, 36vw) + 28px); }
+.sl-dock .sl-logclock { margin: 0; background: rgba(12, 16, 40, 0.86); border: 1px solid rgba(255, 255, 255, 0.14); }
+.sl-panel .sl-dock { position: static; margin: 0 0 10px; }
+.sl-logclock .lc-sub { font-weight: 500; color: #A9B0D0; font-size: 12.5px; margin-left: 6px; }
+.sl-rq { margin: 0 0 4px; font-weight: 650; color: #FFFFFF; }
+.sl-pinchip { margin: 0 0 10px; }
+.sl-read { display: inline-block; margin: 2px 0 8px; }
+.sl-readoff table th[scope="rowgroup"] { text-align: left; vertical-align: top; padding-right: 8px; }
+.sl-readoff tr.r1 td, .sl-readoff tr.r1 th { padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.10); }
+.sl-sheet .cardline { margin: 4px 0 14px; font-size: 16px; }
+.ticket .hrkey { margin: 4px 0 6px; font-weight: 600; }
+@media print { .noprint { display: none !important; } }

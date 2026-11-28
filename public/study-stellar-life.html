@@ -10,11 +10,12 @@
 <title>Stellar Life Cycle VR // PopBoard</title>
 <link rel="icon" type="image/png" href="popboard-logo.png">
 <link rel="preload" as="font" type="font/woff2" href="night-sky/ui/fonts/inter-latin-var.woff2" crossorigin>
-<link rel="stylesheet" href="stellar-life/sl.css?v=20261128a">
+<link rel="stylesheet" href="stellar-life/sl.css?v=20261128c">
 <link rel="stylesheet" href="/shared/corners/corners.css?v=20261124a">
 <script defer src="/shared/corners/corners.js?v=20261124a"></script>
-<script type="module" src="stellar-life/sl-page-ui.js?v=20261128a"></script>
-<script type="module" src="stellar-life/sl-main.js?v=20261128a"></script>
+<script type="module" src="stellar-life/sl-page-ui.js?v=20261128c"></script>
+<script type="module" src="stellar-life/sl-main.js?v=20261128c"></script>
+<script type="module" src="astro-course/story-return.js"></script>
 </head>
 <body>
 <h1 class="sr-only">Stellar Life Cycle VR</h1>
@@ -25,7 +26,7 @@
 <header class="sl-top" id="slTop">
   <button id="studyBackBtn" class="sl-hbtn" type="button" data-study-back aria-label="Back to Study library">
     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-    <span class="lbl">Back</span>
+    <span class="lbl back-label">Back</span>
   </button>
   <p class="title">Stellar Life Cycle VR</p>
   <button id="slHelp" class="sl-hbtn" type="button" aria-pressed="false">Numbers: off</button>
@@ -60,6 +61,7 @@
   </details>
 </section>
 
+<div id="slDock" class="sl-dock" hidden></div>
 <div id="slSheet" class="sl-sheet" hidden></div>
 
 <p id="slStatus" class="sl-status">Loading...</p>

@@ -9,7 +9,7 @@ import { drawHR, plotRect, fromXY, VIEWS } from "./sl-hr.js";
 import { Scenes, scaleBar, zoomText, KM } from "./sl-scenes.js";
 import { ONION } from "./sl-strokes.js";
 import { uiModel, MASS_TEFF } from "./sl-ui.js";
-import { ZONES, cardComplete, FRAME_WORDS, TICKET, logPos, LOGCLOCK } from "./sl-compare.js";
+import { ZONES, cardComplete, FRAME_WORDS, TICKET, logPos, LOGCLOCK, COMPARE_TEXT } from "./sl-compare.js";
 import { XRPanel } from "./sl-xrpanel.js";
 import { temperatureToSRGB } from "../night-sky/ns-astro.js";
 
@@ -96,10 +96,13 @@ function resize() {
   // phone: the H-R card moves into the bottom sheet so it never covers the star; desktop: it floats bottom left
   const card = document.querySelector(".sl-hrcard"), sheet = $("slPanel");
   if (card && sheet) { if (phone && card.parentNode !== sheet) sheet.insertBefore(card, sheet.firstChild); else if (!phone && card.parentNode === sheet) document.body.insertBefore(card, sheet); }
+  const dock = $("slDock"); if (dock && sheet) { if (phone && dock.parentNode !== sheet) sheet.insertBefore(dock, sheet.firstChild); else if (!phone && dock.parentNode === sheet) document.body.insertBefore(dock, sheet); }
   const panel = $("slPanel"); const pr = panel ? panel.getBoundingClientRect() : null;
-  if (!phone && pr && pr.width) { const free = w - pr.width - 24; const ox = (w - free) / 2; camera.setViewOffset(w, h, ox, 0, w, h); }
-  else if (phone && pr && pr.height) { const top = $("slTop") ? $("slTop").getBoundingClientRect().bottom : 0; const free = Math.max(h * 0.32, pr.top - top); const oy = (h - free) / 2 - top; camera.setViewOffset(w, h, 0, Math.max(0, oy), w, h); }
-  else camera.clearViewOffset();
+  const cr = card && !phone ? card.getBoundingClientRect() : null; layout.panel = pr; layout.card = cr && cr.width ? cr : null; layout.off = null;
+  if (!phone && pr && pr.width) { const free = w - pr.width - 24; const ox = (w - free) / 2; camera.setViewOffset(w, h, ox, 0, w, h); layout.off0 = [ox, 0]; }
+  else if (phone && pr && pr.height) { const top = $("slTop") ? $("slTop").getBoundingClientRect().bottom : 0; const free = Math.max(h * 0.32, pr.top - top); const oy = (h - free) / 2 - top; camera.setViewOffset(w, h, 0, Math.max(0, oy), w, h); layout.off0 = [0, Math.max(0, oy)]; }
+  else { camera.clearViewOffset(); layout.off0 = [0, 0]; }
+  layout.offKey = null;
   camera.updateProjectionMatrix(); hrDirty = true;
 }
 addEventListener("resize", () => resize());
@@ -132,8 +135,11 @@ function renderUI(M) {
   const key = JSON.stringify(M); if (key === uiKey) return; uiKey = key;
   renderSheet(M.sheet);
   $("slKicker").textContent = M.kicker || ""; $("slTitle").textContent = M.title || "";
-  const cards = M.cards || []; $("slCaption").innerHTML = cards.length ? `<p>${esc(cards[M.cardIdx || 0])}</p>` + (cards.length > 1 ? `<div class="sl-cardnav"><span>Card ${M.cardIdx + 1} of ${cards.length}</span><button type="button" data-act="card-" ${M.cardIdx ? "" : "disabled"}>Previous</button><button type="button" data-act="card+" ${M.cardIdx < cards.length - 1 ? "" : "disabled"}>Next card</button></div>` : "") : "";
+  const cards = M.cards || []; $("slCaption").innerHTML = cards.length ? `<p>${esc(cards[M.cardIdx || 0])}</p>` + (M.readAloud && window.speechSynthesis ? `<button type="button" class="sl-link sl-read" data-act="readAloud">Read aloud</button>` : "") + (cards.length > 1 ? `<div class="sl-cardnav"><span>Card ${M.cardIdx + 1} of ${cards.length}</span><button type="button" data-act="card-" ${M.cardIdx ? "" : "disabled"}>Previous</button><button type="button" data-act="card+" ${M.cardIdx < cards.length - 1 ? "" : "disabled"}>Next card</button></div>` : "") : "";
   let qh = "";
+  // the pin prompt (and the Tier 1 zone hint) come before the mass tiles, so on phone they sit above the fold
+  if (M.pinPrompt) qh += `<p class="sl-pinprompt">${esc(M.pinPrompt)}</p>`;
+  if (M.pinChip) qh += `<div class="sl-chip sl-pinchip">${esc(M.pinChip)}</div>`;
   if (M.masses) qh += `<div class="sl-masses">${M.masses.map((m) => `<button type="button" class="sl-mass${m.on ? " on" : ""}" data-act="${m.act || "mass:" + m.id}" aria-pressed="${m.on}"><span class="dot" style="--c:${m.css}"></span>${esc(m.label)}${m.done ? ' <span class="done">run</span>' : ""}</button>`).join("")}</div>`;
   if (M.question) {
     const Q = M.question; qh += `<div class="sl-q"><p class="sl-qtext">${esc(Q.text)}</p>`;
@@ -141,10 +147,11 @@ function renderUI(M) {
     else qh += `<div class="sl-choices">${Q.choices.map((c) => `<button type="button" class="sl-choice${c.picked ? " on" : ""}" data-act="${c.act ? esc(c.act) : (Q.key === "H-End" ? "end:" : "choice:" + Q.i + ":") + esc(c.label)}">${esc(c.label)}</button>`).join("")}</div>`;
     qh += `</div>`;
   }
-  if (M.pinPrompt) qh += `<p class="sl-pinprompt">${esc(M.pinPrompt)}</p>`;
-  for (const r of M.reveal || []) qh += `<div class="sl-reveal"><div><span>You picked</span> ${esc(r.picked)}</div><div><span>The model</span> ${esc(r.model)}${r.extra ? ". " + esc(r.extra) : ""}</div>${r.optionalKey && !r.optional ? `<button type="button" class="sl-link" data-act="optional:${r.optionalKey}">Want to know why?</button>` : ""}${r.optional ? `<div class="sl-opt">${esc(r.optional)}</div>` : ""}</div>`;
+  for (const r of M.reveal || []) qh += `<div class="sl-reveal">${r.q ? `<p class="sl-rq">${esc(r.q)}</p>` : ""}<div><span>You picked</span> ${esc(r.picked)}</div><div><span>The model</span> ${esc(r.model)}${r.extra ? ". " + esc(r.extra) : ""}</div>${r.optionalKey && !r.optional ? `<button type="button" class="sl-link" data-act="optional:${r.optionalKey}">Want to know why?</button>` : ""}${r.optional ? `<div class="sl-opt">${esc(r.optional)}</div>` : ""}</div>`;
   $("slQuestion").innerHTML = qh;
-  $("slWidgets").innerHTML = (M.widgets || []).map(widgetHTML).join("");
+  const docked = (M.widgets || []).filter((w) => w.kind === "logclock");   // the COMPARE clock sits at the bottom of the view (above the fold on phone)
+  $("slWidgets").innerHTML = (M.widgets || []).filter((w) => w.kind !== "logclock").map(widgetHTML).join("");
+  const dock = $("slDock"); if (dock) { dock.innerHTML = docked.map(widgetHTML).join(""); dock.hidden = !docked.length; }
   $("slReadouts").innerHTML = (M.readouts || []).map(([k, v]) => `<div class="sl-ro"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join("");
   $("slChips").innerHTML = (M.chips || []).map((c) => `<div class="sl-chip">${esc(c)}</div>`).join("");
   $("slCredit").textContent = M.credit || ""; $("slCredit").hidden = !M.credit;
@@ -155,8 +162,8 @@ function renderUI(M) {
   resizeSoon();
 }
 function widgetHTML(w) {
-  if (w.kind === "logclock") return `<div class="sl-logclock"><div class="sl-wtitle">Log age clock: each notch is 10 times longer</div><div class="lc-track">${Array.from({ length: w.y1 - w.y0 + 1 }, (_, i) => `<span class="lc-notch" style="left:${(100 * i / (w.y1 - w.y0)).toFixed(2)}%"></span>`).join("")}${w.ticks.map((k) => `<span class="lc-tick" style="left:${(100 * k.p).toFixed(2)}%" title="${esc(k.label)}"></span>`).join("")}${w.stars.map((s, i) => `<span class="lc-star" style="left:${(100 * s.p).toFixed(2)}%;--c:${temperatureCss(s.teff)};--row:${i}"></span>${s.life != null ? `<span class="lc-life" style="left:${(100 * s.life).toFixed(2)}%;--row:${i}"></span>` : ""}`).join("")}</div><div class="lc-ends"><span>100,000 years</span><span>10 trillion years</span></div><div class="lc-keys">${w.ticks.map((k) => `<span><i class="lc-tick-key"></i>${esc(k.label)}</span>`).join("")}${w.stars.map((s) => `<span><i class="lc-star-key" style="--c:${temperatureCss(s.teff)}"></i>${esc(s.label)}${s.life != null ? ": main sequence " + esc(s.lifeLabel) : ""}</span>`).join("")}</div></div>`;
-  if (w.kind === "readoff") return `<div class="sl-readoff"><div class="sl-wtitle">Read off the model</div><table><thead><tr><th>Mass</th><th>Main sequence</th><th>Color</th><th>End</th></tr></thead><tbody>${w.rows.map((r) => `<tr><td>${esc(r.label)}</td><td>${esc(r.life)}</td><td>${esc(r.color)}</td><td>${esc(r.end)}</td></tr>`).join("")}</tbody></table></div>`;
+  if (w.kind === "logclock") return `<div class="sl-logclock"><div class="sl-wtitle">Age <span class="lc-sub">log clock: each notch is 10 times longer</span></div><div class="lc-track">${Array.from({ length: w.y1 - w.y0 + 1 }, (_, i) => `<span class="lc-notch" style="left:${(100 * i / (w.y1 - w.y0)).toFixed(2)}%"></span>`).join("")}${w.ticks.map((k) => `<span class="lc-tick" style="left:${(100 * k.p).toFixed(2)}%" title="${esc(k.label)}"></span>`).join("")}${w.stars.map((s, i) => `<span class="lc-star" style="left:${(100 * s.p).toFixed(2)}%;--c:${temperatureCss(s.teff)};--row:${i}"></span>${s.life != null ? `<span class="lc-life" style="left:${(100 * s.life).toFixed(2)}%;--row:${i}"></span>` : ""}`).join("")}</div><div class="lc-ends"><span>100,000 years</span><span>10 trillion years</span></div><div class="lc-keys">${w.ticks.map((k) => `<span><i class="lc-tick-key"></i>${esc(k.label)}</span>`).join("")}${w.stars.map((s) => `<span><i class="lc-star-key" style="--c:${temperatureCss(s.teff)}"></i>${esc(s.label)}${s.life != null ? ": main sequence " + esc(s.lifeLabel) + ", fusion ends " + esc(s.endLabel) : ""}</span>`).join("")}</div></div>`;
+  if (w.kind === "readoff") return `<div class="sl-readoff"><div class="sl-wtitle">Read off the model</div><table><thead><tr><th>Mass</th><th>Age</th><th>Color</th><th>End</th></tr></thead><tbody>${w.rows.map((r) => `<tr class="r1"><th scope="rowgroup" rowspan="2">${esc(r.label)}</th><td>Main sequence (hydrogen in the core): ${esc(r.life)}</td><td rowspan="2">${esc(r.color)}</td><td rowspan="2">${esc(r.end)}</td></tr><tr class="r2"><td>Fusion ends: ${esc(r.fusionEnd)}</td></tr>`).join("")}</tbody></table></div>`;
   if (w.kind === "timebar") return `<label class="sl-timebar">${esc(w.label)}<input type="range" id="slTimebar" min="0" max="1" step="0.005" value="${w.value}"><span class="ends"><span>Giant peak</span><span>Now</span></span></label>`;
   if (w.kind === "onion") return `<div class="sl-onion"><div class="sl-wtitle">Each fuel lasts shorter than the last</div>${w.layers.map(([n, time], i) => `<div class="row${w.progress * w.layers.length > i ? " on" : ""}"><span class="sw" style="--c:${ONION_CSS[n] || "#AACDFF"}"></span><span>${esc(n)}</span><b>${esc(time)}</b></div>`).join("")}<div class="src">Times for a 15 Sun star: ${esc(w.source || "")}</div></div>`;
   if (w.kind === "bars") return `<div class="sl-bars"><div class="sl-wtitle">${esc(cap(w.label || "each fuel lasts shorter than the last"))}</div>${["hydrogen", "helium", "carbon", "neon", "oxygen", "silicon"].map((n, i) => `<div class="barrow${w.progress * 6 > i ? " on" : ""}"><span>${n}</span><div class="bar" style="width:${Math.round(100 * Math.pow(0.55, i))}%;--c:${ONION_CSS[n]}"></div></div>`).join("")}<div class="src">Bars show order only, not real lengths.</div>${w.level2 ? `<div class="src">${esc(w.level2)}</div>` : ""}</div>`;
@@ -186,7 +193,7 @@ function cardHTML(sh) {
   const sentence = sh.tier === 1
     ? `<p class="frame"><b>Sentence frame:</b> ${esc(sh.frame)}</p><div class="fill">The <input id="c-frame-0" data-card="frame:0" list="slW0" value="${esc(card.frame[0])}" aria-label="first blank" placeholder="___"> the mass, the <input id="c-frame-1" data-card="frame:1" list="slW1" value="${esc(card.frame[1])}" aria-label="second blank" placeholder="___"> the life, because <input id="c-frame-2" class="wide" data-card="frame:2" value="${esc(card.frame[2])}" aria-label="because" placeholder="___">.</div><datalist id="slW0">${sh.frameWords[0].map((w) => `<option value="${w}">`).join("")}</datalist><datalist id="slW1">${sh.frameWords[1].map((w) => `<option value="${w}">`).join("")}</datalist>`
     : `<div class="fill">Mass decides <input id="c-decides" class="wide" data-card="sentence:decides" value="${esc(card.decides)}" aria-label="Mass decides" placeholder="___"> because <input id="c-because" class="wide" data-card="sentence:because" value="${esc(card.because)}" aria-label="because" placeholder="___">.</div>`;
-  return `<div class="sl-sheet-in"><header><h2>Mass Card</h2><p>${esc(flow.S && "Fill in the card, then finish the sentence: Mass decides ___ because ___.")}</p><div class="sheet-btns"><button type="button" class="sl-btn" data-act="print">Print or save as PDF</button><button type="button" class="sl-btn" data-act="hub">Close</button></div></header>
+  return `<div class="sl-sheet-in"><header><h2>Mass Card</h2><div class="sheet-btns"><button type="button" class="sl-btn" data-act="print">Print or save as PDF</button><button type="button" class="sl-btn" data-act="hub">Close</button></div></header><p class="cardline">${esc(COMPARE_TEXT.card)}</p>
     <table class="mc"><thead><tr><th>Starting mass</th><th>Lifetime (main sequence)</th><th>Color</th><th>End state</th></tr></thead><tbody>${rows}</tbody></table>
     <div class="sentence">${sentence}</div><p class="printline">${esc(sh.sentence)}</p>
     <p class="status ${sh.complete ? "ok" : ""}" aria-live="polite">${sh.complete ? "Card complete." : "Complete when 1, 15 and 40 plus a third mass are filled and the sentence has both blanks filled."}</p>
@@ -195,24 +202,29 @@ function cardHTML(sh) {
 function starSVG(teff, r, x, y, sticker) { const c = temperatureCss(teff); return `<circle cx="${x}" cy="${y}" r="${r * 1.6}" fill="${c}" opacity="0.18"/><circle cx="${x}" cy="${y}" r="${r}" fill="${c}" stroke="#222" stroke-width="1"/>${sticker ? `<rect x="${x + r * 0.5}" y="${y - r - 12}" width="34" height="16" rx="4" fill="#fff" stroke="#333"/><text x="${x + r * 0.5 + 17}" y="${y - r}" font-size="11" text-anchor="middle" fill="#222">Sun</text>` : ""}`; }
 function ticketHTML() {
   const T = TICKET; const tm = { "0.2": [MASS_TEFF["0.2"], 9], "1": [MASS_TEFF["1"], 16], "15": [MASS_TEFF["15"], 30] };
-  const top = `<svg viewBox="0 0 640 170" role="img" aria-label="A dark cloud with arrows to three stars A, B and C"><ellipse cx="90" cy="85" rx="75" ry="52" fill="#2a2633"/><ellipse cx="70" cy="70" rx="40" ry="28" fill="#3a3445"/>${[45, 85, 125].map((y, i) => `<path d="M170 85 L${380 + i * 0} ${y}" stroke="#333" stroke-width="2" marker-end="url(#ar)"/>`).join("")}
-    <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#333"/></marker></defs>
-    ${T.stars.map((s, i) => { const [teff, r] = tm[s.mass]; const x = 430 + i * 75, y = [45, 85, 125][i]; return starSVG(teff, r, x, y, s.mass === "1") + `<text x="${x}" y="${y + r + 16}" font-size="14" font-weight="700" text-anchor="middle" fill="#111">${s.label}</text>`; }).join("")}</svg>`;
+  const SX = [330, 450, 590], SY = 80;   // stars spaced well apart; each arrow runs all the way to its star's edge
+  const top = `<svg viewBox="0 0 680 150" role="img" aria-label="A dark cloud with arrows to three stars: A 0.2 Suns, B 1 Sun, C 15 Suns"><defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8z" fill="#333"/></marker></defs>
+    <ellipse cx="90" cy="80" rx="75" ry="52" fill="#2a2633"/><ellipse cx="70" cy="65" rx="40" ry="28" fill="#3a3445"/>
+    ${T.stars.map((s, i) => { const [teff, r] = tm[s.mass]; const x = SX[i], y = SY; const ang = Math.atan2(y - 80, x - 168); const ex = x - Math.cos(ang) * (r + 5), ey = y - Math.sin(ang) * (r + 5);
+      return `<path d="M168 80 Q ${(168 + ex) / 2} ${80 + (i - 1) * 34} ${ex.toFixed(1)} ${ey.toFixed(1)}" fill="none" stroke="#333" stroke-width="2" marker-end="url(#ar)"/>` + starSVG(teff, r, x, y, s.mass === "1") + `<text x="${x}" y="${y + 52}" font-size="15" font-weight="700" text-anchor="middle" fill="#111">${s.label} <tspan font-weight="500">${esc(s.note)}</tspan></text>`; }).join("")}</svg>`;
   const notches = Array.from({ length: LOGCLOCK.y1 - LOGCLOCK.y0 + 1 }, (_, i) => i);
-  const bars = T.stars.map((s, i) => `<g transform="translate(40 ${20 + i * 34})"><text x="-24" y="15" font-size="14" font-weight="700" fill="#111">${s.label}</text><rect x="0" y="2" width="520" height="18" fill="#fff" stroke="#333"/>${notches.map((n) => `<line x1="${520 * n / (notches.length - 1)}" y1="0" x2="${520 * n / (notches.length - 1)}" y2="22" stroke="#666"/>`).join("")}</g>`).join("");
-  const clock = `<svg viewBox="0 0 600 140" role="img" aria-label="Three empty bars on a log clock">${bars}<text x="40" y="128" font-size="11" fill="#444">each notch is 10 times longer</text></svg>`;
-  const hr = `<svg viewBox="0 0 300 200" role="img" aria-label="A mini H-R diagram"><rect x="40" y="10" width="240" height="160" fill="#fff" stroke="#333"/><text x="40" y="188" font-size="11" fill="#444">Hotter</text><text x="280" y="188" font-size="11" text-anchor="end" fill="#444">Cooler</text><text x="14" y="90" font-size="11" fill="#444" transform="rotate(-90 14 90)" text-anchor="middle">Brighter</text>${["A", "B", "C"].map((l, i) => `<text x="${58 + i * 46}" y="30" font-size="12" fill="#111">${l}: X</text>`).join("")}</svg>`;
-  const ends = `<svg viewBox="0 0 640 130" role="img" aria-label="Three endings in mixed order"><g transform="translate(40 20)"><circle cx="70" cy="45" r="30" fill="#ffb46b" opacity="0.3"/><circle cx="70" cy="45" r="16" fill="#fff6e8" stroke="#333"/>${[0, 1, 2, 3, 4, 5].map((k) => `<path d="M70 45 L${70 + 44 * Math.cos(k * 1.05)} ${45 + 40 * Math.sin(k * 1.05)}" stroke="#d58a3a" stroke-width="3"/>`).join("")}<circle cx="70" cy="45" r="38" fill="none" stroke="#c05a5a" stroke-dasharray="4 3"/><circle cx="70" cy="45" r="46" fill="none" stroke="#3aa08a" stroke-dasharray="4 3"/></g>
-    <g transform="translate(250 20)"><circle cx="40" cy="45" r="12" fill="#f4f7ff" stroke="#333"/><circle cx="90" cy="45" r="12" fill="#3a78c8" stroke="#333"/><text x="90" y="80" font-size="11" text-anchor="middle" fill="#444">Earth</text></g>
-    <g transform="translate(450 20)">${[0, 1, 2, 3, 4, 5, 6].map((k) => `<rect x="${k * 18}" y="${70 - (20 + (k * 37) % 40)}" width="14" height="${20 + (k * 37) % 40}" fill="#556"/>`).join("")}<circle cx="64" cy="10" r="9" fill="#eef4ff" stroke="#333"/></g></svg>`;
+  const bars = T.stars.map((s, i) => `<g transform="translate(40 ${14 + i * 34})"><text x="-26" y="16" font-size="14" font-weight="700" fill="#111">${s.label}</text><rect x="0" y="2" width="520" height="18" fill="#fff" stroke="#333"/>${notches.map((n) => `<line x1="${520 * n / (notches.length - 1)}" y1="0" x2="${520 * n / (notches.length - 1)}" y2="22" stroke="#666"/>`).join("")}</g>`).join("");
+  const clock = `<svg viewBox="0 0 600 150" role="img" aria-label="Three empty bars on a log clock from 100,000 years to 10 trillion years">${bars}<text x="40" y="126" font-size="12" fill="#222">100,000 years</text><text x="560" y="126" font-size="12" text-anchor="end" fill="#222">10 trillion years</text><text x="300" y="144" font-size="12" text-anchor="middle" fill="#444">each notch is 10 times longer</text></svg>`;
+  const hr = `<p class="hrkey">Mark an X for A, B and C.</p><svg viewBox="0 0 300 200" role="img" aria-label="An empty mini H-R diagram"><rect x="40" y="10" width="240" height="160" fill="#fff" stroke="#333"/><text x="40" y="188" font-size="11" fill="#444">Hotter</text><text x="280" y="188" font-size="11" text-anchor="end" fill="#444">Cooler</text><text x="14" y="90" font-size="11" fill="#444" transform="rotate(-90 14 90)" text-anchor="middle">Brighter</text></svg>`;
+  // the stars are repeated beside the endings, so the matching lines stay in one picture
+  const left = T.stars.map((s, i) => { const [teff, r] = tm[s.mass]; const y = 40 + i * 70; const rr = Math.min(r, 20); return starSVG(teff, rr, 60, y, false) + `<text x="${96}" y="${y + 5}" font-size="14" font-weight="700" fill="#111">${s.label} <tspan font-weight="500">${esc(s.note)}</tspan></text>`; }).join("");
+  const burst = `<g transform="translate(430 0)"><circle cx="70" cy="45" r="30" fill="#ffb46b" opacity="0.3"/><circle cx="70" cy="45" r="16" fill="#fff6e8" stroke="#333"/>${[0, 1, 2, 3, 4, 5].map((k) => `<path d="M70 45 L${(70 + 40 * Math.cos(k * 1.05)).toFixed(1)} ${(45 + 34 * Math.sin(k * 1.05)).toFixed(1)}" stroke="#d58a3a" stroke-width="3"/>`).join("")}<circle cx="70" cy="45" r="34" fill="none" stroke="#c05a5a" stroke-dasharray="4 3"/></g>`;
+  const wd = `<g transform="translate(450 90)"><circle cx="30" cy="30" r="12" fill="#f4f7ff" stroke="#333"/><circle cx="76" cy="30" r="12" fill="#3a78c8" stroke="#333"/><text x="76" y="58" font-size="11" text-anchor="middle" fill="#444">Earth</text></g>`;
+  const city = `<g transform="translate(450 160)">${[0, 1, 2, 3, 4, 5, 6].map((k) => `<rect x="${k * 16}" y="${50 - (14 + (k * 37) % 30)}" width="12" height="${14 + (k * 37) % 30}" fill="#556"/>`).join("")}<circle cx="56" cy="8" r="8" fill="#eef4ff" stroke="#333"/></g>`;
+  const ends = `<svg viewBox="0 0 640 220" role="img" aria-label="Stars A, B and C on the left, three endings in mixed order on the right">${left}${burst}${wd}${city}${[45, 120, 190].map((y) => `<circle cx="420" cy="${y}" r="4" fill="#333"/>`).join("")}${[40, 110, 180].map((y) => `<circle cx="210" cy="${y}" r="4" fill="#333"/>`).join("")}</svg>`;
   return `<div class="sl-sheet-in ticket"><header><h2>${esc(T.title)}</h2><div class="sheet-btns"><button type="button" class="sl-btn" data-act="print">Print</button><button type="button" class="sl-btn" data-act="hub">Close</button></div></header>
     <p class="nameline">Name ______________________</p>
-    <section><h3>1</h3>${top}<p class="keys">A small orange dot (0.2 Suns), B white star with a tiny "Sun" sticker (1 Sun), C large blue-white star (15 Suns)</p></section>
+    <section><h3>1</h3>${top}</section>
     <section><h3>2</h3><p>${esc(T.clock)}</p>${clock}<p>${esc(T.hr)}</p>${hr}</section>
     <section><h3>3</h3><p>${esc(T.ends)}</p>${ends}</section>
     <section><h3>4</h3><p class="bigline">${esc(T.line)} ______________________________</p><p class="bank">Word bank: ${T.bank.map((b) => `<span>${esc(b)}</span>`).join("")}</p></section>
     <section class="confusing"><h3>5</h3><p>${esc(T.last)}</p><div class="box"></div></section>
-    <p class="note">Pictures are a draft for Leo to finish.</p></div>`;
+    <p class="note noprint">Pictures are a draft for Leo to finish.</p></div>`;
 }
 if (sheetEl) {
   const onCard = (e) => { const el = e.target.closest && e.target.closest("[data-card]"); if (!el || !flow) return; const id = el.dataset.card;
@@ -228,6 +240,7 @@ addEventListener("keydown", (e) => { if (!flow || (e.target && /^(INPUT|TEXTAREA
 
 function act(id) {
   if (!flow) return; const st = flow.st; const [k, a, b] = id.split(":"); const rest = id.slice(id.indexOf(":") + 1);
+  if (k === "readAloud") { const p = document.querySelector("#slCaption p"); if (p && window.speechSynthesis) { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(p.textContent)); } return; }
   if (k === "mass") flow.pickMass(a);
   else if (k === "end") flow.answerHub(rest);
   else if (k === "pinUndo") flow.undoPin();
@@ -328,9 +341,41 @@ const xin = new XRInput(THREE, renderer, scene, {
 function hrPointFromRay(r) { panel.ray.set(r.origin, r.dir); const h = panel.ray.intersectObject(panel.mesh, false)[0]; if (!h) return null; const x = h.uv.x * 1024 - 20, y = (1 - h.uv.y) * 1400 - 20; const rect = plotRect(panel.hr.width, panel.hr.height, 2.1); if (x < rect.x || x > rect.x + rect.w || y < rect.y || y > rect.y + rect.h) return null; return fromXY(VIEWS.normal, rect, x, y); }
 function xrPickOrb(r) { let best = null, bd = 1e9; for (const [m, o] of Object.entries(hubOrbs)) { const p = o.grp.getWorldPosition(new THREE.Vector3()); const d = new THREE.Ray(r.origin, r.dir).distanceToPoint(p); if (d < o.R * 1.6 * world.scale.x && d < bd) { bd = d; best = m; } } if (best) act("mass:" + best); }
 
+function sceneRegion(sc) {
+  const want = sc && sc.centered !== false && !layout.phone && layout.card && layout.panel && !document.body.classList.contains("sl-has-sheet");
+  let off = layout.off0 || [0, 0], region = null;
+  if (want) { const x0 = layout.card.right + 16, x1 = layout.panel.left - 16; const cx = (x0 + x1) / 2, cy = layout.h * 0.47; region = { cx, cy, maxR: Math.max(80, Math.min((x1 - x0) / 2 - 8, layout.h * 0.40)) }; off = [layout.w / 2 - cx, layout.h / 2 - cy]; }
+  const k = off.join(","); if (k !== layout.offKey) { layout.offKey = k; camera.setViewOffset(layout.w, layout.h, off[0], off[1], layout.w, layout.h); camera.updateProjectionMatrix(); }
+  return region;
+}
+// ---------------- 3D labels: never smaller than 18 pt (24 px) on desktop, 18 px on phone, 56 px in the headset ----------------
+const lp = new THREE.Vector3(), cp = new THREE.Vector3(), ps = new THREE.Vector3();
+const LABEL_EM = 76 / 256;   // the main line's font size as a share of the label sprite's height
+function sizeLabels(cam, xr) {
+  let vpH = layout.h, minPx = layout.phone ? 18 : 24, tanH = Math.tan(camera.fov * Math.PI / 360);
+  if (xr) { const sub = cam.cameras && cam.cameras[0]; if (sub) { vpH = sub.viewport ? sub.viewport.w : 1800; tanH = 1 / sub.projectionMatrix.elements[5]; } minPx = 56; }
+  if (!xr) camera.updateMatrixWorld(); cam.getWorldPosition(cp); cam.getWorldQuaternion(lq);
+  // on screen, a label plate is kept inside the free view: below the top bar, left of the side panel, clear of the H-R card
+  const xMax = !xr && !layout.phone && layout.panel ? layout.panel.left - 10 : layout.w - 8, yMin = 62, card = !xr ? layout.card : null;
+  scene.traverseVisible((o) => { const d = o.userData; if (!o.isSprite || !d.label || !d.base) return;
+    o.getWorldPosition(lp); o.parent.getWorldScale(ps); const dist = Math.max(1e-6, lp.distanceTo(cp));
+    const ppw = vpH / (2 * dist * tanH); const px = d.base[1] * ps.y * LABEL_EM * ppw; const k = px > 0 ? Math.max(1, minPx / px) : 1;
+    d.k = k; o.scale.set(d.base[0] * k, d.base[1] * k, 1);
+    if (xr || !d.clamp) return;
+    sp2.copy(lp).project(camera); const sx = (sp2.x + 1) / 2 * layout.w, sy = (1 - sp2.y) / 2 * layout.h; if (sp2.z > 1) return;
+    const W = o.scale.x * ps.x * ppw, H = o.scale.y * ps.y * ppw, cx = o.center.x;
+    const L = sx + (d.x0 - cx) * W, Rr = sx + (d.x1 - cx) * W, hh = H * (d.ph || 0.6) / 2, top = sy - hh, bot = sy + hh;
+    let dx = 0, dy = 0; if (Rr > xMax) dx = xMax - Rr; if (L + dx < 18) dx = 18 - L; if (top < yMin) dy = yMin - top;
+    if (card && L + dx < card.right + 8 && bot + dy > card.top - 8) { const up = card.top - 8 - bot; const right = card.right + 8 - (L + dx); if (-up < right) dy = up; else dx += right; }
+    if (!dx && !dy) return;
+    const shift = new THREE.Vector3(dx / ppw, -dy / ppw, 0).applyQuaternion(lq); o.parent.getWorldQuaternion(wq2).invert(); shift.applyQuaternion(wq2).divide(ps);
+    o.position.add(shift); if (d.line) { d.line.setXYZ(1, o.position.x, o.position.y, o.position.z); d.line.needsUpdate = true; } });
+}
+const sp2 = new THREE.Vector3(), lq = new THREE.Quaternion(), wq2 = new THREE.Quaternion();
+
 // ---------------- frame loop ----------------
 const tmp = new THREE.Vector3(), camLocal = new THREE.Vector3(), qW = new THREE.Quaternion(), qL = new THREE.Quaternion(), wq = new THREE.Quaternion();
-let prev = 0, clock = 0, flowT = 0, boilT = 0;
+let prev = 0, clock = 0, flowT = 0, boilT = 0, viewHalfH = 20;
 const stats = { frames: 0, acc: 0, fps: 0, ms: 0, cpu: 0, cpuAcc: 0, samples: [] };
 function frame(now) {
   const dt = (prev && !manual) ? Math.min(0.1, (now - prev) / 1000) : (manual ? manualDt : 0); prev = now; clock += dt;
@@ -349,7 +394,12 @@ function frame(now) {
     const dist = sc ? sc.camDist : 80; world.scale.setScalar(1.9 / dist); world.position.copy(xrPlace.pos); world.rotation.set(0, xrPlace.yaw || 0, 0);
   } else {
     const fit = layout.phone ? Math.max(1.15, 0.95 / Math.max(0.3, camera.aspect)) : camera.aspect < 1.2 ? 1.2 : 1;   // portrait: fit the scene across the narrow width
-    const dist = (sc ? sc.camDist : 80) * view.zoom * fit; const cp = Math.cos(view.pitch);
+    // style B framing: scenes with a fit (radius in world units and its share of the frame height in Leo's 1080 px frames)
+    // are sized to match, centred in the free area right of the H-R card so nothing sits under it (desktop)
+    const region = sceneRegion(sc); let dist = (sc ? sc.camDist : 80) * view.zoom * fit;
+    if (sc && sc.fit) { const f = sc.fit(); const tanH = Math.tan(camera.fov * Math.PI / 360); let frac = f.frac; if (region) frac = Math.min(frac, region.maxR / layout.h); if (layout.phone) frac = Math.min(frac, 0.42 * layout.w / layout.h); dist = f.r / (2 * tanH * frac) * view.zoom; }
+    viewHalfH = dist * Math.tan(camera.fov * Math.PI / 360) * (region ? Math.min(1, 2 * region.maxR / layout.h + 0.1) : 1);
+    const cp = Math.cos(view.pitch);
     camera.position.set(Math.sin(view.yaw) * cp, Math.sin(view.pitch), Math.cos(view.yaw) * cp).multiplyScalar(dist); camera.lookAt(0, 0, 0);
   }
   const cam = presenting ? renderer.xr.getCamera() : camera;
@@ -358,9 +408,9 @@ function frame(now) {
   uni.uCamLocal.value.copy(camLocal); uni.uCosElev.value = Math.max(0.25, Math.hypot(camLocal.x, camLocal.z) / (camLocal.length() || 1));
   bg.root.position.copy(camLocal);   // the sky stays at infinity
   const extra = {};
-  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt, camLocal, camQuatLocal: qL, extra });
+  if (sc) sc.update({ v, st: flow.st, help: flow.st.help, calm, now: performance.now(), time: clock, dt, camLocal, camQuatLocal: qL, extra, halfH: presenting ? (sc ? sc.camDist * 0.45 : 20) : viewHalfH });
   else for (const [m, o] of Object.entries(hubOrbs)) { o.grp.scale.setScalar(flow.st.mass === m ? 1.18 : 1); o.l.quaternion.copy(qL); }
-  hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? "Pick two masses" : "Pick a starting mass");
+  hubTitle.quaternion.copy(qL); scenes.setLabel(hubTitle, flow.st.screen === "compare" ? (flow.cmp.c.step === "setup" ? "Pick two masses" : "") : flow.st.hubStep === "pins" ? "Place your pins" : "Pick a starting mass");
   // scale bar and zoom labels (labelled zoom changes, never a fake scale)
   const km = sc && sc.kmPerUnit ? sc.kmPerUnit() : null;
   // lastKm is the scale of the last label (or of the scene's start), so slow drifts add up and small steps never label
@@ -369,6 +419,7 @@ function frame(now) {
   const bar = km ? scaleBar(km, (sc.radius || 10) * 0.8) : null; sbar.visible = !!bar && !(sc && (sc.kind === "twopaths"));
   if (bar) { sbarBody.scale.set(bar.units, Math.max(0.6, (sc.radius || 10) * 0.05), 1); scenes.setLabel(sbarLab, bar.label); sbar.quaternion.copy(qL); sbar.position.copy(new THREE.Vector3(0, -((sc.radius || 10) * 1.3 + 4), 0).applyQuaternion(qL)); sbarLab.position.set(0, -1.6, 0); }
   if (transient.zoom && clock > transient.zoomUntil) { transient.zoom = null; uiDirty = true; }
+  sizeLabels(cam, presenting);
   if (transient.skip && clock > transient.skipUntil) { transient.skip = null; uiDirty = true; }
   // UI
   if (flow.st.phase === "play" || uiDirty || cmpRunning()) {

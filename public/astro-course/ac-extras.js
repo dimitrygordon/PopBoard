@@ -30,7 +30,8 @@ export const MODULES = {
   "quantum": { file: "study-quantum.html", name: "Quantum", blurb: "Light and matter in packets: photons and energy levels." },
   "fourth-dimension": { file: "study-fourth-dimension.html", name: "Beyond 3D", blurb: "Build a line, a square, a cube, and a tesseract, then turn the tesseract's shadow." },
   "periodic-table-studio": { file: "study-periodic-table-studio.html", name: "Periodic Table", blurb: "Open any element and read its mass, configuration, and isotopes." },
-  "waves": { file: "study-waves.html", name: "Waves", blurb: "Match wavelength and frequency, then watch a moving source bunch the waves." }
+  "waves": { file: "study-waves.html", name: "Waves", blurb: "Match wavelength and frequency, then watch a moving source bunch the waves." },
+  "stellar-life": { file: "study-stellar-life.html", name: "Stellar Life Cycle VR", blurb: "Run a star of 0.2 to 40 Suns from cloud to remnant on the H-R diagram, then compare two masses." }
 };
 
 // A page can link one module, or several. Order is the order of the cards.
@@ -74,7 +75,7 @@ export const EXTRAS = {
   d14: { tryIt: { 7: "stars", 8: "atom-builder", 15: "em-spectrum" } },
   d15: { tryIt: { 3: "em-spectrum", 4: "waves", 5: "spectra", 7: ["spectra", { id: "waves", caption: "Hear the Doppler effect with sound waves. Light shifts the same way, but it needs no air, and for stars we use Doppler shift: (change in wavelength) / (wavelength) = (speed) / (speed of light)." }], 10: "optics", 13: "spaceships", 16: "luminosity", 20: "hrdiagram", 21: "hrdiagram" } },
   d16: { tryIt: { 7: "stars", 13: "stars" } },
-  d17: { tryIt: { 3: "stars", 6: "stars", 19: "black-hole", 21: ["black-hole", "periodic-table-studio"] } },
+  d17: { tryIt: { 3: ["stellar-life", "stars"], 4: "stellar-life", 6: "stars", 11: "stellar-life", 19: "black-hole", 21: ["black-hole", "periodic-table-studio"], 23: "stellar-life" } },
   "d17-5": { tryIt: { 13: "spaceships", 17: "orbits", 18: "kepler" } },
   d18: { tryIt: { 9: "black-hole", 10: "black-hole" } },
   d19: { tryIt: { 4: "spectra", 9: "powers-of-ten", 14: "em-spectrum" } },

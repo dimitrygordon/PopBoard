@@ -13,7 +13,7 @@ const sup = (n) => String(n).split("").map((c) => SUP[c]).join("");
 const css = (c, a = 1) => `rgba(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)},${a})`;
 const tcol = (logT, a = 1) => css(temperatureToSRGB(Math.pow(10, logT)), a);
 
-export function plotRect(W, H, s) { const padL = (W / s < 300 ? 44 : 70) * s, padR = 22 * s, padT = 46 * s, padB = 64 * s; return { x: padL, y: padT, w: W - padL - padR, h: H - padT - padB }; }
+export function plotRect(W, H, s) { const padL = (W / s < 300 ? 44 : 70) * s, padR = 22 * s, padT = 60 * s, padB = 64 * s; return { x: padL, y: padT, w: W - padL - padR, h: H - padT - padB }; }
 export function toXY(view, rect, logT, logL) { return [rect.x + (view.tL - logT) / (view.tL - view.tR) * rect.w, rect.y + (view.lT - logL) / (view.lT - view.lB) * rect.h]; }
 export function fromXY(view, rect, x, y) { return { logT: view.tL - (x - rect.x) / rect.w * (view.tL - view.tR), logL: view.lT - (y - rect.y) / rect.h * (view.lT - view.lB) }; }
 
@@ -60,7 +60,7 @@ export function drawHR(g, W, H, m, s = 1) {
     const [x, y] = toXY(view, rect, p.logT, p.logL);
     g.save(); g.strokeStyle = "#A48CFF"; g.fillStyle = "rgba(164,140,255,0.25)"; g.lineWidth = 2 * s; g.beginPath(); g.arc(x, y, 9 * s, 0, Math.PI * 2); g.fill(); g.stroke();
     g.fillStyle = "#fff"; g.font = fs(11, 700); g.textAlign = "center"; g.fillText(String(p.n), x, y + 4 * s); g.textAlign = "left";
-    g.fillStyle = "#C9BDFF"; g.font = fs(10.5, 600); g.fillText(p.label, x + 12 * s, y - 8 * s); g.restore();
+    g.restore();
   }
   // live trail
   for (const seg of m.trail || []) polyline(g, view, rect, seg.pts, { dashed: !!seg.dashed, width: 4 * s, glow: 8 * s, color: seg.neutral ? "#D6DEF0" : null, alpha: seg.dashed ? 0.9 : 1 });
@@ -93,6 +93,17 @@ export function drawHR(g, W, H, m, s = 1) {
     g.strokeStyle = "rgba(255,255,255,0.2)"; g.lineWidth = 1 * s; g.stroke(); g.fillStyle = "#fff"; g.fillText(msg, bx + 10 * s, by + 19 * s);
   }
   g.restore();
+  // pin key in the header, outside the plot (so it never covers the Sun dot or clips at the right edge)
+  if ((m.pins || []).length) {
+    g.save(); let px = 11; const items = m.pins.map((p) => [String(p.n), p.label]); const avail = W - 36 * s;
+    const width = (f) => { g.font = fs(f, 600); return items.reduce((a, [, l]) => a + 22 * s + g.measureText(l).width + 12 * s, 0); };
+    while (px > 9 && width(px) > avail) px -= 0.5;
+    let x = 18 * s; const y = 47 * s; g.textBaseline = "middle";
+    for (const [n, l] of items) { g.strokeStyle = "#A48CFF"; g.fillStyle = "rgba(164,140,255,0.25)"; g.lineWidth = 1.5 * s; g.beginPath(); g.arc(x + 8 * s, y, 8 * s, 0, Math.PI * 2); g.fill(); g.stroke();
+      g.fillStyle = "#fff"; g.font = fs(10, 700); g.textAlign = "center"; g.fillText(n, x + 8 * s, y + 0.5 * s); g.textAlign = "left";
+      g.fillStyle = "#C9BDFF"; g.font = fs(px, 600); g.fillText(l, x + 20 * s, y + 0.5 * s); x += 22 * s + g.measureText(l).width + 12 * s; }
+    g.restore(); g.textBaseline = "alphabetic";
+  }
   // colour strip under the axis (temperatureToSRGB)
   const sy = rect.y + rect.h + 4 * s; for (let i = 0; i < rect.w; i += 2) { const lt = view.tL - i / rect.w * (view.tL - view.tR); g.fillStyle = tcol(lt); g.fillRect(rect.x + i, sy, 2.2, 7 * s); }
   g.strokeStyle = "rgba(255,255,255,0.35)"; g.lineWidth = 1.5 * s; g.strokeRect(rect.x, rect.y, rect.w, rect.h);

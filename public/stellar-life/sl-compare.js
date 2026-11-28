@@ -21,8 +21,9 @@ export const END_WORDS = ["white dwarf", "neutron star", "black hole"];
 
 // ---------------- Tier 1: two choices instead of three (section 8) ----------------
 /** Keep the model's answer and the first other choice, in their original order. With no known answer, keep the first two. */
-export function tierChoices(choices, answer, tier) {
+export function tierChoices(choices, answer, tier, keep = null) {
   if (tier !== 1 || !choices || choices.length <= 2) return choices;
+  if (keep) return choices.filter((c) => keep.includes(c) || c === answer);   // a question that names its own Tier 1 pair (COMPARE white dwarf: both, neither); the answer always stays
   const ai = answer != null ? choices.indexOf(answer) : -1; if (ai < 0) return choices.slice(0, 2);
   const other = choices.findIndex((c, i) => i !== ai); return choices.filter((c, i) => i === ai || i === other);
 }
@@ -73,7 +74,7 @@ export function createCompare(tracks) {
     return [
       { id: "longer", q: "Which one will live longer?", choices: [L(a), L(b)], answer: L(longer) },
       { id: "bluer", q: "Which will be bluer?", choices: [L(a), L(b)], answer: L(bluer) },
-      { id: "wd", q: "Which ends in a white dwarf?", choices: [L(a), L(b), "both", "neither"], answer: wdA && wdB ? "both" : wdA ? L(a) : wdB ? L(b) : "neither" },
+      { id: "wd", q: "Which ends in a white dwarf?", choices: [L(a), L(b), "both", "neither"], tier1: ["both", "neither"], answer: wdA && wdB ? "both" : wdA ? L(a) : wdB ? L(b) : "neither" },
     ];
   };
   api.pending = () => api.questions().find((q) => c.picks[q.id] == null) || null;
@@ -83,7 +84,8 @@ export function createCompare(tracks) {
   /** Each star on its own clock: its own EEP from ZAMS to the end of its fusing life. */
   // the main sequence takes the first 60 percent of the run (it is about 90 percent of fusing life), the rest the later stages
   api.starAt = (m, t = c.t) => { const tr = tracks[m]; const e0 = tr.zams.eep, e1 = compareEnd(tr), em = Math.min(e1, tr.msEnd.eep); const e = t < 0.6 ? e0 + (em - e0) * (t / 0.6) : em + (e1 - em) * ((t - 0.6) / 0.4); const row = atEEP(tr, e); return { m, row, age: row.age, life: tr.tMS, color: colorWord(Math.pow(10, msMid(tr).logT)), end: endState(m) }; };
-  api.readOff = () => api.sorted().map((m) => { const s = api.starAt(m, 1); return { mass: m, label: MASS_LABEL[m], life: `about ${fmtYears(s.life)}`, color: s.color, end: s.end }; });
+  // two rows per star (spec v1.4): the main sequence and the end of fusion, both from MIST; the clock runs to the second
+  api.readOff = () => api.sorted().map((m) => { const s = api.starAt(m, 1); return { mass: m, label: MASS_LABEL[m], life: `about ${lifeYears(s.life)}`, fusionEnd: `about ${fmtYears(s.age)}`, color: s.color, end: s.end }; });
   api.reset = () => { c.step = "setup"; c.pair = []; c.picks = {}; c.t = 0; };
   return api;
 }
@@ -91,8 +93,16 @@ export function createCompare(tracks) {
 export const LOGCLOCK = { y0: 5, y1: 13, ticks: [{ y: 4.6e9, label: "Sun today: 4.6 billion years" }, { y: 13.8e9, label: "universe: 13.8 billion years" }] };
 export const logPos = (years) => Math.max(0, Math.min(1, (Math.log10(Math.max(1, years)) - LOGCLOCK.y0) / (LOGCLOCK.y1 - LOGCLOCK.y0)));
 
+/** Main-sequence time rounded the way the stage captions round it: one significant figure when that is within 15 percent
+ * (about 1 trillion, 10 billion, 400 million, 5 million years), otherwise two (about 13 million years). */
+export function lifeYears(y) {
+  const unit = y >= 1e12 ? [1e12, "trillion years"] : y >= 1e9 ? [1e9, "billion years"] : y >= 1e6 ? [1e6, "million years"] : null;
+  if (!unit) return fmtYears(y); const v = y / unit[0]; const r1 = +about(v, 1).replace(/,/g, "");
+  return `${Math.abs(r1 / v - 1) <= 0.15 ? about(v, 1) : about(v, 2)} ${unit[1]}`;
+}
+
 // ---------------- the Mass Card (section 3.9; completion rule T9, the same function for every tier) ----------------
-export function lifeChoices(tracks) { return MASSES.map((m) => `about ${fmtYears(tracks[m].tMS)}`); }
+export function lifeChoices(tracks) { return MASSES.map((m) => `about ${lifeYears(tracks[m].tMS)}`); }
 export function newCard() { const rows = {}; for (const m of MASSES) rows[m] = { life: "", color: "", end: "" }; return { rows, decides: "", because: "", frame: ["", "", ""] }; }
 export const rowFilled = (r) => !!(r && r.life && r.color && r.end);
 /** Complete when the 1, 15 and 40 rows plus a third mass (0.2 or 3) are filled and both blanks of "Mass decides ___ because ___" are filled. */
@@ -112,7 +122,7 @@ export function sentenceText(card, tier = 2) {
 // Tier 1 word choices for the first two blanks of the frame (they may also type their own)
 export const FRAME_WORDS = [["bigger", "smaller"], ["shorter", "longer"]];
 /** The model values for a row, for the reveal after the student fills it (never marked wrong). */
-export function modelRow(tracks, m) { return { life: `about ${fmtYears(tracks[m].tMS)}`, color: colorWord(Math.pow(10, msMid(tracks[m]).logT)), end: endState(m) }; }
+export function modelRow(tracks, m) { return { life: `about ${lifeYears(tracks[m].tMS)}`, color: colorWord(Math.pow(10, msMid(tracks[m]).logT)), end: endState(m) }; }
 
 // ---------------- exit ticket (section 7, verbatim) ----------------
 export const TICKET = {
