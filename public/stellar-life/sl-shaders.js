@@ -139,9 +139,60 @@ void main(){
   gl_Position = projectionMatrix * vp;
   vColor = vec4(col, al); vUV = vec4(aUvK.x, aUvK.y, seed, aParam.z);
 }`;
+// round 7: the painted red supergiant (frame 3a). One ShaderMaterial; strokes are dealt, aimed and coloured live (see buildRSG).
+export const rsgVert = /* glsl */`
+attribute vec3 aTan; attribute vec3 aUvK; attribute vec4 aA; attribute vec4 aColor; attribute vec4 aParam;
+uniform float uFlowT; uniform float uBoilT; uniform float uBoil; uniform float uBoilGain; uniform float uAlpha; uniform float uTeff; uniform float uExposure;
+uniform vec3 uCamO; uniform vec4 uCell[12]; uniform vec2 uCellH[12];
+varying vec4 vColor; varying vec4 vUV; varying float vRho;
+${HASH}
+${SRGB}
+${LUT}
+void main(){
+  const float TAU = 6.2831853; float side = aA.x, width = aA.y, seed = aA.w, t = aUvK.y, li = aParam.x;
+  // deal: a fresh spot every LIFE s, crossfaded. Spots are even over the visible disc (the way frame 3a was painted), so no strokes are wasted on the far side
+  float life = 5.0 + 3.0 * h11(seed * 0.37); float ag = uFlowT / life + h11(seed * 0.71); float cyc = floor(ag), age = fract(ag);
+  float fade = smoothstep(0.0, 0.2, age) * smoothstep(1.0, 0.8, age);
+  vec3 z = normalize(uCamO); vec3 e1 = normalize(cross(abs(z.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), z)); vec3 e2 = cross(z, e1);
+  float rr = 1.02 * sqrt(h11(seed + cyc * 7.13)), an = TAU * h11(seed * 1.31 + cyc * 3.77); vec3 c;
+  if (li > 1.5) {   /* hot strokes spawn inside a live cell's core */
+    vec4 ce = uCell[0]; float bh = -1.0; for (int i = 0; i < 12; i++) { float sc2 = uCellH[i].x * (0.5 + 0.5 * dot(uCell[i].xyz, z)) * h11(seed + cyc * 5.1 + float(i) * 1.7); if (sc2 > bh) { bh = sc2; ce = uCell[i]; } }   /* a hot, visible cell, picked at random */
+    vec3 f1 = normalize(cross(abs(ce.y) < 0.95 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0), ce.xyz)), f2 = cross(ce.xyz, f1);
+    float ra = ce.w * 0.6 * sqrt(h11(seed + cyc * 2.3)); c = normalize(ce.xyz + ra * (cos(an) * f1 + sin(an) * f2));
+  } else { float rq = min(rr, 0.999); c = rq * cos(an) * e1 + rq * sin(an) * e2 + sqrt(1.0 - rq * rq) * z; }
+  // live convection at the spot
+  float heat = 0.0, best = 99.0; vec3 cd = vec3(0.0, 1.0, 0.0); float sg = 1.0, cang = 1.0;
+  for (int i = 0; i < 12; i++) { vec3 d = uCell[i].xyz; float a = acos(clamp(dot(d, c), -1.0, 1.0)); float hh = uCellH[i].x;
+    heat = max(heat, hh * exp(-2.0 * (a / uCell[i].w) * (a / uCell[i].w)));
+    float wd = a / (uCell[i].w * (0.35 + 0.65 * hh)); if (wd < best) { best = wd; cd = d; sg = uCellH[i].y; cang = a; } }
+  vec3 o = c - cd * dot(c, cd); float ol = length(o); o = ol > 1e-4 ? o / ol : e1;
+  vec3 sw = cross(cd, c); float swl = length(sw); sw = swl > 1e-4 ? sw / swl * sg : e2;
+  vec3 td = normalize(0.9 * sw + 0.43 * o);   /* swirl plus 0.45 rad of outward upwelling */
+  float len = aColor.r, s = (t - 0.5) * len, kc = (0.8 + 1.2 * aColor.b) / max(cang + 0.25, 0.3) * 0.9;   /* curl around the cell, tighter near its centre */
+  vec3 p = normalize(c + td * s - o * 0.5 * kc * s * s); vec3 tn = td - o * kc * s;
+  vec4 vp = modelViewMatrix * vec4(p, 1.0); float sc = length(modelViewMatrix[0].xyz);
+  vec3 nrm = normalize(mat3(modelViewMatrix) * p); float mu = dot(nrm, -normalize(vp.xyz)); float mu1 = clamp(mu, 0.0, 1.0);
+  // colour: temperatureToSRGB(Teff + dT) x brightness, equal bleed. dT: cell heat (frame: +/-500 K) and a cooler limb (-600 K)
+  float jit = aColor.g - 0.5; float dT = 1250.0 * (heat - 0.2) + 200.0 + (li > 1.5 ? 40.0 : 0.0) - 1200.0 * (1.0 - pow(mu1, 0.8)) + 160.0 * jit;
+  float br = (0.36 + 0.6 * pow(mu1, 0.7)) * (1.0 + 0.1 * mu1 * mu1) * (0.88 + 0.24 * jit) * (0.84 + 0.46 * heat) * (li < 0.5 ? 0.93 : 1.0);
+  vec3 cg = bleed(tlin(uTeff + dT) * br * uExposure);
+  float al = min(1.0, aColor.a * 1.25) * fade * uAlpha * smoothstep(-0.03, 0.1, mu) * (li > 1.5 ? 1.0 : 0.5 + 0.5 * smoothstep(0.0, 0.35, heat));   /* thinner paint between cells: dark lanes */
+  vec3 tv = normalize(mat3(modelViewMatrix) * tn); vec3 sd = cross(tv, normalize(vp.xyz)); float sl = length(sd); sd = sl > 1e-4 ? sd / sl : vec3(1.0, 0.0, 0.0);
+  float u = mod(floor(uBoilT * 8.0), 32.0) / 32.0; float A = uBoil * aParam.y;
+  vec4 hs = vec4(h21(vec2(seed, 1.0)), h21(vec2(seed, 2.0)), h21(vec2(seed, 3.0)), h21(vec2(seed, 4.0)));
+  vp.xy += A * vec2(sin(TAU * (u * (1.0 + floor(hs.x * 3.0)) + hs.z)), sin(TAU * (u * (1.0 + floor(hs.y * 3.0)) + hs.w))) * uBoilGain * sc;
+  vp.xyz += sd * side * width * 0.5 * sc;
+  // clean limb: the fragment shader cuts at the disc edge (rho 1 = the glow disc's edge, same projection)
+  vec4 cv = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0); vRho = length(vp.xy / -vp.z - cv.xy / -cv.z) / (sc / -cv.z);
+  gl_Position = projectionMatrix * vp;
+  vColor = vec4(enc(cg), al); vUV = vec4(aUvK.x, aUvK.y, seed, aParam.z);
+}`;
 export const strokeFrag = /* glsl */`
 precision highp float;
 varying vec4 vColor; varying vec4 vUV;
+#ifdef CLIPR
+varying float vRho;
+#endif
 ${HASH}
 float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
 void main(){
@@ -160,6 +211,9 @@ void main(){
 #endif
   }
   a *= edge;
+#ifdef CLIPR
+  a *= 1.0 - smoothstep(0.984, 0.997, vRho);   /* crisp painted limb */
+#endif
   if (a < 0.002) discard;
   #ifdef ADDITIVE
   gl_FragColor = vec4(col * a, 1.0);
@@ -202,7 +256,7 @@ void main(){
 export const glowFrag = /* glsl */`
 precision highp float; varying vec2 vC; varying float vBr;
 uniform vec4 uLay[5]; uniform float uRad[5]; uniform float uMaxR; uniform float uTeff; uniform float uDisc; uniform float uExposure; uniform float uAlpha;
-uniform vec3 uPeek; uniform float uPeekOn; uniform float uUseTeff; uniform float uChroma; uniform float uBoilT; uniform float uBoil; uniform float uFlowT;
+uniform vec3 uPeek; uniform float uPeekOn; uniform float uUseTeff; uniform float uChroma; uniform float uBoilT; uniform float uBoil; uniform float uFlowT; uniform vec4 uRing;
 ${SRGB}
 ${LUT}
 ${HASH}
@@ -229,6 +283,7 @@ void main(){
     float edge = smoothstep(uDisc, uDisc * 0.985, d);
     c = mix(c, disc + c * 0.15 * (1.0 - uChroma), edge); a = edge;
   }
+  if (uRing.w > 0.0) { float x = (d - 1.0) / 0.016; c += dec(uRing.rgb) * uRing.w * exp(-x * x) * (x < 0.0 ? 0.6 : 1.0); }   /* thin limb ring (frame 3a), drawn over the strokes' crisp edge */
   c = bleed(c);
   float m = max(c.r, max(c.g, c.b)); if (m < 1e-4 && a < 0.01) discard;
   a = max(a, clamp(m, 0.0, 1.0)) * uAlpha;

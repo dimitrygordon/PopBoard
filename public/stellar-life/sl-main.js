@@ -510,7 +510,7 @@ checkXr(); resize(); boot();
 // ---------------- test hook (headless checks; no effect on students) ----------------
 window.__stellar = {
   THREE_REVISION: THREE.REVISION,
-  get flow() { return flow; }, act, setCalm, view, scenes, uni,
+  get flow() { return flow; }, get camera() { return camera; }, act, setCalm, view, scenes, uni,
   /** Jump straight to a stage (by id) of a mass at fraction t, answering any predictions with the first choice. */
   goto(mass, id, t = 1) {
     flow.toHub(); flow.st.skipFormation = false; flow.pickMass(mass); flow.answerHub("white dwarf"); for (let i = 0; i < 3; i++) flow.addPin({ logT: 3.8, logL: i }); flow.start();
