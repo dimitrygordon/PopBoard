@@ -74,3 +74,12 @@ Placeholder stills in `public/spaceships/stills/` and the 1 m box `public/spaces
 - Formulas from Jean Meeus, *Astronomical Algorithms* (2nd ed., 1998); B-V to temperature from Ballesteros (2012); CIE colour-matching fit from Wyman, Sloan and Shirley (2013). Cited in `public/night-sky/ns-astro.js` and `ns-ephem.js`.
 - **Inter** font (`public/night-sky/ui/fonts/inter-latin-var.woff2`, Latin subset) by The Inter Project Authors, https://github.com/rsms/inter . SIL Open Font License 1.1; full text in `public/night-sky/ui/fonts/OFL-Inter.txt`.
 - Night Sky panel icons (sources in `tools/night-sky/icons-src/*.svg`, packed unchanged into `public/night-sky/ui/icons.json`) are PopBoard originals by Leo.
+
+## Stellar Life Cycle VR (public/stellar-life)
+
+`public/stellar-life/data/tracks.json` holds values derived from two published model sets (resampled and reformatted by `tools/stellar-life/build-data.py`; the raw files are not redistributed):
+
+- MIST v1.2 stellar evolution tracks ([Fe/H] = 0, v/vcrit = 0.4, EEP files; Choi et al. 2016, ApJ 823, 102; Dotter 2016, ApJS 222, 8), from https://waps.cfa.harvard.edu/MIST/. Credited in the module's Sources and credits panel.
+- White dwarf cooling sequences of Bédard, Bergeron, Brassard and Fontaine 2020 (ApJ 901, 93), thick hydrogen models seq_020_thick, seq_055_thick and seq_065_thick, from the Montreal White Dwarf Database (https://www.astro.umontreal.ca/~bergeron/CoolingModels/). Used with acknowledgement as the authors ask; only derived values ship.
+
+The late fuel stage times on the core cutaway cards quote Woosley, Heger and Weaver 2002 (Reviews of Modern Physics 74, 1015). The painted-stroke shaders are PopBoard's own (ported from the painted-stroke tech test). The page reuses Night Sky's Inter font and `temperatureToSRGB` colour function.

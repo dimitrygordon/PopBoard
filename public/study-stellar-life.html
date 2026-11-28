@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="shared/layout/layout.css">
+<script type="module" src="shared/layout/layout.js"></script>
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#050A1E">
+<title>Stellar Life Cycle VR // PopBoard</title>
+<link rel="icon" type="image/png" href="popboard-logo.png">
+<link rel="preload" as="font" type="font/woff2" href="night-sky/ui/fonts/inter-latin-var.woff2" crossorigin>
+<link rel="stylesheet" href="stellar-life/sl.css?v=20261128m">
+<link rel="stylesheet" href="/shared/corners/corners.css?v=20261124a">
+<script defer src="/shared/corners/corners.js?v=20261124a"></script>
+<script type="module" src="stellar-life/sl-page-ui.js?v=20261128m"></script>
+<script type="module" src="stellar-life/sl-main.js?v=20261128m"></script>
+<script type="module" src="astro-course/story-return.js"></script>
+</head>
+<body>
+<h1 class="sr-only">Stellar Life Cycle VR</h1>
+<p class="sr-only">Follow five stars from birth to death: 0.2, 1, 3, 15 and 40 times the mass of the Sun. Watch a cloud collapse into a star and planets, follow each star across a live H-R diagram from real stellar models, and see it end as a white dwarf, a neutron star or a black hole. Predict before each stage plays. On a Meta Quest 3, press Enter VR to watch in the headset.</p>
+
+<canvas id="slCanvas" aria-label="3D view of the star. Drag to look around; scroll or pinch to move closer."></canvas>
+
+<header class="sl-top" id="slTop">
+  <button id="studyBackBtn" class="sl-hbtn" type="button" data-study-back aria-label="Back to Study library">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+    <span class="lbl back-label">Back</span>
+  </button>
+  <p class="title">Stellar Life Cycle VR</p>
+  <button id="slHelp" class="sl-hbtn" type="button" aria-pressed="false">Numbers: off</button>
+  <button id="slCalm" class="sl-hbtn" type="button" aria-pressed="false">Calm lines</button>
+  <button id="slVR" class="sl-hbtn sl-vr" type="button" hidden>
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h18v8h-6l-1.5-2.5h-3L9 16H3z"/></svg>
+    <span class="lbl">Enter VR</span>
+  </button>
+  <p id="slVRNote" class="sl-vrnote" hidden>VR needs a headset browser (Meta Quest 3).</p>
+</header>
+
+<aside class="sl-hrcard" aria-label="H-R diagram">
+  <canvas id="slHR" role="img" aria-label="Live H-R diagram: surface temperature across, hotter to the left; brightness up. The dot is the star now and the trail is where it has been."></canvas>
+</aside>
+
+<section class="sl-panel" id="slPanel" aria-live="polite">
+  <p class="sl-kicker" id="slKicker"></p>
+  <h2 class="sl-title" id="slTitle">Loading the stars</h2>
+  <div id="slCaption" class="sl-caption"></div>
+  <div id="slQuestion"></div>
+  <div id="slWidgets"></div>
+  <div id="slReadouts" class="sl-readouts"></div>
+  <div id="slChips" class="sl-chips"></div>
+  <p id="slCredit" class="sl-credit" hidden></p>
+  <div id="slControls" class="sl-controls"></div>
+  <details class="sl-credits">
+    <summary>Sources and credits</summary>
+    <p>Star tracks: MIST v1.2 stellar models (Choi et al. 2016; Dotter 2016), solar metallicity, rotating models (v/vcrit = 0.4), interpolated by equivalent evolutionary point. The 1 Sun track is adjusted slightly so today's Sun matches measured values.</p>
+    <p>White dwarf cooling: Bédard, Bergeron, Brassard and Fontaine 2020, thick hydrogen models, courtesy of the Montreal white dwarf group (astro.umontreal.ca/~bergeron/CoolingModels).</p>
+    <p>Late fuel stage times: Woosley, Heger and Weaver 2002. Dashed lines are drawn, not modelled: 0.2 Suns after its model ends (predicted) and 40 Suns after about 5 million years (models differ from here).</p>
+    <p>Painted stroke style and art direction for PopBoard. Inter typeface by Rasmus Andersson (SIL Open Font License).</p>
+  </details>
+</section>
+
+<div id="slDock" class="sl-dock" hidden></div>
+<div id="slSheet" class="sl-sheet" hidden></div>
+
+<p id="slStatus" class="sl-status">Loading...</p>
+</body>
+</html>

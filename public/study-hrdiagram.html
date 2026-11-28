@@ -1328,6 +1328,18 @@ function refreshExtrasPanel() {
     row.appendChild(k); row.appendChild(rm);
     panel.appendChild(row);
   });
+
+  var lifeTitle = document.createElement("div");
+  lifeTitle.className = "panel-section-title";
+  lifeTitle.textContent = "Watch a Whole Life";
+  panel.appendChild(lifeTitle);
+  var lifeLink = document.createElement("a");
+  lifeLink.className = "panel-link";
+  lifeLink.id = "stellarLifeLink";
+  lifeLink.href = "study-stellar-life.html" + location.search;
+  lifeLink.style.display = "block"; lifeLink.style.textAlign = "center"; lifeLink.style.textDecoration = "none";
+  lifeLink.textContent = "Open Stellar Life Cycle VR";
+  panel.appendChild(lifeLink);
 }
 document.getElementById("extrasBtn").addEventListener("click", function () {
   extrasOpen = !extrasOpen;
