@@ -98,6 +98,7 @@ function drawDetail(now, at, ss, color) {
   const g = ctx.detail, ms = model.ms, mode = st.mode;
   $("squeezeBtn").hidden = mode !== "equilibrium" || at.stage.id !== "main-sequence";
   $("hrLink").hidden = mode !== "build" && mode !== "sandbox";
+  $("lifeLink").hidden = mode !== "fate" && mode !== "lifetime";
   let cap = "";
   if (mode === "sandbox") {
     R.drawHR(g, W, H, { msLine: model.msLine, track: model.track, here: ss.onHR ? { L: ss.L, teff: ss.teff } : null, color });
@@ -268,6 +269,7 @@ function writeUrl() {
   if (st.mode !== "build") p.set("mode", st.mode); else p.delete("mode");
   history.replaceState(null, "", location.pathname + "?" + p.toString());
   $("hrLink").href = "study-hrdiagram.html" + returnQuery();
+  $("lifeLink").href = "study-stellar-life.html" + returnQuery();
 }
 function returnQuery() { const q = forwardStudyQuery(location.search).toString(); return q ? "?" + q : ""; }
 
